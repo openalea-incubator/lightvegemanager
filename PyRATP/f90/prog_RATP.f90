@@ -523,7 +523,7 @@ subroutine do_all
        out_rayt(iterspatial,8) = S_detailed(0,je,k)
        out_rayt(iterspatial,9) = S_detailed(1,je,k)
  !      out_rayt(iterspatial,10) = N_detailed(je,k)
-       out_rayt(iterspatial,10) = xintav(je,k)
+       out_rayt(iterspatial,10) = xintav(je,k)/S_vt_vx(je,k) ! ajout mwoussen 
        !write(12,90) ntime, day, hour, k, ts(0,1,k), ts(1,1,k), taref
    end do
   end do
@@ -544,7 +544,6 @@ subroutine do_all
  call di_destroy
  call hi_destroy
  call swrb_destroy
- write(*,*) 'MODIF MAU'
  write(*,*) 'CALCULS TERMINES INTERCEPTION'
  end subroutine do_interception
 

@@ -13,3 +13,5 @@ f2py -c --build-dir . --compiler=mingw32 --fcompiler=gnu95 pyratp.pyf mod_Cocnst
 # construit pyratp.pyd
 gfortran -Wall -g -shared .\Release\src.win-amd64-3.7\pyratpmodule.o .\Release\src.win-amd64-3.7\src.win-amd64-3.7\fortranobject.o .\Release\mod_Cocnstant_ValuesF2PY.o .\Release\mod_Grid3DF2PY_64bit.o .\Release\mod_SkyvaultF2PY.o .\Release\mod_Vegetation_TypesF2PY.o .\Release\mod_Dir_InterceptionF2PY.o .\Release\mod_Hemi_InterceptionF2PY.o .\Release\mod_MicrometeoF2PY.o .\Release\mod_Shortwave_BalanceF2PY.o .\Release\mod_Energy_BalanceF2PY.o .\Release\mod_PhotosynthesisF2PY.o .\Release\mod_MinerPhenoF2PY.o .\Release\prog_RATP.o .\Release\src.win-amd64-3.7\pyratp-f2pywrappers2.o -L"C:\Program Files\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\lib\gcc\x86_64-w64-mingw32\8.1.0" -L"C:\Users\mwoussen\Anaconda3\envs\pyratp37\libs" -L"C:\Users\mwoussen\Anaconda3\envs\pyratp37\PCBuild\amd64" -lpython37 -lgfortran -o .\pyratp.pyd
 
+# copie de la librairie
+cp .\pyratp.pyd ..\pyratp\

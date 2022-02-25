@@ -146,7 +146,9 @@ class runRATP(object):
     def DoIrradiation(*args):
         ratp = pyratp.ratp
         ratp.out_rayt = np.zeros(pyratp.micrometeo.nbli*pyratp.grid3d.nveg*10*pyratp.grid3d.nent).reshape(pyratp.micrometeo.nbli*pyratp.grid3d.nveg*pyratp.grid3d.nent ,10)
-
+        pyratp.ratp.do_interception()
+        
+        """
         if platform.system() == 'Windows':
             path = 'c:/tmpRATP'
             if os.path.exists(path):
@@ -155,12 +157,13 @@ class runRATP(object):
         else :
             path = tempfile.mkdtemp()
         os.mkdir(path+"/ResulIrradiation")
-        pyratp.ratp.do_interception()
+        
 
         fspatial = open(path+"/ResulIrradiation"+'/spatial.txt','w')
         fspatial.write('VegetationType  Iteration day hour  VoxelId ShadedPAR SunlitPAR ShadedArea  SunlitArea xintav')
         fspatial.write('\n')
         np.savetxt(fspatial,ratp.out_rayt,'%.6e')
         fspatial.close()
+        """
 
         return ratp.out_rayt

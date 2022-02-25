@@ -1,0 +1,103 @@
+
+# Pourquoi le PAR est toujours 2 fois trop grand (et 8 fois trop grand sur les tiges) ???
+- [x] : vérification avec s5 -> le totale du LAD semble égaux, mais la grille est différente (référence des vox diffèrent)
+        et LAD sont très proches
+- [x] : comparer les résultats, si on a un facteur constant entre les deux en parler avec didier
+- [x] : pourquoi caribu ne s'enclenche au réveil -> en fait le critère c'est élévation > 2° et non 5°
+
+- [ ] comparer les parties au bout des feuilles, voir si c'est la merde ou pas 
+
+# Scène avec beaucoup de blés (on s'attend de meilleurs résultats sur ratp)
+
+# Compte-rendu du dynamic cn-wheat seul
+- [x] : validation caribu dans lVM
+- [x] : intégration dynamique de RATP : schéma
+- [x] : fil de construction de lvm (pour caribu et ratp)
+- [ ] : comparaison des résultats entre caribu et ratp
+
+# EXTRA
+- [ ] : afficher le PAR en plantGL avec une colormap (dans caribu : example/assemby_test/test_light_tutorial.py)
+- [ ] : distribution de zenith par s2v ou s5 (arriver à exécuter les .exe!! :( )
+
+# PROBLEMES
+* Problème avec le soleil de CARIBU : météo à 12h indique un z négatif 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------
+  ============================================
+# ==                  DONE                  ==#
+  ============================================  
+
+
+- [x] CARIBU dans LVM
+- [x] CN-WHEAT DYNAMIC seul + LVM CARIBU
+
+- [x] CN-WHEAT DYNAMIC SEUL + LVM RATP
+    même conditions que la référence :
+    - [x] même ciel
+    - [x] pas de réflexion (transmittance?)
+        -[x] diviser LAD par 2 pour la tige (comme conseillé dans s5.f)
+    - [x] adapter la météo
+        - [x] une itération à la fois ? : réécrire un fichier météo automatique avec conversion?
+                                        il existe une option?
+-> pb : différence sur la tige, face exposée et à l'ombre ==
+
+- [x] vérifier correspondance de la grille avec la triangulation
+- [] a-t-on vraiment les même conditions:
+    - [x] : réflectance, transmittance? : comparer en mettant reflectance=0
+    - [x] : unité d'entrée-sorties, 
+        - unité d'entrée?, rayonnement total ou juste le PAR
+        - unité de traitement?
+        - unité en sortie?
+https://www.researchgate.net/post/Can-I-convert-PAR-photo-active-radiation-value-of-micro-mole-M2-S-to-Solar-radiation-in-Watt-m2
+PAR : 400-700nm -> facteur conversion entre les W.m-2 et µmol.m-2.s-1 dans cette ordre = 4,6
+
+(erreur dans caribu_facade, conversion en W.m-2 pour splitter sun/sky ?)
+(erreur, PARa pour les soleil rasants)
+
+météo ratp : W.m-2, avec PAR (sun+sky) et NIR (sun+sky) séparés
+traitement ratp : W.m-2
+sortie ratp : µmol.m-2.s-1
+
+météo caribu : µmol.m-2.s-1 avec PAR (sun+sky)
+traitement ratp : µmol.m-2.s-1
+sortie : µmol.m-2.s-1
+
+- [x] : trouver pourquoi les voxels reçoivent 10+ fois 
+    - [x] : azimut et elevation en rad->degre
+    - [] : discrétiser le ciel pour avoir un omega accurate? -> difficile
+    - [x] : interception ciel et soleil -> okay
+je surestime encore beaucoup
+
+- [x] : caribu avec sky turtle?
+- [x] : reflectance et transmittance??? transmittance est calculé dans la probabilité d'interception
+
+Régler les problèmes RATP/CARIBU
+- [x] : vérifier que le splitter diff/glob fonctionne (fin de journée, diffus domine)
+- [x] : trouver pourquoi RATP renvoit 0 avant la nuit -> soleil est couché
+    - [non] : problème d'heure TU ?
+    - [non] : problème du rf ?
+    - [oui] : calcul du soleil -> problème dans les correspondances des dates
+    compare soleil caribu et ratp
+        - [x] : récupérer soleil de caribu -> pas d'heure solaire comme dans RATP
+        - [x] : récupérer le soleil de RATP et l'envoyer à CARIBU
+            - [x] : récupérer azimut et zenith de pyratp -> modif dans shortwave balance et création novueau pyratp.pyd
+            - [x] : azi,ele -> x,y,z ; vérifier les conventions pendant la conversion
+        - [x] : ajout d'un critère élévation > 5° pour calculer la lumière (même critère que RATP)
+
+Problème aire de RATP (trop grande)
+- [x] réglé : rendu du tableau, on prenait la mauvaise aire
+
+

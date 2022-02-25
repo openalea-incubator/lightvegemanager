@@ -1,9 +1,12 @@
 from src.Polygons import *
 
+from PyRATP.pyratp import grid
+
 '''
 Set de fonctions pour subdiviser un triangle de manière à ce qu'il match une grille de voxels
 '''
 
+## /!\ fonction fausse /!\ pas prise ne compte de l'origine de la grille (et autres bug)
 def whichvoxel(p, mygrid):
     '''Renvoit le voxel (indices 3D) auquel appartient p
 
@@ -29,7 +32,7 @@ def whichvoxel(p, mygrid):
         jz=mygrid.njz-1
     vox.append(jz)
     return vox
-
+    
 def samevoxel(voxels):
     '''Vérifie si la liste voxels contient le même voxel
 
@@ -59,7 +62,9 @@ def tesselate(mygrid, triangle):
     # voxel dans chaque sommet
     wh = []
     for i in range(3):
-        wh.append(whichvoxel(triangle[i], mygrid))
+        #wh.append(whichvoxel(triangle[i], mygrid))
+        Jx, Jy, Jz = grid.grid_index([triangle[i][0]], [triangle[i][1]], [triangle[i][2]], mygrid, toric=False)
+        wh.append([Jx[0], Jy[0], Jz[0]])
     
     if samevoxel(wh):
         return [triangle]
