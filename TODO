@@ -5,7 +5,6 @@
 - [x] : comparer les résultats, si on a un facteur constant entre les deux en parler avec didier
 - [x] : pourquoi caribu ne s'enclenche au réveil -> en fait le critère c'est élévation > 2° et non 5°
 
-- [ ] comparer les parties au bout des feuilles, voir si c'est la merde ou pas 
 
 # Scène avec beaucoup de blés (on s'attend de meilleurs résultats sur ratp)
 
@@ -13,7 +12,7 @@
 - [x] : validation caribu dans lVM
 - [x] : intégration dynamique de RATP : schéma
 - [x] : fil de construction de lvm (pour caribu et ratp)
-- [ ] : comparaison des résultats entre caribu et ratp
+- [x] : comparaison des résultats entre caribu et ratp
 
 # EXTRA
 - [ ] : afficher le PAR en plantGL avec une colormap (dans caribu : example/assemby_test/test_light_tutorial.py)
