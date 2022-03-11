@@ -2,7 +2,7 @@
 # Pourquoi le PAR est toujours 2 fois trop grand (et 8 fois trop grand sur les tiges) ???
 - [x] : vérification avec s5 -> le totale du LAD semble égaux, mais la grille est différente (référence des vox diffèrent)
         et LAD sont très proches
-- [x] : comparer les résultats, si on a un facteur constant entre les deux en parler avec didier
+- [x] : comparer les résultats
 - [x] : pourquoi caribu ne s'enclenche au réveil -> en fait le critère c'est élévation > 2° et non 5°
 
 
@@ -16,7 +16,7 @@
 
 # EXTRA
 - [ ] : afficher le PAR en plantGL avec une colormap (dans caribu : example/assemby_test/test_light_tutorial.py)
-- [ ] : distribution de zenith par s2v ou s5 (arriver à exécuter les .exe!! :( )
+- [ ] : distribution de zenith par s2v ou s5 (arriver à exécuter les .exe)
 
 # PROBLEMES
 * Problème avec le soleil de CARIBU : météo à 12h indique un z négatif 
