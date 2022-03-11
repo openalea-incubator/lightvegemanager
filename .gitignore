@@ -8,8 +8,8 @@ PyRATP/pyratp_wralea/*
 PyRATP/__pycache__/*
 PyRATP/__init__.py
 PyRATP/__init__.pyc
+PyRATP/saved_pyratp_pyd/*
 *.pyc
-*.pyd
 *.pyf
 PyRATP/f90/Release/*
 PyRATP/f90/SConscript
@@ -20,3 +20,5 @@ PyRATP/pyratp/mtg_test.txt
 adel_saved/*
 WheatFspm/*
 l-egume/*
+mytests.py
+TODO
