@@ -137,6 +137,7 @@ class Grid(object):
 
         # isolated or toric scene ?
         grid3d.int_isolated_box = int(not toric)
+        #grid3d.isolated_box = (not toric)
         # definition of aliases
 
         Grid.initParam(grid3d)

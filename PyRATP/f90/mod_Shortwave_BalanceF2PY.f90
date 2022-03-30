@@ -63,7 +63,7 @@ contains
   allocate(Spar(nent,60))
   Spar=0.
 
-  call DirectBeam_Interception(day, hour)
+  call DirectBeam_Interception(day, hour, truesolartime)
 
   if (hdeg.gt.2.) then      !MARC  pb with hdeg ->0 
    do iblo=1,nblomin
@@ -76,15 +76,17 @@ contains
  end subroutine swrb_doall
 
 
- subroutine sundirection(sunheight,sunazimuth,latitude,longitude,timezone,day,hour)
+ subroutine sundirection(sunheight,sunazimuth,latitude,longitude,timezone,day,hour,truesolartime)
 
 ! Computation of the sun direction (i.e. height and azimuth, in degrees) from grid location and time
 ! From programs given by Grebet (1993, in Crop structure and light microclimate)
 ! Sun azimuth is computed with the South clockwise convention (East = -90, West = 90)
+! ajout du flag truesolartime si hour est l'heure solaire (ajout mwoussen 23/03/2022)
 
   real :: sunheight, sunazimuth
   real :: latitude, longitude
   real :: timezone, day, hour
+  logical :: truesolartime
 
   real :: om, teta, sidec, codec, tphi, dphi, eqntime
   real :: silat, colat, pi
@@ -107,7 +109,13 @@ contains
   silat=sin(latitude*pi/180.) ! Sine and cosine of latitude
   colat=cos(latitude*pi/180.)
 
-  TSThour=amod(hour+timezone+longitude/15.-eqntime/60.,24.) ! True Solar Time
+  ! active ou non le calcul de l'heure solaire
+  if(.NOT. truesolartime) then
+    TSThour =amod(hour+timezone+longitude/15.-eqntime/60.,24.) ! True Solar Time
+  else
+    TSThour =hour
+  endif
+
   hour_angle = (TSThour-12)*pi/12.
   sinh = silat*sidec + colat*codec*cos(hour_angle)
   sunheight=asin(sinh)
@@ -122,12 +130,10 @@ contains
   hdeg = sunheight
   azdeg = sunazimuth
 
-  write(*,*) "day,hour,hdeg,azdeg",day,hour,hdeg,azdeg
-
  end subroutine sundirection
 
 
- subroutine DirectBeam_Interception(day,hour)
+ subroutine DirectBeam_Interception(day,hour,truesolartime)
 
   use grid3D
   use skyvault
@@ -135,10 +141,11 @@ contains
   use dir_interception
 
   real :: day, hour
+  logical :: truesolartime
 
   write(*,*) 'Computing interception of direct radiation ...'
 
-  call sundirection(hdeg,azdeg,latitude,longitude,timezone,day,hour)
+  call sundirection(hdeg,azdeg,latitude,longitude,timezone,day,hour,truesolartime)
   
 
   azdeg=azdeg-orientation  ! azimuth with regard to 3Dgrid X-axis

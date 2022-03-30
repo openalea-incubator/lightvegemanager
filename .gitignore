@@ -22,3 +22,9 @@ WheatFspm/*
 l-egume/*
 mytests.py
 TODO
+cas_simple_1.py
+cas_simple_2.py
+cas_simple_3.py
+test_plane_plantgl.py
+test_suns_caribu.py
+PyRATP/f90/pyratp.cp37-win_amd64.pyd

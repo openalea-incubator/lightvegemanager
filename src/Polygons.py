@@ -155,6 +155,7 @@ class Triangle3:
         '''Mise à l'échelle de self d'un float h
         h : float
         Màj du barycentre et de l'aire
+        Màj de l'aire
         '''
         newvert=[]
         for s in self.__vertices:
@@ -165,6 +166,21 @@ class Triangle3:
         side1 = self.__vertices[1]-self.__vertices[0]
         side2 = self.__vertices[2]-self.__vertices[1]
         self.__area = (side1^side2).norm * 0.5
+
+    def zrotate(self, omega):
+        '''Rotation du triangle autour de l'axe z
+        omega : angle en degré
+
+        met à jour __vertices et __barycenter
+        '''
+        omegarad = omega * math.pi/180
+        newvert=[]
+        for s in self.__vertices:
+            newvert.append(Vector3(math.cos(omegarad)*s[0] - math.sin(omegarad)*s[1], 
+                                    math.sin(omegarad)*s[0] + math.cos(omegarad)*s[1],
+                                    s[2]))
+        self.__vertices = tuple(newvert)
+        self.__barycenter = (self.__vertices[0]+self.__vertices[1]+self.__vertices[2]).scale(1/3)
 
     def __getitem__(self, id):
         '''renvoit un sommet

@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import os
 
 from alinea.adel.adel_dynamic import AdelDyn
@@ -332,3 +333,92 @@ def write_outputs_fspmwheat(OUTPUTS_DIRPATH,
         outputs_df = outputs_df.loc[:, state_variables_names]  # compare only the values of the compartments
         cnwheat_tools.compare_actual_to_desired(OUTPUTS_DIRPATH, outputs_df, desired_outputs_filename,
                                                 actual_outputs_filename, precision=PRECISION, overwrite_desired_data=overwrite_desired_data)
+
+# copie de _create_heterogeneous_canopy dans fspmwheat/caribu_facade pour l'utiliser en dehors de la classe
+def create_heterogeneous_canopy_copy(geometrical_model, mtg, nplants=50, var_plant_position=0.03, var_leaf_inclination=0.157, var_leaf_azimut=1.57, var_stem_azimut=0.157,
+                                     plant_density=250, inter_row=0.15):
+        """
+        Duplicate a plant in order to obtain a heterogeneous canopy.
+
+        :param int nplants: the desired number of duplicated plants
+        :param float var_plant_position: variability for plant position (m)
+        :param float var_leaf_inclination: variability for leaf inclination (rad)
+        :param float var_leaf_azimut: variability for leaf azimut (rad)
+        :param float var_stem_azimut: variability for stem azimut (rad)
+
+        :return: duplicated heterogenous scene and its domain
+        :rtype: openalea.plantgl.all.Scene, (float)
+        """
+        from alinea.adel.Stand import AgronomicStand
+        import openalea.plantgl.all as plantgl
+        import random
+
+        # Load scene
+        initial_scene = geometrical_model.scene(mtg)
+
+        alea_canopy = pd.DataFrame()
+
+        # Planter
+        stand = AgronomicStand(sowing_density=plant_density, plant_density=plant_density, inter_row=inter_row, noise=var_plant_position)
+        _, domain, positions, _ = stand.smart_stand(nplants=nplants, at=inter_row, convunit=1)
+
+        random.seed(1234)
+
+        # Built alea table if does not exist yet
+        if alea_canopy.empty:
+            elements_vid_list = []
+            for mtg_plant_vid in mtg.components_iter(mtg.root):
+                for mtg_axis_vid in mtg.components_iter(mtg_plant_vid):
+                    for mtg_metamer_vid in mtg.components_iter(mtg_axis_vid):
+                        for mtg_organ_vid in mtg.components_iter(mtg_metamer_vid):
+                            for mtg_element_vid in mtg.components_iter(mtg_organ_vid):
+                                if mtg.label(mtg_element_vid) == 'LeafElement1':
+                                    elements_vid_list.append(mtg_element_vid)
+            elements_vid_df = pd.DataFrame({'vid': elements_vid_list, 'tmp': 1})
+            positions_df = pd.DataFrame({'pos': range(len(positions)),
+                                         'tmp': 1,
+                                         'azimut_leaf': 0,
+                                         'inclination_leaf': 0})
+            alea = pd.merge(elements_vid_df, positions_df, on=['tmp'])
+            alea = alea.drop('tmp', axis=1)
+            for vid in elements_vid_list:
+                np.random.seed(vid)
+                alea.loc[alea['vid'] == vid, 'azimut_leaf'] = np.random.uniform(-var_leaf_azimut, var_leaf_azimut, size=len(positions))
+                alea.loc[alea['vid'] == vid, 'inclination_leaf'] = np.random.uniform(-var_leaf_inclination, var_leaf_inclination, size=len(positions))
+            alea_canopy = alea
+
+        # Duplication and heterogeneity
+        duplicated_scene = plantgl.Scene()
+        position_number = 0
+        for pos in positions:
+            azimut_stem = random.uniform(-var_stem_azimut, var_stem_azimut)
+            for shp in initial_scene:
+                if mtg.label(shp.id) == 'StemElement':
+                    rotated_geometry = plantgl.EulerRotated(azimut_stem, 0, 0, shp.geometry)
+                    translated_geometry = plantgl.Translated(plantgl.Vector3(pos), rotated_geometry)
+                    new_shape = plantgl.Shape(translated_geometry, appearance=shp.appearance, id=shp.id)
+                    duplicated_scene += new_shape
+                elif mtg.label(shp.id) == 'LeafElement1':
+                    # Add shp.id in alea_canopy if not in yet:
+                    if shp.id not in list(alea_canopy['vid']):
+                        new_vid_df = pd.DataFrame({'vid': shp.id, 'pos': range(len(positions))})
+                        np.random.seed(shp.id)
+                        new_vid_df['azimut_leaf'] = np.random.uniform(-var_leaf_azimut, var_leaf_azimut, size=len(positions))
+                        new_vid_df['inclination_leaf'] = np.random.uniform(-var_leaf_inclination, var_leaf_inclination, size=len(positions))
+                        alea_canopy = alea_canopy.copy().append(new_vid_df, sort=False)
+                    # Translation to origin
+                    anchor_point = mtg.get_vertex_property(shp.id)['anchor_point']
+                    trans_to_origin = plantgl.Translated(-anchor_point, shp.geometry)
+                    # Rotation variability
+                    azimut = alea_canopy.loc[(alea_canopy.pos == position_number) & (alea_canopy.vid == shp.id), 'azimut_leaf'].values[0]
+                    inclination = alea_canopy.loc[(alea_canopy.pos == position_number) & (alea_canopy.vid == shp.id), 'inclination_leaf'].values[0]
+                    rotated_geometry = plantgl.EulerRotated(azimut, inclination, 0, trans_to_origin)
+                    # Restore leaf base at initial anchor point
+                    translated_geometry = plantgl.Translated(anchor_point, rotated_geometry)
+                    # Translate leaf to new plant position
+                    translated_geometry = plantgl.Translated(pos, translated_geometry)
+                    new_shape = plantgl.Shape(translated_geometry, appearance=shp.appearance, id=shp.id)
+                    duplicated_scene += new_shape
+            position_number += 1
+
+        return duplicated_scene, domain

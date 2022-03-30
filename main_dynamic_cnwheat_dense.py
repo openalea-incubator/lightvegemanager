@@ -1,13 +1,15 @@
 from src.LightVegeManager import *
 from src.FSPMWheat_facade import *
 
+from fspmwheat import caribu_facade
+
 import time
 import progressbar
 
 def simu_caribu(SIMULATION_LENGTH, outpath, write):
     # -- SIMULATION PARAMETERS --
     START_TIME = 0
-    PLANT_DENSITY = {1: 1}
+    PLANT_DENSITY = {1: 410}
 
     # define the time step in hours for each simulator
     LIGHT_TIMESTEP = 4
@@ -64,7 +66,7 @@ def simu_caribu(SIMULATION_LENGTH, outpath, write):
     # Paramètres CARIBU
     sun_sky_options="mix"
     sun_algo="ratp"
-    infinite=False
+    infinite=True
     caribu_param = [sun_sky_options, sun_algo, infinite,((-1, -1), (1, 1))]
     in_names = ["fspm-wheat"]
     trans = [["none","none","m","x+ = S"]]
@@ -94,21 +96,25 @@ def simu_caribu(SIMULATION_LENGTH, outpath, write):
         hour = meteo.loc[t_light, ['hour']].iloc[0]
         PARi_next_hours = meteo.loc[range(t_light, t_light + LIGHT_TIMESTEP), ['PARi']].sum().values[0]
 
+        # création d'un couvert hétérogène
+        scene_etendu, domain = create_heterogeneous_canopy_copy(adel_wheat, g, nplants=100, var_plant_position=0.03, var_leaf_inclination=0.157, var_leaf_azimut=1.57, var_stem_azimut=0.157,
+                                     plant_density=250, inter_row=0.15)
+
         # vérifie si l'itération suivante est encore le jour? et lance le calcul de lumière
         if (t_light % LIGHT_TIMESTEP == 0) and (PARi_next_hours > 0):
-            in_scenes = [adel_wheat.scene(g)]
+            in_scenes = [scene_etendu]
             # recherche des tiges dans les différentes scènes
-            id_stems=[]
-            for i in range(len(in_scenes)):
-                id_stems.extend(whichstems_MTG(g, i))
+            id_stems=whichstems_MTG(g, adel_wheat.scene(g))
+
+            # ajoute le pattern aux paramètres du modèle
+            caribu_param[-1] = domain
             
             # Objet calcul de la lumière
-            lght = LightVegeManager(in_scenes, in_names=in_names,
-                                    in_transformations=trans,
-                                    sky_parameters=[],
-                                    lightmodel="caribu", lightmodelparam=caribu_param, 
-                                    rf=rf, coordinates=coordinates,
-                                    global_scene_tesselate_level=0)
+            lght = LightVegeManager(in_scenes, in_names=in_names, id_stems=id_stems, 
+                                        in_transformations=trans,
+                                        sky_parameters=[],
+                                        lightmodel="caribu", lightmodelparam=caribu_param, 
+                                        rf=rf, coordinates=coordinates)
             
             lght.run(PARi=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
             lght.PAR_update_MTG(g)
@@ -169,7 +175,7 @@ def simu_caribu(SIMULATION_LENGTH, outpath, write):
 def simu_ratp(SIMULATION_LENGTH, dv, outpath, write):
     # -- SIMULATION PARAMETERS --
     START_TIME = 0
-    PLANT_DENSITY = {1: 1}
+    PLANT_DENSITY = {1: 410}
 
     # define the time step in hours for each simulator
     LIGHT_TIMESTEP = 4
@@ -232,13 +238,11 @@ def simu_ratp(SIMULATION_LENGTH, dv, outpath, write):
     rs=[0., 0] # Soil reflectance in PAR and NIR bands
     ratp_rf=[[0., 0]] # leaf reflectance PAR et NIR pour l'entité 0
     ratp_mu = [1.] # clumping pour chaque entité
-    tesselate_level = 7
+    tesselate_level = 6
     distrib_algo = "compute" # "file"
     distrib_option = 40
-    infinite=False
+    infinite=True
     ratp_parameters = [dx, dy, dz, rs, ratp_mu, tesselate_level, distrib_algo, distrib_option,infinite]
-
-    sky_parameters=[] # turtle 46 directions par défaut
 
     latitude, longitude, timezone = 46.58, 0.38, 0.
     coordinates = [latitude, longitude, timezone]
@@ -265,7 +269,11 @@ def simu_ratp(SIMULATION_LENGTH, dv, outpath, write):
 
         # vérifie si l'itération suivante est encore le jour? et lance le calcul de lumière
         if (t_light % LIGHT_TIMESTEP == 0) and (PARi_next_hours > 0):
-            in_scenes = [adel_wheat.scene(g)]
+            # création d'un couvert hétérogène
+            scene_etendu, domain = create_heterogeneous_canopy_copy(adel_wheat, g, nplants=100, var_plant_position=0.03, var_leaf_inclination=0.157, var_leaf_azimut=1.57, var_stem_azimut=0.157,
+                                     plant_density=250, inter_row=0.15)
+
+            in_scenes = [scene_etendu]
             
             # recherche des tiges dans les différentes scènes
             id_stems=[]
@@ -273,23 +281,25 @@ def simu_ratp(SIMULATION_LENGTH, dv, outpath, write):
                 id_stems.extend(whichstems_MTG(g, i))
             
             # Objet calcul de la lumière
-            lght = LightVegeManager(in_scenes, in_names=in_names, 
-                                    in_transformations=trans,
-                                    sky_parameters=sky_parameters,
-                                    lightmodel="ratp", lightmodelparam=ratp_parameters, 
-                                    rf=ratp_rf, 
-                                    coordinates=coordinates)
+            lght = LightVegeManager(in_scenes, 
+                                in_names=in_names,
+                                in_transformations=trans,
+                                id_stems=id_stems, 
+                                lightmodel="ratp", 
+                                lightmodelparam=ratp_parameters,
+                                sky_parameters=[], 
+                                rf=ratp_rf,
+                                coordinates=coordinates)
             
             lght.run(PARi=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
             lght.PAR_update_MTG(g)
 
-
             print(lght.shapes_outputs)
 
             # write VTK
-            if write:
+            #if write:
                 #lght.VTKinit("outputs/"+outpath+"/cnwheat_dyn_init_"+str(t_light)+"_")
-                lght.VTKout("outputs/"+outpath+"/cnwheat_dyn_PAR_",t_light, voxels=True)
+                #lght.VTKout("outputs/"+outpath+"/cnwheat_dyn_PAR_",t_light, voxels=False)
         
         # sinon on copie le PAR de l'itération précédente
         else:
@@ -337,23 +347,18 @@ def simu_ratp(SIMULATION_LENGTH, dv, outpath, write):
     if write: df_myout.to_csv("outputs/dynamic_cn_wheat_csv/"+outpath+".csv")
 
 if __name__ == "__main__":
-    nstep=4
-    write=False
-    out=""
-
-    out = "dynamic_cn_wheat_simple2_caribu"
+    nstep=1200
+    write=True
+ 
+    #out = "dynamic_2_cnwheat_dense_lvmcaribu"
     
-    simu_caribu(nstep,out,write)
+    #simu_caribu(nstep,out,write)
     print("=== END CARIBU===")
     
-    dv = 0.01 #m
-    out = "dynamic_cn_wheat_simple2_ratp"
+    dv = 0.025 #m
+    out = "dynamic_2_cnwheat_dense_lvmratp_2-5cm"
     simu_ratp(nstep, dv, out, write)
-    print("=== END RATP 1cm===")
-    
-    #dv = 0.005 #m
-    #out = "dynamic_cnwheat_lvmratp_5mm"
-    #simu_ratp(nstep, dv, out, write)
+    print("=== END RATP 2.5cm===")
 
     print("=== END ===")
     

@@ -110,6 +110,52 @@ def tesselate(mygrid, triangle):
 
         return smalltriangles
 
+def tesselate2(triangle):
+    '''Subdivise triangle en 4 sous-triangles sans test
+    triangle : Triangle3
+    
+    return : [Triangle3] liste de 4 triangles
+    '''
+    smalltriangles=[]
+
+    # récupère les milieux
+    middles = []
+    for i in range(3):
+        middles.append(Vector3.middle(triangle[i], triangle[(i+1)%3]))
+
+    # triangle 1
+    smalltriangles.append(Triangle3(
+        triangle[0],
+        middles[0],
+        middles[2]
+    ))
+    
+    # triangle 2
+    smalltriangles.append(Triangle3(
+        middles[0],
+        triangle[1],
+        middles[1]
+    ))
+
+    # triangle 3
+    smalltriangles.append(Triangle3(
+        middles[1],
+        triangle[2],
+        middles[2]
+    ))
+
+    # triangle 4
+    smalltriangles.append(Triangle3(
+        middles[0],
+        middles[1],
+        middles[2]
+    ))
+    
+    for t in smalltriangles : t.set_id(triangle.id)
+
+    return smalltriangles
+
+
 def iterate_trianglesingrid(triangle, mygrid, level, levelmax, triangles_shape):
     '''Récursion sur triangle, tant que sa subdivision ne match pas la grille ou atteint un critère d'arrêt
 
@@ -133,5 +179,27 @@ def iterate_trianglesingrid(triangle, mygrid, level, levelmax, triangles_shape):
         else:
             for subt in ltriangle:
                 iterate_trianglesingrid(subt, mygrid, level, levelmax, triangles_shape)
+    
+    return 1
+
+def iterate_triangles(triangle, level, levelmax, triangles_shape):
+    '''Récursion sur triangle, tant que levelmax n'est pas atteint
+
+    triangle : Triangle3, triangle à tester 
+    level : nombre de subdivision actuel
+    levelmax : limite de subdivision
+    triangles_shape : liste de Triangle3, stocke les triangles subdivisés ou non
+    
+    return : 1 si fonction a bien terminée et 
+            met à jour la liste triangles_shape
+    '''
+    level+=1
+    ltriangle = tesselate2(triangle)
+    if level == levelmax:
+        triangles_shape.append(triangle)
+    
+    else:
+        for subt in ltriangle:
+            iterate_triangles(subt, level, levelmax, triangles_shape)
     
     return 1
