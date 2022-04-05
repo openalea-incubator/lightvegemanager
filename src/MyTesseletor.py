@@ -203,3 +203,13 @@ def iterate_triangles(triangle, level, levelmax, triangles_shape):
             iterate_triangles(subt, level, levelmax, triangles_shape)
     
     return 1
+
+class MyTessetelorGrid:
+    def __init__(self, mygrid, level, levelmax, triangles_shape):
+        self.__mygrid = mygrid
+        self.__level = level
+        self.__levelmax = levelmax
+        self.__triangles_shape = triangles_shape
+    
+    def _iterate_trianglesingrid(self, triangle):
+        iterate_trianglesingrid(triangle, self.__mygrid, self.__level, self.__levelmax, self.__triangles_shape)

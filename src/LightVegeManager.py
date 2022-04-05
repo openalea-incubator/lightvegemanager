@@ -8,12 +8,14 @@ from PyRATP.pyratp.micrometeo import MicroMeteo
 from PyRATP.pyratp.runratp import runRATP
 
 from alinea.caribu.CaribuScene import CaribuScene
-from alinea.caribu.sky_tools import GenSky, GetLight, Gensun, GetLightsSun, spitters_horaire, turtle
+from alinea.caribu.sky_tools import GenSky, GetLight, Gensun, GetLightsSun, spitters_horaire, turtle, Sun
 
-import os, subprocess, copy
+import os, subprocess
 import itertools
 import numpy as np
 import pandas
+import concurrent.futures
+import time
 
 from src.Polygons import *
 from src.MyTesseletor import *
@@ -190,6 +192,7 @@ class LightVegeManager:
                     rf = [],
                     coordinates=[46.58, 0.38, 0.], # Poitiers
                     global_scene_tesselate_level=0,
+                    multithread=0,
                     scene_unit="m"):
         '''Constructeur
         
@@ -235,7 +238,7 @@ class LightVegeManager:
 
             Notes :
                 Convention de coordonnées (type RATP scene) : x+ = N, y+ = W 
-                dans le self.__myscene
+                valable dans self.__myscene et self.__caribu_scene
 
         '''
         self.__in_scenes = in_scenes
@@ -326,67 +329,6 @@ class LightVegeManager:
             dx, dy, dz, rs, mu, levelmax, ele_algo, ele_option, infinite = lightmodelparam     
 
             self.__ratp_mu = mu 
-            
-            # on ajuste au besoin les min-max si la scène est plane pour avoir un espace 3D
-            if xmin==xmax:
-                xmax+=dx
-                xmin-=dx 
-            if ymin==ymax:
-                ymax+=dy
-                ymin-=dy 
-            if zmin==zmax:
-                zmax+=dz
-                zmin-=dz   
-            
-            self.__pmax = Vector3(xmax, ymax, zmax)
-            self.__pmin = Vector3(xmin, ymin, zmin)
-
-            # nombre de voxels
-            nx = int((self.__pmax[0] - self.__pmin[0]) // dx)
-            ny = int((self.__pmax[1] - self.__pmin[1]) // dy)
-            nz = int((self.__pmax[2] - self.__pmin[2]) // dz)
-            if (self.__pmax[0] - self.__pmin[0]) % dx > 0 : nx += 1
-            if (self.__pmax[1] - self.__pmin[1]) % dy > 0 : ny += 1
-            if (self.__pmax[2] - self.__pmin[2]) % dz > 0 : nz += 1
-
-            # définit une origine en Pmin 
-            xorig, yorig, zorig = self.__pmin[0], self.__pmin[1], -self.__pmin[2]
-
-            # création de la grille
-            mygrid = grid.Grid.initialise(nx, ny, nz, dx, dy, dz, xorig, yorig, zorig, coordinates[0], coordinates[1], coordinates[2], len(in_scenes), rs, toric=infinite)
-
-            # subdivision des triangles pour matcher la grille
-            if levelmax>0:
-                # traite les triangles de la shape
-                new_tr_scene=[]
-                for tr in self.__my_scene:
-                    level = 0
-                    isworking = iterate_trianglesingrid(tr, mygrid, level, levelmax, new_tr_scene)
-                # copie de la nouvelle triangulation
-                self.__my_scene = new_tr_scene
-            
-            # préparation du fill
-            # pour chaque triangle, indice entité, x, y, z, aire, nitro
-            entity, barx, bary, barz, a, n = [],[], [], [], [], []
-            for tr in self.__my_scene:
-                bar = tr.barycenter
-                barx.append(bar[0])
-                bary.append(bar[1])
-                barz.append(bar[2])
-                
-                # id : id de la shape, val : [id shape en input, id de l'entité]
-                # c'est une tige on divise par 2 le LAD
-                if (self.__matching_ids[tr.id][0], self.__matching_ids[tr.id][1]) in self.__id_stems:
-                    a.append(tr.area/2)
-                else:
-                    a.append(tr.area)
-                
-                n.append(0.)
-                entity.append(self.__matching_ids[tr.id][1])
-
-            mygrid, matching = grid.Grid.fill_1(entity, barx, bary, barz, a, n, mygrid)
-            self.__ratp_scene = mygrid
-            self.__tr_vox = matching 
 
             ## distribution d'angles pour chaque entité
             distrib = []
@@ -404,7 +346,7 @@ class LightVegeManager:
                     t_nent_area.append(totA)
                 
                 # on ajoute 1 au nombre de classe avec range
-                angles = list(range(10, 100, ele_option+1))
+                angles = list(np.linspace(90/ele_option, 90, ele_option))
 
                 # pour chaque entité
                 for k in range(len(self.__in_scenes)):
@@ -438,6 +380,76 @@ class LightVegeManager:
                     distrib.append([float(x) for x in line.split(',')[1:]])
             
             self.__ratp_distrib = distrib
+
+            # on ajuste au besoin les min-max si la scène est plane pour avoir un espace 3D
+            if xmin==xmax:
+                xmax+=dx
+                xmin-=dx 
+            if ymin==ymax:
+                ymax+=dy
+                ymin-=dy 
+            if zmin==zmax:
+                zmax+=dz
+                zmin-=dz   
+            
+            self.__pmax = Vector3(xmax, ymax, zmax)
+            self.__pmin = Vector3(xmin, ymin, zmin)
+
+            # nombre de voxels
+            nx = int((self.__pmax[0] - self.__pmin[0]) // dx)
+            ny = int((self.__pmax[1] - self.__pmin[1]) // dy)
+            nz = int((self.__pmax[2] - self.__pmin[2]) // dz)
+            if (self.__pmax[0] - self.__pmin[0]) % dx > 0 : nx += 1
+            if (self.__pmax[1] - self.__pmin[1]) % dy > 0 : ny += 1
+            if (self.__pmax[2] - self.__pmin[2]) % dz > 0 : nz += 1
+            
+            # définit une origine en Pmin 
+            xorig, yorig, zorig = self.__pmin[0], self.__pmin[1], -self.__pmin[2]
+
+            # création de la grille
+            mygrid = grid.Grid.initialise(nx, ny, nz, dx, dy, dz, xorig, yorig, zorig, coordinates[0], coordinates[1], coordinates[2], len(in_scenes), rs, toric=infinite)
+
+            # subdivision des triangles pour matcher la grille
+            if levelmax>0:
+                # traite les triangles de la shape
+                new_tr_scene=[]
+                start=time.time()
+                # traitement multithreading
+                if multithread > 0:
+                    level = 0
+                    tesseletorgrid = MyTessetelorGrid(mygrid, level, levelmax, new_tr_scene)
+                    with concurrent.futures.ThreadPoolExecutor(multithread) as executor:
+                        executor.map(tesseletorgrid._iterate_trianglesingrid, self.__my_scene)
+                else :
+                    for tr in self.__my_scene:
+                        level = 0
+                        isworking = iterate_trianglesingrid(tr, mygrid, level, levelmax, new_tr_scene)
+                print("tesselation time : ",time.time()-start)
+                # copie de la nouvelle triangulation
+                self.__my_scene = new_tr_scene
+            
+            # préparation du fill
+            # pour chaque triangle, indice entité, x, y, z, aire, nitro
+            entity, barx, bary, barz, a, n = [],[], [], [], [], []
+            for tr in self.__my_scene:
+                bar = tr.barycenter
+                barx.append(bar[0])
+                bary.append(bar[1])
+                barz.append(bar[2])
+                
+                # id : id de la shape, val : [id shape en input, id de l'entité]
+                # c'est une tige on divise par 2 le LAD
+                if (self.__matching_ids[tr.id][0], self.__matching_ids[tr.id][1]) in self.__id_stems:
+                    a.append(tr.area/2)
+                else:
+                    a.append(tr.area)
+                
+                n.append(0.)
+                entity.append(self.__matching_ids[tr.id][1])
+
+            mygrid, matching = grid.Grid.fill_1(entity, barx, bary, barz, a, n, mygrid)
+            self.__ratp_scene = mygrid
+            self.__tr_vox = matching 
 
             # construction du ciel:
             if sky_parameters==[]:
@@ -508,13 +520,11 @@ class LightVegeManager:
             for id,val in self.__matching_ids.items():
                 self.__caribu_scene[id] = []
 
-            # changement de coordonnées dans la convention de CARIBU avec x+ = S (anciennement x+ = N)
+            # la convention de CARIBU avec x+ = N, pas de changement de base
             for tr in self.__my_scene:
-                tr_copy = copy.deepcopy(tr)
-                tr_copy.zrotate(180)
                 l_tr=[]
                 for i in range(3):
-                    l_tr.append((tr_copy[i][0], tr_copy[i][1], tr_copy[i][2]))
+                    l_tr.append((tr[i][0], tr[i][1], tr[i][2]))
                 self.__caribu_scene[tr.id].append(l_tr)
             
             # création du ciel
@@ -540,23 +550,7 @@ class LightVegeManager:
         else:
             raise ValueError("Unknown lightmodel : can be either 'ratp' or 'caribu' ")
             
-    def __str__(self):
-        '''imprime les infos de la scène couplée
-        '''
-        out = "\n-------------------------------------\n"
-        out += "Light Vege Manager v0.0\n"
-        out += str(len(self.__in_scenes))+" entités\n"
-        out += "Modèle de lumière : "+self.__lightmodel
-        if self.__lightmodelparam[4]>0 : out += " avec tesselation\n"
-        else : out += "\n"
-        out += "Scènes en entrée : \n"
-        for i in range(len(self.__in_scenes)):
-            out+= "\t scene "+str(i)+" : "+str(len(self.__in_scenes[i]))+" shapes, modèle : "+str(self.__in_names[i])+"\n"
-
-        out += "\n-------------------------------------\n"
-        return out
-
-    def run(self, meteo_path="", PARi=0, day=0, hour=0, parunit="micromol.m-2.s-1", domain= [], truesolartime=False):
+    def run(self, meteo_path="", PARi=0, day=0, hour=0, parunit="micromol.m-2.s-1", domain= [], truesolartime=False, printsun=False):
         '''calcul du bilan radiatif
         Args :
             meteo_path : string, chemin du fichier meteo
@@ -653,6 +647,9 @@ class LightVegeManager:
             # ne prend pas le sol
             dfvox = dfvox[dfvox['VegetationType'] > 0]
             
+            # enregistre la dataframe des voxels
+            self.__voxels_outputs = dfvox
+
             # nouvelle data frame avec les triangles en index
             dfmap = pandas.DataFrame({'primitive_index': index,'shape_id': sh_id, 'VoxelId':vox_id, 'VegetationType':[entity[sh_id] for sh_id in sh_id], 'primitive_area':s})
 
@@ -676,6 +673,10 @@ class LightVegeManager:
             s_day=[]
             s_hour=[]
             s_ent=[]
+            s_parsun=[]
+            s_parsha=[]
+            s_areasun=[]
+            s_areasha=[]
             for id in range(nshapes):
                 # itérations commencent à 1
                 for ite in range(int(max(output["Iteration"]))):
@@ -686,6 +687,10 @@ class LightVegeManager:
                     s_ite.append(ite+1)
                     s_area.append(sum(dffil["primitive_area"]))
                     s_par.append(sum(dffil['primitive_area']*dffil['PARa']) / s_area[-1])
+                    s_parsun.append(sum(dffil['primitive_area']*dffil['SunlitPAR']) / s_area[-1])
+                    s_parsha.append(sum(dffil['primitive_area']*dffil['ShadedPAR']) / s_area[-1])
+                    s_areasun.append(sum(dffil['primitive_area']*dffil['SunlitArea']) / s_area[-1])
+                    s_areasha.append(sum(dffil['primitive_area']*dffil['ShadedArea']) / s_area[-1])
                     s_xintav.append(sum(dffil['primitive_area']*dffil['xintav']) / s_area[-1])
                     s_ent.append(dffil["VegetationType"].values[0])
                     s_shapes.append(self.__matching_ids[id][0])
@@ -697,7 +702,11 @@ class LightVegeManager:
                 "VegetationType" : s_ent,
                 "Area" : s_area,
                 "PARa" : s_par,
-                "xintav" : s_xintav
+                "xintav" : s_xintav,
+                "SunlitPAR" : s_parsun,
+                "SunlitArea" : s_areasun,
+                "ShadedPAR" : s_parsha,
+                "ShadedArea" : s_areasha
             })
 
         # CARIBU
@@ -711,32 +720,56 @@ class LightVegeManager:
                 from PyRATP.pyratp import pyratp
                 
                 az, ele = 5.,9. # variables fantômes (non récupérées)
-                pyratp.shortwave_balance.sundirection(ele, az, self.__coordinates[0], self.__coordinates[1], self.__coordinates[2], day, hour, truesolartime)
-                # azimut : South clockwise convention (East = -90, West = 90)
-                # elevation(height) : zenith=90, horizon=0               
+                pyratp.shortwave_balance.sundirection(ele, az, self.__coordinates[0], self.__coordinates[1], self.__coordinates[2], day, hour, truesolartime)            
                 degtorad = math.pi/180
 
                 azrad = pyratp.shortwave_balance.azdeg
                 # peut avoir un nan à 12h 
-                if math.isnan(azrad) and hour==12. : azrad = 0.
+                if math.isnan(azrad) and hour==12. : 
+                    # critère empirique basé sur l'algo de CARIBU (GenSun)
+                    if self.__coordinates[0] >= 21.11:
+                        azrad = 0.
+                    else:
+                        azrad = 180.
+                # passage de l'azimuth en South=0° clockwise (RATP) à North=0° clockwise (CARIBU.Gensun)
                 azrad = -azrad * degtorad
-                elerad = pyratp.shortwave_balance.hdeg * degtorad
 
-                sunx = suny = math.cos(elerad)
+                zenirad = pyratp.shortwave_balance.hdeg * degtorad
+
+                # le vecteur pointe du ciel vers le sol
+                sunx = suny = math.cos(zenirad)
                 sunx *= math.cos(azrad)
                 suny *= math.sin(azrad)
-                sunz = -math.sin(elerad)
+                sunz = -math.sin(zenirad)
                 
                 # list soleil
                 self.__sun = [tuple((1., tuple((sunx, suny, sunz))))]
             
             # algo de CARIBU
             else:
-                sun = Gensun.Gensun()(1., day, hour, self.__coordinates[0])
+                # si l'heure est locale, calcul de l'heure solaire (algorithme pris dans RATP, sundirection: shortwave_balance.f90)
+                if not truesolartime:
+                    om =0.017202*(day-3.244)
+                    teta=om+0.03344*math.sin(om)*(1+0.021*math.cos(om))-1.3526
+                    tphi=0.91747*math.sin(teta)/math.cos(teta)
+                    dphi=math.atan(tphi)-om+1.3526
+                    if dphi+1. <= 0: dphi=(dphi+1+1000.*math.pi % math.pi)-1.
+                    eqntime=dphi*229.2
+                    hour =hour+self.__coordinates[2]+self.__coordinates[1]/15.-eqntime/60. % 24.
+
+                # Conversion de la latitude en radian!
+                sun = Gensun.Gensun()(1., day, hour, self.__coordinates[0]*math.pi/180)
                 sun = GetLightsSun.GetLightsSun(sun)
                 sun_str_split = sun.split(' ')
+                
+                # format d'entrée de CaribuScene
                 self.__sun = [tuple((float(sun_str_split[0]), tuple((float(sun_str_split[1]), float(sun_str_split[2]), float(sun_str_split[3])))))]
 
+            # affichage des coordonnées du soleil
+            if printsun: 
+                from PyRATP.pyratp import pyratp    
+                self._print_sun(day, hour, pyratp, truesolartime)
+                
             # active le calcul si le soleil est levé
             # critère élévation min fixé à 2° comme dans RATP (shortwave_balance.F90 -> DirectBeam_Interception, l.68 ou l.148)
             sun_up = math.asin(-self.__sun[0][1][2])*(180/math.pi) > 2.
@@ -910,6 +943,60 @@ class LightVegeManager:
         else:
             raise ValueError("Unknown lightmodel : can be either 'ratp' or 'caribu' ")
 
+    def _print_sun(self, day, hour, pyratp, truesolartime):
+        """Méthode qui imprime les coordonnées du soleil (pour le débuggage)
+            séparée pour la lisibilité dans run(...)
+        """
+        print("---\t SUN COORDONATES\t ---")
+        print("--- Convention x+ = North, vector from sky to floor")
+        print("--- azimut: south clockwise E = -90° W = 90°\t zenith: zenith = 0° horizon = 90°")
+        print("--- day: %i \t hour: %i \t latitude: %0.2f °"%(day, hour, self.__coordinates[0]))
+        
+        if truesolartime : 
+            caribuhour=hour
+            print("--- true solar time")
+        
+        else :
+            om =0.017202*(day-3.244)
+            teta=om+0.03344*math.sin(om)*(1+0.021*math.cos(om))-1.3526
+            tphi=0.91747*math.sin(teta)/math.cos(teta)
+            dphi=math.atan(tphi)-om+1.3526
+            if dphi+1. <= 0: dphi=(dphi+1+1000.*math.pi % math.pi)-1.
+            eqntime=dphi*229.2
+            caribuhour =hour+self.__coordinates[2]+self.__coordinates[1]/15.-eqntime/60. % 24. 
+            print("--- local time, true solar time is %0.2f"%(caribuhour))
+        
+        # CARIBU et RATP sont dans la même convention de coordonnées, x+ = North
+        print("--- RATP ---")
+        az, ele = 5.,9. # variables fantômes (non récupérées)
+        pyratp.shortwave_balance.sundirection(ele, az, self.__coordinates[0], self.__coordinates[1], self.__coordinates[2], day, hour, truesolartime)        
+        degtorad = math.pi/180
+        azrad = pyratp.shortwave_balance.azdeg
+        if math.isnan(azrad) and hour==12. : 
+            if self.__coordinates[0] >= 21.11:
+                azrad = 0.
+            else:
+                azrad = 180.
+        azrad = -azrad * degtorad
+        elerad = pyratp.shortwave_balance.hdeg * degtorad
+
+        sunx = suny = math.cos(elerad)
+        sunx *= math.cos(azrad)
+        suny *= math.sin(azrad)
+        sunz = -math.sin(elerad)
+
+        print("\t azimut: %0.3f \t zenith: %0.3f" % (-azrad*180/math.pi, pyratp.shortwave_balance.hdeg))
+        print("\t x: %0.3f \t y: %0.3f \t z: %0.3f" % (sunx, suny, sunz))
+        
+        print("--- CARIBU ---")
+        suncaribu = Sun.Sun()
+        suncaribu._set_pos_astro(day, caribuhour, self.__coordinates[0]*math.pi/180)
+        sun_str_split = suncaribu.toLight().split(' ')
+
+        print("\t azimut: %0.3f \t zenith: %0.3f" % (-suncaribu.azim*180/math.pi, 90-(suncaribu.elev*180/math.pi)))
+        print("\t x: %0.3f \t y: %0.3f \t z: %0.3f" % (float(sun_str_split[1]),float(sun_str_split[2]),float(sun_str_split[3])))
+        print("\n")
+
     @property
     def shapes_outputs(self):
         return self.__shape_outputs 
@@ -917,6 +1004,10 @@ class LightVegeManager:
     @property
     def triangles_outputs(self):
         return self.__outputs 
+    
+    @property
+    def voxels_outputs(self):
+        return self.__voxels_outputs 
 
     @property
     def sun(self):
@@ -1125,3 +1216,19 @@ class LightVegeManager:
 
         os.system(r"s2v\s2v++.exe")
         print("--- Fin de s2v.cpp")
+
+    def __str__(self):
+        '''imprime les infos de la scène couplée
+        '''
+        out = "\n-------------------------------------\n"
+        out += "Light Vege Manager v0.0\n"
+        out += str(len(self.__in_scenes))+" entités\n"
+        out += "Modèle de lumière : "+self.__lightmodel
+        if self.__lightmodelparam[4]>0 : out += " avec tesselation\n"
+        else : out += "\n"
+        out += "Scènes en entrée : \n"
+        for i in range(len(self.__in_scenes)):
+            out+= "\t scene "+str(i)+" : "+str(len(self.__in_scenes[i]))+" shapes, modèle : "+str(self.__in_names[i])+"\n"
+
+        out += "\n-------------------------------------\n"
+        return out
