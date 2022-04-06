@@ -222,7 +222,7 @@ class LightVegeManager:
                                 infinite : boolean, pour activer ou non le couvert infini
                                 domain_pattern : si l'option couvert infini est activé, défini le domaine (xy) du pattern à reproduire
                                 ]
-            id_stems : liste de [nshape(int), nentité(int)], liste des shapes de l'entité d'entrée qui correspondent à une tige
+            id_stems : liste de tuple(nshape(int), nentité(int)), liste des shapes de l'entité d'entrée qui correspondent à une tige
             sky_parameters : liste, plusieurs possibilité selon le modele de lumière :
                                     [] : ciel par défaut est une turtle à 46 directions pour CARIBU et RATP
                                     [0] : annule de diffus pour RATP
@@ -328,17 +328,45 @@ class LightVegeManager:
             # récupère les paramètres
             dx, dy, dz, rs, mu, levelmax, ele_algo, ele_option, infinite = lightmodelparam     
 
-            self.__ratp_mu = mu 
+            self.__ratp_mu = mu
+
+            # on sépare les tiges dans une nouvelle entité
+            mem_mu=[]
+            for stem in id_stems:
+                # on recherche la shape correspondante dans le dict des id
+                ids=0
+                search=True
+                while ids < len(self.__matching_ids) and search:
+                    if (self.__matching_ids[ids][0], self.__matching_ids[ids][1]) == stem:
+                        search=False
+                    else:
+                        ids += 1
+                # change le numéro d'entité dans le dict
+                tuple_temp = (self.__matching_ids[ids][0], 
+                                self.__matching_ids[ids][1] + len(self.__in_scenes),
+                                self.__matching_ids[ids][2])
+                self.__matching_ids[ids] = tuple_temp
+
+                if stem[1] not in mem_mu:
+                    self.__ratp_mu.append(self.__ratp_mu[stem[1]])
+                    self.__rf.append(self.__rf[stem[1]])
+                    mem_mu.append(stem[1])
 
             ## distribution d'angles pour chaque entité
             distrib = []
 
+            # recherche du nb d'entité
+            nent=0
+            for key, val in self.__matching_ids.items():
+                if val[1]+1 > nent:
+                    nent = val[1]+1
+
             # calcul en dynamique
             # ele_option = nombre de classes
-            if ele_algo == "compute" :
+            if ele_algo == "compute global" :
                 # compte le nombre de triangles par entité
                 t_nent_area=[]
-                for k in range(len(self.__in_scenes)):
+                for k in range(nent):
                     totA=0
                     for t in self.__my_scene:
                         if self.__matching_ids[t.id][1] == k:
@@ -349,7 +377,7 @@ class LightVegeManager:
                 angles = list(np.linspace(90/ele_option, 90, ele_option))
 
                 # pour chaque entité
-                for k in range(len(self.__in_scenes)):
+                for k in range(nent):
                     classes = [0] * ele_option
                     # parcourt les triangles
                     for t in self.__my_scene:
@@ -367,7 +395,7 @@ class LightVegeManager:
                     distrib.append(classes)
 
                 # convertit en pourcentage
-                for k in range(len(self.__in_scenes)):
+                for k in range(nent):
                     for i in range(len(distrib[k])):
                         distrib[k][i] *= 1/t_nent_area[k]
             
@@ -378,8 +406,6 @@ class LightVegeManager:
                 for i in range(len(self.__in_scenes)):
                     line = f_angle.readline()
                     distrib.append([float(x) for x in line.split(',')[1:]])
-            
-            self.__ratp_distrib = distrib
 
             # on ajuste au besoin les min-max si la scène est plane pour avoir un espace 3D
             if xmin==xmax:
@@ -407,7 +433,7 @@ class LightVegeManager:
             xorig, yorig, zorig = self.__pmin[0], self.__pmin[1], -self.__pmin[2]
 
             # création de la grille
-            mygrid = grid.Grid.initialise(nx, ny, nz, dx, dy, dz, xorig, yorig, zorig, coordinates[0], coordinates[1], coordinates[2], len(in_scenes), rs, toric=infinite)
+            mygrid = grid.Grid.initialise(nx, ny, nz, dx, dy, dz, xorig, yorig, zorig, coordinates[0], coordinates[1], coordinates[2], nent, rs, toric=infinite)
 
             # subdivision des triangles pour matcher la grille
             if levelmax>0:
@@ -439,7 +465,7 @@ class LightVegeManager:
                 
                 # id : id de la shape, val : [id shape en input, id de l'entité]
                 # c'est une tige on divise par 2 le LAD
-                if (self.__matching_ids[tr.id][0], self.__matching_ids[tr.id][1]) in self.__id_stems:
+                if (self.__matching_ids[tr.id][0], self.__matching_ids[tr.id][1] - len(self.__in_scenes)) in self.__id_stems:
                     a.append(tr.area/2)
                 else:
                     a.append(tr.area)
@@ -450,6 +476,43 @@ class LightVegeManager:
             mygrid, matching = grid.Grid.fill_1(entity, barx, bary, barz, a, n, mygrid)
             self.__ratp_scene = mygrid
             self.__tr_vox = matching 
+
+            if ele_algo == "compute voxel":
+                angles = list(np.linspace(90/ele_option, 90, ele_option))
+                t_area=[]
+                # pour chaque voxel
+                for k in range(self.__ratp_scene.nveg):
+                    t_nent_area=[]
+                    distrib_nent=[]
+                    # pour chaque entité
+                    for n in range(nent):
+                        areatot=0
+                        classes = [0] * ele_option
+                        # on parcourt le dico des correspondances triangle->voxel
+                        for idt, idv in self.__tr_vox.items():
+                            if idv == k and self.__my_scene[int(idt)].id == n:
+                                areatot += self.__my_scene[int(idt)].area
+                                
+                                # recherche de la classe
+                                i=0
+                                while i<ele_option:
+                                    if self.__my_scene[int(idt)].elevation < angles[i]:
+                                        classes[i] += self.__my_scene[int(idt)].area
+                                        # pour sortir de la boucle
+                                        i=ele_option+10
+                                    i+=1
+                        t_nent_area.append(areatot)
+                        distrib_nent.append(classes)
+                    t_area.append(t_nent_area)
+                    distrib.append(distrib_nent)
+
+                # convertit en pourcentage
+                for k in range(self.__ratp_scene.nveg):
+                    for n in range(nent):
+                        for i in range(len(distrib[k])):
+                            distrib[k][n][i] *= 1/t_area[k][n]
+
+            self.__ratp_distrib = distrib
 
             # construction du ciel:
             if sky_parameters==[]:
@@ -572,12 +635,13 @@ class LightVegeManager:
         if self.__lightmodel == "ratp":
             # création d'un dict entity
             entities_param = []
-            for id, dist_ent in enumerate(self.__ratp_distrib):
-                entities_param.append({
-                                        'mu' : self.__ratp_mu[id],
-                                        'distinc' : dist_ent,
-                                        'rf' : self.__rf[id]
-                                        })
+            if self.__lightmodelparam[6] != "compute voxel":
+                for id, dist_ent in enumerate(self.__ratp_distrib):
+                    entities_param.append({
+                                            'mu' : self.__ratp_mu[id],
+                                            'distinc' : dist_ent,
+                                            'rf' : self.__rf[id]
+                                            })
 
             vegetation = Vegetation.initialise(entities_param)
 

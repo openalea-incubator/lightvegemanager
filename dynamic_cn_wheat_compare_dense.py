@@ -81,7 +81,7 @@ def simulation(SIMULATION_LENGTH, write, outpath):
     rs=[0., 0] # Soil reflectance in PAR and NIR bands
     ratp_mu = [1.]
     tesselate_level = 5
-    distrib_algo = "compute" # "file"
+    distrib_algo = "compute global" # "file"
     distrib_option = 45
     infinite=True
     ratp_parameters = [dx, dy, dz, rs, ratp_mu, tesselate_level, distrib_algo, distrib_option, infinite]
@@ -117,7 +117,8 @@ def simulation(SIMULATION_LENGTH, write, outpath):
         if (t_light % LIGHT_TIMESTEP == 0) and (PARi_next_hours > 0):
             in_scenes = [scene_etendu]
             # recherche des tiges dans les différentes scènes
-            id_stems=whichstems_MTG(g, adel_wheat.scene(g))
+            id_entity = 0
+            id_stems=whichstems_MTG(g, id_entity)
 
             # ajoute le pattern aux paramètres du modèle
             caribu_param[-1] = domain
@@ -207,8 +208,8 @@ def simulation(SIMULATION_LENGTH, write, outpath):
     print("--- temps execution : ",tot_light)
 
 if __name__ == "__main__":
-    nstep=600
-    write=True
+    nstep=4
+    write=False
     outpath = "dynamic_cnwheat_dense_2"
     simulation(nstep,write, outpath)
     print("=== END ===")

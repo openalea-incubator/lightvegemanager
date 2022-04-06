@@ -20,7 +20,7 @@ def simulation(geom, hour, situation, sun_sky_options, ratp_sky, ratp_mu, dv):
     rs=[0., 0] # Soil reflectance in PAR and NIR bands
     ratp_rf=[[0., 0]] # leaf reflectance PAR et NIR pour l'entité 0
     tesselate_level = 7
-    distrib_algo = "compute" # "file"
+    distrib_algo = "compute global" # "file"
     distrib_option = 45
     infinite=False
     ratp_parameters = [dx, dy, dz, rs, ratp_mu, tesselate_level, distrib_algo, distrib_option, infinite]

@@ -77,15 +77,15 @@ def simulation(SIMULATION_LENGTH, write, outpath):
     ## Paramètres RATP ##
     dv = 0.02 # m
     dx, dy, dz = dv, dv, dv # m
-    rs=[0., 0] # Soil reflectance in PAR and NIR bands
+    rs=[0., 0.] # Soil reflectance in PAR and NIR bands
     ratp_mu = [1.]
     tesselate_level = 7
-    distrib_algo = "compute" # "file"
+    distrib_algo = "compute global" # "file"
     distrib_option = 45
     infinite=False
     ratp_parameters = [dx, dy, dz, rs, ratp_mu,tesselate_level, distrib_algo, distrib_option,infinite]
     ratp_sky = [] # ciel turtle à 46 directions
-    ratp_rf=[[0., 0]] # leaf reflectance PAR et NIR pour l'entité 0
+    ratp_rf=[[0., 0.]] # leaf reflectance PAR et NIR pour l'entité 0
 
     # ---------------------------------------------
     # -----      RUN OF THE SIMULATION      -------
@@ -112,7 +112,8 @@ def simulation(SIMULATION_LENGTH, write, outpath):
         if (t_light % LIGHT_TIMESTEP == 0) and (PARi_next_hours > 0):
             in_scenes = [adel_wheat.scene(g)]
             # recherche des tiges dans les différentes scènes
-            id_stems=whichstems_MTG(g, adel_wheat.scene(g))
+            id_entity = 0
+            id_stems=whichstems_MTG(g, id_entity)
             
             # Objet calcul de la lumière
             lghtcaribu = LightVegeManager(in_scenes, 
@@ -202,7 +203,7 @@ def simulation(SIMULATION_LENGTH, write, outpath):
 
 if __name__ == "__main__":
     nstep=4
-    write=True
+    write=False
     outpath = "dynamic_cnwheat_oneplant_2"
     simulation(nstep, write, outpath)
     print("=== END ===")
