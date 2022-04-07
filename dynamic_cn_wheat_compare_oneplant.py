@@ -63,7 +63,7 @@ def simulation(SIMULATION_LENGTH, write, outpath):
     
     # Paramètres pré-simulation
     model_names = ["fspm-wheat"]
-    transformations = [["none", "none", "m", "x+ = S"]]
+    transformations = [["none", "none", "m", "x+ = N"]]
     coordinates = [46.,0,0] # latitude, longitude, timezone
     
     ## Paramètres CARIBU ##
@@ -101,6 +101,7 @@ def simulation(SIMULATION_LENGTH, write, outpath):
     shapes=[]
     tot_light = 0.
     for t_light in progressbar.progressbar(range(START_TIME, SIMULATION_LENGTH, LIGHT_TIMESTEP)):
+        print("\n")
         light_start=time.time()
         # récupère les données météo
         PARi = meteo.loc[t_light, ['PARi_MA4']].iloc[0]

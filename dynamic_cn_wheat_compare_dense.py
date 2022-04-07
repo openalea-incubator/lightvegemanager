@@ -81,7 +81,7 @@ def simulation(SIMULATION_LENGTH, write, outpath):
     rs=[0., 0] # Soil reflectance in PAR and NIR bands
     ratp_mu = [1.]
     tesselate_level = 5
-    distrib_algo = "compute global" # "file"
+    distrib_algo = "compute voxel" # "file"
     distrib_option = 45
     infinite=True
     ratp_parameters = [dx, dy, dz, rs, ratp_mu, tesselate_level, distrib_algo, distrib_option, infinite]
@@ -102,6 +102,7 @@ def simulation(SIMULATION_LENGTH, write, outpath):
     shapes=[]
     tot_light = 0.
     for t_light in progressbar.progressbar(range(START_TIME, SIMULATION_LENGTH, LIGHT_TIMESTEP)):
+        print("\n")
         light_start=time.time()
         # récupère les données météo
         PARi = meteo.loc[t_light, ['PARi_MA4']].iloc[0]
@@ -209,7 +210,7 @@ def simulation(SIMULATION_LENGTH, write, outpath):
 
 if __name__ == "__main__":
     nstep=4
-    write=False
+    write=True
     outpath = "dynamic_cnwheat_dense_2"
     simulation(nstep,write, outpath)
     print("=== END ===")
