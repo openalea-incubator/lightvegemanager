@@ -35,12 +35,9 @@ contains
   scattering=.TRUE.
   isolated_box=ib0
 
-  !write(*,*) 'Computing interception of diffuse and scattered radiation ...'
-
 !
 !  Allocation et initialisation des tableaux de facteurs de forme
   call hi_destroy
-  !write(*,*) 'Destroy memory pass'
 !
 !  1- Sky_integrated STAR at different scales
                                        
@@ -74,7 +71,7 @@ contains
 !  ffvs=0.
 !  ffcs=0.
 
-  !write(*,*) 'DEBUG: Allocation'
+!  write(*,*) 'debut hi_doall'
 
 !  Array initialisation
   do ks=1,nveg   ! source = vegetated voxels
@@ -105,17 +102,16 @@ contains
 
 
 !     For each sky direction jdir, jdir=1,ndir
-  !write(*,*) 'ndir',ndir
+!     write(*,*) 'ndir',ndir
 
 !   Directional interception (includes computation of extinction coefficient, beam sampling, and exchange coefficients)
   do jdir=1,ndir
-   !write(*,*) 'jdir',jdir
-   !write(*,*) 'DEBUG: ARGS',hmoy(jdir)*180./pi 
-   !write(*,*) 'DEBUG: ARGS', azmoy(jdir)*180./pi 
-   !write(*,*) 'DEBUG: ARGS', omega(jdir),dpx0,dpy0,scattering,isolated_box
+!  write(*,*) 'jdir',jdir
+!  write(*,*) 'DEBUG: ARGS',hmoy(jdir)*180./pi 
+!  write(*,*) 'DEBUG: ARGS', azmoy(jdir)*180./pi 
+!  write(*,*) 'DEBUG: ARGS', omega(jdir),dpx0,dpy0,scattering,isolated_box
   
    call di_doall(hmoy(jdir)*180./pi, azmoy(jdir)*180./pi, omega(jdir),dpx0,dpy0,scattering,isolated_box) 
-
 
 !   Sky-vault integration of incident diffuse radiation interception
     do k=1,nveg
@@ -137,24 +133,36 @@ contains
     end do
    end do
 
-!   Sky-vault integration of scattered radiation interception
-         do ks=1,nveg   ! source = vegetated voxels
-            do kr=1,nveg
-               do jes=1,nje(ks)  ! receptor = vegetated voxels
-               do jer=1,nje(kr)
-                  ffvv(kr,jer,ks,jes)=ffvv(kr,jer,ks,jes)+ rka(nume(jes,ks))*ffvvb(kr,ks)*share(jer,kr)
-     end do
-     end do
-    end do
-            do kr=1,nsol    ! receptor = ground zones
-               do jes=1,nje(ks)
-                  ffsv(kr,ks,jes)=ffsv(kr,ks,jes)+ rka(nume(jes,ks))*ffsvb(kr,ks)
-     end do
-    end do
-            do jes=1,nje(ks)
-               ffcv(ks,jes)=ffcv(ks,jes)+rka(nume(jes,ks))*ffcvb(ks)  ! receptor = sky (i.e. reflected radiation)
-    end do
-   end do  ! do-loop ks=1,nveg (source = vegetated voxels)
+    !   Sky-vault integration of scattered radiation interception
+    do ks=1,nveg   ! source = vegetated voxels
+      do kr=1,nveg
+        do jes=1,nje(ks)  ! receptor = vegetated voxels
+          do jer=1,nje(kr)
+            if (.NOT. pervoxel) then  
+              ffvv(kr,jer,ks,jes)=ffvv(kr,jer,ks,jes)+ rka(nume(jes,ks))*ffvvb(kr,ks)*share(jer,kr)
+            else
+              ffvv(kr,jer,ks,jes)=ffvv(kr,jer,ks,jes)+ rkavox(ks,jes)*ffvvb(kr,ks)*share(jer,kr)
+            endif
+          end do
+        end do
+      end do
+      do kr=1,nsol    ! receptor = ground zones
+        do jes=1,nje(ks)
+          if (.NOT. pervoxel) then  
+            ffsv(kr,ks,jes)=ffsv(kr,ks,jes)+ rka(nume(jes,ks))*ffsvb(kr,ks)
+          else
+            ffsv(kr,ks,jes)=ffsv(kr,ks,jes)+ rkavox(ks,jes)*ffsvb(kr,ks)
+          endif
+        end do
+      end do
+      do jes=1,nje(ks)
+        if (.NOT. pervoxel) then  
+          ffcv(ks,jes)=ffcv(ks,jes)+rka(nume(jes,ks))*ffcvb(ks)  ! receptor = sky (i.e. reflected radiation)
+        else
+          ffcv(ks,jes)=ffcv(ks,jes)+rkavox(ks,jes)*ffcvb(ks)  ! receptor = sky (i.e. reflected radiation)
+        endif
+      end do
+    end do  ! do-loop ks=1,nveg (source = vegetated voxels)
 
          do ks=1,nsol   ! source = ground zones
             do kr=1,nveg    ! receptor = vegetated voxels

@@ -363,6 +363,8 @@ class LightVegeManager:
 
             # calcul en dynamique
             # ele_option = nombre de classes
+            # on fait le calcul de la distribution global avant la tesselation des triangles
+            # pour optimiser les calculs
             if ele_algo == "compute global" :
                 # compte le nombre de triangles par entité
                 t_nent_area=[]
@@ -477,6 +479,9 @@ class LightVegeManager:
             self.__ratp_scene = mygrid
             self.__tr_vox = matching 
 
+            # si la distribution d'angle est par voxel, on est
+            # obligé de prendre en compte les triangles après
+            # la tesselation
             if ele_algo == "compute voxel":
                 angles = list(np.linspace(90/ele_option, 90, ele_option))
                 t_area=[]
@@ -572,7 +577,6 @@ class LightVegeManager:
                 
                 self.__sky = Skyvault.initialise(ele, azi, omega, pc)
             
-            
     
         elif lightmodel == "caribu":
             self.__pmax = Vector3(xmax, ymax, zmax)
@@ -636,14 +640,20 @@ class LightVegeManager:
             # création d'un dict entity
             entities_param = []
             if self.__lightmodelparam[6] != "compute voxel":
-                for id, dist_ent in enumerate(self.__ratp_distrib):
+                for id, mu_ent in enumerate(self.__ratp_mu):
                     entities_param.append({
-                                            'mu' : self.__ratp_mu[id],
-                                            'distinc' : dist_ent,
+                                            'mu' : mu_ent,
+                                            'distinc' : self.__ratp_distrib[id],
                                             'rf' : self.__rf[id]
                                             })
-
-            vegetation = Vegetation.initialise(entities_param)
+                vegetation = Vegetation.initialise(entities_param)
+            else :
+                for id, mu_ent in enumerate(self.__ratp_mu):
+                    entities_param.append({
+                                            'mu' : mu_ent,
+                                            'rf' : self.__rf[id]
+                                            })
+                vegetation = Vegetation.initialise(entities_param, pervoxel=True, distribvox=self.__ratp_distrib)
 
             # init météo, PARi en entrée en W.m-2
             if meteo_path == "":

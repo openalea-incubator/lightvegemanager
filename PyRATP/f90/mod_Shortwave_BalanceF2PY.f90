@@ -143,7 +143,7 @@ contains
   real :: day, hour
   logical :: truesolartime
 
-  write(*,*) 'Computing interception of direct radiation ...'
+!  write(*,*) 'Computing interception of direct radiation ...'
 
   call sundirection(hdeg,azdeg,latitude,longitude,timezone,day,hour,truesolartime)
   
@@ -184,7 +184,7 @@ contains
   allocate(xintbv(nemax,nveg))
   allocate(xintbs(nsol))
 
-   !write(*,*) 'Spectral_Radiation_Balance debut'     
+!  write(*,*) 'Spectral_Radiation_Balance debut'     
 !  Premiere interception : direct + diffus incidents
 !
 !  - Pour la vegetation:

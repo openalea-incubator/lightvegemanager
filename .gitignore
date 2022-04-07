@@ -19,6 +19,7 @@ PyRATP/pyratp/interface/*
 PyRATP/pyratp/mtg_test.txt
 adel_saved/*
 WheatFspm/*
+WheatFspm
 l-egume/*
 mytests.py
 TODO
@@ -31,3 +32,4 @@ PyRATP/f90/pyratp.cp37-win_amd64.pyd
 post_process.py
 .vscode/*
 debug_tesselation_multithread.py
+debug_distrib_voxel.py

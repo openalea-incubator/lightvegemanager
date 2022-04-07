@@ -16,6 +16,7 @@ real              :: S_ss(0:1)      ! Shaded (i=0) and sunlit (i=1) leaf area in
 real, allocatable :: share(:,:)  ! Sharing coeff of intercepted radiation in voxel k (k=1,nveg), for the studied direction
 real, allocatable :: xk(:)   ! Optical density of voxel k (k=1,nveg), = somme(Ki*LADi)
 real, allocatable :: rka(:)  ! Fraction of scattered radiation in current direction by vegetation type jent (jent=1,nent)
+real, allocatable :: rkavox(:,:)  ! Fraction of scattered radiation in current direction by vegetation type jent (jent=1,nent) and for each voxel
 real, allocatable :: riv(:)  ! fraction of directional incident radiation intercepted in voxel k (k=1,nveg)
 real, allocatable :: ris(:)  ! fraction of directional incident radiation intercepted by ground zone ksol (ksol=1,nsol)
 real, allocatable :: ffvvb(:,:) ! Exchange coeff between vegetated voxels and vegetated voxels
@@ -53,10 +54,10 @@ contains
  real :: x0, y0, z0     ! co-ordinates of entering point in voxel
  integer :: jx,jy,jz     ! voxel indices along X- Y- and Z- axes
 
-
  real, allocatable :: xka(:)
+ real, allocatable :: xkavox(:,:) ! for each voxel and each entity
 
-  !write(*,*) 'di_doall debut'
+!  write(*,*) 'di_doall debut'
 
   hmoy0=hmoy0*pi/180.    ! Conversion to radians
   azmoy0=azmoy0*pi/180.
@@ -86,28 +87,28 @@ contains
 !                                                 rka(jent)
 ! (hypothese de distribution uniforme des azimuths)
 ! (hypothese de comportement lambertien des feuilles)
-
-
-  allocate(xka(nent))
-  allocate(rka(nent)) 
-  xka=0.
-  rka=0.
+  
 !  write(*,*) 'nbincli',nbincli,'nent',nent
-  do jent=1,nent  ! For each vegetation type
-!   sumrka=0.  ! Sum of rka over directions should be ONE
-    di=(pi/2.)/nbincli(jent)
-    do jinc=1,nbincli(jent)
-      xic=(real(jinc)-.5)*di
-      if (xic.le.hmoy0) then
-        G_function=cos(xic)*sin(hmoy0)
-      else
-        xm=acos(-tan(hmoy0)/tan(xic))
-        G_function=(2*cos(hmoy0)*sin(xic)*sin(xm)-cos(xic)*sin(hmoy0)*(pi-2*xm))/pi
-      endif
-      !    write(*,*) xic*180./pi, hmoy0*180./pi, G_function/sin(hmoy0)
-      !    pause
-      xka(jent)=xka(jent) + G_function/sin(hmoy0) * distinc(jent,jinc)
-      rka(jent)=rka(jent) + G_function*omega0/(2.*pi) * distinc(jent,jinc)
+  if (.NOT. pervoxel) then 
+    allocate(xka(nent))
+    allocate(rka(nent)) 
+    xka=0.
+    rka=0.
+    do jent=1,nent  ! For each vegetation type
+  !   sumrka=0.  ! Sum of rka over directions should be ONE
+      di=(pi/2.)/nbincli(jent)
+      do jinc=1,nbincli(jent)
+        xic=(real(jinc)-.5)*di
+        if (xic.le.hmoy0) then
+          G_function=cos(xic)*sin(hmoy0)
+        else
+          xm=acos(-tan(hmoy0)/tan(xic))
+          G_function=(2*cos(hmoy0)*sin(xic)*sin(xm)-cos(xic)*sin(hmoy0)*(pi-2*xm))/pi
+        endif
+        !    write(*,*) xic*180./pi, hmoy0*180./pi, G_function/sin(hmoy0)
+        !    pause
+        xka(jent)=xka(jent) + G_function/sin(hmoy0) * distinc(jent,jinc)
+        rka(jent)=rka(jent) + G_function*omega0/(2.*pi) * distinc(jent,jinc)
 
 ! rem: rka est une variable qui peut �tre utilis�e � l'�chelle des voxels
 !   puisque qu'elle int�gre la convolution avec la distribution d'inclinaison
@@ -119,6 +120,32 @@ contains
 !   write(*,*) 'Direction-integrated scattered radiation by vegetation type #',jent,': ',sumrka,' . SHOULD BE ONE'
   end do   ! next vegetation type
 
+! cadre d'une distribution d'angle par voxel
+else 
+  allocate(xkavox(nveg, nent))
+  allocate(rkavox(nveg, nent))
+  xkavox=0.
+  rkavox=0.
+  do kt=1,nveg ! For each voxel
+    do jent=1,nje(kt)  ! For each vegetation type in a voxel
+  !   sumrka=0.  ! Sum of rka over directions should be ONE
+      di=(pi/2.)/nbinclivox
+      do jinc=1,nbinclivox ! for each elevation class
+        xic=(real(jinc)-.5)*di
+        if (xic.le.hmoy0) then
+          G_function=cos(xic)*sin(hmoy0)
+        else
+          xm=acos(-tan(hmoy0)/tan(xic))
+          G_function=(2*cos(hmoy0)*sin(xic)*sin(xm)-cos(xic)*sin(hmoy0)*(pi-2*xm))/pi
+        endif
+        !    write(*,*) xic*180./pi, hmoy0*180./pi, G_function/sin(hmoy0)
+        !    pause
+        xkavox(kt, jent)=xkavox(kt, jent) + G_function/sin(hmoy0) * distincvox(kt, jent, jinc)
+        rkavox(kt, jent)=rkavox(kt, jent) + G_function*omega0/(2.*pi) * distincvox(kt, jent, jinc)
+      end do
+    end do
+  end do
+endif
 
 ! Calcul des coeff d'extinction de chaque voxel k: x
   
@@ -130,18 +157,27 @@ contains
   allocate(share(nemax,nveg))
   xk=0.
   share=0.
-    do k=1,nveg
-      do je=1,nje(k)
+  do k=1,nveg
+    do je=1,nje(k)
+      if (.NOT. pervoxel) then
         share(je,k) = xka(nume(je,k)) * leafareadensity(je,k) *mu(nume(je,k))  ! Inclusion of a leaf dispersion parameter   (done on 11 March 2008)
-        xk(k) = xk(k) + share(je,k)  ! optical density = sum(Kje*LADje)
-      end do
-      do je=1,nje(k)
-        share(je,k) = share(je,k) / xk(k) ! sharing coefficient
-      end do
+      else
+        share(je,k) = xkavox(k, je) * leafareadensity(je,k) *mu(nume(je,k))  ! Inclusion of a leaf dispersion parameter per voxel   (done on 06 April 2022)
+      endif
+      xk(k) = xk(k) + share(je,k)  ! optical density = sum(Kje*LADje)
+      
     end do
+    do je=1,nje(k)
+      share(je,k) = share(je,k) / xk(k) ! sharing coefficient
+    end do
+  end do
 
 !  write(*,*) 'deallocate(xka)'
-  deallocate(xka)  ! Not ever used
+  if (.NOT. pervoxel) then
+    deallocate(xka)  ! Not ever used
+  else
+    deallocate(xkavox)
+  endif
 
 
 ! Part 2: Diffuse and scattered radiation interception:
@@ -215,7 +251,6 @@ contains
    call beampath(oax, oay, oaz, x0, y0, z0, omega0)
   end do
   end do
-
 ! STAR computations (from coefficients riv and share, and dividing by leaf area)
 
  ! write(*,*) 'STAR computations'
@@ -270,7 +305,6 @@ contains
   hmoy0=hmoy0/pi*180.    ! Conversion to degrees
   azmoy0=azmoy0/pi*180.
 
-  !write(*,*) 'di_doall fin'
  end subroutine di_doall
 
  subroutine beampath(oax, oay, oaz, x0, y0, z0, omega0)
@@ -516,6 +550,7 @@ contains
  subroutine di_destroy
 
   if (allocated(rka))   deallocate(rka)
+  if (allocated(rkavox))   deallocate(rkavox)
   if (allocated(xk))   deallocate(xk)
   if (allocated(share))  deallocate(share)
 
