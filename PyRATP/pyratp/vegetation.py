@@ -106,11 +106,16 @@ class Vegetation(object):
             nbincli = [len(entity.get('distinc', default['distinc'])) for entity in entities]
             vegetation.nbincli = np.zeros(nent)
             vegetation.nbincli[:] = nbincli
+            vegetation.distinc = np.zeros((nent, max(nbincli)))
             vegetation.distinc[:,:] = [entity.get('distinc', default['distinc']) for entity in entities]
         else : 
             vegetation.nbinclivox = [len(distribvox[0][0])]
             vegetation.distincvox =  np.zeros((len(distribvox),nent, len(distribvox[0][0])))
-            vegetation.distincvox[:,:,:] = distribvox
+            for k in range(len(distribvox)):
+                for n in range(nent):
+                    if len(distribvox[k]) > n :
+                        for i in range(len(distribvox[0][0])):
+                            vegetation.distincvox[k][n][i] = distribvox[k][n][i]
 
         vegetation.mu = np.zeros(nent)
         vegetation.nblo = np.zeros(nent)

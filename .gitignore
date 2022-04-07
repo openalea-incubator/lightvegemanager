@@ -29,7 +29,9 @@ cas_simple_3.py
 test_plane_plantgl.py
 test_suns_caribu.py
 PyRATP/f90/pyratp.cp37-win_amd64.pyd
+PyRATP/f90/pyratp.pyd
 post_process.py
 .vscode/*
 debug_tesselation_multithread.py
 debug_distrib_voxel.py
+*.pyc

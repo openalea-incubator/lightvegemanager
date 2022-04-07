@@ -184,7 +184,6 @@ contains
   allocate(xintbv(nemax,nveg))
   allocate(xintbs(nsol))
 
-!  write(*,*) 'Spectral_Radiation_Balance debut'     
 !  Premiere interception : direct + diffus incidents
 !
 !  - Pour la vegetation:
@@ -354,7 +353,6 @@ contains
   deallocate(xintbv)
   deallocate(xintbs)
 
-  !write(*,*) 'Spectral_Radiation_Balance fin'
  end subroutine Spectral_Radiation_Balance
 
  subroutine swrb_destroy

@@ -397,9 +397,9 @@ class LightVegeManager:
                     distrib.append(classes)
 
                 # convertit en pourcentage
-                for k in range(nent):
-                    for i in range(len(distrib[k])):
-                        distrib[k][i] *= 1/t_nent_area[k]
+                for n in range(nent):
+                    for i in range(len(distrib[n])):
+                        distrib[n][i] *= 1/t_nent_area[n]
             
             # lecture du fichier
             # ele_option = chemin du fichier
@@ -495,9 +495,9 @@ class LightVegeManager:
                         classes = [0] * ele_option
                         # on parcourt le dico des correspondances triangle->voxel
                         for idt, idv in self.__tr_vox.items():
-                            if idv == k and self.__my_scene[int(idt)].id == n:
+                            # si on est dans le bon voxel et le triangle appartient a la bonne entité
+                            if idv == k and self.__matching_ids[self.__my_scene[int(idt)].id][1] == n:
                                 areatot += self.__my_scene[int(idt)].area
-                                
                                 # recherche de la classe
                                 i=0
                                 while i<ele_option:
@@ -511,11 +511,20 @@ class LightVegeManager:
                     t_area.append(t_nent_area)
                     distrib.append(distrib_nent)
 
+                to_remove=[]
                 # convertit en pourcentage
                 for k in range(self.__ratp_scene.nveg):
                     for n in range(nent):
-                        for i in range(len(distrib[k])):
-                            distrib[k][n][i] *= 1/t_area[k][n]
+                        # peut survenir si une entité n'est pas dans le voxel
+                        if t_area[k][n] != 0 :
+                            for i in range(ele_option):
+                                distrib[k][n][i] *= 1/t_area[k][n]
+                        
+                        # enleve les entités en trop
+                        else:
+                            to_remove.append((k,n))
+                for t in to_remove:
+                    del distrib[t[0]][t[1]]
 
             self.__ratp_distrib = distrib
 
