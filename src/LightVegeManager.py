@@ -248,7 +248,7 @@ class LightVegeManager:
         self.__lightmodelparam = lightmodelparam
         self.__scene_unit = scene_unit
         self.__id_stems = id_stems
-        self.__rf = rf
+        self.__rf = [x for x in rf]
         self.__coordinates = coordinates
         self.__diffus=True
 
@@ -328,7 +328,7 @@ class LightVegeManager:
             # récupère les paramètres
             dx, dy, dz, rs, mu, levelmax, ele_algo, ele_option, infinite = lightmodelparam     
 
-            self.__ratp_mu = mu
+            self.__ratp_mu = [x for x in mu]
 
             # on sépare les tiges dans une nouvelle entité
             mem_mu=[]
@@ -468,7 +468,7 @@ class LightVegeManager:
                 # id : id de la shape, val : [id shape en input, id de l'entité]
                 # c'est une tige on divise par 2 le LAD
                 if (self.__matching_ids[tr.id][0], self.__matching_ids[tr.id][1] - len(self.__in_scenes)) in self.__id_stems:
-                    a.append(tr.area/2)
+                    a.append(tr.area*0.5)
                 else:
                     a.append(tr.area)
                 

@@ -1,15 +1,13 @@
 from src.LightVegeManager import *
 from src.FSPMWheat_facade import *
 
-from fspmwheat import caribu_facade
-
 import time
 import progressbar
 
-def simulation(SIMULATION_LENGTH, write, outpath):
+def simulation(tesselation, SIMULATION_LENGTH, write, outpath):
     # -- SIMULATION PARAMETERS --
     START_TIME = 0
-    PLANT_DENSITY = {1: 410}
+    PLANT_DENSITY = {1: 1}
 
     # define the time step in hours for each simulator
     LIGHT_TIMESTEP = 4
@@ -65,12 +63,12 @@ def simulation(SIMULATION_LENGTH, write, outpath):
     
     # Paramètres pré-simulation
     model_names = ["fspm-wheat"]
-    coordinates = [43.,0,0] # latitude, longitude, timezone
+    coordinates = [46.,0,0] # latitude, longitude, timezone
+    infinite=True # couvert infini
     
     ## Paramètres CARIBU ##
-    sun_sky_options = "mix"
+    sun_sky_options = "mix" # calcul le direct et diffus (sans réflection)
     sun_algo="ratp" # soleil avec RATP sundirection dans Shortwave_Balance.f90 
-    infinite=True # pas de couvert infini
     caribu_param = [sun_sky_options, sun_algo, infinite, None]
     caribu_sky = [] # ciel turtle à 46 directions
     caribu_rf = [[0.1, 0.05]] # réflectance, transmittance
@@ -78,15 +76,14 @@ def simulation(SIMULATION_LENGTH, write, outpath):
     ## Paramètres RATP ##
     dv = 0.02 # m
     dx, dy, dz = dv, dv, dv # m
-    rs=[0., 0] # Soil reflectance in PAR and NIR bands
+    rs=[0., 0.] # Soil reflectance in PAR and NIR bands
     ratp_mu = [1.]
-    tesselate_level = 5
+    tesselate_level = tesselation
     distrib_algo = "compute voxel" # "file"
     distrib_option = 45
-    infinite=True
-    ratp_parameters = [dx, dy, dz, rs, ratp_mu, tesselate_level, distrib_algo, distrib_option, infinite]
+    ratp_parameters = [dx, dy, dz, rs, ratp_mu,tesselate_level, distrib_algo, distrib_option,infinite]
     ratp_sky = [] # ciel turtle à 46 directions
-    ratp_rf=[[0., 0]] # leaf reflectance PAR et NIR pour l'entité 0
+    ratp_rf=[[0., 0.]] # leaf reflectance PAR et NIR pour l'entité 0
 
     # ---------------------------------------------
     # -----      RUN OF THE SIMULATION      -------
@@ -103,6 +100,7 @@ def simulation(SIMULATION_LENGTH, write, outpath):
     tot_light = 0.
     for t_light in progressbar.progressbar(range(START_TIME, SIMULATION_LENGTH, LIGHT_TIMESTEP)):
         print("\n")
+        print("tesselation : ",i)
         light_start=time.time()
         # récupère les données météo
         PARi = meteo.loc[t_light, ['PARi_MA4']].iloc[0]
@@ -117,6 +115,7 @@ def simulation(SIMULATION_LENGTH, write, outpath):
         # vérifie si l'itération suivante est encore le jour? et lance le calcul de lumière
         if (t_light % LIGHT_TIMESTEP == 0) and (PARi_next_hours > 0):
             in_scenes = [scene_etendu]
+            
             # recherche des tiges dans les différentes scènes
             id_entity = 0
             id_stems=whichstems_MTG(g, id_entity)
@@ -147,12 +146,9 @@ def simulation(SIMULATION_LENGTH, write, outpath):
             print(lghtcaribu.shapes_outputs)
             print(lghtratp.shapes_outputs)
             
-            '''
             # write VTK
-            if write:
-                lghtcaribu.VTKout("outputs/"+outpath+"/cnwheat_caribu_PAR_",t_light)
-                lghtratp.VTKout("outputs/"+outpath+"/cnwheat_ratp_PAR_",t_light)
-            '''
+            #if write:
+            #    lghtratp.VTKout("outputs/tesselation_sensibility/triangles_tesselation"+str(tesselation)+"_",t_light)
         
         # sinon on copie le PAR de l'itération précédente
         else:
@@ -211,9 +207,11 @@ def simulation(SIMULATION_LENGTH, write, outpath):
     print("--- temps execution : ",tot_light)
 
 if __name__ == "__main__":
-    nstep=600
+    nstep=32
     write=True
-    outpath = "dynamic_cnwheat_dense_3"
-    simulation(nstep,write, outpath)
+    
+    for i in range(1,10):
+        outpath = "tesselation_sensibility_denseinfi_"+str(i)
+        simulation(i, nstep, write, outpath)
     print("=== END ===")
     
