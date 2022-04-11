@@ -3,8 +3,14 @@ from src.FSPMWheat_facade import *
 
 import time
 import progressbar
+import os
+import sys
+
+import getopt
 
 def simulation(tesselation, SIMULATION_LENGTH, write, outpath):
+    print("tesselation : ", tesselation)
+
     # -- SIMULATION PARAMETERS --
     START_TIME = 0
     PLANT_DENSITY = {1: 1}
@@ -81,7 +87,7 @@ def simulation(tesselation, SIMULATION_LENGTH, write, outpath):
     tesselate_level = tesselation
     distrib_algo = "compute voxel" # "file"
     distrib_option = 45
-    ratp_parameters = [dx, dy, dz, rs, ratp_mu,tesselate_level, distrib_algo, distrib_option,infinite]
+    ratp_parameters = [dx, dy, dz, rs, ratp_mu, tesselate_level, distrib_algo, distrib_option, infinite]
     ratp_sky = [] # ciel turtle à 46 directions
     ratp_rf=[[0., 0.]] # leaf reflectance PAR et NIR pour l'entité 0
 
@@ -100,7 +106,6 @@ def simulation(tesselation, SIMULATION_LENGTH, write, outpath):
     tot_light = 0.
     for t_light in progressbar.progressbar(range(START_TIME, SIMULATION_LENGTH, LIGHT_TIMESTEP)):
         print("\n")
-        print("tesselation : ",i)
         light_start=time.time()
         # récupère les données météo
         PARi = meteo.loc[t_light, ['PARi_MA4']].iloc[0]
@@ -207,11 +212,23 @@ def simulation(tesselation, SIMULATION_LENGTH, write, outpath):
     print("--- temps execution : ",tot_light)
 
 if __name__ == "__main__":
-    nstep=32
+    nstep=64
     write=True
+
+    #definition d'arguments avec getopt
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "b:")
+    except getopt.GetoptError as err:
+        print(str(err))
+        sys.exit(2)
+
+    #print("opts", opts)
+    for opt, arg in opts:
+        if opt in ("-b"):
+            tess_level = int(arg)
     
-    for i in range(1,10):
-        outpath = "tesselation_sensibility_denseinfi_"+str(i)
-        simulation(i, nstep, write, outpath)
+    print("level",tess_level)
+    outpath = "tesselation_sensibility_denseinfi_"+str(tess_level)
+    simulation(tess_level, nstep, write, outpath)
     print("=== END ===")
     
