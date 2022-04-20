@@ -8,7 +8,7 @@ import sys
 
 import getopt
 
-def simulation(tesselation, SIMULATION_LENGTH, write, outpath):
+def simulation(tesselation, SIMULATION_LENGTH, write, outfolderpath):
     print("tesselation : ", tesselation)
 
     # -- SIMULATION PARAMETERS --
@@ -24,7 +24,7 @@ def simulation(tesselation, SIMULATION_LENGTH, write, outpath):
     CNWHEAT_TIMESTEP = 1
 
     # fspm-wheat file name
-    INPUTS_FOLDER = r'C:\Users\mwoussen\cdd\codes\vegecouplelight\WheatFspm\fspm-wheat\test\inputs'
+    INPUTS_FOLDER = 'WheatFspm/fspm-wheat/test/inputs'
     # Name of the CSV files which describes the initial state of the system
     AXES_INITIAL_STATE_FILENAME = 'axes_initial_state.csv'
     ORGANS_INITIAL_STATE_FILENAME = 'organs_initial_state.csv'
@@ -103,6 +103,7 @@ def simulation(tesselation, SIMULATION_LENGTH, write, outpath):
     parsha=[]
     iter=[]
     shapes=[]
+    times_tesse=[]
     tot_light = 0.
     for t_light in progressbar.progressbar(range(START_TIME, SIMULATION_LENGTH, LIGHT_TIMESTEP)):
         print("\n")
@@ -139,6 +140,7 @@ def simulation(tesselation, SIMULATION_LENGTH, write, outpath):
             lghtcaribu.run(PARi=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
             lghtcaribu.PAR_update_MTG(g)
 
+            tesse_start=time.time()
             lghtratp = LightVegeManager(in_scenes, 
                                         in_names=model_names,
                                         id_stems=id_stems, 
@@ -146,14 +148,23 @@ def simulation(tesselation, SIMULATION_LENGTH, write, outpath):
                                         lightmodel="ratp", lightmodelparam=ratp_parameters, 
                                         rf=ratp_rf, 
                                         coordinates=coordinates)
+            # enregistre le temps de tesselation
+            time_tesse = (time.time()-tesse_start)
+            
             lghtratp.run(PARi=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
 
-            print(lghtcaribu.shapes_outputs)
-            print(lghtratp.shapes_outputs)
-            
-            # write VTK
-            #if write:
-            #    lghtratp.VTKout("outputs/tesselation_sensibility/triangles_tesselation"+str(tesselation)+"_",t_light)
+            for key,items in g.property("PARa").items():
+                para_c.append(items)
+                para_r.append(lghtratp.shapes_outputs[lghtratp.shapes_outputs.ShapeId==key]["PARa"].values[0])
+                shapes.append(key)
+                pari.append(lghtcaribu.shapes_outputs[lghtcaribu.shapes_outputs.ShapeId==key]["PARi"].values[0])
+                parsun.append(lghtratp.shapes_outputs[lghtratp.shapes_outputs.ShapeId==key]["SunlitPAR"].values[0])
+                parsha.append(lghtratp.shapes_outputs[lghtratp.shapes_outputs.ShapeId==key]["ShadedPAR"].values[0])
+            iter.extend([t_light]*len(g.property("PARa")))
+            parin.extend([PARi]*len(g.property("PARa")))
+            times_tesse.extend([time_tesse]*len(g.property("PARa")))
+
+
         
         # sinon on copie le PAR de l'itération précédente
         else:
@@ -167,17 +178,7 @@ def simulation(tesselation, SIMULATION_LENGTH, write, outpath):
                 # update the MTG
                 g.property(param).update(outputs[param])
 
-        # enregistre les valeurs de PAR
-        for key,items in g.property("PARa").items():
-            para_c.append(items)
-            para_r.append(lghtratp.shapes_outputs[lghtratp.shapes_outputs.ShapeId==key]["PARa"].values[0])
-            shapes.append(key)
-            pari.append(lghtcaribu.shapes_outputs[lghtcaribu.shapes_outputs.ShapeId==key]["PARi"].values[0])
-            parsun.append(lghtratp.shapes_outputs[lghtratp.shapes_outputs.ShapeId==key]["SunlitPAR"].values[0])
-            parsha.append(lghtratp.shapes_outputs[lghtratp.shapes_outputs.ShapeId==key]["ShadedPAR"].values[0])
-        iter.extend([t_light]*len(g.property("PARa")))
-        parin.extend([PARi]*len(g.property("PARa")))
-
+        
         tot_light += (time.time() - light_start)
 
         iteration_fspmwheat_withoutlighting(meteo,
@@ -199,6 +200,7 @@ def simulation(tesselation, SIMULATION_LENGTH, write, outpath):
 
     myoutputs = {"Shapes" : shapes, 
                     "Iteration" : iter, 
+                    "Prep Time" : times_tesse,
                     "PAR input":parin, 
                     "PARa CARIBU" : para_c, 
                     "PARi CARIBU" : pari, 
@@ -207,7 +209,7 @@ def simulation(tesselation, SIMULATION_LENGTH, write, outpath):
                     "ShadedPAR" : parsha}
     df_myout = pd.DataFrame(myoutputs)
     
-    if write: df_myout.to_csv("outputs/dynamic_cn_wheat_csv/"+outpath+".csv")
+    if write: df_myout.to_csv(outfolderpath+"tesselation_analysis.csv")
 
     print("--- temps execution : ",tot_light)
 
@@ -217,18 +219,22 @@ if __name__ == "__main__":
 
     #definition d'arguments avec getopt
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "b:")
+        opts, args = getopt.getopt(sys.argv[1:], "l: o: i:")
     except getopt.GetoptError as err:
         print(str(err))
         sys.exit(2)
 
     #print("opts", opts)
+    tess_level = 0
+    outfolderpath = ""
     for opt, arg in opts:
-        if opt in ("-b"):
+        if opt in ("-l"):
             tess_level = int(arg)
+        elif opt in ("-o"):
+            outfolderpath = str(arg)
+        elif opt in ("-i"):
+            nstep = int(arg)
     
-    print("level",tess_level)
-    outpath = "tesselation_sensibility_denseinfi_"+str(tess_level)
-    simulation(tess_level, nstep, write, outpath)
+    simulation(tess_level, nstep, write, outfolderpath)
     print("=== END ===")
     
