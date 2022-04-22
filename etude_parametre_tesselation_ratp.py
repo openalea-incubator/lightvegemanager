@@ -116,7 +116,7 @@ def simulation(tesselation, SIMULATION_LENGTH, write, outfolderpath):
 
         # création d'un couvert hétérogène
         scene_etendu, domain = create_heterogeneous_canopy_copy(adel_wheat, g, nplants=100, var_plant_position=0.03, var_leaf_inclination=0.157, var_leaf_azimut=1.57, var_stem_azimut=0.157,
-                                     plant_density=250, inter_row=0.15)
+                                     plant_density=250, inter_row=0.08)
 
         # vérifie si l'itération suivante est encore le jour? et lance le calcul de lumière
         if (t_light % LIGHT_TIMESTEP == 0) and (PARi_next_hours > 0):
