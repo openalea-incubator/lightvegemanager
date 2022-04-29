@@ -9,5 +9,6 @@ setup(
     name="LightVegeManager for Singularity",
     version="0.0.0 (Working only with Wheat-Fspm)",
     url="https://github.com/mwoussen/lightvegemanager/tree/singularity",
-    packages=find_packages(include=["PyRATP/pyratp","src","runscript"], exclude=["PyRATP"]),
+    packages=find_packages(include=["PyRATP","src","runscript"]),
+    package_data = {'' : ['*.pyd', '*.so'],}
 )
