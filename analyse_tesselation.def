@@ -10,7 +10,7 @@ From: ubuntu:20.04
     export PATH="/opt/miniconda/bin:$PATH"
 
 %runscript
-     # Execute container
+    # Execute container
     python etude_parametre_tesselation_ratp.py "$@"
 
 %post
@@ -23,8 +23,8 @@ From: ubuntu:20.04
     apt install -y build-essential wget bzip2 git python3.9 unzip gfortran freeglut3-dev libxext-dev libxrender-dev libglib2.0-0 libqhull-dev
 
     # miniconda3, dernière version, python 3.9, v4.11.0
-	wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-     
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+        
     #install conda
     bash  miniconda.sh -b -p /opt/miniconda 
     export PATH="/opt/miniconda/bin:$PATH"
@@ -34,25 +34,25 @@ From: ubuntu:20.04
     rm -f /opt/miniconda.sh
     apt autoremove --purge
     apt clean
-	
+
     # installation des dépendances (préférable)
-	conda install python=3.7 openalea.mtg openalea.plantgl openalea.lpy alinea.caribu alinea.astk xlrd coverage nose sphinx statsmodels numpy scipy pandas matplotlib progressbar2 -c conda-forge -c fredboudon
+    conda install python=3.7 openalea.mtg openalea.plantgl openalea.lpy alinea.caribu alinea.astk xlrd coverage nose sphinx statsmodels numpy scipy pandas matplotlib progressbar2 -c conda-forge -c fredboudon
 
-	# installe adel (requis par WheatFspm)
-	wget https://github.com/rbarillot/adel/archive/python3.zip 
-	unzip python3.zip && cd adel-python3
-	python setup.py develop
-	cd ~
+    # installe adel (requis par WheatFspm)
+    wget https://github.com/rbarillot/adel/archive/python3.zip 
+    unzip python3.zip && cd adel-python3
+    python setup.py develop
+    cd ~
 
-	# clone du depot 
+    # clone du depot 
     git clone -b singularity https://github.com/mwoussen/lightvegemanager
     cd lightvegemanager
-   
-	# installe Wheat-Fspm
+
+    # installe Wheat-Fspm
     git clone --recurse-submodules https://github.com/openalea-incubator/WheatFspm
-	cd WheatFspm
+    cd WheatFspm
     git submodule update --remote
-	python setup.py develop
+    python setup.py develop
 
     # compile la partie fortran de PyRATP (pour linux 64bits)
     cd ../PyRATP/f90
