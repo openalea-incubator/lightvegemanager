@@ -9,8 +9,6 @@ import sys
 import getopt
 
 def simulation(tesselation, SIMULATION_LENGTH, write, outfolderpath):
-    print("tesselation : ", tesselation)
-
     # -- SIMULATION PARAMETERS --
     START_TIME = 0
     PLANT_DENSITY = {1: 1}
@@ -213,12 +211,11 @@ def simulation(tesselation, SIMULATION_LENGTH, write, outfolderpath):
                     "ShadedPAR" : parsha}
     df_myout = pd.DataFrame(myoutputs)
     
-    if write: df_myout.to_csv(outfolderpath+"tesselation_analysis.csv")
+    if write: df_myout.to_csv(outfolderpath+"tesselation_analysis_level_"+str(tesselation)+".csv")
 
     print("--- temps execution : ",tot_light)
 
 if __name__ == "__main__":
-    nstep=64
     write=True
 
     #definition d'arguments avec getopt
@@ -228,9 +225,12 @@ if __name__ == "__main__":
         print(str(err))
         sys.exit(2)
 
-    #print("opts", opts)
+    # arguments par défaut
     tess_level = 0
+    nstep=24
     outfolderpath = ""
+
+    # récupère les arguments en entrée
     for opt, arg in opts:
         if opt in ("-l"):
             tess_level = int(arg)
@@ -239,6 +239,8 @@ if __name__ == "__main__":
         elif opt in ("-i"):
             nstep = int(arg)
     
+    print("=== BEGIN ===")
+    print("--- Analyse tesselation : niveau=%i | iterations=%i | outputs=%s"%(tess_level, nstep, outfolderpath))
     simulation(tess_level, nstep, write, outfolderpath)
     print("=== END ===")
     
