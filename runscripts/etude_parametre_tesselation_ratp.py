@@ -24,7 +24,11 @@ def simulation(tesselation, SIMULATION_LENGTH, write, outfolderpath):
     CNWHEAT_TIMESTEP = 1
 
     # fspm-wheat file name
-    INPUTS_FOLDER = 'WheatFspm/fspm-wheat/test/inputs'
+    current_path = os.path.dirname(os.path.abspath(__file__))
+    lvm_folder = "/".join(current_path.split("/")[:-1])
+    if lvm_folder == "": lvm_folder = "/".join(current_path.split("\\")[:-1])
+    INPUTS_FOLDER = lvm_folder+'/WheatFspm/fspm-wheat/test/inputs'
+
     # Name of the CSV files which describes the initial state of the system
     AXES_INITIAL_STATE_FILENAME = 'axes_initial_state.csv'
     ORGANS_INITIAL_STATE_FILENAME = 'organs_initial_state.csv'

@@ -11,6 +11,8 @@ PyRATP/saved_pyratp_pyd/*
 *.so
 PyRATP/f90/Release/*
 PyRATP/f90/SConscript
+WheatFspm
+l-egume
 *.mod
 PyRATP/f90/src.win-amd64-3.7/*
 PyRATP/pyratp/interface/*
@@ -18,6 +20,7 @@ PyRATP/pyratp/mtg_test.txt
 PyRATP/f90/pyratp.cp37-win_amd64.pyd
 PyRATP/f90/pyratp.pyd
 LightVegeManager_for_Singularity.egg-info/*
+LightVegeManager.egg-info/*
 build/*
 dist/*
 PyRATP/pyratp/pyratp.pyd
