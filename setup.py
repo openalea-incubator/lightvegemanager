@@ -12,6 +12,6 @@ setup(
     version="0.0.0",
     description="Works only with cn-wheat",
     url="https://github.com/mwoussen/lightvegemanager/tree/singularity",
-    packages=find_packages(),
+    packages=find_packages(include=["PyRATP","src","runscript"]),
     package_data = {'' : ['*.pyd', '*.so'],}
 )
