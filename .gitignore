@@ -13,6 +13,7 @@ PyRATP/f90/Release/*
 PyRATP/f90/SConscript
 WheatFspm
 l-egume
+outputs
 *.mod
 PyRATP/f90/src.win-amd64-3.7/*
 PyRATP/pyratp/interface/*

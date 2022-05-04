@@ -331,8 +331,11 @@ def write_outputs_fspmwheat(OUTPUTS_DIRPATH,
         outputs_df.rename({'level_0': 't'}, axis=1, inplace=True)
         outputs_df = outputs_df.reindex(index_columns + outputs_df.columns.difference(index_columns).tolist(), axis=1, copy=False)
         outputs_df = outputs_df.loc[:, state_variables_names]  # compare only the values of the compartments
-        cnwheat_tools.compare_actual_to_desired(OUTPUTS_DIRPATH, outputs_df, desired_outputs_filename,
-                                                actual_outputs_filename, precision=PRECISION, overwrite_desired_data=overwrite_desired_data)
+        actual_data_filepath = os.path.join(OUTPUTS_DIRPATH, actual_outputs_filename)
+        outputs_df.to_csv(actual_data_filepath, na_rep='NA', index=False, float_format='%.{}f'.format(PRECISION))
+        
+        # cnwheat_tools.compare_actual_to_desired(OUTPUTS_DIRPATH, outputs_df, desired_outputs_filename,
+        #                                        actual_outputs_filename, precision=PRECISION, overwrite_desired_data=overwrite_desired_data)
 
 # copie de _create_heterogeneous_canopy dans fspmwheat/caribu_facade pour l'utiliser en dehors de la classe
 def create_heterogeneous_canopy_copy(geometrical_model, mtg, nplants=50, var_plant_position=0.03, var_leaf_inclination=0.157, var_leaf_azimut=1.57, var_stem_azimut=0.157,
