@@ -18,6 +18,26 @@ Compare :
     * sorties CN-Wheat
 '''
 
+def Create_OutputsFolders(parentfolderpath):
+    # dossier des données brutes
+    dirName = parentfolderpath+"/brut"
+    try:
+        # Create target Directory
+        os.mkdir(dirName)
+        print("Directory " , dirName ,  " Created ") 
+    except FileExistsError:
+        print("Directory " , dirName ,  " already exists")
+    
+    # dossier du postprocessing
+    dirName = parentfolderpath+"/postprocessing"
+    try:
+        # Create target Directory
+        os.mkdir(dirName)
+        print("Directory " , dirName ,  " Created ") 
+    except FileExistsError:
+        print("Directory " , dirName ,  " already exists")
+    
+
 def simulation_caribu(level_tesselation, inter_row, SIMULATION_LENGTH, outfolderpath):
     # -- SIMULATION PARAMETERS --
     START_TIME = 0
@@ -35,6 +55,9 @@ def simulation_caribu(level_tesselation, inter_row, SIMULATION_LENGTH, outfolder
     current_path = os.path.dirname(os.path.abspath(__file__))
     lvm_folder = "/".join(current_path.split("/")[:-1])
     if lvm_folder == "": lvm_folder = "/".join(current_path.split("\\")[:-1])
+    Create_OutputsFolders(outfolderpath+"/caribu")
+    
+    # Path of the directory which contains the inputs of the model
     INPUTS_FOLDER = lvm_folder+'/WheatFspm/fspm-wheat/test/inputs'
     
     # Name of the CSV files which describes the initial state of the system
@@ -45,6 +68,26 @@ def simulation_caribu(level_tesselation, inter_row, SIMULATION_LENGTH, outfolder
     SOILS_INITIAL_STATE_FILENAME = 'soils_initial_state.csv'
     METEO_FILENAME = 'meteo_Ljutovac2002.csv'
     PHYTOT_FILENAME = 'phytoT.csv'
+
+    # Path of the directory which contains the outputs of the model
+    OUTPUTS_DIRPATH = outfolderpath+"/caribu/brut/"
+
+    # Name of the CSV files which will contain the outputs of the model
+    AXES_OUTPUTS_FILENAME = 'axes_outputs.csv'
+    ORGANS_OUTPUTS_FILENAME = 'organs_outputs.csv'
+    HIDDENZONES_OUTPUTS_FILENAME = 'hiddenzones_outputs.csv'
+    ELEMENTS_OUTPUTS_FILENAME = 'elements_outputs.csv'
+    SOILS_OUTPUTS_FILENAME = 'soils_outputs.csv'
+
+    # Path of the directory which contains the postprocessing
+    POSTPROCESSING_DIRPATH = outfolderpath+"/caribu/postprocessing/"
+    
+    # Name of the CSV files which will contain the postprocessing of the model
+    AXES_POSTPROCESSING_FILENAME = 'axes_postprocessing.csv'
+    ORGANS_POSTPROCESSING_FILENAME = 'organs_postprocessing.csv'
+    HIDDENZONES_POSTPROCESSING_FILENAME = 'hiddenzones_postprocessing.csv'
+    ELEMENTS_POSTPROCESSING_FILENAME = 'elements_postprocessing.csv'
+    SOILS_POSTPROCESSING_FILENAME = 'soils_postprocessing.csv'
 
     # parameters
     LEAVES_MODEL = 'Soissons_byleafclass'
@@ -79,21 +122,6 @@ def simulation_caribu(level_tesselation, inter_row, SIMULATION_LENGTH, outfolder
                                                                         K_AMINO_ACIDS_EXPORT,
                                                                         K_NITRATE_EXPORT)
     
-    # Path of the directory which contains the inputs of the model
-    OUTPUTS_DIRPATH = outfolderpath+"/caribu/"
-
-    # Name of the CSV files which will contain the outputs of the model
-    DESIRED_AXES_OUTPUTS_FILENAME = 'desired_axes_outputs.csv'
-    DESIRED_ORGANS_OUTPUTS_FILENAME = 'desired_organs_outputs.csv'
-    DESIRED_HIDDENZONES_OUTPUTS_FILENAME = 'desired_hiddenzones_outputs.csv'
-    DESIRED_ELEMENTS_OUTPUTS_FILENAME = 'desired_elements_outputs.csv'
-    DESIRED_SOILS_OUTPUTS_FILENAME = 'desired_soils_outputs.csv'
-    ACTUAL_AXES_OUTPUTS_FILENAME = 'actual_axes_outputs.csv'
-    ACTUAL_ORGANS_OUTPUTS_FILENAME = 'actual_organs_outputs.csv'
-    ACTUAL_HIDDENZONES_OUTPUTS_FILENAME = 'actual_hiddenzones_outputs.csv'
-    ACTUAL_ELEMENTS_OUTPUTS_FILENAME = 'actual_elements_outputs.csv'
-    ACTUAL_SOILS_OUTPUTS_FILENAME = 'actual_soils_outputs.csv'
-
     # define lists of dataframes to store the inputs and the outputs of the models at each step.
     axes_all_data_list = []
     organs_all_data_list = []  # organs which belong to axes: roots, phloem, grains
@@ -256,24 +284,23 @@ def simulation_caribu(level_tesselation, inter_row, SIMULATION_LENGTH, outfolder
     df_myout.to_csv(outfolderpath+"/PAR_values_caribu_geom.csv")
 
     write_outputs_fspmwheat(OUTPUTS_DIRPATH,
-                            DESIRED_AXES_OUTPUTS_FILENAME,
-                            DESIRED_ORGANS_OUTPUTS_FILENAME,
-                            DESIRED_HIDDENZONES_OUTPUTS_FILENAME,
-                            DESIRED_ELEMENTS_OUTPUTS_FILENAME,
-                            DESIRED_SOILS_OUTPUTS_FILENAME,
-                            ACTUAL_AXES_OUTPUTS_FILENAME,
-                            ACTUAL_ORGANS_OUTPUTS_FILENAME,
-                            ACTUAL_HIDDENZONES_OUTPUTS_FILENAME,
-                            ACTUAL_ELEMENTS_OUTPUTS_FILENAME,
-                            ACTUAL_SOILS_OUTPUTS_FILENAME,
+                            POSTPROCESSING_DIRPATH,
+                            AXES_OUTPUTS_FILENAME,
+                            ORGANS_OUTPUTS_FILENAME,
+                            HIDDENZONES_OUTPUTS_FILENAME,
+                            ELEMENTS_OUTPUTS_FILENAME,
+                            SOILS_OUTPUTS_FILENAME,
+                            AXES_POSTPROCESSING_FILENAME,
+                            ORGANS_POSTPROCESSING_FILENAME,
+                            HIDDENZONES_POSTPROCESSING_FILENAME,
+                            ELEMENTS_POSTPROCESSING_FILENAME,
+                            SOILS_POSTPROCESSING_FILENAME,
                             axes_all_data_list,
                             organs_all_data_list,
                             hiddenzones_all_data_list,
                             elements_all_data_list,
                             soils_all_data_list,
-                            all_simulation_steps,
-                            PRECISION = 4,
-                            overwrite_desired_data=True)
+                            all_simulation_steps)
     print("--- temps execution : ",tot_light)
 
 def simulation_ratp(level_tesselation, inter_row, SIMULATION_LENGTH, outfolderpath):
@@ -293,6 +320,9 @@ def simulation_ratp(level_tesselation, inter_row, SIMULATION_LENGTH, outfolderpa
     current_path = os.path.dirname(os.path.abspath(__file__))
     lvm_folder = "/".join(current_path.split("/")[:-1])
     if lvm_folder == "": lvm_folder = "/".join(current_path.split("\\")[:-1])
+    Create_OutputsFolders(outfolderpath+"/ratp")
+    
+    # Path of the directory which contains the inputs of the model
     INPUTS_FOLDER = lvm_folder+'/WheatFspm/fspm-wheat/test/inputs'
 
     # Name of the CSV files which describes the initial state of the system
@@ -303,6 +333,26 @@ def simulation_ratp(level_tesselation, inter_row, SIMULATION_LENGTH, outfolderpa
     SOILS_INITIAL_STATE_FILENAME = 'soils_initial_state.csv'
     METEO_FILENAME = 'meteo_Ljutovac2002.csv'
     PHYTOT_FILENAME = 'phytoT.csv'
+
+    # Path of the directory which contains the outputs of the model
+    OUTPUTS_DIRPATH = outfolderpath+"/ratp/brut/"
+
+    # Name of the CSV files which will contain the outputs of the model
+    AXES_OUTPUTS_FILENAME = 'axes_outputs.csv'
+    ORGANS_OUTPUTS_FILENAME = 'organs_outputs.csv'
+    HIDDENZONES_OUTPUTS_FILENAME = 'hiddenzones_outputs.csv'
+    ELEMENTS_OUTPUTS_FILENAME = 'elements_outputs.csv'
+    SOILS_OUTPUTS_FILENAME = 'soils_outputs.csv'
+
+    # Path of the directory which contains the postprocessing
+    POSTPROCESSING_DIRPATH = outfolderpath+"/ratp/postprocessing/"
+    
+    # Name of the CSV files which will contain the postprocessing of the model
+    AXES_POSTPROCESSING_FILENAME = 'axes_postprocessing.csv'
+    ORGANS_POSTPROCESSING_FILENAME = 'organs_postprocessing.csv'
+    HIDDENZONES_POSTPROCESSING_FILENAME = 'hiddenzones_postprocessing.csv'
+    ELEMENTS_POSTPROCESSING_FILENAME = 'elements_postprocessing.csv'
+    SOILS_POSTPROCESSING_FILENAME = 'soils_postprocessing.csv'
 
     # parameters
     LEAVES_MODEL = 'Soissons_byleafclass'
@@ -336,21 +386,6 @@ def simulation_ratp(level_tesselation, inter_row, SIMULATION_LENGTH, outfolderpa
                                                                         VMAX_ROOTS_GROWTH_PREFLO,
                                                                         K_AMINO_ACIDS_EXPORT,
                                                                         K_NITRATE_EXPORT)
-    
-    # Path of the directory which contains the inputs of the model
-    OUTPUTS_DIRPATH = outfolderpath+"/ratp/"
-
-    # Name of the CSV files which will contain the outputs of the model
-    DESIRED_AXES_OUTPUTS_FILENAME = 'desired_axes_outputs.csv'
-    DESIRED_ORGANS_OUTPUTS_FILENAME = 'desired_organs_outputs.csv'
-    DESIRED_HIDDENZONES_OUTPUTS_FILENAME = 'desired_hiddenzones_outputs.csv'
-    DESIRED_ELEMENTS_OUTPUTS_FILENAME = 'desired_elements_outputs.csv'
-    DESIRED_SOILS_OUTPUTS_FILENAME = 'desired_soils_outputs.csv'
-    ACTUAL_AXES_OUTPUTS_FILENAME = 'actual_axes_outputs.csv'
-    ACTUAL_ORGANS_OUTPUTS_FILENAME = 'actual_organs_outputs.csv'
-    ACTUAL_HIDDENZONES_OUTPUTS_FILENAME = 'actual_hiddenzones_outputs.csv'
-    ACTUAL_ELEMENTS_OUTPUTS_FILENAME = 'actual_elements_outputs.csv'
-    ACTUAL_SOILS_OUTPUTS_FILENAME = 'actual_soils_outputs.csv'
 
     # define lists of dataframes to store the inputs and the outputs of the models at each step.
     axes_all_data_list = []
@@ -483,24 +518,23 @@ def simulation_ratp(level_tesselation, inter_row, SIMULATION_LENGTH, outfolderpa
     df_myout.to_csv(outfolderpath+"/PAR_values_ratp_geom.csv")
     
     write_outputs_fspmwheat(OUTPUTS_DIRPATH,
-                            DESIRED_AXES_OUTPUTS_FILENAME,
-                            DESIRED_ORGANS_OUTPUTS_FILENAME,
-                            DESIRED_HIDDENZONES_OUTPUTS_FILENAME,
-                            DESIRED_ELEMENTS_OUTPUTS_FILENAME,
-                            DESIRED_SOILS_OUTPUTS_FILENAME,
-                            ACTUAL_AXES_OUTPUTS_FILENAME,
-                            ACTUAL_ORGANS_OUTPUTS_FILENAME,
-                            ACTUAL_HIDDENZONES_OUTPUTS_FILENAME,
-                            ACTUAL_ELEMENTS_OUTPUTS_FILENAME,
-                            ACTUAL_SOILS_OUTPUTS_FILENAME,
+                            POSTPROCESSING_DIRPATH,
+                            AXES_OUTPUTS_FILENAME,
+                            ORGANS_OUTPUTS_FILENAME,
+                            HIDDENZONES_OUTPUTS_FILENAME,
+                            ELEMENTS_OUTPUTS_FILENAME,
+                            SOILS_OUTPUTS_FILENAME,
+                            AXES_POSTPROCESSING_FILENAME,
+                            ORGANS_POSTPROCESSING_FILENAME,
+                            HIDDENZONES_POSTPROCESSING_FILENAME,
+                            ELEMENTS_POSTPROCESSING_FILENAME,
+                            SOILS_POSTPROCESSING_FILENAME,
                             axes_all_data_list,
                             organs_all_data_list,
                             hiddenzones_all_data_list,
                             elements_all_data_list,
                             soils_all_data_list,
-                            all_simulation_steps,
-                            PRECISION = 4,
-                            overwrite_desired_data=True)
+                            all_simulation_steps)
     print("--- temps execution : ",tot_light)
 
 if __name__ == "__main__":
@@ -514,8 +548,8 @@ if __name__ == "__main__":
     # valeur par défaut
     level_tesselation=2
     inter_row=0.1
-    nstep=2400
-    outfolderpath = "cn-wheat_comparaison_dense"
+    nstep=4
+    outfolderpath = "outputs/cn-wheat_dense"
     sim = 3
 
     # récupère les arguments en entrée
