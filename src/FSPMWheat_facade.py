@@ -292,6 +292,24 @@ def iteration_fspmwheat_withoutlighting(meteo,
                             elements_all_data_list.append(elements_outputs)
                             soils_all_data_list.append(soils_outputs)
 
+def save_df_to_csv(df, outputs_filepath, precision):
+    """
+    Save pandas dataframes to csv
+    :param pandas.DataFrame df: a pandas dataframe to be saved
+    :param str outputs_filepath: the name of the CSV file to be saved
+    :param int precision: number of decimals in CSV file
+    """
+    try:
+        df.to_csv(outputs_filepath, na_rep='NA', index=False, float_format='%.{}f'.format(precision))
+    except IOError as err:
+        path, filename = os.path.split(outputs_filepath)
+        filename = os.path.splitext(filename)[0]
+        newfilename = 'ACTUAL_{}.csv'.format(filename)
+        newpath = os.path.join(path, newfilename)
+        df.to_csv(newpath, na_rep='NA', index=False, float_format='%.{}f'.format(precision))
+        warnings.warn('[{}] {}'.format(err.errno, err.strerror))
+        warnings.warn('File will be saved at {}'.format(newpath))
+
 def write_outputs_fspmwheat(OUTPUTS_DIRPATH,
                             POSTPROCESSING_DIRPATH,
                             AXES_OUTPUTS_FILENAME,
@@ -312,26 +330,7 @@ def write_outputs_fspmwheat(OUTPUTS_DIRPATH,
                             all_simulation_steps,
                             PRECISION = 4,
                             run_postprocessing=True):
-
-    
-    def save_df_to_csv(df, outputs_filepath, precision):
-        """
-        Save pandas dataframes to csv
-        :param pandas.DataFrame df: a pandas dataframe to be saved
-        :param str outputs_filepath: the name of the CSV file to be saved
-        :param int precision: number of decimals in CSV file
-        """
-        try:
-            df.to_csv(outputs_filepath, na_rep='NA', index=False, float_format='%.{}f'.format(precision))
-        except IOError as err:
-            path, filename = os.path.split(outputs_filepath)
-            filename = os.path.splitext(filename)[0]
-            newfilename = 'ACTUAL_{}.csv'.format(filename)
-            newpath = os.path.join(path, newfilename)
-            df.to_csv(newpath, na_rep='NA', index=False, float_format='%.{}f'.format(precision))
-            warnings.warn('[{}] {}'.format(err.errno, err.strerror))
-            warnings.warn('File will be saved at {}'.format(newpath))
-            
+       
     # save des données brutes
     outputs_df_dict = {}
     for (outputs_df_list,
@@ -383,6 +382,86 @@ def write_outputs_fspmwheat(OUTPUTS_DIRPATH,
                                                                       (soils_postprocessing_file_basename, SOILS_POSTPROCESSING_FILENAME)):
             postprocessing_filepath = os.path.join(POSTPROCESSING_DIRPATH, postprocessing_filename)
             postprocessing_df_dict[postprocessing_file_basename].to_csv(postprocessing_filepath, na_rep='NA', index=False, float_format='%.{}f'.format(PRECISION))
+
+def append_outputs_fspmwheat(OUTPUTS_DIRPATH,
+                            POSTPROCESSING_DIRPATH,
+                            AXES_OUTPUTS_FILENAME,
+                            ORGANS_OUTPUTS_FILENAME,
+                            HIDDENZONES_OUTPUTS_FILENAME,
+                            ELEMENTS_OUTPUTS_FILENAME,
+                            SOILS_OUTPUTS_FILENAME,
+                            AXES_POSTPROCESSING_FILENAME,
+                            ORGANS_POSTPROCESSING_FILENAME,
+                            HIDDENZONES_POSTPROCESSING_FILENAME,
+                            ELEMENTS_POSTPROCESSING_FILENAME,
+                            SOILS_POSTPROCESSING_FILENAME,
+                            axes_data_list,
+                            organs_data_list,
+                            hiddenzones_data_list,
+                            elements_data_list,
+                            soils_data_list,
+                            all_simulation_steps,
+                            PRECISION = 4,
+                            run_postprocessing=True):
+       
+    # save des données brutes
+    outputs_df_dict = {}
+    for (outputs_df_list,
+         outputs_filename,
+         index_columns) \
+            in ((axes_data_list, AXES_OUTPUTS_FILENAME, cnwheat_simulation.Simulation.AXES_T_INDEXES),
+                (organs_data_list, ORGANS_OUTPUTS_FILENAME, cnwheat_simulation.Simulation.ORGANS_T_INDEXES),
+                (hiddenzones_data_list, HIDDENZONES_OUTPUTS_FILENAME, cnwheat_simulation.Simulation.HIDDENZONE_T_INDEXES),
+                (elements_data_list, ELEMENTS_OUTPUTS_FILENAME, cnwheat_simulation.Simulation.ELEMENTS_T_INDEXES),
+                (soils_data_list, SOILS_OUTPUTS_FILENAME, cnwheat_simulation.Simulation.SOILS_T_INDEXES)):
+        data_filepath = os.path.join(OUTPUTS_DIRPATH, outputs_filename)
+        outputs_df = pd.concat(outputs_df_list, keys=all_simulation_steps, sort=False)
+        outputs_df.reset_index(0, inplace=True)
+        outputs_df.rename({'level_0': 't'}, axis=1, inplace=True)
+        outputs_df = outputs_df.reindex(index_columns + outputs_df.columns.difference(index_columns).tolist(), axis=1, copy=False)
+        outputs_df.fillna(value=np.nan, inplace=True)  # Convert back None to NaN
+        if not os.path.exists(data_filepath):
+            outputs_df.to_csv(data_filepath, na_rep='NA', index=False, float_format='%.{}f'.format(PRECISION), mode='w')
+        else:
+            outputs_df.to_csv(data_filepath, na_rep='NA', index=False, float_format='%.{}f'.format(PRECISION), mode='a', header=False)
+        
+        outputs_file_basename = outputs_filename.split('.')[0]
+        outputs_df_dict[outputs_file_basename] = outputs_df.reset_index()
+    
+    # construit un premier postprocessing
+    if run_postprocessing:
+        time_grid = list(outputs_df_dict.values())[0].t
+        delta_t = (time_grid.loc[1] - time_grid.loc[0]) * HOUR_TO_SECOND_CONVERSION_FACTOR
+
+        axes_postprocessing_file_basename = AXES_POSTPROCESSING_FILENAME.split('.')[0]
+        hiddenzones_postprocessing_file_basename = HIDDENZONES_POSTPROCESSING_FILENAME.split('.')[0]
+        organs_postprocessing_file_basename = ORGANS_POSTPROCESSING_FILENAME.split('.')[0]
+        elements_postprocessing_file_basename = ELEMENTS_POSTPROCESSING_FILENAME.split('.')[0]
+        soils_postprocessing_file_basename = SOILS_POSTPROCESSING_FILENAME.split('.')[0]
+
+        postprocessing_df_dict = {}
+        (postprocessing_df_dict[axes_postprocessing_file_basename],
+         postprocessing_df_dict[hiddenzones_postprocessing_file_basename],
+         postprocessing_df_dict[organs_postprocessing_file_basename],
+         postprocessing_df_dict[elements_postprocessing_file_basename],
+         postprocessing_df_dict[soils_postprocessing_file_basename]) \
+            = cnwheat_facade.CNWheatFacade.postprocessing(axes_outputs_df=outputs_df_dict[AXES_OUTPUTS_FILENAME.split('.')[0]],
+                                                          hiddenzone_outputs_df=outputs_df_dict[HIDDENZONES_OUTPUTS_FILENAME.split('.')[0]],
+                                                          organs_outputs_df=outputs_df_dict[ORGANS_OUTPUTS_FILENAME.split('.')[0]],
+                                                          elements_outputs_df=outputs_df_dict[ELEMENTS_OUTPUTS_FILENAME.split('.')[0]],
+                                                          soils_outputs_df=outputs_df_dict[SOILS_OUTPUTS_FILENAME.split('.')[0]],
+                                                          delta_t=delta_t)
+
+        for postprocessing_file_basename, postprocessing_filename in ((axes_postprocessing_file_basename, AXES_POSTPROCESSING_FILENAME),
+                                                                      (hiddenzones_postprocessing_file_basename, HIDDENZONES_POSTPROCESSING_FILENAME),
+                                                                      (organs_postprocessing_file_basename, ORGANS_POSTPROCESSING_FILENAME),
+                                                                      (elements_postprocessing_file_basename, ELEMENTS_POSTPROCESSING_FILENAME),
+                                                                      (soils_postprocessing_file_basename, SOILS_POSTPROCESSING_FILENAME)):
+            postprocessing_filepath = os.path.join(POSTPROCESSING_DIRPATH, postprocessing_filename)
+            if not os.path.exists(postprocessing_filepath) :
+                postprocessing_df_dict[postprocessing_file_basename].to_csv(postprocessing_filepath, na_rep='NA', index=False, float_format='%.{}f'.format(PRECISION), mode='w')
+            else:
+                postprocessing_df_dict[postprocessing_file_basename].to_csv(postprocessing_filepath, na_rep='NA', index=False, float_format='%.{}f'.format(PRECISION), mode='a', header=False)
 
 
 # copie de _create_heterogeneous_canopy dans fspmwheat/caribu_facade pour l'utiliser en dehors de la classe

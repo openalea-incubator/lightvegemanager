@@ -36,7 +36,7 @@ From: ubuntu:20.04
     apt clean
 
     # installation des dépendances (préférable)
-    conda install python=3.7 openalea.mtg openalea.plantgl openalea.lpy alinea.caribu alinea.astk xlrd coverage nose sphinx statsmodels numpy scipy pandas matplotlib progressbar2 -c conda-forge -c fredboudon
+    conda install python=3.7 openalea.mtg openalea.plantgl openalea.lpy alinea.caribu alinea.astk xlrd coverage nose sphinx statsmodels numpy scipy pandas progressbar2 -c conda-forge -c fredboudon
 
     # installe adel (requis par WheatFspm)
     wget https://github.com/rbarillot/adel/archive/python3.zip

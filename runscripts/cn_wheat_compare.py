@@ -2,6 +2,7 @@ from src.LightVegeManager import *
 from src.FSPMWheat_facade import *
 
 import os
+import shutil
 import sys
 import time
 import progressbar
@@ -388,13 +389,6 @@ def simulation_ratp(level_tesselation, inter_row, SIMULATION_LENGTH, outfolderpa
                                                                         K_NITRATE_EXPORT)
 
     # define lists of dataframes to store the inputs and the outputs of the models at each step.
-    axes_all_data_list = []
-    organs_all_data_list = []  # organs which belong to axes: roots, phloem, grains
-    hiddenzones_all_data_list = []
-    elements_all_data_list = []
-    soils_all_data_list = []
-
-    all_simulation_steps = []  # to store the steps of the simulation
     
     # Paramètres pré-simulation
     model_names = ["fspm-wheat"]
@@ -417,15 +411,24 @@ def simulation_ratp(level_tesselation, inter_row, SIMULATION_LENGTH, outfolderpa
     # -----      RUN OF THE SIMULATION      -------
     # ---------------------------------------------
 
-    para_r=[]
-    parin=[]
-    parsun=[]
-    parsha=[]
-    iter=[]
-    shapes=[]
-    ratp_times=[]
+    
     tot_light = 0.
     for t_light in progressbar.progressbar(range(START_TIME, SIMULATION_LENGTH, LIGHT_TIMESTEP)):
+        axes_all_data_list = []
+        organs_all_data_list = []  # organs which belong to axes: roots, phloem, grains
+        hiddenzones_all_data_list = []
+        elements_all_data_list = []
+        soils_all_data_list = []
+        all_simulation_steps = []  # to store the steps of the simulation
+
+        para_r=[]
+        parin=[]
+        parsun=[]
+        parsha=[]
+        iter=[]
+        shapes=[]
+        ratp_times=[]
+
         print("\n")
         light_start=time.time()
         # récupère les données météo
@@ -465,7 +468,20 @@ def simulation_ratp(level_tesselation, inter_row, SIMULATION_LENGTH, outfolderpa
                 parsha.append(lghtratp.shapes_outputs[lghtratp.shapes_outputs.ShapeId==key]["ShadedPAR"].values[0])
             iter.extend([t_light]*len(g.property("PARa")))
             parin.extend([PARi]*len(g.property("PARa")))
-            ratp_times.extend([r_time]*len(g.property("PARa")))     
+            ratp_times.extend([r_time]*len(g.property("PARa")))  
+
+            myoutputs = {"Shapes" : shapes, 
+                        "Iteration" : iter,
+                        "RATP time" : ratp_times, 
+                        "PAR input":parin, 
+                        "PARa RATP" : para_r, 
+                        "SunlitPAR" : parsun,
+                        "ShadedPAR" : parsha}
+            df_myout = pd.DataFrame(myoutputs)
+            if not os.path.exists(outfolderpath+"/PAR_values_ratp_geom.csv"):
+                df_myout.to_csv(outfolderpath+"/PAR_values_ratp_geom.csv", mode='w')
+            else:
+                df_myout.to_csv(outfolderpath+"/PAR_values_ratp_geom.csv", mode='a', header=False)   
         
         # sinon on copie le PAR de l'itération précédente
         else:
@@ -507,17 +523,7 @@ def simulation_ratp(level_tesselation, inter_row, SIMULATION_LENGTH, outfolderpa
                                             soils_all_data_list=soils_all_data_list,
                                             all_simulation_steps=all_simulation_steps)
 
-    myoutputs = {"Shapes" : shapes, 
-                    "Iteration" : iter,
-                    "RATP time" : ratp_times, 
-                    "PAR input":parin, 
-                    "PARa RATP" : para_r, 
-                    "SunlitPAR" : parsun,
-                    "ShadedPAR" : parsha}
-    df_myout = pd.DataFrame(myoutputs)
-    df_myout.to_csv(outfolderpath+"/PAR_values_ratp_geom.csv")
-    
-    write_outputs_fspmwheat(OUTPUTS_DIRPATH,
+        append_outputs_fspmwheat(OUTPUTS_DIRPATH,
                             POSTPROCESSING_DIRPATH,
                             AXES_OUTPUTS_FILENAME,
                             ORGANS_OUTPUTS_FILENAME,
@@ -535,6 +541,7 @@ def simulation_ratp(level_tesselation, inter_row, SIMULATION_LENGTH, outfolderpa
                             elements_all_data_list,
                             soils_all_data_list,
                             all_simulation_steps)
+    
     print("--- temps execution : ",tot_light)
 
 if __name__ == "__main__":
@@ -548,7 +555,7 @@ if __name__ == "__main__":
     # valeur par défaut
     level_tesselation=2
     inter_row=0.1
-    nstep=4
+    nstep=16
     outfolderpath = "outputs/cn-wheat_dense"
     sim = 3
 
@@ -565,6 +572,17 @@ if __name__ == "__main__":
         elif opt in ("-s"):
             sim = int(arg)
 
+    # supprime le contenant du dossier outputs si non vide
+    for filename in os.listdir(outfolderpath):
+        file_path = os.path.join(outfolderpath, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+        except Exception as e:
+            print('Failed to delete %s. Reason: %s' % (file_path, e))
+    
     # construit les dossiers s'ils n'existent pas
     dirName = outfolderpath+"/caribu"
     try:
