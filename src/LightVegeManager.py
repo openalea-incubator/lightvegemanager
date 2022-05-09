@@ -292,6 +292,11 @@ class LightVegeManager:
                         if trans[3] == "x+ = E":
                             tr.zrotate(-90)
         
+        # enregistre l'aire du plus grand triangle (indicateur par rapport au besoin de tesselation)
+        self.__maxtrarea = 0.
+        for tr in self.__my_scene:
+            if tr.area > self.__maxtrarea: self.__maxtrarea = tr.area
+        
         # active tesselation sur la scène globale (pour avoir une triangulation plus fine)
         if global_scene_tesselate_level > 0:
             new_tr_scene=[]
@@ -1095,6 +1100,12 @@ class LightVegeManager:
     @property
     def sun(self):
         return self.__sun
+
+    # aire du plus grand triangle à partir des scènes en entrée
+    # -> avant la tesselation
+    @property
+    def maxtrianglearea(self):
+        return self.__maxtrarea
 
     def PAR_update_MTG(self, mtg):
         # crée un tableau comme dans caribu_facade de fspm-wheat

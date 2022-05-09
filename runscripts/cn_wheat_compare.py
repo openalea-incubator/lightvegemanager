@@ -52,6 +52,28 @@ def simulation_caribu(level_tesselation, inter_row, SIMULATION_LENGTH, outfolder
     GROWTHWHEAT_TIMESTEP = 1
     CNWHEAT_TIMESTEP = 1
 
+    # supprime le contenant du dossier outputs si non vide
+    if os.path.exists(outfolderpath+"/caribu"):
+        for filename in os.listdir(outfolderpath+"/caribu"):
+            file_path = os.path.join(outfolderpath+"/caribu", filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                print('Failed to delete %s. Reason: %s' % (file_path, e))
+    if os.path.exists(outfolderpath+"/PAR_values_caribu_geom.csv"): os.remove(outfolderpath+"/PAR_values_caribu_geom.csv")
+
+    # (re)création du dossier de sortie
+    dirName = outfolderpath+"/caribu"
+    try:
+        # Create target Directory
+        os.mkdir(dirName)
+        print("Directory " , dirName ,  " Created ") 
+    except FileExistsError:
+        print("Directory " , dirName ,  " already exists")
+
     # fspm-wheat file name
     current_path = os.path.dirname(os.path.abspath(__file__))
     lvm_folder = "/".join(current_path.split("/")[:-1])
@@ -123,15 +145,6 @@ def simulation_caribu(level_tesselation, inter_row, SIMULATION_LENGTH, outfolder
                                                                         K_AMINO_ACIDS_EXPORT,
                                                                         K_NITRATE_EXPORT)
     
-    # define lists of dataframes to store the inputs and the outputs of the models at each step.
-    axes_all_data_list = []
-    organs_all_data_list = []  # organs which belong to axes: roots, phloem, grains
-    hiddenzones_all_data_list = []
-    elements_all_data_list = []
-    soils_all_data_list = []
-
-    all_simulation_steps = []  # to store the steps of the simulation
-    
     # Paramètres pré-simulation
     model_names = ["fspm-wheat"]
     coordinates = [43.,0,0] # latitude, longitude, timezone
@@ -161,18 +174,27 @@ def simulation_caribu(level_tesselation, inter_row, SIMULATION_LENGTH, outfolder
     # -----      RUN OF THE SIMULATION      -------
     # ---------------------------------------------
 
-    para_c=[]
-    para_r=[]
-    pari=[]
-    parin=[]
-    parsun=[]
-    parsha=[]
-    iter=[]
-    shapes=[]
-    caribu_times=[]
-    ratp_times=[]
     tot_light = 0.
     for t_light in progressbar.progressbar(range(START_TIME, SIMULATION_LENGTH, LIGHT_TIMESTEP)):
+        axes_all_data_list = []
+        organs_all_data_list = []  # organs which belong to axes: roots, phloem, grains
+        hiddenzones_all_data_list = []
+        elements_all_data_list = []
+        soils_all_data_list = []
+        all_simulation_steps = []  # to store the steps of the simulation
+
+        para_c=[]
+        para_r=[]
+        parin=[]
+        pari=[]
+        parsun=[]
+        parsha=[]
+        iter=[]
+        shapes=[]
+        caribu_times=[]
+        ratp_times=[]
+        maxtr=[]
+
         print("\n")
         light_start=time.time()
         # récupère les données météo
@@ -231,6 +253,24 @@ def simulation_caribu(level_tesselation, inter_row, SIMULATION_LENGTH, outfolder
             parin.extend([PARi]*len(g.property("PARa")))
             caribu_times.extend([c_time]*len(g.property("PARa")))
             ratp_times.extend([r_time]*len(g.property("PARa")))
+            maxtr.extend([lghtcaribu.maxtrianglearea]*len(g.property("PARa")))
+
+            myoutputs = {"Shapes" : shapes, 
+                        "Iteration" : iter,
+                        "CARIBU time" : caribu_times, 
+                        "RATP time" : ratp_times, 
+                        "PAR input" : parin, 
+                        "PARa CARIBU" : para_c,
+                        "PARi CARIBU" : pari,
+                        "PARa RATP" : para_r, 
+                        "SunlitPAR" : parsun,
+                        "ShadedPAR" : parsha,
+                        "Max Triangle Area" : maxtr}
+            df_myout = pd.DataFrame(myoutputs)
+            if not os.path.exists(outfolderpath+"/PAR_values_caribu_geom.csv"):
+                df_myout.to_csv(outfolderpath+"/PAR_values_caribu_geom.csv", mode='w', index=False)
+            else:
+                df_myout.to_csv(outfolderpath+"/PAR_values_caribu_geom.csv", mode='a', index=False, header=False)   
         
         # sinon on copie le PAR de l'itération précédente
         else:
@@ -271,37 +311,24 @@ def simulation_caribu(level_tesselation, inter_row, SIMULATION_LENGTH, outfolder
                                             soils_all_data_list=soils_all_data_list,
                                             all_simulation_steps=all_simulation_steps)
 
-    myoutputs = {"Shapes" : shapes, 
-                    "Iteration" : iter,
-                    "CARIBU time" : caribu_times,
-                    "RATP time" : ratp_times,
-                    "PAR input":parin, 
-                    "PARa CARIBU" : para_c, 
-                    "PARi CARIBU" : pari, 
-                    "PARa RATP" : para_r, 
-                    "SunlitPAR" : parsun,
-                    "ShadedPAR" : parsha}
-    df_myout = pd.DataFrame(myoutputs)
-    df_myout.to_csv(outfolderpath+"/PAR_values_caribu_geom.csv")
-
-    write_outputs_fspmwheat(OUTPUTS_DIRPATH,
-                            POSTPROCESSING_DIRPATH,
-                            AXES_OUTPUTS_FILENAME,
-                            ORGANS_OUTPUTS_FILENAME,
-                            HIDDENZONES_OUTPUTS_FILENAME,
-                            ELEMENTS_OUTPUTS_FILENAME,
-                            SOILS_OUTPUTS_FILENAME,
-                            AXES_POSTPROCESSING_FILENAME,
-                            ORGANS_POSTPROCESSING_FILENAME,
-                            HIDDENZONES_POSTPROCESSING_FILENAME,
-                            ELEMENTS_POSTPROCESSING_FILENAME,
-                            SOILS_POSTPROCESSING_FILENAME,
-                            axes_all_data_list,
-                            organs_all_data_list,
-                            hiddenzones_all_data_list,
-                            elements_all_data_list,
-                            soils_all_data_list,
-                            all_simulation_steps)
+        append_outputs_fspmwheat(OUTPUTS_DIRPATH,
+                                POSTPROCESSING_DIRPATH,
+                                AXES_OUTPUTS_FILENAME,
+                                ORGANS_OUTPUTS_FILENAME,
+                                HIDDENZONES_OUTPUTS_FILENAME,
+                                ELEMENTS_OUTPUTS_FILENAME,
+                                SOILS_OUTPUTS_FILENAME,
+                                AXES_POSTPROCESSING_FILENAME,
+                                ORGANS_POSTPROCESSING_FILENAME,
+                                HIDDENZONES_POSTPROCESSING_FILENAME,
+                                ELEMENTS_POSTPROCESSING_FILENAME,
+                                SOILS_POSTPROCESSING_FILENAME,
+                                axes_all_data_list,
+                                organs_all_data_list,
+                                hiddenzones_all_data_list,
+                                elements_all_data_list,
+                                soils_all_data_list,
+                                all_simulation_steps)
     print("--- temps execution : ",tot_light)
 
 def simulation_ratp(level_tesselation, inter_row, SIMULATION_LENGTH, outfolderpath):
@@ -316,6 +343,26 @@ def simulation_ratp(level_tesselation, inter_row, SIMULATION_LENGTH, outfolderpa
     ELONGWHEAT_TIMESTEP = 1
     GROWTHWHEAT_TIMESTEP = 1
     CNWHEAT_TIMESTEP = 1
+
+    # supprime le contenant du dossier outputs si non vide
+    if os.path.exists(outfolderpath+"/ratp"):
+        for filename in os.listdir(outfolderpath+"/ratp"):
+            file_path = os.path.join(outfolderpath+"/ratp", filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                print('Failed to delete %s. Reason: %s' % (file_path, e))
+    if os.path.exists(outfolderpath+"/PAR_values_ratp_geom.csv"): os.remove(outfolderpath+"/PAR_values_ratp_geom.csv")
+
+    dirName = outfolderpath+"/ratp"
+    try:
+        os.mkdir(dirName)
+        print("Directory " , dirName ,  " Created ") 
+    except FileExistsError:
+        print("Directory " , dirName ,  " already exists")
 
     # fspm-wheat file name
     current_path = os.path.dirname(os.path.abspath(__file__))
@@ -428,6 +475,7 @@ def simulation_ratp(level_tesselation, inter_row, SIMULATION_LENGTH, outfolderpa
         iter=[]
         shapes=[]
         ratp_times=[]
+        maxtr=[]
 
         print("\n")
         light_start=time.time()
@@ -469,19 +517,21 @@ def simulation_ratp(level_tesselation, inter_row, SIMULATION_LENGTH, outfolderpa
             iter.extend([t_light]*len(g.property("PARa")))
             parin.extend([PARi]*len(g.property("PARa")))
             ratp_times.extend([r_time]*len(g.property("PARa")))  
+            maxtr.extend([lghtratp.maxtrianglearea]*len(g.property("PARa")))  
 
             myoutputs = {"Shapes" : shapes, 
                         "Iteration" : iter,
                         "RATP time" : ratp_times, 
-                        "PAR input":parin, 
+                        "PAR input" : parin, 
                         "PARa RATP" : para_r, 
                         "SunlitPAR" : parsun,
-                        "ShadedPAR" : parsha}
+                        "ShadedPAR" : parsha,
+                        "Max Triangle Area" : maxtr}
             df_myout = pd.DataFrame(myoutputs)
             if not os.path.exists(outfolderpath+"/PAR_values_ratp_geom.csv"):
-                df_myout.to_csv(outfolderpath+"/PAR_values_ratp_geom.csv", mode='w')
+                df_myout.to_csv(outfolderpath+"/PAR_values_ratp_geom.csv", mode='w', index=False)
             else:
-                df_myout.to_csv(outfolderpath+"/PAR_values_ratp_geom.csv", mode='a', header=False)   
+                df_myout.to_csv(outfolderpath+"/PAR_values_ratp_geom.csv", mode='a', index=False, header=False)   
         
         # sinon on copie le PAR de l'itération précédente
         else:
@@ -555,7 +605,7 @@ if __name__ == "__main__":
     # valeur par défaut
     level_tesselation=2
     inter_row=0.1
-    nstep=16
+    nstep=4
     outfolderpath = "outputs/cn-wheat_dense"
     sim = 3
 
@@ -571,32 +621,6 @@ if __name__ == "__main__":
             inter_row = int(arg)
         elif opt in ("-s"):
             sim = int(arg)
-
-    # supprime le contenant du dossier outputs si non vide
-    for filename in os.listdir(outfolderpath):
-        file_path = os.path.join(outfolderpath, filename)
-        try:
-            if os.path.isfile(file_path) or os.path.islink(file_path):
-                os.unlink(file_path)
-            elif os.path.isdir(file_path):
-                shutil.rmtree(file_path)
-        except Exception as e:
-            print('Failed to delete %s. Reason: %s' % (file_path, e))
-    
-    # construit les dossiers s'ils n'existent pas
-    dirName = outfolderpath+"/caribu"
-    try:
-        # Create target Directory
-        os.mkdir(dirName)
-        print("Directory " , dirName ,  " Created ") 
-    except FileExistsError:
-        print("Directory " , dirName ,  " already exists")
-    dirName = outfolderpath+"/ratp"
-    try:
-        os.mkdir(dirName)
-        print("Directory " , dirName ,  " Created ") 
-    except FileExistsError:
-        print("Directory " , dirName ,  " already exists")
     
     print("=== BEGIN ===")
     if sim==1:
