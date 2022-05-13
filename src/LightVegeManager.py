@@ -287,9 +287,9 @@ class LightVegeManager:
                     if len(trans) > 3:
                         if trans[3] == "x+ = S":
                             tr.zrotate(180)
-                        if trans[3] == "x+ = W":
+                        elif trans[3] == "x+ = W":
                             tr.zrotate(90)
-                        if trans[3] == "x+ = E":
+                        elif trans[3] == "x+ = E":
                             tr.zrotate(-90)
         
         # enregistre l'aire du plus grand triangle (indicateur par rapport au besoin de tesselation)
@@ -457,7 +457,7 @@ class LightVegeManager:
                     for tr in self.__my_scene:
                         level = 0
                         isworking = iterate_trianglesingrid(tr, mygrid, level, levelmax, new_tr_scene)
-                print("tesselation time : ",time.time()-start)
+                # print("tesselation time : ",time.time()-start)
                 # copie de la nouvelle triangulation
                 self.__my_scene = new_tr_scene
             
@@ -716,6 +716,12 @@ class LightVegeManager:
             # ('PAR' is expected in  Watt.m-2 in RATP input, whereas output is in micromol => convert back to W.m2 (cf shortwavebalance, line 306))
             # on reste en micromol !
             # On enregistre tout dans une dataframe pandas
+            para_list=[]
+            for i in range(len(ShadedPAR)):
+                if (ShadedArea[i] + SunlitArea[i]) > 0 :
+                    para_list.append((ShadedPAR[i] * ShadedArea[i] + SunlitPAR[i] * SunlitArea[i]) / (ShadedArea[i] + SunlitArea[i]))
+                else:
+                    para_list.append(0.)
             dfvox =  pandas.DataFrame({'VegetationType':VegetationType,
                                 'Iteration':Iteration,
                                 'day':day,
@@ -726,7 +732,7 @@ class LightVegeManager:
                                 'ShadedArea':ShadedArea,
                                 'SunlitArea': SunlitArea,
                                 'Area': ShadedArea + SunlitArea,
-                                'PARa': (ShadedPAR * ShadedArea + SunlitPAR * SunlitArea) / (ShadedArea + SunlitArea),
+                                'PARa': para_list,
                                 'xintav': xintav, 
                                 })
             
@@ -930,15 +936,15 @@ class LightVegeManager:
                     
                     # dataframe des triangles
                     Erel_output_tr = {}
-                    Eri_output_tr = {}
+                    Ei_output_tr = {}
                     count=0
                     for key, val in raw_sun['par']['Eabs'].items():
                         for i,par in enumerate(val):
                             Erel_output_tr[count] = raw_sun['par']['Eabs'][key][i]
-                            Eri_output_tr[count] = raw_sun['par']['Ei'][key][i]
+                            Ei_output_tr[count] = raw_sun['par']['Ei'][key][i]
                             count+=1
                     PARa_output_tr = {k: v * PARi for k, v in Erel_output_tr.items()}
-                    PARi_output_tr = {k: v * PARi for k, v in Eri_output_tr.items()}
+                    PARi_output_tr = {k: v * PARi for k, v in Ei_output_tr.items()}
                 
                 elif sun_sky_option == "sky":
                     raw_sky, aggregated_sky = c_scene_sky.run(direct=True, infinite=infinite)
@@ -949,12 +955,12 @@ class LightVegeManager:
                     
                     # dataframe des triangles
                     Erel_output_tr = {}
-                    Eri_output_tr = {}
+                    Ei_output_tr = {}
                     count=0
                     for key, val in raw_sky['par']['Eabs'].items():
                         for i,par in enumerate(val):
                             Erel_output_tr[count] = raw_sky['par']['Eabs'][key][i]
-                            Eri_output_tr[count] = raw_sky['par']['Ei'][key][i]
+                            Ei_output_tr[count] = raw_sky['par']['Ei'][key][i]
                             count+=1
                     PARa_output_tr = {k: v * PARi for k, v in Erel_output_tr.items()}
                     PARi_output_tr = {k: v * PARi for k, v in Ei_output_tr.items()}
@@ -978,7 +984,9 @@ class LightVegeManager:
                 if sun_up: s_par[key] = PARa_output_shape[key]
                 if sun_up: s_pari[key] = PARi_output_shape[key]
                 if sun_up: s_xintav[key] = Erel_output_shape[key]
-                if sun_up: s_area[key] = aggregated_sun['par']['area'][key]
+                if sun_up: 
+                    tr_shape = [self.__my_scene[t] for t in val[2]]
+                    s_area[key] = sum([tr.area for tr in tr_shape])
                 s_day[key] = day
                 s_hour[key] = hour
                 s_ent[key] = self.__matching_ids[key][1]

@@ -33,11 +33,8 @@ def initialisation_fspmwheat(ELONGWHEAT_TIMESTEP,
                                 PHYTOT_FILENAME,
                                 PLANT_DENSITY,
                                 LEAVES_MODEL,
-                                SL_RATIO_D,
-                                AGE_EFFECT_SENESCENCE,
-                                VMAX_ROOTS_GROWTH_PREFLO,
-                                K_AMINO_ACIDS_EXPORT,
-                                K_NITRATE_EXPORT):
+                                update_parameters_all_models=None,
+                                N_fertilizations=None):
 
     # Read the inputs from CSV files and create inputs dataframes
     inputs_dataframes = {}
@@ -46,7 +43,8 @@ def initialisation_fspmwheat(ELONGWHEAT_TIMESTEP,
                             HIDDENZONES_INITIAL_STATE_FILENAME,
                             ELEMENTS_INITIAL_STATE_FILENAME,
                             SOILS_INITIAL_STATE_FILENAME):
-        inputs_dataframe = pd.read_csv(os.path.join(INPUTS_FOLDER, inputs_filename))
+        #inputs_dataframe = pd.read_csv(os.path.join(INPUTS_FOLDER, inputs_filename))
+        inputs_dataframe = pd.read_csv(INPUTS_FOLDER+"/"+inputs_filename)
         inputs_dataframes[inputs_filename] = inputs_dataframe.where(inputs_dataframe.notnull(), None)
 
 
@@ -80,8 +78,14 @@ def initialisation_fspmwheat(ELONGWHEAT_TIMESTEP,
 
     phytoT = os.path.join(INPUTS_FOLDER, PHYTOT_FILENAME)
 
-    # Update some parameters
-    update_cnwheat_parameters = {'SL_ratio_d': SL_RATIO_D}
+    # Update parameters if specified
+    if update_parameters_all_models and 'elongwheat' in update_parameters_all_models:
+        update_parameters_elongwheat = update_parameters_all_models['elongwheat']
+    else:
+        update_parameters_elongwheat = None
+
+    # # Update some parameters
+    # update_cnwheat_parameters = {'SL_ratio_d': SL_RATIO_D}
 
     # Facade initialisation
     elongwheat_facade_ = elongwheat_facade.ElongWheatFacade(g,
@@ -92,7 +96,8 @@ def initialisation_fspmwheat(ELONGWHEAT_TIMESTEP,
                                                             shared_axes_inputs_outputs_df,
                                                             shared_hiddenzones_inputs_outputs_df,
                                                             shared_elements_inputs_outputs_df,
-                                                            adel_wheat, phytoT, update_cnwheat_parameters)
+                                                            adel_wheat, phytoT, 
+                                                            update_parameters_elongwheat)
 
     # -- SENESCWHEAT --
     # Initial states
@@ -109,7 +114,13 @@ def initialisation_fspmwheat(ELONGWHEAT_TIMESTEP,
         [i for i in senescwheat_facade.converter.SENESCWHEAT_AXES_INPUTS if i in inputs_dataframes[AXES_INITIAL_STATE_FILENAME].columns]].copy()
 
     # Update some parameters
-    update_cnwheat_parameters = {'AGE_EFFECT_SENESCENCE': AGE_EFFECT_SENESCENCE}
+    # update_cnwheat_parameters = {'AGE_EFFECT_SENESCENCE': AGE_EFFECT_SENESCENCE}
+
+    # Update parameters if specified
+    if update_parameters_all_models and 'senescwheat' in update_parameters_all_models:
+        update_parameters_senescwheat = update_parameters_all_models['senescwheat']
+    else:
+        update_parameters_senescwheat = None
 
     # Facade initialisation
     senescwheat_facade_ = senescwheat_facade.SenescWheatFacade(g,
@@ -119,7 +130,8 @@ def initialisation_fspmwheat(ELONGWHEAT_TIMESTEP,
                                                                senescwheat_elements_initial_state,
                                                                shared_organs_inputs_outputs_df,
                                                                shared_axes_inputs_outputs_df,
-                                                               shared_elements_inputs_outputs_df, update_cnwheat_parameters)
+                                                               shared_elements_inputs_outputs_df, 
+                                                               update_parameters_senescwheat)
 
     # -- FARQUHARWHEAT --
     # Initial states
@@ -131,11 +143,15 @@ def initialisation_fspmwheat(ELONGWHEAT_TIMESTEP,
         farquharwheat_facade.converter.AXIS_TOPOLOGY_COLUMNS +
         [i for i in farquharwheat_facade.converter.FARQUHARWHEAT_AXES_INPUTS if i in inputs_dataframes[AXES_INITIAL_STATE_FILENAME].columns]].copy()
 
+    # Use the initial version of the photosynthesis sub-model (as in Barillot et al. 2016, and in Gauthier et al. 2020)
+    update_parameters_farquharwheat = {'SurfacicProteins': False, 'NSC_Retroinhibition': False}
+    
     # Facade initialisation
     farquharwheat_facade_ = farquharwheat_facade.FarquharWheatFacade(g,
                                                                      farquharwheat_elements_initial_state,
                                                                      farquharwheat_axes_initial_state,
-                                                                     shared_elements_inputs_outputs_df)
+                                                                     shared_elements_inputs_outputs_df,
+                                                                     update_parameters_farquharwheat)
 
     # -- GROWTHWHEAT --
     # Initial states
@@ -156,7 +172,13 @@ def initialisation_fspmwheat(ELONGWHEAT_TIMESTEP,
         [i for i in growthwheat_facade.simulation.AXIS_INPUTS if i in inputs_dataframes[AXES_INITIAL_STATE_FILENAME].columns]].copy()
 
     # Update some parameters
-    update_cnwheat_parameters = {'VMAX_ROOTS_GROWTH_PREFLO': VMAX_ROOTS_GROWTH_PREFLO}
+    # update_cnwheat_parameters = {'VMAX_ROOTS_GROWTH_PREFLO': VMAX_ROOTS_GROWTH_PREFLO}
+
+    # Update parameters if specified
+    if update_parameters_all_models and 'growthwheat' in update_parameters_all_models:
+        update_parameters_growthwheat = update_parameters_all_models['growthwheat']
+    else:
+        update_parameters_growthwheat = None
 
     # Facade initialisation
     growthwheat_facade_ = growthwheat_facade.GrowthWheatFacade(g,
@@ -168,7 +190,8 @@ def initialisation_fspmwheat(ELONGWHEAT_TIMESTEP,
                                                                shared_organs_inputs_outputs_df,
                                                                shared_hiddenzones_inputs_outputs_df,
                                                                shared_elements_inputs_outputs_df,
-                                                               shared_axes_inputs_outputs_df, update_cnwheat_parameters)
+                                                               shared_axes_inputs_outputs_df, 
+                                                               update_parameters_growthwheat)
 
     # -- CNWHEAT --
     # Initial states
@@ -185,14 +208,20 @@ def initialisation_fspmwheat(ELONGWHEAT_TIMESTEP,
         [i for i in cnwheat_facade.cnwheat_converter.SOILS_VARIABLES if i in inputs_dataframes[SOILS_INITIAL_STATE_FILENAME].columns]].copy()
 
     # Update some parameters
-    update_cnwheat_parameters = {'roots': {'K_AMINO_ACIDS_EXPORT': K_AMINO_ACIDS_EXPORT,
-                                           'K_NITRATE_EXPORT': K_NITRATE_EXPORT}}
+    # update_cnwheat_parameters = {'roots': {'K_AMINO_ACIDS_EXPORT': K_AMINO_ACIDS_EXPORT,
+    #                                        'K_NITRATE_EXPORT': K_NITRATE_EXPORT}}
+
+    # Update parameters if specified
+    if update_parameters_all_models and 'cnwheat' in update_parameters_all_models:
+        update_parameters_cnwheat = update_parameters_all_models['cnwheat']
+    else:
+        update_parameters_cnwheat = {}
 
     # Facade initialisation
     cnwheat_facade_ = cnwheat_facade.CNWheatFacade(g,
                                                    CNWHEAT_TIMESTEP * HOUR_TO_SECOND_CONVERSION_FACTOR,
                                                    PLANT_DENSITY,
-                                                   update_cnwheat_parameters,
+                                                   update_parameters_cnwheat,
                                                    cnwheat_organs_initial_state,
                                                    cnwheat_hiddenzones_initial_state,
                                                    cnwheat_elements_initial_state,
@@ -202,6 +231,12 @@ def initialisation_fspmwheat(ELONGWHEAT_TIMESTEP,
                                                    shared_hiddenzones_inputs_outputs_df,
                                                    shared_elements_inputs_outputs_df,
                                                    shared_soils_inputs_outputs_df)
+    
+    # Run cnwheat with constant nitrates concentration in the soil if specified
+    if N_fertilizations is not None and 'constant_Conc_Nitrates' in N_fertilizations.keys():
+        cnwheat_facade_.soils[(1, 'MS')].constant_Conc_Nitrates = True
+        cnwheat_facade_.soils[(1, 'MS')].nitrates = N_fertilizations['constant_Conc_Nitrates'] * cnwheat_facade_.soils[(1, 'MS')].volume
+    
     # -- FSPMWHEAT --
     # Facade initialisation
     fspmwheat_facade_ = fspmwheat_facade.FSPMWheatFacade(g)
@@ -244,6 +279,8 @@ def iteration_fspmwheat_withoutlighting(meteo,
                                         elements_all_data_list = [],
                                         soils_all_data_list = [],
                                         all_simulation_steps = [],
+                                        N_fertilizations=None,
+                                        tillers_replications=None,
                                         save_geom=False,
                                         GEOM_FOLDER=""):
     # suite de la simu
@@ -254,7 +291,7 @@ def iteration_fspmwheat_withoutlighting(meteo,
         # Run the rest of the model if the plant is alive
         for t_farquharwheat in range(t_senescwheat, t_senescwheat + SENESCWHEAT_TIMESTEP, FARQUHARWHEAT_TIMESTEP):
             # get the meteo of the current step
-            Ta, ambient_CO2, RH, Ur = meteo.loc[t_farquharwheat, ['air_temperature_MA2', 'ambient_CO2_MA2', 'humidity_MA2', 'Wind_MA2']]
+            Ta, ambient_CO2, RH, Ur = meteo.loc[t_farquharwheat, ['air_temperature', 'ambient_CO2', 'humidity', 'Wind']]
 
             # run FarquharWheat
             farquharwheat_facade_.run(Ta, ambient_CO2, RH, Ur)
@@ -274,12 +311,17 @@ def iteration_fspmwheat_withoutlighting(meteo,
                     growthwheat_facade_.run()
 
                     for t_cnwheat in range(t_growthwheat, t_growthwheat + GROWTHWHEAT_TIMESTEP, CNWHEAT_TIMESTEP):
+                        # N fertilization if any
+                        if N_fertilizations is not None and len(N_fertilizations) > 0:
+                            if t_cnwheat in N_fertilizations.keys():
+                                cnwheat_facade_.soils[(1, 'MS')].nitrates += N_fertilizations[t_cnwheat]
+                        
                         if t_cnwheat > 0:
 
                             # run CNWheat
                             Tair = meteo.loc[t_elongwheat, 'air_temperature']
                             Tsoil = meteo.loc[t_elongwheat, 'soil_temperature']
-                            cnwheat_facade_.run(Tair, Tsoil)
+                            cnwheat_facade_.run(Tair, Tsoil, tillers_replications)
 
                         if save_df:
                             # append outputs at current step to global lists
@@ -414,7 +456,8 @@ def append_outputs_fspmwheat(OUTPUTS_DIRPATH,
                 (hiddenzones_data_list, HIDDENZONES_OUTPUTS_FILENAME, cnwheat_simulation.Simulation.HIDDENZONE_T_INDEXES),
                 (elements_data_list, ELEMENTS_OUTPUTS_FILENAME, cnwheat_simulation.Simulation.ELEMENTS_T_INDEXES),
                 (soils_data_list, SOILS_OUTPUTS_FILENAME, cnwheat_simulation.Simulation.SOILS_T_INDEXES)):
-        data_filepath = os.path.join(OUTPUTS_DIRPATH, outputs_filename)
+        #data_filepath = os.path.join(OUTPUTS_DIRPATH, outputs_filename)
+        data_filepath = OUTPUTS_DIRPATH+"/"+outputs_filename
         outputs_df = pd.concat(outputs_df_list, keys=all_simulation_steps, sort=False)
         outputs_df.reset_index(0, inplace=True)
         outputs_df.rename({'level_0': 't'}, axis=1, inplace=True)
@@ -457,7 +500,8 @@ def append_outputs_fspmwheat(OUTPUTS_DIRPATH,
                                                                       (organs_postprocessing_file_basename, ORGANS_POSTPROCESSING_FILENAME),
                                                                       (elements_postprocessing_file_basename, ELEMENTS_POSTPROCESSING_FILENAME),
                                                                       (soils_postprocessing_file_basename, SOILS_POSTPROCESSING_FILENAME)):
-            postprocessing_filepath = os.path.join(POSTPROCESSING_DIRPATH, postprocessing_filename)
+            #postprocessing_filepath = os.path.join(POSTPROCESSING_DIRPATH, postprocessing_filename)
+            postprocessing_filepath = POSTPROCESSING_DIRPATH+"/"+postprocessing_filename
             if not os.path.exists(postprocessing_filepath) :
                 postprocessing_df_dict[postprocessing_file_basename].to_csv(postprocessing_filepath, na_rep='NA', index=False, float_format='%.{}f'.format(PRECISION), mode='w')
             else:

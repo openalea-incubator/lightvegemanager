@@ -512,7 +512,7 @@ class Grid(object):
         grid3d.voxel_canopy = np.zeros(nent)
         #grid3d.int_isolated_box = 1
         grid3d.int_scattering = 1 # scattering is currently forced to TRUE in RATP (mod_Hemi_Interception.f90, line 35)
-        print("GRILLE OK")
+        #print("GRILLE OK")
 
 
 def gridToVGX(grid,path,filename):

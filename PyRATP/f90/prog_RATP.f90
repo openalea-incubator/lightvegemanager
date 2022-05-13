@@ -446,12 +446,12 @@ subroutine do_all
  subroutine do_interception
 
  !write(*,*)
-  write(*,*)  ' R. A. T. P.    Version 2.0'
+ !write(*,*)  ' R. A. T. P.    Version 2.0'
  !write(*,*)  ' Radiation Absorption, Transpiration and Photosynthesis'
  !write(*,*)
  !write(*,*)  ' Spatial distribution in a 3D grid of voxels'
  !write(*,*)
- write(*,*)  '                July 2003 - December 2012  '
+ !write(*,*)  '                July 2003 - December 2012  '
  !write(*,*)
 
  !write(*,*)
@@ -481,14 +481,14 @@ subroutine do_all
  else
   scattering=.FALSE.
  end if
- write(*,*) "scattering", scattering
+ !write(*,*) "scattering", scattering
 
  if (int_isolated_box.eq.1)  then
   isolated_box=.TRUE.
  else
   isolated_box=.FALSE.
  end if
- write(*,*) "isolated", isolated_box
+ !write(*,*) "isolated", isolated_box
  !write(*,*)  '                hi_doall ...  '
  call hi_doall(dpx,dpy,isolated_box)  ! Compute interception of diffuse and scattering radiation, ie exchange
  !write(*,*)  '             ...   hi_doall   '
@@ -500,7 +500,7 @@ subroutine do_all
  iterspatial = 0
  do while (.NOT.((endmeteo)))
   ntime=ntime+1
-  write(*,*) '...Iteration : ',ntime,nbli
+  !write(*,*) '...Iteration : ',ntime,nbli
   call mm_read(ntime,nbli)  ! Read micrometeo data (line #ntime in file mmeteo.<spec>)
   !write(*,*) '...mm_read : '
   call swrb_doall     ! Compute short wave radiation balance
@@ -544,7 +544,7 @@ subroutine do_all
  call di_destroy
  call hi_destroy
  call swrb_destroy
- write(*,*) 'CALCULS TERMINES INTERCEPTION'
+ !write(*,*) 'CALCULS TERMINES INTERCEPTION'
  end subroutine do_interception
 
  subroutine out_rayt_destroy

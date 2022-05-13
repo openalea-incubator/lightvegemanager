@@ -93,7 +93,7 @@ contains
     ii = ii+1                       !Relative Soil Humidity   Ngao 02/2012 
     HRsol=tabMeteo(ntime,ii)        !Relative Soil Humidity   Ngao 02/2012  set to 1 by default (no stress)
 
-    write(*,*) 'day,hour =',day,hour ,(glob(iblo),diff(iblo),iblo=1,nblomin), ratmos,tsol,taref,earef,caref,urefref
+    !write(*,*) 'day,hour =',day,hour ,(glob(iblo),diff(iblo),iblo=1,nblomin), ratmos,tsol,taref,earef,caref,urefref
 
 !   Rem: L'azimut 0 est d�fini pour la direction SUD,
 !      i.e. un rayon avancant vers le NORD, donc les X > 0

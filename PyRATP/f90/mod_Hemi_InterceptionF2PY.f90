@@ -193,8 +193,8 @@ contains
   end do
 
   STARsky_canopy = STARsky_canopy / S_canopy
-  write(*,*) 'STARsky_canopy =', STARsky_canopy
-  write(*,*) 'S_canopy =', S_canopy
+  !write(*,*) 'STARsky_canopy =', STARsky_canopy
+  !write(*,*) 'S_canopy =', S_canopy
 
 
 ! Verification de la conservation des rayonnements
