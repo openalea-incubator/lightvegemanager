@@ -460,7 +460,7 @@ if __name__ == "__main__":
         simulation(level_tesselation, nstep, outfolderpath, active_lightmodel="ratp", writing=writing)
     elif sim==3:
         print("=== === DEFAULT === ===")
-        runstring = "python runscripts/main_vegetative_stages.py -n "+str(nstep)+" -o "+str(outfolderpath)
+        runstring = "python /lightvegemanager/runscripts/main_vegetative_stages.py -n "+str(nstep)+" -o "+str(outfolderpath)
         os.system(runstring)
 
         
