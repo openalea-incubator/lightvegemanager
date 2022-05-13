@@ -65,7 +65,7 @@ def save_df_to_csv(df, outputs_filepath, precision):
 def main(simulation_length, forced_start_time=0, run_simu=True, run_postprocessing=True, generate_graphs=False, run_from_outputs=False, stored_times=None,
          option_static=False, show_3Dplant=False, tillers_replications=None, heterogeneous_canopy=True,
          N_fertilizations=None, PLANT_DENSITY=None, update_parameters_all_models=None,
-         INPUTS_DIRPATH='WheatFspm/fspm-wheat/example/Vegetative_stages/inputs', METEO_FILENAME='meteo.csv',
+         INPUTS_DIRPATH='/lightvegemanager/WheatFspm/fspm-wheat/example/Vegetative_stages/inputs', METEO_FILENAME='meteo.csv',
          OUTPUTS_DIRPATH='outputs', POSTPROCESSING_DIRPATH='postprocessing', GRAPHS_DIRPATH='graphs'):
     """
     Run a simulation of fspmwheat with coupling to several models

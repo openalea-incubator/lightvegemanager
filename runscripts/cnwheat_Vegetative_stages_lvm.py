@@ -55,7 +55,7 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
     GROWTHWHEAT_TIMESTEP = 1
     CNWHEAT_TIMESTEP = 1
 
-    if writing == "final":
+    if writing == "append":
         # supprime le contenant du dossier outputs si non vide
         if os.path.exists(outfolderpath):
             for filename in os.listdir(outfolderpath):
@@ -68,14 +68,14 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
                 except Exception as e:
                     print('Failed to delete %s. Reason: %s' % (file_path, e))
 
-        # (re)création du dossier de sortie
-        dirName = outfolderpath
-        try:
-            # Create target Directory
-            os.mkdir(dirName)
-            print("Directory " , dirName ,  " Created ") 
-        except FileExistsError:
-            print("Directory " , dirName ,  " already exists")
+    # (re)création du dossier de sortie
+    dirName = outfolderpath
+    try:
+        # Create target Directory
+        os.mkdir(dirName)
+        print("Directory " , dirName ,  " Created ") 
+    except FileExistsError:
+        print("Directory " , dirName ,  " already exists")
 
     # fspm-wheat file name
     current_path = os.path.dirname(os.path.abspath(__file__))
@@ -84,7 +84,7 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
     Create_OutputsFolders(outfolderpath)
     
     # Path of the directory which contains the inputs of the model
-    INPUTS_FOLDER = 'WheatFspm/fspm-wheat/example/Vegetative_stages/inputs'
+    INPUTS_FOLDER = '/lightvegemanager/WheatFspm/fspm-wheat/example/Vegetative_stages/inputs'
     
     # Name of the CSV files which describes the initial state of the system
     AXES_INITIAL_STATE_FILENAME = 'axes_initial_state.csv'
