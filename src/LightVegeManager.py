@@ -1127,11 +1127,17 @@ class LightVegeManager:
 
     @property
     def tesselationtime(self):
-        return self.__tess_time
+        try:
+            return self.__tess_time
+        except AttributeError:
+            return 0.
     
     @property
     def modelruntime(self):
-        return self.__time_runmodel
+        try:
+            return self.__time_runmodel
+        except AttributeError:
+            return 0.
 
     def PAR_update_MTG(self, mtg):
         # crée un tableau comme dans caribu_facade de fspm-wheat
