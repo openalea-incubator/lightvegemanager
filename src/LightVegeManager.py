@@ -460,6 +460,8 @@ class LightVegeManager:
                 # print("tesselation time : ",time.time()-start)
                 # copie de la nouvelle triangulation
                 self.__my_scene = new_tr_scene
+                self.__tess_time = time.time() - start
+
             
             # préparation du fill
             # pour chaque triangle, indice entité, x, y, z, aire, nitro
@@ -690,8 +692,10 @@ class LightVegeManager:
             else:
                 met = MicroMeteo.read(meteo_path, truesolartime)
 
+            start=time.time()
             # Calcul du bilan radiatif sur chaque pas de temps du fichier météo
             res = runRATP.DoIrradiation(self.__ratp_scene, vegetation, self.__sky, met)
+            self.__time_runmodel = time.time() - start
 
             # Mise en forme des sorties
             # création de plusieurs tableaux intermédiaires qui serviront à trier les sorties
@@ -893,12 +897,14 @@ class LightVegeManager:
                 # direct=False : active la rediffusion
                 # infinite=False : désactive la répétition infinie de la scène (pas de pattern défini ici)
                 if sun_sky_option == "mix":
+                    start=time.time()
                     raw_sun, aggregated_sun = c_scene_sun.run(direct=True, infinite=infinite)
                     Erel_sun = aggregated_sun['par']['Eabs']
                     Ei_sun = aggregated_sun['par']['Ei']
                     raw_sky, aggregated_sky = c_scene_sky.run(direct=True, infinite=infinite)
                     Erel_sky = aggregated_sky['par']['Eabs']
                     Ei_sky = aggregated_sky['par']['Ei']
+                    self.__time_runmodel = time.time() - start
 
                     #: Spitters's model estimating for the diffuse:direct ratio
                     # % de sky dans la valeur d'énergie finale
@@ -928,7 +934,9 @@ class LightVegeManager:
                     PARi_output_tr = {k: v * PARi for k, v in Ei_output_tr.items()}
                 
                 elif sun_sky_option == "sun":
+                    start=time.time()
                     raw_sun, aggregated_sun = c_scene_sun.run(direct=True, infinite=infinite)
+                    self.__time_runmodel = time.time() - start
                     Erel_output_shape = aggregated_sun['par']['Eabs']  #: Erel is the relative surfacic absorbed energy per organ
                     Ei_output_shape = aggregated_sun['par']['Ei']
                     PARa_output_shape = {k: v * PARi for k, v in Erel_output_shape.items()}
@@ -947,7 +955,9 @@ class LightVegeManager:
                     PARi_output_tr = {k: v * PARi for k, v in Ei_output_tr.items()}
                 
                 elif sun_sky_option == "sky":
+                    start=time.time()
                     raw_sky, aggregated_sky = c_scene_sky.run(direct=True, infinite=infinite)
+                    self.__time_runmodel = time.time() - start
                     Erel_output_shape = aggregated_sky['par']['Eabs']  #: Erel is the relative surfacic absorbed energy per organ
                     Ei_output_shape = aggregated_sky['par']['Ei']
                     PARa_output_shape = {k: v * PARi for k, v in Erel_output_shape.items()}
@@ -1114,6 +1124,14 @@ class LightVegeManager:
     @property
     def maxtrianglearea(self):
         return self.__maxtrarea
+
+    @property
+    def tesselationtime(self):
+        return self.__tess_time
+    
+    @property
+    def modelruntime(self):
+        return self.__time_runmodel
 
     def PAR_update_MTG(self, mtg):
         # crée un tableau comme dans caribu_facade de fspm-wheat

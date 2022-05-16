@@ -188,6 +188,9 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
         shapes=[]
         caribu_times=[]
         ratp_times=[]
+        tess_times=[]
+        caribu_runtimes=[]
+        ratp_runtimes=[]
         maxtr=[]
     
     tot_light = 0.
@@ -210,6 +213,9 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
             shapes=[]
             caribu_times=[]
             ratp_times=[]
+            tess_times=[]
+            caribu_runtimes=[]
+            ratp_runtimes=[]
             maxtr=[]
 
         light_start=time.time()
@@ -275,12 +281,18 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
                 parin.extend([PARi]*len(g.property("PARa")))
                 caribu_times.extend([c_time]*len(g.property("PARa")))
                 ratp_times.extend([r_time]*len(g.property("PARa")))
+                tess_times.extend([lghtratp.tesselationtime]*len(g.property("PARa")))
+                ratp_runtimes.extend([lghtratp.modelruntime]*len(g.property("PARa")))
+                caribu_runtimes.extend([lghtcaribu.modelruntime]*len(g.property("PARa")))
                 maxtr.extend([lghtcaribu.maxtrianglearea]*len(g.property("PARa")))
 
                 myoutputs = {"Shapes" : shapes, 
                             "Iteration" : iter,
-                            "CARIBU time" : caribu_times, 
-                            "RATP time" : ratp_times, 
+                            "CARIBU total time" : caribu_times, 
+                            "CARIBU run time" : caribu_runtimes,
+                            "RATP total time" : ratp_times, 
+                            "RATP run time" : ratp_runtimes, 
+                            "RATP tess time" : tess_times, 
                             "PAR input" : parin, 
                             "PARa CARIBU" : para_c,
                             "PARi CARIBU" : pari,
@@ -380,8 +392,11 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
         if active_lightmodel == "caribu":
             myoutputs = {"Shapes" : shapes, 
                                     "Iteration" : iter,
-                                    "CARIBU time" : caribu_times, 
-                                    "RATP time" : ratp_times, 
+                                    "CARIBU total time" : caribu_times, 
+                                    "CARIBU run time" : caribu_runtimes,
+                                    "RATP total time" : ratp_times, 
+                                    "RATP run time" : ratp_runtimes, 
+                                    "RATP tess time" : tess_times, 
                                     "PAR input" : parin, 
                                     "PARa CARIBU" : para_c,
                                     "PARi CARIBU" : pari,
