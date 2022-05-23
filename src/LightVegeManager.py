@@ -633,7 +633,7 @@ class LightVegeManager:
         else:
             raise ValueError("Unknown lightmodel : can be either 'ratp' or 'caribu' ")
             
-    def run(self, meteo_path="", PARi=0, day=0, hour=0, parunit="micromol.m-2.s-1", domain= [], truesolartime=False, printsun=False):
+    def run(self, meteo_path="", PARi=0, day=0, hour=0, direct=True, parunit="micromol.m-2.s-1", domain= [], truesolartime=False, printsun=False):
         '''calcul du bilan radiatif
         Args :
             meteo_path : string, chemin du fichier meteo
@@ -684,8 +684,14 @@ class LightVegeManager:
                     RdRs = spitters_horaire.RdRsH(Rg=PARi/0.439, DOY=day, heureTU=hour, latitude=self.__coordinates[0])
                 
                 # PAR et Dif en W.m^-2
-                if self.__diffus : 
-                    met = MicroMeteo.initialise(doy=day, hour=hour, Rglob=PARi, Rdif=PARi*RdRs, truesolartime=truesolartime)
+                if self.__diffus :
+                    # Direct et diffus
+                    if direct: 
+                        met = MicroMeteo.initialise(doy=day, hour=hour, Rglob=PARi, Rdif=PARi*RdRs, truesolartime=truesolartime)
+                    # uniquement diffus
+                    else:
+                        met = MicroMeteo.initialise(doy=day, hour=hour, Rglob=PARi, Rdif=PARi, truesolartime=truesolartime)
+                # uniquement direct
                 else :  met = MicroMeteo.initialise(doy=day, hour=hour, Rglob=PARi, Rdif=0, truesolartime=truesolartime)
             
             # lecture d'un fichier

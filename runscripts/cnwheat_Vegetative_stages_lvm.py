@@ -154,7 +154,7 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
     caribu_rf = [[0.1, 0.05]] # réflectance, transmittance
 
     ## Paramètres RATP ##
-    dv = 0.02 # m
+    dv = 0.1 # m
     dx, dy, dz = dv, dv, dv # m
     rs=[0., 0] # Soil reflectance in PAR and NIR bands
     ratp_mu = [1.]
@@ -262,7 +262,7 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
                                         lightmodel="ratp", lightmodelparam=ratp_parameters, 
                                         rf=ratp_rf, 
                                         coordinates=coordinates)
-            lghtratp.run(PARi=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
+            lghtratp.run(PARi=PARi, day=DOY, hour=hour, direct=False, parunit="micromol.m-2.s-1", truesolartime=True)
 
             r_time = time.time()-r_time
 
@@ -446,7 +446,7 @@ if __name__ == "__main__":
         sys.exit(2)
 
     # valeur par défaut
-    level_tesselation=2
+    level_tesselation=0
     nstep=16
     outfolderpath = "outputs/mau_Vegetative_stages"
     sim = 1
