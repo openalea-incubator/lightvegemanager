@@ -26,7 +26,6 @@ LightVegeManager_Singularity.egg-info
 build
 dist
 PyRATP/pyratp/pyratp.pyd
-debug_tests
 s2v
 s5
 *.def
