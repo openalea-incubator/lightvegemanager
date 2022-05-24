@@ -182,75 +182,74 @@ class LightVegeManager:
     '''
     units = {'mm': 0.001, 'cm': 0.01, 'dm': 0.1, 'm': 1, 'dam': 10, 'hm': 100,'km': 1000}
 
-    def __init__(self, in_scenes, 
-                    in_transformations=[], 
-                    in_names=[],
-                    id_stems=[], 
-                    lightmodel="ratp", 
-                    lightmodelparam=[],
-                    sky_parameters=[],
-                    rf = [],
-                    coordinates=[46.58, 0.38, 0.], # Poitiers
+    def __init__(self, 
+                    geometry = {},
+                    environment = {},
+                    lightmodel="ratp",
+                    lightmodel_parameters = {},
                     global_scene_tesselate_level=0,
-                    multithread=0,
-                    scene_unit="m"):
+                    main_unit="m"):
         '''Constructeur
         
         Arg :
-            in_scenes : liste de scenes plantgl, contient une scène plantGL par entité
-            in_transformation : liste pour chaque entité de 4 éléments :
-                                * rescale factor(float)
-                                * translation vector(Vector3) 
-                                * échelle de la scène parmi le dico units
-                                * convetion point cardinal de x+ (x+ = N par défaut) 
-                            transformations à appliquer pour chaque scène de in_scenes
-            in_names : liste de string, nom des modèles (ou autre informations) dont vient chaque scene
-            lightmodel : string, nom du modèle de calcul de la lumière 'ratp' ou 'caribu'
-            lightmodelparam : liste mixte, paramètre en entrée du modèle de lumière
-                pour RATP : [dx(float), dy(float), dz(float), : dimension d'un voxel (dans l'unité de scene_unit)
-                            rs(liste de 2 float), : réflectance du sol dans le PAR et le NIR
-                            mu(list de float) : clumping pour chaque entité
-                            tesselate_maxlevel(int), : niveau de subdivision des triangles pour rentrer dans la grille
-                            distribalgo(string), "compute" : calcul la distribution d'élévation des triangles
-                                                "file" : lit un fichier pour avoir la distribution d'élévation de chaque scène
-                            distriboption(dépend de distribalgo) : si "compute" = nombre de classe
-                                                                    si "file" = chemin du fichier
-                            infinite : boolean, pour activer ou non le couvert infini 
-                            ] 
-                pour CARIBU : [sun_sky_option(string) : 'sun' ou 'sky' ou 'mix' pour le type de rayonnement,
-                                sun_algo(string) : "caribu" ou "ratp : indique la manière de calculer la direction du soleil
-                                infinite : boolean, pour activer ou non le couvert infini
-                                domain_pattern : si l'option couvert infini est activé, défini le domaine (xy) du pattern à reproduire
-                                ]
-            id_stems : liste de tuple(nshape(int), nentité(int)), liste des shapes de l'entité d'entrée qui correspondent à une tige
-            sky_parameters : liste, plusieurs possibilité selon le modele de lumière :
-                                    [] : ciel par défaut est une turtle à 46 directions pour CARIBU et RATP
-                                    [0] : annule de diffus pour RATP
-                                    [chemin fichier ciel] : valable que pour RATP
-                                    [n_azimuth, n_zenith] 
-                                    [n_azimuth, n_zenith, type of sky] 
-                                    [n_azimuth, n_zenith, weights]
-            rf : list, [[reflectancePAR_ent1, reflectanceNIR_ent1], ..., [reflectancePAR_ent1, reflectanceNIR_ent1]] 
-                 reflectances PAR;NIR ou reflectance;transmittance selon le modèle
-            coordinates : list(float), latitude, longitude, timezone
-            scene_unit : string, indique l'unité d'échelle du couplage
+            geometry : dict
+                "scenes" : liste de scènes PlantGL
+                "names" : liste de str, un nom par élément de scenes (non obligatoire)
+                "transformation" : dict, indique les transformations à effectuer sur les scènes (non obligatoire)
+                        "rescale" : liste de float, un facteur d'aggrandissement par scène
+                        "translate" : liste de src.Polygons.vector3, un vecteur par scène
+                        "scenes unit" : liste de src, une unité de la liste self.units par scène
+                        "xyz orientation" : liste de src, pour chaque scène, "x+ = N" ou "x+ = S" ou "x+ = E" ou "x+ = W"
+                "stems id" : liste de tuple, pour chaque tige on a tuple(numero de l'élément, indice de la scène) (non obligatoire)
+
+            environment : dict
+                "coordinates" : liste de float, [latitude, longitude, timezone]
+                "sky" : "turtle46" ou ["file", "filepath"] ou [nb_azimut, nb_zenith, "soc" ou "uoc"]
+                "diffus" : boolean, si on active le rayonnement diffus
+                "direct" : boolean, si on active le rayonnement direct
+                "reflected" : boolean, si on active le rayonnement réfléchi
+                "reflectance coefficients" : liste de listes, pour chaque scène
+                        si "ratp" : [lambertien PAR, lambertien NIR]
+                        si "caribu" : [reflectance PAR, transmittance PAR]
+                "infinite" : boolean, si on veut un couvert un infini
+                "domain" : liste de float, si on a un couvert infini, indique le domaine à reproduire
+            
+            lightmodel : string, "ratp" ou "caribu", nom du modèle à utiliser
+            lightmodel_parameters : dict
+                si lightmodel == "caribu" :
+                    "sun algo" : "caribu" ou "ratp", indique quel modèle fournira la position du soleil
+                
+                si lightmodel == "ratp" :
+                    "voxel size" : liste de float, dimension d'un voxel [dx, dy, dz]
+                    "soil reflectance" : liste de float, [reflectance PAR, reflectance NIR], coefficients de réflexion du sol
+                    "mu" : liste de float, pour chaque scene indique un coefficient de clumping 
+                    "tesselation level" : int, niveau de découpage des triangles pour correspondre à la grille
+                    "angle distrib algo" : "compute global" ou "compute voxel" ou "file", comment sera calculé la distribution d'angles des feuilles
+                    "nb angle classes" : float, si "compute global" ou "compute voxel", indique le nombre de classes d'angles
+                    "angle distrib file" : si "file", chemin du fichier à lire
+
             global_scene_tesselate_level : tesselation de la scène couplée globale, quelque soit le modèle de lumière
+            main_unit : string, indique l'unité d'échelle du couplage parmi la liste self.units
 
             Notes :
                 Convention de coordonnées (type RATP scene) : x+ = N, y+ = W 
                 valable dans self.__myscene et self.__caribu_scene
 
         '''
-        self.__in_scenes = in_scenes
-        self.__in_transformations = in_transformations
-        self.__in_names = in_names
+        self.__in_geometry = geometry
+        self.__in_environment = environment
         self.__lightmodel = lightmodel
-        self.__lightmodelparam = lightmodelparam
-        self.__scene_unit = scene_unit
-        self.__id_stems = id_stems
-        self.__rf = [x for x in rf]
-        self.__coordinates = coordinates
-        self.__diffus=True
+        self.__in_lightmodel_parameters = lightmodel_parameters
+        self.__main_unit = main_unit
+
+        # paramètres par défaut
+        if "coordinates" not in self.__in_environment : self.__in_environment["coordinates"] = [46.4, 0. , 1.] # INRAE Lusignan 
+        if "sky" not in self.__in_environment : self.__in_environment["sky"] = "turtle46" # ciel turtle à 46 directions
+        if "diffus" not in self.__in_environment : self.__in_environment["diffus"] = True
+        if "direct" not in self.__in_environment : self.__in_environment["direct"] = True
+        if "reflected" not in self.__in_environment : self.__in_environment["reflected"] = False
+        if "infinite" not in self.__in_environment : self.__in_environment["infinite"] = False
+        if "reflectance coefficients" not in self.__in_environment : self.__in_environment["reflectance coefficients"] = []
 
         # couplage des scènes dans un plantGL commun et création du tableau des ids
         # [plantGL] -(+)-> [Triangle3] -> transformation sur les Triangle3 -> [Triangle3]
@@ -258,7 +257,7 @@ class LightVegeManager:
         self.__matching_ids = {}
         self.__my_scene=[]
         count=0
-        for i_esp, scene in enumerate(in_scenes) :
+        for i_esp, scene in enumerate(self.__in_geometry["scenes"]) :
             for id, pgl_objects in scene.todict().items():
                 lastid = len(self.__my_scene)
                 
@@ -272,25 +271,31 @@ class LightVegeManager:
                 count += 1
         
         # applique les transformations sur les triangles
-        for i_esp, trans in enumerate(in_transformations):
-            scale = (trans[0] != "none") and (trans[0] != "None")
-            transl = (trans[1] != "none") and (trans[1] != "None")
-            for tr in self.__my_scene:
-                if self.__matching_ids[tr.id][1] == i_esp:
-                    if scale : tr.rescale(trans[0])
-                    if transl : tr.translate(trans[1])
-                    if (trans[2] != scene_unit) and (trans[2] in self.units):
-                        tr.rescale(self.units[trans[2]]/self.units[scene_unit])
-                    # la convention du repère xyz par rapport aux points cardinaux est précisée
-                    # on ramène la scène à la convention x+ = N
-                    # si non précisé, on ne change pas l'orientation de la scène
-                    if len(trans) > 3:
-                        if trans[3] == "x+ = S":
-                            tr.zrotate(180)
-                        elif trans[3] == "x+ = W":
-                            tr.zrotate(90)
-                        elif trans[3] == "x+ = E":
-                            tr.zrotate(-90)
+        if "transformations" in self.__in_geometry :
+            for i_esp in range(len(self.__in_geometry["scenes"])):
+                for tr in self.__my_scene:
+                    if self.__matching_ids[tr.id][1] == i_esp:
+                        if "rescale" in  self.__in_geometry["transformations"] : tr.rescale(self.__in_geometry["transformations"]["rescale"][i_esp])
+                        
+                        if "translate" in  self.__in_geometry["transformations"]  : tr.translate(self.__in_geometry["transformations"]["translate"][i_esp])
+                        
+                        if "scenes unit" in  self.__in_geometry["transformations"] :
+                            # recupère la variable pour la lisibilité
+                            scene_unit = self.__in_geometry["transformations"]["scenes unit"][i_esp]
+                            
+                            if (scene_unit != self.__main_unit) and (scene_unit in self.units):
+                                tr.rescale(self.units[scene_unit]/self.units[self.__main_unit])
+                        
+                        # la convention du repère xyz par rapport aux points cardinaux est précisée
+                        # on ramène la scène à la convention x+ = N
+                        # si non précisé, on ne change pas l'orientation de la scène
+                        if "xyz orientation" in self.__in_geometry["transformations"]:
+                            if self.__in_geometry["transformations"]["xyz orientation"][i_esp] == "x+ = S":
+                                tr.zrotate(180)
+                            elif self.__in_geometry["transformations"]["xyz orientation"][i_esp] == "x+ = W":
+                                tr.zrotate(90)
+                            elif self.__in_geometry["transformations"]["xyz orientation"][i_esp] == "x+ = E":
+                                tr.zrotate(-90)
         
         # enregistre l'aire du plus grand triangle (indicateur par rapport au besoin de tesselation)
         self.__maxtrarea = 0.
@@ -330,32 +335,36 @@ class LightVegeManager:
         # création de la scène du modèle de lumière
         # RATP
         if lightmodel == "ratp":
-            # récupère les paramètres
-            dx, dy, dz, rs, mu, levelmax, ele_algo, ele_option, infinite = lightmodelparam     
-
-            self.__ratp_mu = [x for x in mu]
+            # paramètres par défaut :
+            if "voxel size" not in self.__in_lightmodel_parameters : self.__in_lightmodel_parameters["voxel size"] = [0.1, 0.1, 0.1]
+            if "soil reflectance" not in self.__in_lightmodel_parameters : self.__in_lightmodel_parameters["soil reflectance"] = [0., 0.]
+            if "mu" not in self.__in_lightmodel_parameters : self.__in_lightmodel_parameters["mu"] = [1.]
+            if "tesselation level" not in self.__in_lightmodel_parameters : self.__in_lightmodel_parameters["tesselation level"] = 0
+            if "angle distrib algo" not in self.__in_lightmodel_parameters : self.__in_lightmodel_parameters["angle distrib algo"] = "compute global"
+            if "nb angle classes" not in self.__in_lightmodel_parameters : self.__in_lightmodel_parameters["nb angle classes"] = 9
 
             # on sépare les tiges dans une nouvelle entité
             mem_mu=[]
-            for stem in id_stems:
-                # on recherche la shape correspondante dans le dict des id
-                ids=0
-                search=True
-                while ids < len(self.__matching_ids) and search:
-                    if (self.__matching_ids[ids][0], self.__matching_ids[ids][1]) == stem:
-                        search=False
-                    else:
-                        ids += 1
-                # change le numéro d'entité dans le dict
-                tuple_temp = (self.__matching_ids[ids][0], 
-                                self.__matching_ids[ids][1] + len(self.__in_scenes),
-                                self.__matching_ids[ids][2])
-                self.__matching_ids[ids] = tuple_temp
+            if "stems id" in self.__in_geometry :
+                for stem in self.__in_geometry["stems id"]:
+                    # on recherche la shape correspondante dans le dict des id
+                    ids=0
+                    search=True
+                    while ids < len(self.__matching_ids) and search:
+                        if (self.__matching_ids[ids][0], self.__matching_ids[ids][1]) == stem:
+                            search=False
+                        else:
+                            ids += 1
+                    # change le numéro d'entité dans le dict
+                    tuple_temp = (self.__matching_ids[ids][0], 
+                                    self.__matching_ids[ids][1] + len(self.__in_geometry["scenes"]),
+                                    self.__matching_ids[ids][2])
+                    self.__matching_ids[ids] = tuple_temp
 
-                if stem[1] not in mem_mu:
-                    self.__ratp_mu.append(self.__ratp_mu[stem[1]])
-                    self.__rf.append(self.__rf[stem[1]])
-                    mem_mu.append(stem[1])
+                    if stem[1] not in mem_mu:
+                        self.__in_lightmodel_parameters["mu"].append(self.__in_lightmodel_parameters["mu"][stem[1]])
+                        environment["reflectance coefficients"].append(environment["reflectance coefficients"][stem[1]])
+                        mem_mu.append(stem[1])
 
             ## distribution d'angles pour chaque entité
             distrib = []
@@ -370,7 +379,7 @@ class LightVegeManager:
             # ele_option = nombre de classes
             # on fait le calcul de la distribution global avant la tesselation des triangles
             # pour optimiser les calculs
-            if ele_algo == "compute global" :
+            if self.__in_lightmodel_parameters["angle distrib algo"] == "compute global" :
                 # compte le nombre de triangles par entité
                 t_nent_area=[]
                 for k in range(nent):
@@ -381,22 +390,22 @@ class LightVegeManager:
                     t_nent_area.append(totA)
                 
                 # on ajoute 1 au nombre de classe avec range
-                angles = list(np.linspace(90/ele_option, 90, ele_option))
+                angles = list(np.linspace(90/self.__in_lightmodel_parameters["nb angle classes"], 90, self.__in_lightmodel_parameters["nb angle classes"]))
 
                 # pour chaque entité
                 for k in range(nent):
-                    classes = [0] * ele_option
+                    classes = [0] * self.__in_lightmodel_parameters["nb angle classes"]
                     # parcourt les triangles
                     for t in self.__my_scene:
                         # pour chaque triangle de l'entité
                         if self.__matching_ids[t.id][1] == k:
                             # recherche de la classe
                             i=0
-                            while i<ele_option:
+                            while i<self.__in_lightmodel_parameters["nb angle classes"]:
                                 if t.elevation < angles[i]:
                                     classes[i] += t.area
                                     # pour sortir de la boucle
-                                    i=ele_option+10
+                                    i=self.__in_lightmodel_parameters["nb angle classes"]+10
                                 i+=1
 
                     distrib.append(classes)
@@ -408,60 +417,72 @@ class LightVegeManager:
             
             # lecture du fichier
             # ele_option = chemin du fichier
-            elif ele_algo == "file" : 
-                f_angle = open(ele_option, 'r')
+            elif self.__in_lightmodel_parameters["angle distrib algo"] == "file" : 
+                f_angle = open(self.__in_lightmodel_parameters["angle distrib file"], 'r')
                 for i in range(len(self.__in_scenes)):
                     line = f_angle.readline()
                     distrib.append([float(x) for x in line.split(',')[1:]])
 
             # on ajuste au besoin les min-max si la scène est plane pour avoir un espace 3D
-            if xmin==xmax:
-                xmax+=dx
-                xmin-=dx 
-            if ymin==ymax:
-                ymax+=dy
-                ymin-=dy 
-            if zmin==zmax:
-                zmax+=dz
-                zmin-=dz   
+            if xmin == xmax:
+                xmax += self.__in_lightmodel_parameters["voxel size"][0]
+                xmin -= self.__in_lightmodel_parameters["voxel size"][0]
+            if ymin == ymax:
+                ymax += self.__in_lightmodel_parameters["voxel size"][1]
+                ymin -= self.__in_lightmodel_parameters["voxel size"][1]
+            if zmin == zmax:
+                zmax += self.__in_lightmodel_parameters["voxel size"][2]
+                zmin -= self.__in_lightmodel_parameters["voxel size"][2]
             
             self.__pmax = Vector3(xmax, ymax, zmax)
             self.__pmin = Vector3(xmin, ymin, zmin)
 
             # nombre de voxels
-            nx = int((self.__pmax[0] - self.__pmin[0]) // dx)
-            ny = int((self.__pmax[1] - self.__pmin[1]) // dy)
-            nz = int((self.__pmax[2] - self.__pmin[2]) // dz)
-            if (self.__pmax[0] - self.__pmin[0]) % dx > 0 : nx += 1
-            if (self.__pmax[1] - self.__pmin[1]) % dy > 0 : ny += 1
-            if (self.__pmax[2] - self.__pmin[2]) % dz > 0 : nz += 1
+            nx = int((self.__pmax[0] - self.__pmin[0]) // self.__in_lightmodel_parameters["voxel size"][0])
+            ny = int((self.__pmax[1] - self.__pmin[1]) // self.__in_lightmodel_parameters["voxel size"][1])
+            nz = int((self.__pmax[2] - self.__pmin[2]) // self.__in_lightmodel_parameters["voxel size"][2])
+            if (self.__pmax[0] - self.__pmin[0]) % self.__in_lightmodel_parameters["voxel size"][0] > 0 : nx += 1
+            if (self.__pmax[1] - self.__pmin[1]) % self.__in_lightmodel_parameters["voxel size"][1] > 0 : ny += 1
+            if (self.__pmax[2] - self.__pmin[2]) % self.__in_lightmodel_parameters["voxel size"][2] > 0 : nz += 1
             
             # définit une origine en Pmin 
             xorig, yorig, zorig = self.__pmin[0], self.__pmin[1], -self.__pmin[2]
 
             # création de la grille
-            mygrid = grid.Grid.initialise(nx, ny, nz, dx, dy, dz, xorig, yorig, zorig, coordinates[0], coordinates[1], coordinates[2], nent, rs, toric=infinite)
+            # si pas de rayonnement réfléchi on annules la réflexion du sol
+            if self.__in_environment["reflected"] :
+                mygrid = grid.Grid.initialise(nx, ny, nz, 
+                                                self.__in_lightmodel_parameters["voxel size"][0], 
+                                                self.__in_lightmodel_parameters["voxel size"][1], 
+                                                self.__in_lightmodel_parameters["voxel size"][2], 
+                                                xorig, yorig, zorig, 
+                                                self.__in_environment["coordinates"][0], self.__in_environment["coordinates"][1], self.__in_environment["coordinates"][2], 
+                                                nent, 
+                                                self.__in_lightmodel_parameters["soil reflectance"], 
+                                                toric=self.__in_environment["infinite"])
+            else :
+                mygrid = grid.Grid.initialise(nx, ny, nz, 
+                                                self.__in_lightmodel_parameters["voxel size"][0], 
+                                                self.__in_lightmodel_parameters["voxel size"][1], 
+                                                self.__in_lightmodel_parameters["voxel size"][2], 
+                                                xorig, yorig, zorig, 
+                                                self.__in_environment["coordinates"][0], self.__in_environment["coordinates"][1], self.__in_environment["coordinates"][2], 
+                                                nent, 
+                                                [0., 0.], 
+                                                toric=self.__in_environment["infinite"])
 
             # subdivision des triangles pour matcher la grille
-            if levelmax>0:
+            if self.__in_lightmodel_parameters["tesselation level"]>0:
                 # traite les triangles de la shape
                 new_tr_scene=[]
                 start=time.time()
-                # traitement multithreading
-                if multithread > 0:
+                for tr in self.__my_scene:
                     level = 0
-                    tesseletorgrid = MyTessetelorGrid(mygrid, level, levelmax, new_tr_scene)
-                    with concurrent.futures.ThreadPoolExecutor(multithread) as executor:
-                        executor.map(tesseletorgrid._iterate_trianglesingrid, self.__my_scene)
-                else :
-                    for tr in self.__my_scene:
-                        level = 0
-                        isworking = iterate_trianglesingrid(tr, mygrid, level, levelmax, new_tr_scene)
+                    isworking = iterate_trianglesingrid(tr, mygrid, level, self.__in_lightmodel_parameters["tesselation level"], new_tr_scene)
                 # print("tesselation time : ",time.time()-start)
                 # copie de la nouvelle triangulation
                 self.__my_scene = new_tr_scene
                 self.__tess_time = time.time() - start
-
             
             # préparation du fill
             # pour chaque triangle, indice entité, x, y, z, aire, nitro
@@ -474,7 +495,7 @@ class LightVegeManager:
                 
                 # id : id de la shape, val : [id shape en input, id de l'entité]
                 # c'est une tige on divise par 2 le LAD
-                if (self.__matching_ids[tr.id][0], self.__matching_ids[tr.id][1] - len(self.__in_scenes)) in self.__id_stems:
+                if (self.__matching_ids[tr.id][0], self.__matching_ids[tr.id][1] - len(self.__in_geometry["scenes"])) in self.__in_geometry["stems id"]:
                     a.append(tr.area*0.5)
                 else:
                     a.append(tr.area)
@@ -489,8 +510,8 @@ class LightVegeManager:
             # si la distribution d'angle est par voxel, on est
             # obligé de prendre en compte les triangles après
             # la tesselation
-            if ele_algo == "compute voxel":
-                angles = list(np.linspace(90/ele_option, 90, ele_option))
+            if self.__in_lightmodel_parameters["angle distrib algo"] == "compute voxel":
+                angles = list(np.linspace(90/self.__in_lightmodel_parameters["nb angle classes"], 90, self.__in_lightmodel_parameters["nb angle classes"]))
                 t_area=[]
                 # pour chaque voxel
                 for k in range(self.__ratp_scene.nveg):
@@ -499,7 +520,7 @@ class LightVegeManager:
                     # pour chaque entité
                     for n in range(nent):
                         areatot=0
-                        classes = [0] * ele_option
+                        classes = [0] * self.__in_lightmodel_parameters["nb angle classes"]
                         # on parcourt le dico des correspondances triangle->voxel
                         for idt, idv in self.__tr_vox.items():
                             # si on est dans le bon voxel et le triangle appartient a la bonne entité
@@ -507,11 +528,11 @@ class LightVegeManager:
                                 areatot += self.__my_scene[int(idt)].area
                                 # recherche de la classe
                                 i=0
-                                while i<ele_option:
+                                while i<self.__in_lightmodel_parameters["nb angle classes"]:
                                     if self.__my_scene[int(idt)].elevation < angles[i]:
                                         classes[i] += self.__my_scene[int(idt)].area
                                         # pour sortir de la boucle
-                                        i=ele_option+10
+                                        i=self.__in_lightmodel_parameters["nb angle classes"]+10
                                     i+=1
                         t_nent_area.append(areatot)
                         distrib_nent.append(classes)
@@ -524,7 +545,7 @@ class LightVegeManager:
                     for n in range(nent):
                         # peut survenir si une entité n'est pas dans le voxel
                         if t_area[k][n] != 0 :
-                            for i in range(ele_option):
+                            for i in range(self.__in_lightmodel_parameters["nb angle classes"]):
                                 distrib[k][n][i] *= 1/t_area[k][n]
                         
                         # enleve les entités en trop
@@ -536,65 +557,63 @@ class LightVegeManager:
             self.__ratp_distrib = distrib
 
             # construction du ciel:
-            if sky_parameters==[]:
+            # si on a une liste de paramètres
+            if len(self.__in_environment["sky"]) > 1 and type(self.__in_environment["sky"]) == list :
+                if self.__in_environment["sky"][0] == "file" : self.__sky = Skyvault.read(self.__in_environment["sky"][1])
+                
+                elif len(self.__in_environment["sky"]) == 3 :
+                    ele=[]
+                    azi=[]
+                    da = 2 * math.pi / self.__in_environment["sky"][0]
+                    dz = math.pi / 2 / self.__in_environment["sky"][1]      
+                    todeg = 180/math.pi          
+                    for j in range(self.__in_environment["sky"][0]):
+                        for k in range(self.__in_environment["sky"][1]):
+                            azi.append((j * da + da / 2)*todeg)
+                            ele.append((k * dz + dz / 2)*todeg)
+                    n = self.__in_environment["sky"][0]*self.__in_environment["sky"][1]
+                    
+                    omega=[2*math.pi/n]*n
+                    
+                    def uoc (teta, dt, dp):
+                        """ teta: angle zenithal; phi: angle azimutal du soleil """
+                        dt /= 2.
+                        x = math.cos(teta-dt)
+                        y = math.cos(teta+dt)
+                        E = (x*x-y*y)*dp/2./math.pi
+                        return E
+                    def soc (teta, dt, dp):
+                        """ teta: angle zenithal; phi: angle azimutal du soleil """
+                        dt /= 2.
+                        x = math.cos(teta-dt)
+                        y = math.cos(teta+dt)
+                        E = (3/14.*(x*x-y*y) + 6/21.*(x*x*x-y*y*y))*dp/math.pi
+                        return E
+                    pc=[]
+                    for j in range(self.__in_environment["sky"][0]):
+                        for k in range (self.__in_environment["sky"][1]):
+                            azim,elv = j * da + da / 2, k * dz + dz / 2
+                            I=0
+                            if(self.__in_environment["sky"][2]=='soc'):
+                                I = soc(elv, dz, da)
+                            else:
+                                I = uoc(elv, dz, da)
+
+                            pc.append(I) 
+                    
+                    self.__sky = Skyvault.initialise(ele, azi, omega, pc)
+
+            # initialisation par défaut
+            elif self.__in_environment["sky"] == "turtle46":
                 # par défaut ciel à 46 directions ("tortue")
-                self.__sky = Skyvault.initialise()
-
-            # annule le diffus
-            elif sky_parameters[0]==0:
-                self.__sky = Skyvault.initialise()
-                self.__diffus = False
-            
-            # ciel dans un fichier à lire
-            elif len(sky_parameters)==1:
-                self.__sky = Skyvault.read(sky_parameters[0])
-            
-            # on utilise un outil de caribu pour subdiviser le ciel
-            elif len(sky_parameters)==3:
-                ele=[]
-                azi=[]
-                da = 2 * math.pi / sky_parameters[0]
-                dz = math.pi / 2 / sky_parameters[1]      
-                todeg = 180/math.pi          
-                for j in range(sky_parameters[0]):
-                    for k in range(sky_parameters[1]):
-                        azi.append((j * da + da / 2)*todeg)
-                        ele.append((k * dz + dz / 2)*todeg)
-                n = sky_parameters[0]*sky_parameters[1]
-                
-                omega=[2*math.pi/n]*n
-                
-                def uoc (teta, dt, dp):
-                    """ teta: angle zenithal; phi: angle azimutal du soleil """
-                    dt /= 2.
-                    x = math.cos(teta-dt)
-                    y = math.cos(teta+dt)
-                    E = (x*x-y*y)*dp/2./math.pi
-                    return E
-                def soc (teta, dt, dp):
-                    """ teta: angle zenithal; phi: angle azimutal du soleil """
-                    dt /= 2.
-                    x = math.cos(teta-dt)
-                    y = math.cos(teta+dt)
-                    E = (3/14.*(x*x-y*y) + 6/21.*(x*x*x-y*y*y))*dp/math.pi
-                    return E
-                pc=[]
-                for j in range(sky_parameters[0]):
-                    for k in range (sky_parameters[1]):
-                        azim,elv = j * da + da / 2, k * dz + dz / 2
-                        I=0
-                        if(sky_parameters[2]=='soc'):
-                            I = soc(elv, dz, da)
-                        else:
-                            I = uoc(elv, dz, da)
-
-                        pc.append(I) 
-                
-                
-                self.__sky = Skyvault.initialise(ele, azi, omega, pc)
+                self.__sky = Skyvault.initialise()                
             
     
         elif lightmodel == "caribu":
+            # paramètres par défaut
+            self.__in_lightmodel_parameters["sun algo"] = "caribu"
+
+            # copîe du minmax
             self.__pmax = Vector3(xmax, ymax, zmax)
             self.__pmin = Vector3(xmin, ymin, zmin)
 
@@ -612,39 +631,42 @@ class LightVegeManager:
             
             # création du ciel
             # par défaut turtle 46 directions, soc
-            if sky_parameters==[]:
+            if len(self.__in_environment["sky"]) > 1 and type(self.__in_environment["sky"]) == list :
+                if len(self.__in_environment["sky"]) == 3 :
+                    sky_string = GetLight.GetLight(GenSky.GenSky()(1., self.__in_environment["sky"][2], 
+                                                                        self.__in_environment["sky"][0], 
+                                                                        self.__in_environment["sky"][1]))  #: (Energy, soc/uoc, azimuts, zenits)
+    
+                    # Convert string to list in order to be compatible with CaribuScene input format
+                    self.__sky = []
+                    for string in sky_string.split('\n'):
+                        if len(string) != 0:
+                            string_split = string.split(' ')
+                            t = tuple((float(string_split[0]), tuple((float(string_split[1]), float(string_split[2]), float(string_split[3])))))
+                            self.__sky.append(t)
+            
+            elif self.__in_environment["sky"] == "turtle46":
                 turtle_list = turtle.turtle()
                 self.__sky=[]
                 for i,e in enumerate(turtle_list[0]):
                     t = tuple((e, tuple((turtle_list[2][i][0], turtle_list[2][i][1], turtle_list[2][i][2]))))
-                    self.__sky.append(t)
-
+                    self.__sky.append(t)       
             else:
-                sky_string = GetLight.GetLight(GenSky.GenSky()(1., sky_parameters[2], sky_parameters[0], sky_parameters[1]))  #: (Energy, soc/uoc, azimuts, zenits)
-            
-                # Convert string to list in order to be compatible with CaribuScene input format
-                self.__sky = []
-                for string in sky_string.split('\n'):
-                    if len(string) != 0:
-                        string_split = string.split(' ')
-                        t = tuple((float(string_split[0]), tuple((float(string_split[1]), float(string_split[2]), float(string_split[3])))))
-                        self.__sky.append(t)
+                raise ValueError("Unknown sky parameters : can be either 'turtle46' or ['file', 'filepath'] or [nb_azimut, nb_zenith, 'soc' or 'uoc'] ")
 
         else:
             raise ValueError("Unknown lightmodel : can be either 'ratp' or 'caribu' ")
             
-    def run(self, meteo_path="", PARi=0, day=0, hour=0, direct=True, parunit="micromol.m-2.s-1", domain= [], truesolartime=False, printsun=False):
+    def run(self, meteo_path="", PARi=0, day=0, hour=0, parunit="micromol.m-2.s-1", truesolartime=False, printsun=False):
         '''calcul du bilan radiatif
         Args :
             meteo_path : string, chemin du fichier meteo
-            vege_path : string, chemin du fichier grandeurs associées aux plantes (pour RATP)
-            elevation_path : string, chemin du fichier contenant une distribution d'angle par entité (pour RATP)
             PARi : float, PARi en µmol.m-2.s-1 ou W.m-2
             day : float, day of the year 
             hour : float, hour TU
             parunit : "micromol.m-2.s-1" ou "W.m-2"
-            domain : si CARIBU est en infinitisation, définit le pattern de la CaribuScene
             truesolartime : boolean, si hour est l'heure solaire réel ou l'heure locale
+            printsun : option pour imprimer la position du soleil
 
         return :
             enregistre les sorties dans self.__outputs sous forme de dataframes pandas
@@ -655,19 +677,32 @@ class LightVegeManager:
         if self.__lightmodel == "ratp":
             # création d'un dict entity
             entities_param = []
-            if self.__lightmodelparam[6] != "compute voxel":
-                for id, mu_ent in enumerate(self.__ratp_mu):
-                    entities_param.append({
-                                            'mu' : mu_ent,
-                                            'distinc' : self.__ratp_distrib[id],
-                                            'rf' : self.__rf[id]
-                                            })
+            if self.__in_lightmodel_parameters["angle distrib algo"] != "compute voxel":
+                for id, mu_ent in enumerate(self.__in_lightmodel_parameters["mu"]):
+                    if self.__in_environment["reflected"] :
+                        entities_param.append({
+                                                'mu' : mu_ent,
+                                                'distinc' : self.__ratp_distrib[id],
+                                                'rf' : self.__in_environment["reflectance coefficients"][id]
+                                                })
+                    else :
+                        entities_param.append({
+                                                'mu' : mu_ent,
+                                                'distinc' : self.__ratp_distrib[id],
+                                                'rf' : [0., 0.]
+                                                })
                 vegetation = Vegetation.initialise(entities_param)
             else :
-                for id, mu_ent in enumerate(self.__ratp_mu):
-                    entities_param.append({
+                for id, mu_ent in enumerate(self.__in_lightmodel_parameters["mu"]):
+                    if self.__in_environment["reflected"] :
+                        entities_param.append({
+                                                'mu' : mu_ent,
+                                                'rf' : self.__in_environment["reflectance coefficients"][id]
+                                                })
+                    else :
+                        entities_param.append({
                                             'mu' : mu_ent,
-                                            'rf' : self.__rf[id]
+                                            'rf' : [0., 0.]
                                             })
                 vegetation = Vegetation.initialise(entities_param, pervoxel=True, distribvox=self.__ratp_distrib)
 
@@ -676,17 +711,17 @@ class LightVegeManager:
                 if parunit == "micromol.m-2.s-1" :
                     #: Spitters's model estimating for the diffuse:direct ratio
                     # coefficient 2.02 : 4.6 (conversion en W.m-2) x 0.439 (PAR -> global)
-                    RdRs = spitters_horaire.RdRsH(Rg=PARi/2.02, DOY=day, heureTU=hour, latitude=self.__coordinates[0])
+                    RdRs = spitters_horaire.RdRsH(Rg=PARi/2.02, DOY=day, heureTU=hour, latitude=self.__in_environment["coordinates"][0])
                     
                     # coeff 4.6 : https://www.researchgate.net/post/Can-I-convert-PAR-photo-active-radiation-value-of-micro-mole-M2-S-to-Solar-radiation-in-Watt-m2
                     PARi = PARi / 4.6  # W.m-2
                 else:
-                    RdRs = spitters_horaire.RdRsH(Rg=PARi/0.439, DOY=day, heureTU=hour, latitude=self.__coordinates[0])
+                    RdRs = spitters_horaire.RdRsH(Rg=PARi/0.439, DOY=day, heureTU=hour, latitude=self.__in_environment["coordinates"][0])
                 
                 # PAR et Dif en W.m^-2
-                if self.__diffus :
+                if self.__in_environment["diffus"] :
                     # Direct et diffus
-                    if direct: 
+                    if self.__in_environment["direct"]: 
                         met = MicroMeteo.initialise(doy=day, hour=hour, Rglob=PARi, Rdif=PARi*RdRs, truesolartime=truesolartime)
                     # uniquement diffus
                     else:
@@ -697,6 +732,11 @@ class LightVegeManager:
             # lecture d'un fichier
             else:
                 met = MicroMeteo.read(meteo_path, truesolartime)
+
+            # impression de la position du soleil
+            if printsun: 
+                from PyRATP.pyratp import pyratp    
+                self._print_sun(day, hour, pyratp, truesolartime)
 
             start=time.time()
             # Calcul du bilan radiatif sur chaque pas de temps du fichier météo
@@ -815,23 +855,24 @@ class LightVegeManager:
 
         # CARIBU
         elif self.__lightmodel == "caribu":
-            if len(self.__lightmodelparam)==3 : sun_sky_option, sun_algo, infinite = self.__lightmodelparam
-            elif len(self.__lightmodelparam)==4 : sun_sky_option, sun_algo, infinite, domain = self.__lightmodelparam
-
             ## Création du ciel et du soleil
             #: Direct light sources (sun positions)
-            if sun_algo=="ratp":
+            if self.__in_lightmodel_parameters["sun algo"]=="ratp":
                 from PyRATP.pyratp import pyratp
                 
                 az, ele = 5.,9. # variables fantômes (non récupérées)
-                pyratp.shortwave_balance.sundirection(ele, az, self.__coordinates[0], self.__coordinates[1], self.__coordinates[2], day, hour, truesolartime)            
+                pyratp.shortwave_balance.sundirection(ele, az, 
+                                                            self.__in_environment["coordinates"][0], 
+                                                            self.__in_environment["coordinates"][1], 
+                                                            self.__in_environment["coordinates"][2], 
+                                                            day, hour, truesolartime)            
                 degtorad = math.pi/180
 
                 azrad = pyratp.shortwave_balance.azdeg
                 # peut avoir un nan à 12h 
                 if math.isnan(azrad) and hour==12. : 
                     # critère empirique basé sur l'algo de CARIBU (GenSun)
-                    if self.__coordinates[0] >= 21.11:
+                    if self.__in_environment["coordinates"][0] >= 21.11:
                         azrad = 0.
                     else:
                         azrad = 180.
@@ -859,10 +900,10 @@ class LightVegeManager:
                     dphi=math.atan(tphi)-om+1.3526
                     if dphi+1. <= 0: dphi=(dphi+1+1000.*math.pi % math.pi)-1.
                     eqntime=dphi*229.2
-                    hour =hour+self.__coordinates[2]+self.__coordinates[1]/15.-eqntime/60. % 24.
+                    hour =hour+self.__in_environment["coordinates"][2]+self.__in_environment["coordinates"][1]/15.-eqntime/60. % 24.
 
                 # Conversion de la latitude en radian!
-                sun = Gensun.Gensun()(1., day, hour, self.__coordinates[0]*math.pi/180)
+                sun = Gensun.Gensun()(1., day, hour, self.__in_environment["coordinates"][0]*math.pi/180)
                 sun = GetLightsSun.GetLightsSun(sun)
                 sun_str_split = sun.split(' ')
                 
@@ -886,28 +927,37 @@ class LightVegeManager:
                 for id, val in self.__matching_ids.items():
                     # id : id de la shape, val : [id shape en input, id de l'entité]
                     # c'est une tige il n'y a pas de transmission
-                    if (val[0], val[1]) in self.__id_stems:
-                        opt['par'][id] = (self.__rf[val[1]][0],)  #: (reflectance,) of the stems ou organe opaque
+                    if (val[0], val[1]) in self.__in_geometry["stems id"]:
+                        opt['par'][id] = (self.__in_environment["reflectance coefficients"][val[1]][0],)  #: (reflectance,) of the stems ou organe opaque
                     else:
-                        opt['par'][id] = (self.__rf[val[1]][0], self.__rf[val[1]][1]) #: (reflectance, transmittance) of the adaxial side of the leaves, élément translucide symétrique
+                        opt['par'][id] = (self.__in_environment["reflectance coefficients"][val[1]][0], self.__in_environment["reflectance coefficients"][val[1]][1]) #: (reflectance, transmittance) of the adaxial side of the leaves, élément translucide symétrique
 
                 # construction d'une scène ciel et soleil
-                if infinite : # on ajoute un domaine pour la création du pattern
-                    c_scene_sky = CaribuScene(scene=self.__caribu_scene, light=self.__sky, opt=opt, scene_unit=self.__scene_unit, pattern=domain)
-                    c_scene_sun = CaribuScene(scene=self.__caribu_scene, light=self.__sun, opt=opt, scene_unit=self.__scene_unit, pattern=domain)
+                if self.__in_environment["infinite"] : # on ajoute un domaine pour la création du pattern
+                    c_scene_sky = CaribuScene(scene=self.__caribu_scene, light=self.__sky, opt=opt, scene_unit=self.__main_unit, pattern=self.__in_environment["domain"])
+                    c_scene_sun = CaribuScene(scene=self.__caribu_scene, light=self.__sun, opt=opt, scene_unit=self.__main_unit, pattern=self.__in_environment["domain"])
                 else:
-                    c_scene_sky = CaribuScene(scene=self.__caribu_scene, light=self.__sky, opt=opt, scene_unit=self.__scene_unit)
-                    c_scene_sun = CaribuScene(scene=self.__caribu_scene, light=self.__sun, opt=opt, scene_unit=self.__scene_unit)
+                    c_scene_sky = CaribuScene(scene=self.__caribu_scene, light=self.__sky, opt=opt, scene_unit=self.__main_unit)
+                    c_scene_sun = CaribuScene(scene=self.__caribu_scene, light=self.__sun, opt=opt, scene_unit=self.__main_unit)
 
+                if self.__in_environment["diffus"] :
+                    # Direct et diffus
+                    if self.__in_environment["direct"]: 
+                        sun_sky_option = "mix"
+                    else:
+                        sun_sky_option = "sky"
+                else:
+                    sun_sky_option = "sun"
+                
                 # choix du type de rayonnement
                 # direct=False : active la rediffusion
                 # infinite=False : désactive la répétition infinie de la scène (pas de pattern défini ici)
                 if sun_sky_option == "mix":
                     start=time.time()
-                    raw_sun, aggregated_sun = c_scene_sun.run(direct=True, infinite=infinite)
+                    raw_sun, aggregated_sun = c_scene_sun.run(direct=True, infinite=self.__in_environment["infinite"])
                     Erel_sun = aggregated_sun['par']['Eabs']
                     Ei_sun = aggregated_sun['par']['Ei']
-                    raw_sky, aggregated_sky = c_scene_sky.run(direct=True, infinite=infinite)
+                    raw_sky, aggregated_sky = c_scene_sky.run(direct=True, infinite=self.__in_environment["infinite"])
                     Erel_sky = aggregated_sky['par']['Eabs']
                     Ei_sky = aggregated_sky['par']['Ei']
                     self.__time_runmodel = time.time() - start
@@ -915,7 +965,7 @@ class LightVegeManager:
                     #: Spitters's model estimating for the diffuse:direct ratio
                     # % de sky dans la valeur d'énergie finale
                     Rg = PARi / 2.02  #: Global Radiation (W.m-2)
-                    RdRs = spitters_horaire.RdRsH(Rg=Rg, DOY=day, heureTU=hour, latitude=self.__coordinates[0])  #: Diffuse fraction of the global irradiance
+                    RdRs = spitters_horaire.RdRsH(Rg=Rg, DOY=day, heureTU=hour, latitude=self.__in_environment["coordinates"][0])  #: Diffuse fraction of the global irradiance
                     Erel = {}
                     Ei_output_shape = {}
                     for element_id, Erel_value in Erel_sky.items():
@@ -941,7 +991,7 @@ class LightVegeManager:
                 
                 elif sun_sky_option == "sun":
                     start=time.time()
-                    raw_sun, aggregated_sun = c_scene_sun.run(direct=True, infinite=infinite)
+                    raw_sun, aggregated_sun = c_scene_sun.run(direct=True, infinite=self.__in_environment["infinite"])
                     self.__time_runmodel = time.time() - start
                     Erel_output_shape = aggregated_sun['par']['Eabs']  #: Erel is the relative surfacic absorbed energy per organ
                     Ei_output_shape = aggregated_sun['par']['Ei']
@@ -962,7 +1012,7 @@ class LightVegeManager:
                 
                 elif sun_sky_option == "sky":
                     start=time.time()
-                    raw_sky, aggregated_sky = c_scene_sky.run(direct=True, infinite=infinite)
+                    raw_sky, aggregated_sky = c_scene_sky.run(direct=True, infinite=self.__in_environment["infinite"])
                     self.__time_runmodel = time.time() - start
                     Erel_output_shape = aggregated_sky['par']['Eabs']  #: Erel is the relative surfacic absorbed energy per organ
                     Ei_output_shape = aggregated_sky['par']['Ei']
@@ -981,7 +1031,6 @@ class LightVegeManager:
                     PARa_output_tr = {k: v * PARi for k, v in Erel_output_tr.items()}
                     PARi_output_tr = {k: v * PARi for k, v in Ei_output_tr.items()}
                     
-
                 else:
                     raise ValueError("Unknown sun_sky_option : can be either 'mix', 'sun' or 'sky'.")
         
@@ -1062,7 +1111,7 @@ class LightVegeManager:
         print("---\t SUN COORDONATES\t ---")
         print("--- Convention x+ = North, vector from sky to floor")
         print("--- azimut: south clockwise E = -90° W = 90°\t zenith: zenith = 0° horizon = 90°")
-        print("--- day: %i \t hour: %i \t latitude: %0.2f °"%(day, hour, self.__coordinates[0]))
+        print("--- day: %i \t hour: %i \t latitude: %0.2f °"%(day, hour, self.__in_environment["coordinates"][0]))
         
         if truesolartime : 
             caribuhour=hour
@@ -1075,17 +1124,17 @@ class LightVegeManager:
             dphi=math.atan(tphi)-om+1.3526
             if dphi+1. <= 0: dphi=(dphi+1+1000.*math.pi % math.pi)-1.
             eqntime=dphi*229.2
-            caribuhour =hour+self.__coordinates[2]+self.__coordinates[1]/15.-eqntime/60. % 24. 
+            caribuhour =hour+self.__in_environment["coordinates"][2]+self.__in_environment["coordinates"][1]/15.-eqntime/60. % 24. 
             print("--- local time, true solar time is %0.2f"%(caribuhour))
         
         # CARIBU et RATP sont dans la même convention de coordonnées, x+ = North
         print("--- RATP ---")
         az, ele = 5.,9. # variables fantômes (non récupérées)
-        pyratp.shortwave_balance.sundirection(ele, az, self.__coordinates[0], self.__coordinates[1], self.__coordinates[2], day, hour, truesolartime)        
+        pyratp.shortwave_balance.sundirection(ele, az, self.__in_environment["coordinates"][0], self.__in_environment["coordinates"][1], self.__in_environment["coordinates"][2], day, hour, truesolartime)        
         degtorad = math.pi/180
         azrad = pyratp.shortwave_balance.azdeg
         if math.isnan(azrad) and hour==12. : 
-            if self.__coordinates[0] >= 21.11:
+            if self.__in_environment["coordinates"][0] >= 21.11:
                 azrad = 0.
             else:
                 azrad = 180.
@@ -1102,7 +1151,7 @@ class LightVegeManager:
         
         print("--- CARIBU ---")
         suncaribu = Sun.Sun()
-        suncaribu._set_pos_astro(day, caribuhour, self.__coordinates[0]*math.pi/180)
+        suncaribu._set_pos_astro(day, caribuhour, self.__in_environment["coordinates"][0]*math.pi/180)
         sun_str_split = suncaribu.toLight().split(' ')
 
         print("\t azimut: %0.3f \t zenith: %0.3f" % (-suncaribu.azim*180/math.pi, 90-(suncaribu.elev*180/math.pi)))
@@ -1269,7 +1318,7 @@ class LightVegeManager:
         f=open("s5/fort.51", 'w')
         c_tr=1
         for tr in self.__my_scene:
-            if (self.__matching_ids[tr.id][0], self.__matching_ids[tr.id][1]) in self.__id_stems:
+            if (self.__matching_ids[tr.id][0], self.__matching_ids[tr.id][1]) in self.__in_geometry["stems id"]:
                 stem='000'
             else:
                 stem='001'

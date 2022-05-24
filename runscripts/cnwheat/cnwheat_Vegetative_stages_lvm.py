@@ -10,13 +10,14 @@ import getopt
 
 '''
 Comparaison sur un temps avec un couvert dense entre CARIBU et RATP
-Simu 1 : CARIBU + RATP sur la géo de CARIBU
+Simu 1 : CARIBU + RATP sur la géométrie de CARIBU
 Simu 2 : RATP seul
+Simu 3 : lance le script main en exemple de WheatFspm
 
-Compare :
-    * PAR sortie (inutile de retenir les nuits)
-    * temps de calcul
-    * sorties CN-Wheat
+Possibilité d'écrire les sorties au fur et à mesure ou en dernière étape après la simulation
+
+NOTES :
+    vérifier le chemin de INPUTS_FOLDER et celui de runstring pour lancer le script par défaut
 '''
 
 def Create_OutputsFolders(parentfolderpath):
@@ -84,7 +85,7 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
     Create_OutputsFolders(outfolderpath)
     
     # Path of the directory which contains the inputs of the model
-    INPUTS_FOLDER = '/lightvegemanager/WheatFspm/fspm-wheat/example/Vegetative_stages/inputs'
+    INPUTS_FOLDER = 'WheatFspm/fspm-wheat/example/Vegetative_stages/inputs'
     
     # Name of the CSV files which describes the initial state of the system
     AXES_INITIAL_STATE_FILENAME = 'axes_initial_state.csv'
@@ -141,30 +142,35 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
                                                                         update_parameters_all_models,
                                                                         N_fertilizations=N_fertilizations)
     
+    geometry = {}
+    environment = {}
+    ratp_parameters = {}
+    caribu_parameters = {}
+
     # Paramètres pré-simulation
-    model_names = ["fspm-wheat"]
-    coordinates = [48.85,0,0] # latitude, longitude, timezone
+    geometry["names"] = ["fspm-wheat"]
+    
+    environment["coordinates"] = [48.85,0,0] # latitude, longitude, timezone
+    environment["sky"] = "turtle46" # turtle à 46 directions par défaut
+    environment["diffus"] = True
+    environment["direct"] = False
+    environment["reflected"] = False
+    environment["reflectance coefficients"] = [[0.1, 0.05]]
+    environment["infinite"] = True
     
     ## Paramètres CARIBU ##
-    sun_sky_options = "sky"
-    sun_algo="caribu" # soleil avec RATP sundirection dans Shortwave_Balance.f90 
-    infinite=True # avec couvert inifini
-    caribu_param = [sun_sky_options, sun_algo, infinite, None]
-    caribu_sky = [] # ciel turtle à 46 directions
-    caribu_rf = [[0.1, 0.05]] # réflectance, transmittance
+    caribu_parameters["sun algo"] = "caribu"
 
     ## Paramètres RATP ##
     dv = 0.1 # m
     dx, dy, dz = dv, dv, dv # m
-    rs=[0., 0] # Soil reflectance in PAR and NIR bands
-    ratp_mu = [1.]
-    tesselate_level = level_tesselation
-    distrib_algo = "compute voxel" # "file"
-    distrib_option = 30
-    infinite=True
-    ratp_parameters = [dx, dy, dz, rs, ratp_mu, tesselate_level, distrib_algo, distrib_option, infinite]
-    ratp_sky = [] # ciel turtle à 46 directions
-    ratp_rf=[[0., 0]] # leaf reflectance PAR et NIR pour l'entité 0
+    ratp_parameters["voxel size"] = [dx, dy, dz]
+    ratp_parameters["soil reflectance"] = [0., 0.]
+    ratp_parameters["mu"] = [1.]
+    ratp_parameters["tesselation level"] = level_tesselation
+    ratp_parameters["angle distrib algo"] = "compute voxel"
+    ratp_parameters["nb angle classes"] = 30
+
 
     # ---------------------------------------------
     # -----      RUN OF THE SIMULATION      -------
@@ -231,38 +237,32 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
 
         # vérifie si l'itération suivante est encore le jour? et lance le calcul de lumière
         if (t_light % LIGHT_TIMESTEP == 0) and (PARi_next_hours > 0):
-            in_scenes = [scene_etendu]
+            geometry["scenes"] = [scene_etendu]
             # recherche des tiges dans les différentes scènes
             id_entity = 0
-            id_stems=whichstems_MTG(g, id_entity)
+            geometry["stems id"] = whichstems_MTG(g, id_entity)
             
             if active_lightmodel=="caribu":
                 # ajoute le pattern aux paramètres du modèle
-                caribu_param[-1] = domain
+                environment["domain"] = domain
                 
                 c_time = time.time()
                 # Objet calcul de la lumière
-                lghtcaribu = LightVegeManager(in_scenes, 
-                                            in_names=model_names,
-                                            id_stems=id_stems, 
-                                            sky_parameters=caribu_sky,
-                                            lightmodel="caribu", lightmodelparam=caribu_param, 
-                                            rf=caribu_rf, 
-                                            coordinates=coordinates)
-                lghtcaribu.run(PARi=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
+                lghtcaribu = LightVegeManager(geometry=geometry, 
+                                            environment=environment,
+                                            lightmodel="caribu",
+                                            lightmodel_parameters=caribu_parameters)
+                lghtcaribu.run(PARi=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True, printsun=True)
                 c_time = time.time()-c_time
                 lghtcaribu.PAR_update_MTG(g)
             
             # RATP est lancé dans les deux cas pour comparer
             r_time = time.time()
-            lghtratp = LightVegeManager(in_scenes, 
-                                        in_names=model_names,
-                                        id_stems=id_stems, 
-                                        sky_parameters=ratp_sky,
-                                        lightmodel="ratp", lightmodelparam=ratp_parameters, 
-                                        rf=ratp_rf, 
-                                        coordinates=coordinates)
-            lghtratp.run(PARi=PARi, day=DOY, hour=hour, direct=False, parunit="micromol.m-2.s-1", truesolartime=True)
+            lghtratp = LightVegeManager(geometry=geometry, 
+                                            environment=environment,
+                                            lightmodel="ratp",
+                                            lightmodel_parameters=ratp_parameters)
+            lghtratp.run(PARi=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
 
             r_time = time.time()-r_time
 
@@ -448,7 +448,7 @@ if __name__ == "__main__":
     # valeur par défaut
     level_tesselation=0
     nstep=16
-    outfolderpath = "outputs/mau_Vegetative_stages"
+    outfolderpath = "outputs"
     sim = 1
     writing = "append"
 
