@@ -12,29 +12,34 @@ geom1 = pgl_all.FaceSet([(0,0,0),(2,0,0), (2,2,0),(0,2,0)],[range(4)]) # plaque 
 geom2 = pgl_all.FaceSet([(0,1,1),(2,1,1), (2,3,1),(0,3,1)],[range(4)]) # plaque dessus, décalée en y (axe est-ouest) vers l'ouest
 s = pgl_all.Scene([pgl_all.Shape(geom1, pgl_all.Material((250,0,0),1), 888),
                     pgl_all.Shape(geom2, pgl_all.Material((0,250,0),1), 999)])
-in_scenes = [s]
-model_names = ["fspm-wheat"]
-rf = [[0.1, 0.05]] # réflectance, transmittance
+
+geometry = {}
+environment = {}
+ratp_parameters = {}
+caribu_parameters = {}
+
+# Paramètres pré-simulation
+geometry["scenes"] = [s]
+
+environment["coordinates"] = [0. ,0. ,0.] # latitude, longitude, timezone
+environment["sky"] = "turtle46" # turtle à 46 directions par défaut
+environment["diffus"] = False
+environment["direct"] = True
+environment["reflected"] = False
+environment["reflectance coefficients"] = [[0.1, 0.05]]
+environment["infinite"] = False
 
 ## Paramètres CARIBU ##
-sun_sky_options="sun" # calcule que le direct
-sun_algo="caribu" # soleil avec GenSun 
-infinite=False # pas de couvert infini
-caribu_param = [sun_sky_options, sun_algo, None]
-sky = [] # ciel turtle à 46 directions
+caribu_parameters["sun algo"] = "caribu"
 
-coordinates = [0,0,0] # latitude, longitude, timezone
 PARi = 500 # forçage arbitraire en µmol.m-2.s-1
 day = 264 # jour arbitraire (21 septembre)
 
 # Déclaration de l'objet
-lghtcaribu = LightVegeManager(in_scenes=in_scenes,
-                                # in_transformations=None, pas de transformations
-                                in_names=model_names,
-                                sky_parameters=sky,
-                                lightmodel="caribu", lightmodelparam=caribu_param, 
-                                rf=rf, 
-                                coordinates=coordinates,
+lghtcaribu = LightVegeManager(geometry=geometry,
+                                environment=environment,
+                                lightmodel="caribu",
+                                lightmodel_parameters=caribu_parameters,
                                 global_scene_tesselate_level=5)
 
 # heure matin, soleil arrive de l'est, les 2 plaques reçoivent tout le rayonnement

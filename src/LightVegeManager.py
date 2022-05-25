@@ -250,6 +250,7 @@ class LightVegeManager:
         if "reflected" not in self.__in_environment : self.__in_environment["reflected"] = False
         if "infinite" not in self.__in_environment : self.__in_environment["infinite"] = False
         if "reflectance coefficients" not in self.__in_environment : self.__in_environment["reflectance coefficients"] = []
+        if "stems id" not in self.__in_geometry : self.__in_geometry["stems id"] = []
 
         # couplage des scènes dans un plantGL commun et création du tableau des ids
         # [plantGL] -(+)-> [Triangle3] -> transformation sur les Triangle3 -> [Triangle3]
