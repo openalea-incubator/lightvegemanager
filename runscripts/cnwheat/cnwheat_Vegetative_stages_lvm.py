@@ -90,7 +90,7 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
     Create_OutputsFolders(outfolderpath)
     
     # Path of the directory which contains the inputs of the model
-    INPUTS_FOLDER = 'WheatFspm/fspm-wheat/example/Vegetative_stages/inputs'
+    INPUTS_FOLDER = '/lightvegemanager/WheatFspm/fspm-wheat/example/Vegetative_stages/inputs'
     
     # Name of the CSV files which describes the initial state of the system
     AXES_INITIAL_STATE_FILENAME = 'axes_initial_state.csv'
