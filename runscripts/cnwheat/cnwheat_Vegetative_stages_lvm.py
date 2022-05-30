@@ -90,7 +90,7 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
     Create_OutputsFolders(outfolderpath)
     
     # Path of the directory which contains the inputs of the model
-    INPUTS_FOLDER = '/lightvegemanager/WheatFspm/fspm-wheat/example/Vegetative_stages/inputs'
+    INPUTS_FOLDER = 'WheatFspm/fspm-wheat/example/Vegetative_stages/inputs'
     
     # Name of the CSV files which describes the initial state of the system
     AXES_INITIAL_STATE_FILENAME = 'axes_initial_state.csv'
@@ -395,7 +395,8 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
                                     hiddenzones_all_data_list,
                                     elements_all_data_list,
                                     soils_all_data_list,
-                                    all_simulation_steps)
+                                    all_simulation_steps,
+                                    delta_t=SENESCWHEAT_TIMESTEP)
 
     if writing == "final":
         if active_lightmodel == "caribu":
@@ -456,9 +457,9 @@ if __name__ == "__main__":
 
     # valeur par défaut
     level_tesselation=0
-    nstep=16
+    nstep=24
     outfolderpath = "outputs"
-    sim = 1
+    sim = 2
     writing = "final"
 
     # récupère les arguments en entrée
