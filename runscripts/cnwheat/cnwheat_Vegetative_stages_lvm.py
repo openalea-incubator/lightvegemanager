@@ -151,8 +151,7 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
     caribu_parameters = {}
 
     # Paramètres pré-simulation
-    geometry["names"] = ["fspm-wheat"]
-    
+    environment["names"] = ["fspm-wheat"]
     environment["coordinates"] = [48.85,0,0] # latitude, longitude, timezone
     environment["sky"] = "turtle46" # turtle à 46 directions par défaut
     environment["diffus"] = True
@@ -163,6 +162,10 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
     
     ## Paramètres CARIBU ##
     caribu_parameters["sun algo"] = "caribu"
+    
+    lghtcaribu = LightVegeManager(environment=environment,
+                                    lightmodel="caribu",
+                                    lightmodel_parameters=caribu_parameters)
 
     ## Paramètres RATP ##
     dv = 0.1 # m
@@ -173,6 +176,10 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
     ratp_parameters["tesselation level"] = level_tesselation
     ratp_parameters["angle distrib algo"] = "compute voxel"
     ratp_parameters["nb angle classes"] = 30
+    
+    lghtratp = LightVegeManager(environment=environment,
+                                    lightmodel="ratp",
+                                    lightmodel_parameters=ratp_parameters)
 
 
     # ---------------------------------------------
@@ -236,28 +243,24 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
         hour = meteo.loc[t_light, ['hour']].iloc[0]
         PARi_next_hours = meteo.loc[range(t_light, t_light + LIGHT_TIMESTEP), ['PARi']].sum().values[0]
 
-        # création d'un couvert hétérogène
-        scene_etendu, domain = create_heterogeneous_canopy_copy(adel_wheat, g, nplants=50, var_plant_position=0.03, var_leaf_inclination=0.157, var_leaf_azimut=1.57, var_stem_azimut=0.157,
-                                     plant_density=PLANT_DENSITY[1], inter_row=0.15)
-
         # vérifie si l'itération suivante est encore le jour? et lance le calcul de lumière
         if (t_light % LIGHT_TIMESTEP == 0) and (PARi_next_hours > 0):
+            # création d'un couvert hétérogène
+            scene_etendu, domain = create_heterogeneous_canopy_copy(adel_wheat, g, nplants=50, var_plant_position=0.03, var_leaf_inclination=0.157, var_leaf_azimut=1.57, var_stem_azimut=0.157,
+                                        plant_density=PLANT_DENSITY[1], inter_row=0.15)
+            # copie de la scène
             geometry["scenes"] = [scene_etendu]
+            geometry["domain"] = domain
+
             # recherche des tiges dans les différentes scènes
             id_entity = 0
             geometry["stems id"] = whichstems_MTG(g, id_entity)
             
             if active_lightmodel=="caribu":
-                # ajoute le pattern aux paramètres du modèle
-                environment["domain"] = domain
-                
+                # ajoute le pattern aux paramètres du modèle                
                 c_time = time.time()
                 # Objet calcul de la lumière
-                lghtcaribu = LightVegeManager(geometry=geometry, 
-                                            environment=environment,
-                                            lightmodel="caribu",
-                                            lightmodel_parameters=caribu_parameters)
-                lghtcaribu.VTKinit("outputs/mycaribuheterocanopy")
+                lghtcaribu.init_scenes(geometry)
                 lghtcaribu.run(PARi=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
                 c_time = time.time()-c_time
                 lghtcaribu.PAR_update_MTG(g)
@@ -265,10 +268,7 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
             
             # RATP est lancé dans les deux cas pour comparer
             r_time = time.time()
-            lghtratp = LightVegeManager(geometry=geometry, 
-                                            environment=environment,
-                                            lightmodel="ratp",
-                                            lightmodel_parameters=ratp_parameters)
+            lghtratp.init_scenes(geometry)
             lghtratp.run(PARi=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
 
             r_time = time.time()-r_time
@@ -457,7 +457,7 @@ if __name__ == "__main__":
     nstep=16
     outfolderpath = "outputs"
     sim = 1
-    writing = "append"
+    writing = "final"
 
     # récupère les arguments en entrée
     for opt, arg in opts:
