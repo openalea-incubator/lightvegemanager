@@ -612,7 +612,7 @@ class LightVegeManager:
     
         elif lightmodel == "caribu":
             # paramètres par défaut
-            self.__in_lightmodel_parameters["sun algo"] = "caribu"
+            if "sun algo" not in self.__in_lightmodel_parameters : self.__in_lightmodel_parameters["sun algo"] = "caribu"
 
             # copîe du minmax
             self.__pmax = Vector3(xmax, ymax, zmax)
@@ -1241,17 +1241,17 @@ class LightVegeManager:
             RATP2VTK.RATPVOXELS2VTK(self.__ratp_scene, lad, "LAD", path+"init_voxels.vtk")
 
         if plantnames==[]:
-            for i in range(self.__ratp_scene.nent):
+            for i in range(len(self.__in_geometry["scenes"])):
                 plantnames.append("plant_"+str(i))
         
         # pour chaque plante on a une valeur par triangle
         if planttrianglevalues==[]:
-            for i in range(self.__ratp_scene.nent):
+            for i in range(len(self.__in_geometry["scenes"])):
                 planttrianglevalues.append([])
 
             for tr in self.__my_scene :
                 planttrianglevalues[self.__matching_ids[tr.id][1]].append(10)
-                for i in range(self.__ratp_scene.nent):
+                for i in range(len(self.__in_geometry["scenes"])):
                     if i != self.__matching_ids[tr.id][1] : planttrianglevalues[i].append(0)
 
         VTKtriangles(self.__my_scene, planttrianglevalues, plantnames, path+"init_triangles.vtk")

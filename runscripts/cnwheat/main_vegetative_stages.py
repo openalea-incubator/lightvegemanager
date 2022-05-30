@@ -1059,6 +1059,6 @@ if __name__ == '__main__':
             show_3Dplant=False,
             option_static=False, tillers_replications={'T1': 0.5, 'T2': 0.5, 'T3': 0.5, 'T4': 0.5},
             heterogeneous_canopy=True, N_fertilizations={2016: 357143, 2520: 1000000},
-            PLANT_DENSITY={1: 250}, METEO_FILENAME='meteo_Ljutovac2002.csv',
+            PLANT_DENSITY={1: 250.}, METEO_FILENAME='meteo_Ljutovac2002.csv',
             OUTPUTS_DIRPATH=outfolderpath+"/brut",
             POSTPROCESSING_DIRPATH = outfolderpath+"/postprocessing")

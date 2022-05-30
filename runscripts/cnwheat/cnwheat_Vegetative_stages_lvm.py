@@ -18,6 +18,9 @@ Possibilité d'écrire les sorties au fur et à mesure ou en dernière étape ap
 
 NOTES :
     vérifier le chemin de INPUTS_FOLDER et celui de runstring pour lancer le script par défaut
+
+
+EN fait 
 '''
 
 def Create_OutputsFolders(parentfolderpath):
@@ -200,7 +203,9 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
         maxtr=[]
     
     tot_light = 0.
-    for t_light in progressbar.progressbar(range(START_TIME, SIMULATION_LENGTH, LIGHT_TIMESTEP)):
+    
+    #for t_light in progressbar.progressbar(range(START_TIME, SIMULATION_LENGTH, LIGHT_TIMESTEP)):
+    for t_light in progressbar.progressbar(range(START_TIME, SIMULATION_LENGTH, SENESCWHEAT_TIMESTEP)):
         if writing=="append":
             axes_all_data_list = []
             organs_all_data_list = []  # organs which belong to axes: roots, phloem, grains
@@ -252,9 +257,11 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
                                             environment=environment,
                                             lightmodel="caribu",
                                             lightmodel_parameters=caribu_parameters)
-                lghtcaribu.run(PARi=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True, printsun=True)
+                lghtcaribu.VTKinit("outputs/mycaribuheterocanopy")
+                lghtcaribu.run(PARi=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
                 c_time = time.time()-c_time
                 lghtcaribu.PAR_update_MTG(g)
+                print(lghtcaribu.shapes_outputs)
             
             # RATP est lancé dans les deux cas pour comparer
             r_time = time.time()
@@ -475,7 +482,7 @@ if __name__ == "__main__":
         simulation(level_tesselation, nstep, outfolderpath, active_lightmodel="ratp", writing=writing)
     elif sim==3:
         print("=== === DEFAULT === ===")
-        runstring = "python /lightvegemanager/runscripts/main_vegetative_stages.py -n "+str(nstep)+" -o "+str(outfolderpath)
+        runstring = "python runscripts/cnwheat/main_vegetative_stages.py -n "+str(nstep)+" -o "+str(outfolderpath)
         os.system(runstring)
 
         

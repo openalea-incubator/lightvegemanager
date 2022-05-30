@@ -284,7 +284,7 @@ def iteration_fspmwheat_withoutlighting(meteo,
                                         save_geom=False,
                                         GEOM_FOLDER=""):
     # suite de la simu
-    for t_senescwheat in range(t_light, t_light + LIGHT_TIMESTEP, SENESCWHEAT_TIMESTEP):
+    for t_senescwheat in range(t_light, t_light + SENESCWHEAT_TIMESTEP, SENESCWHEAT_TIMESTEP):
         # run SenescWheat
         senescwheat_facade_.run()
 
