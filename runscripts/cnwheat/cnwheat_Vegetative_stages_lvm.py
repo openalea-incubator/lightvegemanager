@@ -7,6 +7,7 @@ import sys
 import time
 import progressbar
 import getopt
+import random
 
 '''
 Comparaison sur un temps avec un couvert dense entre CARIBU et RATP
@@ -19,9 +20,10 @@ Possibilité d'écrire les sorties au fur et à mesure ou en dernière étape ap
 NOTES :
     vérifier le chemin de INPUTS_FOLDER et celui de runstring pour lancer le script par défaut
 
-
-EN fait 
 '''
+
+random.seed(1234)
+np.random.seed(1234)
 
 def Create_OutputsFolders(parentfolderpath):
     # dossier des données brutes
@@ -334,7 +336,7 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
                 else:
                     df_myout.to_csv(outfolderpath+"/LVM_out_values.csv", mode='a', index=False, header=False)   
         
-        # sinon on copie le PAR de l'itération précédente
+        # sinon on copie Erel de l'itération précédente
         else:
             Erel = g.property('Erel')
             PARa_output = {k: v * PARi for k, v in Erel.items()}

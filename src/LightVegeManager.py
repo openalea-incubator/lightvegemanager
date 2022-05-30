@@ -334,7 +334,7 @@ class LightVegeManager:
             raise ValueError("Unknown lightmodel : can be either 'ratp' or 'caribu' ")
             
     def init_scenes(self, geometry = {}, global_scene_tesselate_level=0):
-        '''Constructeur
+        '''Initialisation des scènes géométriques
         
         Arg :
             geometry : dict
