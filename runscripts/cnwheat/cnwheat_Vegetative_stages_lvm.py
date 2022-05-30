@@ -266,7 +266,6 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
                 lghtcaribu.run(PARi=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
                 c_time = time.time()-c_time
                 lghtcaribu.PAR_update_MTG(g)
-                print(lghtcaribu.shapes_outputs)
             
             # RATP est lancé dans les deux cas pour comparer
             r_time = time.time()
