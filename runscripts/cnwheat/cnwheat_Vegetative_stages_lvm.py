@@ -45,7 +45,7 @@ def Create_OutputsFolders(parentfolderpath):
         print("Directory " , dirName ,  " already exists")
     
 
-def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_lightmodel="caribu", writing="append"):
+def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_lightmodel="caribu", writing="append", device="local"):
     # -- SIMULATION PARAMETERS --
     START_TIME = 0
     PLANT_DENSITY = {1: 250.}
@@ -90,7 +90,8 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
     Create_OutputsFolders(outfolderpath)
     
     # Path of the directory which contains the inputs of the model
-    INPUTS_FOLDER = '/lightvegemanager/WheatFspm/fspm-wheat/example/Vegetative_stages/inputs'
+    if device=="local" : INPUTS_FOLDER = 'WheatFspm/fspm-wheat/example/Vegetative_stages/inputs'
+    elif device=="docker" : INPUTS_FOLDER = '/lightvegemanager/WheatFspm/fspm-wheat/example/Vegetative_stages/inputs'
     
     # Name of the CSV files which describes the initial state of the system
     AXES_INITIAL_STATE_FILENAME = 'axes_initial_state.csv'
@@ -449,7 +450,7 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
 if __name__ == "__main__":
     #definition d'arguments avec getopt
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "s: l: n: o: w:")
+        opts, args = getopt.getopt(sys.argv[1:], "s: l: n: o: w: d:")
     except getopt.GetoptError as err:
         print(str(err))
         sys.exit(2)
@@ -460,6 +461,7 @@ if __name__ == "__main__":
     outfolderpath = "outputs"
     sim = 2
     writing = "final"
+    device = "local" # docker
 
     # récupère les arguments en entrée
     for opt, arg in opts:
@@ -473,15 +475,17 @@ if __name__ == "__main__":
             sim = int(arg)
         elif opt in ("-w"):
             writing = str(arg)
+        elif opt in ("-d"):
+            device = str(arg)
     
     print("=== BEGIN ===")
     print("--- Simulation Cn-Wheat : niveau tesselation (RATP)=%i | iterations=%i | outputs=%s"%(level_tesselation, nstep, outfolderpath))
     if sim==1:
         print("=== === LVM : CARIBU ACTIVE + RATP PASSVE === ===")
-        simulation(level_tesselation, nstep, outfolderpath, active_lightmodel="caribu", writing=writing)
+        simulation(level_tesselation, nstep, outfolderpath, active_lightmodel="caribu", writing=writing, device=device)
     elif sim==2:
         print("=== === LVM : RATP ACTIVE === ===")
-        simulation(level_tesselation, nstep, outfolderpath, active_lightmodel="ratp", writing=writing)
+        simulation(level_tesselation, nstep, outfolderpath, active_lightmodel="ratp", writing=writing, device=device)
     elif sim==3:
         print("=== === DEFAULT === ===")
         runstring = "python runscripts/cnwheat/main_vegetative_stages.py -n "+str(nstep)+" -o "+str(outfolderpath)
