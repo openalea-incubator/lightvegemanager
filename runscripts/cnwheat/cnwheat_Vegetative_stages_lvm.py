@@ -171,7 +171,7 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
                                     lightmodel_parameters=caribu_parameters)
 
     ## Paramètres RATP ##
-    dv = 0.07 # m
+    dv = 0.1 # m
     dx, dy, dz = dv, dv, dv # m
     ratp_parameters["voxel size"] = [dx, dy, dz]
     ratp_parameters["soil reflectance"] = [0., 0.]

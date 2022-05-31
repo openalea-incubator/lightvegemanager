@@ -785,6 +785,15 @@ class LightVegeManager:
                     para_list.append((ShadedPAR[i] * ShadedArea[i] + SunlitPAR[i] * SunlitArea[i]) / (ShadedArea[i] + SunlitArea[i]))
                 else:
                     para_list.append(0.)
+            
+            # vérifie qu'on a pas de erel négatif
+            erel_list=[]
+            for i in range(len(xintav)):
+                if xintav[i] >= 0 :
+                    erel_list.append(xintav[i])
+                else:
+                    erel_list.append(0.)
+            
             dfvox =  pandas.DataFrame({'VegetationType':VegetationType,
                                 'Iteration':Iteration,
                                 'day':day,
@@ -796,7 +805,7 @@ class LightVegeManager:
                                 'SunlitArea': SunlitArea,
                                 'Area': ShadedArea + SunlitArea,
                                 'PARa': para_list,
-                                'xintav': xintav, 
+                                'xintav': erel_list, 
                                 })
             
             # tri de la dataframe par rapport aux shapes et triangles
