@@ -789,7 +789,7 @@ class LightVegeManager:
             # vérifie qu'on a pas de erel négatif
             erel_list=[]
             for i in range(len(xintav)):
-                if xintav[i] >= 0 :
+                if xintav[i] >= 1e-6 :
                     erel_list.append(xintav[i])
                 else:
                     erel_list.append(0.)
