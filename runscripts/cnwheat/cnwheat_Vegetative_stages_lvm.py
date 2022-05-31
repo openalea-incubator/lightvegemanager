@@ -247,7 +247,8 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
         PARi_next_hours = meteo.loc[range(t_light, t_light + LIGHT_TIMESTEP), ['PARi']].sum().values[0]
 
         # vérifie si l'itération suivante est encore le jour? et lance le calcul de lumière
-        if (t_light % LIGHT_TIMESTEP == 0) and (PARi_next_hours > 0):
+        # if (t_light % LIGHT_TIMESTEP == 0) and (PARi_next_hours > 0):
+        if (PARi > 0):
             # création d'un couvert hétérogène
             scene_etendu, domain = create_heterogeneous_canopy_copy(adel_wheat, g, nplants=50, var_plant_position=0.03, var_leaf_inclination=0.157, var_leaf_azimut=1.57, var_stem_azimut=0.157,
                                         plant_density=PLANT_DENSITY[1], inter_row=0.15)
