@@ -444,7 +444,8 @@ def append_outputs_fspmwheat(OUTPUTS_DIRPATH,
                             soils_data_list,
                             all_simulation_steps,
                             PRECISION = 4,
-                            run_postprocessing=True):
+                            run_postprocessing=True,
+                            delta_t="none"):
        
     # save des données brutes
     outputs_df_dict = {}
@@ -473,8 +474,9 @@ def append_outputs_fspmwheat(OUTPUTS_DIRPATH,
     
     # construit un premier postprocessing
     if run_postprocessing:
-        time_grid = list(outputs_df_dict.values())[0].t
-        delta_t = (time_grid.loc[1] - time_grid.loc[0]) * HOUR_TO_SECOND_CONVERSION_FACTOR
+        if delta_t=="none":
+            time_grid = list(outputs_df_dict.values())[0].t
+            delta_t = (time_grid.loc[1] - time_grid.loc[0]) * HOUR_TO_SECOND_CONVERSION_FACTOR
 
         axes_postprocessing_file_basename = AXES_POSTPROCESSING_FILENAME.split('.')[0]
         hiddenzones_postprocessing_file_basename = HIDDENZONES_POSTPROCESSING_FILENAME.split('.')[0]

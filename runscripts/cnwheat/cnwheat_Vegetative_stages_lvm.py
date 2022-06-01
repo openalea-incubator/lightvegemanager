@@ -45,7 +45,7 @@ def Create_OutputsFolders(parentfolderpath):
         print("Directory " , dirName ,  " already exists")
     
 
-def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_lightmodel="caribu", writing="append"):
+def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_lightmodel="caribu", writing="append", device="local"):
     # -- SIMULATION PARAMETERS --
     START_TIME = 0
     PLANT_DENSITY = {1: 250.}
@@ -90,7 +90,8 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
     Create_OutputsFolders(outfolderpath)
     
     # Path of the directory which contains the inputs of the model
-    INPUTS_FOLDER = 'WheatFspm/fspm-wheat/example/Vegetative_stages/inputs'
+    if device=="local" : INPUTS_FOLDER = 'WheatFspm/fspm-wheat/example/Vegetative_stages/inputs'
+    elif device=="docker" : INPUTS_FOLDER = '/lightvegemanager/WheatFspm/fspm-wheat/example/Vegetative_stages/inputs'
     
     # Name of the CSV files which describes the initial state of the system
     AXES_INITIAL_STATE_FILENAME = 'axes_initial_state.csv'
@@ -246,7 +247,8 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
         PARi_next_hours = meteo.loc[range(t_light, t_light + LIGHT_TIMESTEP), ['PARi']].sum().values[0]
 
         # vérifie si l'itération suivante est encore le jour? et lance le calcul de lumière
-        if (t_light % LIGHT_TIMESTEP == 0) and (PARi_next_hours > 0):
+        # if (t_light % LIGHT_TIMESTEP == 0) and (PARi_next_hours > 0):
+        if (PARi > 0):
             # création d'un couvert hétérogène
             scene_etendu, domain = create_heterogeneous_canopy_copy(adel_wheat, g, nplants=50, var_plant_position=0.03, var_leaf_inclination=0.157, var_leaf_azimut=1.57, var_stem_azimut=0.157,
                                         plant_density=PLANT_DENSITY[1], inter_row=0.15)
@@ -266,7 +268,6 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
                 lghtcaribu.run(PARi=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
                 c_time = time.time()-c_time
                 lghtcaribu.PAR_update_MTG(g)
-                print(lghtcaribu.shapes_outputs)
             
             # RATP est lancé dans les deux cas pour comparer
             r_time = time.time()
@@ -395,7 +396,8 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
                                     hiddenzones_all_data_list,
                                     elements_all_data_list,
                                     soils_all_data_list,
-                                    all_simulation_steps)
+                                    all_simulation_steps,
+                                    delta_t=SENESCWHEAT_TIMESTEP)
 
     if writing == "final":
         if active_lightmodel == "caribu":
@@ -449,17 +451,18 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
 if __name__ == "__main__":
     #definition d'arguments avec getopt
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "s: l: n: o: w:")
+        opts, args = getopt.getopt(sys.argv[1:], "s: l: n: o: w: d:")
     except getopt.GetoptError as err:
         print(str(err))
         sys.exit(2)
 
     # valeur par défaut
     level_tesselation=0
-    nstep=16
+    nstep=24
     outfolderpath = "outputs"
-    sim = 1
+    sim = 2
     writing = "final"
+    device = "local" # docker
 
     # récupère les arguments en entrée
     for opt, arg in opts:
@@ -473,15 +476,17 @@ if __name__ == "__main__":
             sim = int(arg)
         elif opt in ("-w"):
             writing = str(arg)
+        elif opt in ("-d"):
+            device = str(arg)
     
     print("=== BEGIN ===")
     print("--- Simulation Cn-Wheat : niveau tesselation (RATP)=%i | iterations=%i | outputs=%s"%(level_tesselation, nstep, outfolderpath))
     if sim==1:
         print("=== === LVM : CARIBU ACTIVE + RATP PASSVE === ===")
-        simulation(level_tesselation, nstep, outfolderpath, active_lightmodel="caribu", writing=writing)
+        simulation(level_tesselation, nstep, outfolderpath, active_lightmodel="caribu", writing=writing, device=device)
     elif sim==2:
         print("=== === LVM : RATP ACTIVE === ===")
-        simulation(level_tesselation, nstep, outfolderpath, active_lightmodel="ratp", writing=writing)
+        simulation(level_tesselation, nstep, outfolderpath, active_lightmodel="ratp", writing=writing, device=device)
     elif sim==3:
         print("=== === DEFAULT === ===")
         runstring = "python runscripts/cnwheat/main_vegetative_stages.py -n "+str(nstep)+" -o "+str(outfolderpath)
