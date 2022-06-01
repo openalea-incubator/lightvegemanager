@@ -45,7 +45,7 @@ def Create_OutputsFolders(parentfolderpath):
         print("Directory " , dirName ,  " already exists")
     
 
-def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_lightmodel="caribu", writing="append", device="local"):
+def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_lightmodel="caribu", passive_lightmodel="", writing="append", device="local", dv=0.1):
     # -- SIMULATION PARAMETERS --
     START_TIME = 0
     PLANT_DENSITY = {1: 250.}
@@ -171,7 +171,6 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
                                     lightmodel_parameters=caribu_parameters)
 
     ## Paramètres RATP ##
-    dv = 0.1 # m
     dx, dy, dz = dv, dv, dv # m
     ratp_parameters["voxel size"] = [dx, dy, dz]
     ratp_parameters["soil reflectance"] = [0., 0.]
@@ -260,26 +259,22 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
             id_entity = 0
             geometry["stems id"] = whichstems_MTG(g, id_entity)
             
-            if active_lightmodel=="caribu":
-                # ajoute le pattern aux paramètres du modèle                
+            if active_lightmodel=="caribu" or passive_lightmodel=="caribu":             
                 c_time = time.time()
-                # Objet calcul de la lumière
                 lghtcaribu.init_scenes(geometry)
                 lghtcaribu.run(PARi=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
                 c_time = time.time()-c_time
-                lghtcaribu.PAR_update_MTG(g)
+                
+                if active_lightmodel=="caribu" : lghtcaribu.PAR_update_MTG(g)
             
-            # RATP est lancé dans les deux cas pour comparer
-            r_time = time.time()
-            lghtratp.init_scenes(geometry)
-            lghtratp.run(PARi=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
-
-            r_time = time.time()-r_time
-
-            if active_lightmodel == "ratp":
-                lghtratp.PAR_update_MTG(g)
+            if active_lightmodel=="ratp" or passive_lightmodel=="ratp":
+                r_time = time.time()
+                lghtratp.init_scenes(geometry)
+                lghtratp.run(PARi=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
+                r_time = time.time()-r_time
+                if active_lightmodel == "ratp": lghtratp.PAR_update_MTG(g)
             
-            if active_lightmodel == "caribu":
+            if active_lightmodel == "caribu" and passive_lightmodel=="ratp":
                 for key,items in g.property("PARa").items():
                     para_c.append(items)
                     para_r.append(lghtratp.shapes_outputs[lghtratp.shapes_outputs.ShapeId==key]["PARa"].values[0])
@@ -310,7 +305,34 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
                             "SunlitPAR" : parsun,
                             "ShadedPAR" : parsha,
                             "Max Triangle Area" : maxtr}
-            elif active_lightmodel == "ratp":
+            
+            elif active_lightmodel == "caribu" and passive_lightmodel == "":
+                for key,items in g.property("PARa").items():
+                    para_c.append(items)
+                    shapes.append(key)
+                    pari.append(lghtcaribu.shapes_outputs[lghtcaribu.shapes_outputs.ShapeId==key]["PARi"].values[0])
+                iter.extend([t_light]*len(g.property("PARa")))
+                parin.extend([PARi]*len(g.property("PARa")))
+                caribu_times.extend([c_time]*len(g.property("PARa")))
+                caribu_runtimes.extend([lghtcaribu.modelruntime]*len(g.property("PARa")))
+                maxtr.extend([lghtcaribu.maxtrianglearea]*len(g.property("PARa")))
+
+                myoutputs = {"Shapes" : shapes, 
+                            "Iteration" : iter,
+                            "CARIBU total time" : caribu_times, 
+                            "CARIBU run time" : caribu_runtimes,
+                            "RATP total time" : ratp_times, 
+                            "RATP run time" : ratp_runtimes, 
+                            "RATP tess time" : tess_times, 
+                            "PAR input" : parin, 
+                            "PARa CARIBU" : para_c,
+                            "PARi CARIBU" : pari,
+                            "PARa RATP" : para_r, 
+                            "SunlitPAR" : parsun,
+                            "ShadedPAR" : parsha,
+                            "Max Triangle Area" : maxtr}
+            
+            elif active_lightmodel == "ratp" and passive_lightmodel == "":
                 for key,items in g.property("PARa").items():
                     para_r.append(lghtratp.shapes_outputs[lghtratp.shapes_outputs.ShapeId==key]["PARa"].values[0])
                     shapes.append(key)
@@ -400,7 +422,7 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
                                     delta_t=SENESCWHEAT_TIMESTEP)
 
     if writing == "final":
-        if active_lightmodel == "caribu":
+        if active_lightmodel == "caribu" and passive_lightmodel=="ratp":
             myoutputs = {"Shapes" : shapes, 
                                     "Iteration" : iter,
                                     "CARIBU total time" : caribu_times, 
@@ -415,8 +437,18 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
                                     "SunlitPAR" : parsun,
                                     "ShadedPAR" : parsha,
                                     "Max Triangle Area" : maxtr}
+        
+        elif active_lightmodel == "caribu" and passive_lightmodel == "":
+            myoutputs = {"Shapes" : shapes, 
+                                    "Iteration" : iter,
+                                    "CARIBU total time" : caribu_times, 
+                                    "CARIBU run time" : caribu_runtimes,
+                                    "PAR input" : parin, 
+                                    "PARa CARIBU" : para_c,
+                                    "PARi CARIBU" : pari,
+                                    "Max Triangle Area" : maxtr}
 
-        elif active_lightmodel == "ratp":
+        elif active_lightmodel == "ratp" and passive_lightmodel == "":
             myoutputs = {"Shapes" : shapes, 
                                     "Iteration" : iter,
                                     "RATP time" : ratp_times, 
@@ -425,6 +457,7 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
                                     "SunlitPAR" : parsun,
                                     "ShadedPAR" : parsha,
                                     "Max Triangle Area" : maxtr}
+        
         df_myout = pd.DataFrame(myoutputs)
         df_myout.to_csv(outfolderpath+"/LVM_out_values.csv", mode='w', index=False)
         write_outputs_fspmwheat(OUTPUTS_DIRPATH,
@@ -451,18 +484,19 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
 if __name__ == "__main__":
     #definition d'arguments avec getopt
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "s: l: n: o: w: d:")
+        opts, args = getopt.getopt(sys.argv[1:], "s: l: n: o: w: d: v:")
     except getopt.GetoptError as err:
         print(str(err))
         sys.exit(2)
 
     # valeur par défaut
     level_tesselation=0
-    nstep=24
+    nstep=4
     outfolderpath = "outputs"
     sim = 2
     writing = "final"
     device = "local" # docker
+    dv = 0.1 #m taille des voxels
 
     # récupère les arguments en entrée
     for opt, arg in opts:
@@ -478,16 +512,21 @@ if __name__ == "__main__":
             writing = str(arg)
         elif opt in ("-d"):
             device = str(arg)
+        elif opt in ("-v"):
+            device = str(arg)
     
     print("=== BEGIN ===")
-    print("--- Simulation Cn-Wheat : niveau tesselation (RATP)=%i | iterations=%i | outputs=%s"%(level_tesselation, nstep, outfolderpath))
+    print("--- Simulation Cn-Wheat : niveau tesselation (RATP)=%i | iterations=%i | outputs=%s | voxel=%.2fm"%(level_tesselation, nstep, outfolderpath, dv))
     if sim==1:
         print("=== === LVM : CARIBU ACTIVE + RATP PASSVE === ===")
-        simulation(level_tesselation, nstep, outfolderpath, active_lightmodel="caribu", writing=writing, device=device)
+        simulation(level_tesselation, nstep, outfolderpath, active_lightmodel="caribu", passive_lightmodel="ratp", writing=writing, device=device, dv=dv)
     elif sim==2:
-        print("=== === LVM : RATP ACTIVE === ===")
-        simulation(level_tesselation, nstep, outfolderpath, active_lightmodel="ratp", writing=writing, device=device)
+        print("=== === LVM : CARIBU ACTIVE === ===")
+        simulation(level_tesselation, nstep, outfolderpath, active_lightmodel="caribu", writing=writing, device=device)
     elif sim==3:
+        print("=== === LVM : RATP ACTIVE === ===")
+        simulation(level_tesselation, nstep, outfolderpath, active_lightmodel="ratp", writing=writing, device=device, dv=dv)
+    elif sim==4:
         print("=== === DEFAULT === ===")
         runstring = "python runscripts/cnwheat/main_vegetative_stages.py -n "+str(nstep)+" -o "+str(outfolderpath)
         os.system(runstring)
