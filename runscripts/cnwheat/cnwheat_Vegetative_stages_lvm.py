@@ -532,6 +532,8 @@ if __name__ == "__main__":
         print("=== === DEFAULT === ===")
         runstring = "python runscripts/cnwheat/main_vegetative_stages.py -n "+str(nstep)+" -o "+str(outfolderpath)
         os.system(runstring)
+    
+    print("=== END ===")
 
         
 

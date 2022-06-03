@@ -437,9 +437,9 @@ class LightVegeManager:
 
         # RATP
         if self.__lightmodel == "ratp":
-            # on sépare les tiges dans une nouvelle entité
-            mem_mu=[]
-            if "stems id" in self.__in_geometry :
+            # on sépare les tiges dans une nouvelle entité si il y a des shapes non tiges
+            if "stems id" in self.__in_geometry and len(self.__in_geometry["stems id"]) < len(self.__matching_ids) :
+                mem_mu=[]
                 for stem in self.__in_geometry["stems id"]:
                     # on recherche la shape correspondante dans le dict des id
                     ids=0
@@ -483,8 +483,8 @@ class LightVegeManager:
                             totA+=t.area
                     t_nent_area.append(totA)
                 
-                # on ajoute 1 au nombre de classe avec range
-                angles = list(np.linspace(90/self.__in_lightmodel_parameters["nb angle classes"], 90, self.__in_lightmodel_parameters["nb angle classes"]))
+                # on va jusqu'à 91° pour prendre en compte les plans
+                angles = list(np.linspace(90/self.__in_lightmodel_parameters["nb angle classes"], 91, self.__in_lightmodel_parameters["nb angle classes"]))
 
                 # pour chaque entité
                 for k in range(nent):
