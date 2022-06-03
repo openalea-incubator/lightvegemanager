@@ -214,7 +214,9 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
     tot_light = 0.
     
     #for t_light in progressbar.progressbar(range(START_TIME, SIMULATION_LENGTH, LIGHT_TIMESTEP)):
-    for t_light in progressbar.progressbar(range(START_TIME, SIMULATION_LENGTH, SENESCWHEAT_TIMESTEP)):
+    if active_lightmodel == "ratp" : simu_step = 1
+    elif active_lightmodel == "caribu" : simu_step = 4
+    for t_light in progressbar.progressbar(range(START_TIME, SIMULATION_LENGTH, simu_step)):
         if writing=="append":
             axes_all_data_list = []
             organs_all_data_list = []  # organs which belong to axes: roots, phloem, grains
