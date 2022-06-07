@@ -591,7 +591,7 @@ class LightVegeManager:
                 # c'est une tige on divise par 2 le LAD
                 if (self.__matching_ids[tr.id][0], self.__matching_ids[tr.id][1] - len(self.__in_geometry["scenes"])) in self.__in_geometry["stems id"] or \
                     (self.__matching_ids[tr.id][0], self.__matching_ids[tr.id][1]) in self.__in_geometry["stems id"] :
-                    a.append(tr.area*0.5)
+                    a.append(tr.area)
                 else:
                     a.append(tr.area)
                 
@@ -606,7 +606,7 @@ class LightVegeManager:
             # obligé de prendre en compte les triangles après
             # la tesselation
             if self.__in_lightmodel_parameters["angle distrib algo"] == "compute voxel":
-                angles = list(np.linspace(90/self.__in_lightmodel_parameters["nb angle classes"], 90, self.__in_lightmodel_parameters["nb angle classes"]))
+                angles = list(np.linspace(90/self.__in_lightmodel_parameters["nb angle classes"], 91, self.__in_lightmodel_parameters["nb angle classes"]))
                 t_area=[]
                 # pour chaque voxel
                 for k in range(self.__ratp_scene.nveg):
@@ -1269,8 +1269,9 @@ class LightVegeManager:
             plantnames : liste de string, si l'on veut mettre un nom personnalisé pour chaque entité
             planttrianglevalues : liste de liste de float, si l'on veut mettre des grandeurs associées à chaque triangle pour chaque entité
         '''
-        
+        nent = len(self.__in_geometry["scenes"])
         if self.__lightmodel == "ratp":
+            nent = int(self._LightVegeManager__ratp_scene.nent)
             # plot dans VTK
             temp1, temp2, temp3 = [], [], []
             # éviter les éléments en trop
@@ -1284,17 +1285,17 @@ class LightVegeManager:
             RATP2VTK.RATPVOXELS2VTK(self.__ratp_scene, lad, "LAD", path+"init_voxels.vtk")
 
         if plantnames==[]:
-            for i in range(len(self.__in_geometry["scenes"])):
+            for i in range(nent):
                 plantnames.append("plant_"+str(i))
         
         # pour chaque plante on a une valeur par triangle
         if planttrianglevalues==[]:
-            for i in range(len(self.__in_geometry["scenes"])):
+            for i in range(nent):
                 planttrianglevalues.append([])
 
             for tr in self.__my_scene :
                 planttrianglevalues[self.__matching_ids[tr.id][1]].append(10)
-                for i in range(len(self.__in_geometry["scenes"])):
+                for i in range(nent):
                     if i != self.__matching_ids[tr.id][1] : planttrianglevalues[i].append(0)
 
         VTKtriangles(self.__my_scene, planttrianglevalues, plantnames, path+"init_triangles.vtk")

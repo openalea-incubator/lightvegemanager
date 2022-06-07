@@ -295,8 +295,6 @@ def RATPVOXELS2VTK(grid, variable,varname="Variable",nomfich="C:\tmpRATP\RATPOUT
                 for ii in range(grid.njx): #Loop over all voxels
                     k =grid.kxyz[ii,ij,ik] # attention affiche k+1
                     f.write(str(k)+'\n')
-                    if k == 28 or k == 29 or k == 31 or k == 30:
-                        print("x y z k",ii, ij, ik, k)
         f.write('\n')
 
     f.close()
