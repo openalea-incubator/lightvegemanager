@@ -12,6 +12,14 @@ plusieurs plaques horizontales dans un voxel comme suit (censé correspondre à 
 
 On compare la moyenne du PAR sur les plaques entre CARIBU et RATP
 
+Prise en compte des tiges
+    * CARIBU
+        le calcul du PAR incident est effectué sans disctinction sur les triangles, puis on soustrait
+        la portion réfléchi. On soustrait uniquement la partie transmise aux éléments non tiges
+    
+    * RATP
+        
+
 """
 
 # scène géométrique
@@ -76,11 +84,24 @@ lghtratp.init_scenes(geometry)
 # imprime la scène
 lghtratp.VTKinit("outputs/stems/")
 
-# situation
+## situation 1
 PARi=500
-DOY=201
-hour=12.
+DOY=100.
+hour=12
+# calcul
+lghtcaribu.run(PARi=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True, printsun=True)
+lghtratp.run(PARi=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
 
+# résultats
+print("=== CARIBU ===")
+print(lghtcaribu.shapes_outputs)
+print("=== RATP ===")
+print(lghtratp.shapes_outputs)
+
+## situation 2
+PARi=500
+DOY=100.
+hour=17.5
 # calcul
 lghtcaribu.run(PARi=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True, printsun=True)
 lghtratp.run(PARi=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)

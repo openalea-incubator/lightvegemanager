@@ -104,14 +104,12 @@ class Triangle3:
         self.__area = v12.norm * 0.5
 
         # recupère l'élévation de la normale
-        e = math.acos(self.__normal[2])
+        e = math.acos(abs(self.__normal[2]))
         # passe en degré
         e *= 180/math.pi
         # on reste entre 0 et 90
-        if e < 0 :
-            e = 180 - e
-        elif(e > 90):
-            e -= 90
+        if e > 90 and e < 180 : e = 90-(e%90)
+        else : e = e%90
         
         self.__elevation = e
     

@@ -589,7 +589,8 @@ class LightVegeManager:
                 
                 # id : id de la shape, val : [id shape en input, id de l'entité]
                 # c'est une tige on divise par 2 le LAD
-                if (self.__matching_ids[tr.id][0], self.__matching_ids[tr.id][1] - len(self.__in_geometry["scenes"])) in self.__in_geometry["stems id"]:
+                if (self.__matching_ids[tr.id][0], self.__matching_ids[tr.id][1] - len(self.__in_geometry["scenes"])) in self.__in_geometry["stems id"] or \
+                    (self.__matching_ids[tr.id][0], self.__matching_ids[tr.id][1]) in self.__in_geometry["stems id"] :
                     a.append(tr.area*0.5)
                 else:
                     a.append(tr.area)
@@ -833,7 +834,8 @@ class LightVegeManager:
             nshapes = len(self.__matching_ids)
             s_shapes = []
             s_area=[]
-            s_par=[]
+            s_para=[]
+            s_pari=[]
             s_xintav=[]
             s_ite=[]
             s_day=[]
@@ -845,6 +847,7 @@ class LightVegeManager:
             s_areasha=[]
             for id in range(nshapes):
                 # itérations commencent à 1
+                nent = self.__matching_ids[id][1]
                 for ite in range(int(max(output["Iteration"]))):
                     dffil = output[(output.Iteration == ite+1) & (output.shape_id == id)]
                     
@@ -852,7 +855,25 @@ class LightVegeManager:
                     s_day.append(dffil["day"].values[0])
                     s_ite.append(ite+1)
                     s_area.append(sum(dffil["primitive_area"]))
-                    s_par.append(sum(dffil['primitive_area']*dffil['PARa']) / s_area[-1])
+
+                    # le rayonnemenbt réfléchi est calculé dans RATP
+                    if self.__in_environment["reflected"] :
+                        s_para.append(sum(dffil['primitive_area']*dffil['PARa']) / s_area[-1])
+                    
+                    # sinon on le rajoute manuellement
+                    else:
+                        # PAR incident
+                        s_pari.append(sum(dffil['primitive_area']*dffil['PARa']) / s_area[-1])
+                        s_para.append(s_pari[-1] - (s_pari[-1] * self.__in_environment["reflectance coefficients"][nent][0]))
+                        
+                        # # applique une réflectance et une transmittance sur le PAR incident
+                        # if (self.__matching_ids[id][0], nent - len(self.__in_geometry["scenes"])) in self.__in_geometry["stems id"] or \
+                        #     (self.__matching_ids[id][0], nent) in self.__in_geometry["stems id"] :
+                        #     
+                        # else:
+                        #     s_para.append(s_pari[-1] - (s_pari[-1] * self.__in_environment["reflectance coefficients"][nent][0] + \
+                        #                                 s_pari[-1] * self.__in_environment["reflectance coefficients"][nent][1]))
+
                     s_parsun.append(sum(dffil['primitive_area']*dffil['SunlitPAR']) / s_area[-1])
                     s_parsha.append(sum(dffil['primitive_area']*dffil['ShadedPAR']) / s_area[-1])
                     s_areasun.append(sum(dffil['primitive_area']*dffil['SunlitArea']) / s_area[-1])
@@ -867,7 +888,8 @@ class LightVegeManager:
                 "ShapeId" : s_shapes,
                 "VegetationType" : s_ent,
                 "Area" : s_area,
-                "PARa" : s_par,
+                "PARi" : s_pari,
+                "PARa" : s_para,
                 "xintav" : s_xintav,
                 "SunlitPAR" : s_parsun,
                 "SunlitArea" : s_areasun,
@@ -1084,8 +1106,8 @@ class LightVegeManager:
                 "ShapeId" : s_shapes,
                 "VegetationType" : s_ent,
                 "Area" : s_area,
-                "PARa" : s_par,
                 "PARi" : s_pari,
+                "PARa" : s_par,
                 "xintav" : s_xintav
             })
 
@@ -1118,8 +1140,8 @@ class LightVegeManager:
                 "ShapeId" : s_shapes,
                 "VegetationType" : s_ent,
                 "Area" : s_area,
-                "PARa" : s_par,
                 "PARi" : s_pari,
+                "PARa" : s_par,
                 "xintav" : s_xintav
             })
 
