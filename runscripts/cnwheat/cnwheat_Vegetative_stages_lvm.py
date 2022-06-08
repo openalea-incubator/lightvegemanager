@@ -278,8 +278,6 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
                 lghtratp.run(PARi=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
                 r_time = time.time()-r_time
                 if active_lightmodel == "ratp": lghtratp.PAR_update_MTG(g)
-
-                lghtratp.VTKinit(outfolderpath+"/")
             
             if active_lightmodel == "caribu" and passive_lightmodel=="ratp":
                 for key,items in g.property("PARa").items():
