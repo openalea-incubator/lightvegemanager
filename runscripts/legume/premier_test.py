@@ -1,23 +1,13 @@
-from openalea.lpy import *
-import multiprocessing
+from src.LightVegeManager import *
+from src. import *
 
-import os
-import sys
+## --> Installer la dernière version de lpy (3.9.2) pour la cohabitation cnwheat et legume
 
-import legume
-
-path_ = os.path.dirname(os.path.abspath(legume.__file__))  # local absolute path of L-egume
-
-print(('path', path_))
-
-sys.path.insert(0, path_)
-import IOxls
-import IOtable
-import run_legume_usm as runl
-import ShootMorpho as sh
-import daily_loop as loop
-import numpy as np
-import RIRI5 as riri
+### ETAPES
+# chemin des inputs
+# ouvre le excel usm et l'enregistre dans un dico
+# fait une liste de lsystem pour chaque situation de l'usm to_run==1 
+# 
 
 def runlsystem_bystep(n):
     """run du niem l-system by step dans une liste (names)"""
@@ -27,17 +17,23 @@ def runlsystem_bystep(n):
     nb_iter = lsys.derivationLength #lire dans derivation_length #335 #30
     lsys.opt_external_coupling = 1 # met a un l'option external coupling
 
-    #option stress a zero si besoin
-    #lsys.opt_stressN = 0
-    #lsys.opt_stressW = 0
-
     for i in range(nb_iter+1):
         print('iter ',i,n)
         lstring = lsys.derive(lstring, i, 1)
 
         ## daily loop
         tag_loop_inputs = lsys.tag_loop_inputs
-        invar, outvar, invar_sc, ParamP, station, carto, meteo_j, mng_j, DOY, cutNB, start_time, nbplantes, surfsolref, m_lais, dicFeuilBilanR, surf_refVOX, triplets, ls_dif, S, par_SN, lims_sol, ls_roots, stateEV, Uval, b_, ls_mat_res, vCC, ls_ftswStress, ls_NNIStress, ls_TStress, lsApex, lsApexAll, dicOrgans, deltaI_I0, nbI_I0, I_I0profilLfPlant, I_I0profilPetPlant, I_I0profilInPlant, NlClasses, NaClasses, NlinClasses, opt_stressW, opt_stressN, opt_stressGel, opt_residu = tag_loop_inputs
+        invar, outvar, invar_sc, ParamP, \
+            station, carto, meteo_j, mng_j,  \
+            DOY, cutNB, start_time, nbplantes,  \
+            surfsolref, m_lais, dicFeuilBilanR,  \
+            surf_refVOX, triplets, ls_dif, S, par_SN,  \
+            lims_sol, ls_roots, stateEV, Uval, b_,  \
+            ls_mat_res, vCC, ls_ftswStress, ls_NNIStress,  \
+            ls_TStress, lsApex, lsApexAll, dicOrgans,  \
+            deltaI_I0, nbI_I0, I_I0profilLfPlant, I_I0profilPetPlant,  \
+            I_I0profilInPlant, NlClasses, NaClasses, NlinClasses,  \
+            opt_stressW, opt_stressN, opt_stressGel, opt_residu = tag_loop_inputs
 
         ############
         # step light transfer coupling
@@ -53,7 +49,7 @@ def runlsystem_bystep(n):
 
         # R_FR voxel (calcul de zeta)
         tag_light_inputs2 = [res_trans / (meteo_j['I0'] * surf_refVOX)]  # input tag
-        local_res_rfr = riri.rfr_calc_relatif(*tag_light_inputs2)  # (res_trans/(meteo_j['I0']*surf_refVOX))
+        local_res_rfr = riri.rfr_calc_relatif(*tag_light_inputs2)
 
         res_rfr = local_res_rfr  # mise a jour variables globales
 
@@ -98,7 +94,6 @@ def runlsystem_bystep(n):
         res_residue_step = loop.update_residue_mat(*tag_inputs_residue_updt)
         ls_mat_res, S = res_residue_step  # unpacks results from a list and updates global variables
 
-
         #########
         # reinjecte les sorties midiee dans le lsystem
         #########
@@ -118,29 +113,8 @@ def runlsystem_bystep(n):
         lsys.ls_TStress = ls_TStress
         lsys.I_I0profilInPlant = I_I0profilInPlant
 
-        #ls_mat_res bien pris en compte??? -> yes
-
-        #yes!! + produit bien la meme sortie!! que fichier sans by_pass
-        #par contre temps de calcul plus long!!!  525s au lieu de 323!!!
-
-        #pour sauvegarder geometrie
-        #s_leg = lsys.sceneInterpretation(lstring)
-        #s_leg.save("s_leg.bgeom")
-
     testsim[names[n]].clear()
     print((''.join((names[n], " - done"))))
 
 if __name__ == '__main__':
-    multiprocessing.freeze_support()
-    CPUnb = multiprocessing.cpu_count() - 1  # nombre de processeurs, moins un par prudence. (et pour pouvoir faire d'autres choses en meme temps)
-    print('nb CPU: ' + str(CPUnb))
-    pool = multiprocessing.Pool(processes=CPUnb)
-    for i in range(1):#(int(nb_usms)):
-        #pool.apply_async(runlsystem, args=(i,))   # Lance CPUnb simulations en meme temps, lorsqu'une simulation se termine elle est immediatement remplacee par la suivante
-        runlsystem(i) #pour debug hors multisim (messages d'ereur visible)
-        #runlsystem_bystep(i)
-        #runl2system_bystep(i, i+1)
-        #runl2systemLight_bystep(i, i+1)
-
-    pool.close()
-    pool.join()
+    runlsystem_bystep(0)
