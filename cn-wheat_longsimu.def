@@ -1,0 +1,37 @@
+Bootstrap: localimage
+From: miniconda3_py37_4.11.0.sif
+# on part d'un conteneur pré-construit
+
+%environment
+    export LC_ALL=C
+    export LC_NUMERIC=en_GB.UTF-8
+
+%runscript
+    # Execute script python
+    python "$@"
+
+%post
+	apt update
+	DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt install -y tzdata
+
+	apt install -y build-essential wget bzip2 unzip git gfortran freeglut3-dev libxext-dev libxrender-dev libglib2.0-0 libqhull-dev
+
+    # installation des dépendances
+    conda install python=3.7 openalea.mtg openalea.plantgl openalea.lpy alinea.caribu alinea.astk xlrd coverage nose sphinx statsmodels numpy scipy pandas progressbar2 -c conda-forge -c fredboudon
+
+    # installe adel (requis par WheatFspm)
+    wget https://github.com/rbarillot/adel/archive/python3.zip
+    unzip python3.zip && cd adel-python3
+    python setup.py develop
+    cd -
+    rm python3.zip
+
+    # installe Wheat-Fspm
+    git clone --recurse-submodules https://github.com/openalea-incubator/WheatFspm.git
+    cd WheatFspm
+    git submodule update --remote
+    python setup.py develop
+
+	# installe l-egume
+	git clone -b Develop https://github.com/glouarn/l-egume.git
+	python setup.py develop

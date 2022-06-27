@@ -364,44 +364,46 @@ class LightVegeManager:
         self.__my_scene=[]
         count=0
         for i_esp, scene in enumerate(self.__in_geometry["scenes"]) :
-            for id, pgl_objects in scene.todict().items():
-                lastid = len(self.__my_scene)
-                
-                tri_list = list(itertools.chain(*[pgl_to_triangles(pgl_object) for pgl_object in pgl_objects]))
-                # on set l'id des triangles de la shape
-                for tr in tri_list:
-                    tr.set_id(count)
-                self.__my_scene.extend(tri_list)
-                # on set le tableau des indices
-                self.__matching_ids[count] = (id, i_esp, list(range(lastid,lastid+len(tri_list))))
-                count += 1
+            if isinstance(scene, pgl.Scene):
+                for id, pgl_objects in scene.todict().items():
+                    lastid = len(self.__my_scene)
+                    
+                    tri_list = list(itertools.chain(*[pgl_to_triangles(pgl_object) for pgl_object in pgl_objects]))
+                    # on set l'id des triangles de la shape
+                    for tr in tri_list:
+                        tr.set_id(count)
+                    self.__my_scene.extend(tri_list)
+                    # on set le tableau des indices
+                    self.__matching_ids[count] = (id, i_esp, list(range(lastid,lastid+len(tri_list))))
+                    count += 1
         
         # applique les transformations sur les triangles
         if "transformations" in self.__in_geometry :
             for i_esp in range(len(self.__in_geometry["scenes"])):
-                for tr in self.__my_scene:
-                    if self.__matching_ids[tr.id][1] == i_esp:
-                        if "rescale" in  self.__in_geometry["transformations"] : tr.rescale(self.__in_geometry["transformations"]["rescale"][i_esp])
-                        
-                        if "translate" in  self.__in_geometry["transformations"]  : tr.translate(self.__in_geometry["transformations"]["translate"][i_esp])
-                        
-                        if "scenes unit" in  self.__in_geometry["transformations"] :
-                            # recupère la variable pour la lisibilité
-                            scene_unit = self.__in_geometry["transformations"]["scenes unit"][i_esp]
+                if isinstance(self.__in_geometry["scenes"][i_esp], pgl.Scene):
+                    for tr in self.__my_scene:
+                        if self.__matching_ids[tr.id][1] == i_esp:
+                            if "rescale" in  self.__in_geometry["transformations"] : tr.rescale(self.__in_geometry["transformations"]["rescale"][i_esp])
                             
-                            if (scene_unit != self.__main_unit) and (scene_unit in self.units):
-                                tr.rescale(self.units[scene_unit]/self.units[self.__main_unit])
-                        
-                        # la convention du repère xyz par rapport aux points cardinaux est précisée
-                        # on ramène la scène à la convention x+ = N
-                        # si non précisé, on ne change pas l'orientation de la scène
-                        if "xyz orientation" in self.__in_geometry["transformations"]:
-                            if self.__in_geometry["transformations"]["xyz orientation"][i_esp] == "x+ = S":
-                                tr.zrotate(180)
-                            elif self.__in_geometry["transformations"]["xyz orientation"][i_esp] == "x+ = W":
-                                tr.zrotate(90)
-                            elif self.__in_geometry["transformations"]["xyz orientation"][i_esp] == "x+ = E":
-                                tr.zrotate(-90)
+                            if "translate" in  self.__in_geometry["transformations"]  : tr.translate(self.__in_geometry["transformations"]["translate"][i_esp])
+                            
+                            if "scenes unit" in  self.__in_geometry["transformations"] :
+                                # recupère la variable pour la lisibilité
+                                scene_unit = self.__in_geometry["transformations"]["scenes unit"][i_esp]
+                                
+                                if (scene_unit != self.__main_unit) and (scene_unit in self.units):
+                                    tr.rescale(self.units[scene_unit]/self.units[self.__main_unit])
+                            
+                            # la convention du repère xyz par rapport aux points cardinaux est précisée
+                            # on ramène la scène à la convention x+ = N
+                            # si non précisé, on ne change pas l'orientation de la scène
+                            if "xyz orientation" in self.__in_geometry["transformations"]:
+                                if self.__in_geometry["transformations"]["xyz orientation"][i_esp] == "x+ = S":
+                                    tr.zrotate(180)
+                                elif self.__in_geometry["transformations"]["xyz orientation"][i_esp] == "x+ = W":
+                                    tr.zrotate(90)
+                                elif self.__in_geometry["transformations"]["xyz orientation"][i_esp] == "x+ = E":
+                                    tr.zrotate(-90)
         
         # enregistre l'aire du plus grand triangle (indicateur par rapport au besoin de tesselation)
         self.__maxtrarea = 0.
