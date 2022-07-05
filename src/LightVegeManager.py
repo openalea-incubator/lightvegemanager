@@ -154,6 +154,9 @@ def VTKtriangles(triangles, var, varname, filename):
 
     f.close()
 
+    var=[]
+    varname=[]
+
 def VTKline(start, end, filename):
     """Ecriture d'une ligne VTK
     
@@ -421,237 +424,346 @@ class LightVegeManager:
         
         # min-max de la scène
         xmax, xmin, ymax, ymin, zmax, zmin = -999999,999999,-999999,999999,-999999,999999      
-        for tr in self.__my_scene:
-            for i in range(3) :
-                p = tr[i]
-                if p[0] > xmax :
-                    xmax = p[0]
-                if p[0] < xmin:
-                    xmin = p[0]
-                if p[1] > ymax :
-                    ymax = p[1]
-                if p[1] < ymin:
-                    ymin = p[1]
-                if p[2] > zmax :
-                    zmax = p[2]
-                if p[2] < zmin:
-                    zmin = p[2]
+        if self.__my_scene :
+            for tr in self.__my_scene:
+                for i in range(3) :
+                    p = tr[i]
+                    if p[0] > xmax :
+                        xmax = p[0]
+                    if p[0] < xmin:
+                        xmin = p[0]
+                    if p[1] > ymax :
+                        ymax = p[1]
+                    if p[1] < ymin:
+                        ymin = p[1]
+                    if p[2] > zmax :
+                        zmax = p[2]
+                    if p[2] < zmin:
+                        zmin = p[2]
 
         # RATP
         if self.__lightmodel == "ratp":
-            # on sépare les tiges dans une nouvelle entité si il y a des shapes non tiges
-            if "stems id" in self.__in_geometry and len(self.__in_geometry["stems id"]) < len(self.__matching_ids) :
-                mem_mu=[]
-                for stem in self.__in_geometry["stems id"]:
-                    # on recherche la shape correspondante dans le dict des id
-                    ids=0
-                    search=True
-                    while ids < len(self.__matching_ids) and search:
-                        if (self.__matching_ids[ids][0], self.__matching_ids[ids][1]) == stem:
-                            search=False
-                        else:
-                            ids += 1
-                    # change le numéro d'entité dans le dict
-                    tuple_temp = (self.__matching_ids[ids][0], 
-                                    self.__matching_ids[ids][1] + len(self.__in_geometry["scenes"]),
-                                    self.__matching_ids[ids][2])
-                    self.__matching_ids[ids] = tuple_temp
+            if isinstance(self.__in_geometry["scenes"][0], pgl.Scene):
+                # on sépare les tiges dans une nouvelle entité si il y a des shapes non tiges
 
-                    if stem[1] not in mem_mu:
-                        self.__in_lightmodel_parameters["mu"].append(self.__in_lightmodel_parameters["mu"][stem[1]])
-                        self.__in_environment["reflectance coefficients"].append(self.__in_environment["reflectance coefficients"][stem[1]])
-                        mem_mu.append(stem[1])
+                if self.__matching_ids:
+                    
+                    if "stems id" in self.__in_geometry and len(self.__in_geometry["stems id"]) < len(self.__matching_ids) :
+                        mem_mu=[]
+                        for stem in self.__in_geometry["stems id"]:
+                            # on recherche la shape correspondante dans le dict des id
+                            ids=0
+                            search=True
+                            while ids < len(self.__matching_ids) and search:
+                                if (self.__matching_ids[ids][0], self.__matching_ids[ids][1]) == stem:
+                                    search=False
+                                else:
+                                    ids += 1
+                            # change le numéro d'entité dans le dict
+                            tuple_temp = (self.__matching_ids[ids][0], 
+                                            self.__matching_ids[ids][1] + len(self.__in_geometry["scenes"]),
+                                            self.__matching_ids[ids][2])
+                            self.__matching_ids[ids] = tuple_temp
 
-            ## distribution d'angles pour chaque entité
-            distrib = []
+                            if stem[1] not in mem_mu:
+                                self.__in_lightmodel_parameters["mu"].append(self.__in_lightmodel_parameters["mu"][stem[1]])
+                                self.__in_environment["reflectance coefficients"].append(self.__in_environment["reflectance coefficients"][stem[1]])
+                                mem_mu.append(stem[1])
 
-            # recherche du nb d'entité
-            nent=0
-            for key, val in self.__matching_ids.items():
-                if val[1]+1 > nent:
-                    nent = val[1]+1
+                    ## distribution d'angles pour chaque entité
+                    distrib = []
 
-            # calcul en dynamique
-            # ele_option = nombre de classes
-            # on fait le calcul de la distribution global avant la tesselation des triangles
-            # pour optimiser les calculs
-            if self.__in_lightmodel_parameters["angle distrib algo"] == "compute global" :
-                # compte le nombre de triangles par entité
-                t_nent_area=[]
-                for k in range(nent):
-                    totA=0
-                    for t in self.__my_scene:
-                        if self.__matching_ids[t.id][1] == k:
-                            totA+=t.area
-                    t_nent_area.append(totA)
-                
-                # on va jusqu'à 91° pour prendre en compte les plans
-                angles = list(np.linspace(90/self.__in_lightmodel_parameters["nb angle classes"], 91, self.__in_lightmodel_parameters["nb angle classes"]))
+                    # recherche du nb d'entité
+                    nent=0
+                    for key, val in self.__matching_ids.items():
+                        if val[1]+1 > nent:
+                            nent = val[1]+1
 
-                # pour chaque entité
-                for k in range(nent):
-                    classes = [0] * self.__in_lightmodel_parameters["nb angle classes"]
-                    # parcourt les triangles
-                    for t in self.__my_scene:
-                        # pour chaque triangle de l'entité
-                        if self.__matching_ids[t.id][1] == k:
-                            # recherche de la classe
-                            i=0
-                            while i<self.__in_lightmodel_parameters["nb angle classes"]:
-                                if t.elevation < angles[i]:
-                                    classes[i] += t.area
-                                    # pour sortir de la boucle
-                                    i=self.__in_lightmodel_parameters["nb angle classes"]+10
-                                i+=1
-
-                    distrib.append(classes)
-
-                # convertit en pourcentage
-                for n in range(nent):
-                    for i in range(len(distrib[n])):
-                        distrib[n][i] *= 1/t_nent_area[n]
-            
-            # lecture du fichier
-            # ele_option = chemin du fichier
-            elif self.__in_lightmodel_parameters["angle distrib algo"] == "file" : 
-                f_angle = open(self.__in_lightmodel_parameters["angle distrib file"], 'r')
-                for i in range(len(self.__in_scenes)):
-                    line = f_angle.readline()
-                    distrib.append([float(x) for x in line.split(',')[1:]])
-
-            # on ajuste au besoin les min-max si la scène est plane pour avoir un espace 3D
-            if xmin == xmax:
-                xmax += self.__in_lightmodel_parameters["voxel size"][0]
-                xmin -= self.__in_lightmodel_parameters["voxel size"][0]
-            if ymin == ymax:
-                ymax += self.__in_lightmodel_parameters["voxel size"][1]
-                ymin -= self.__in_lightmodel_parameters["voxel size"][1]
-            if zmin == zmax:
-                zmax += self.__in_lightmodel_parameters["voxel size"][2]
-                zmin -= self.__in_lightmodel_parameters["voxel size"][2]
-            
-            self.__pmax = Vector3(xmax, ymax, zmax)
-            self.__pmin = Vector3(xmin, ymin, zmin)
-
-            # nombre de voxels
-            nx = int((self.__pmax[0] - self.__pmin[0]) // self.__in_lightmodel_parameters["voxel size"][0])
-            ny = int((self.__pmax[1] - self.__pmin[1]) // self.__in_lightmodel_parameters["voxel size"][1])
-            nz = int((self.__pmax[2] - self.__pmin[2]) // self.__in_lightmodel_parameters["voxel size"][2])
-            if (self.__pmax[0] - self.__pmin[0]) % self.__in_lightmodel_parameters["voxel size"][0] > 0 : nx += 1
-            if (self.__pmax[1] - self.__pmin[1]) % self.__in_lightmodel_parameters["voxel size"][1] > 0 : ny += 1
-            if (self.__pmax[2] - self.__pmin[2]) % self.__in_lightmodel_parameters["voxel size"][2] > 0 : nz += 1
-            
-            # définit une origine en Pmin 
-            xorig, yorig, zorig = self.__pmin[0], self.__pmin[1], -self.__pmin[2]
-
-            # création de la grille
-            # si pas de rayonnement réfléchi on annules la réflexion du sol
-            if self.__in_environment["reflected"] :
-                mygrid = grid.Grid.initialise(nx, ny, nz, 
-                                                self.__in_lightmodel_parameters["voxel size"][0], 
-                                                self.__in_lightmodel_parameters["voxel size"][1], 
-                                                self.__in_lightmodel_parameters["voxel size"][2], 
-                                                xorig, yorig, zorig, 
-                                                self.__in_environment["coordinates"][0], self.__in_environment["coordinates"][1], self.__in_environment["coordinates"][2], 
-                                                nent, 
-                                                self.__in_lightmodel_parameters["soil reflectance"], 
-                                                toric=self.__in_environment["infinite"])
-            else :
-                mygrid = grid.Grid.initialise(nx, ny, nz, 
-                                                self.__in_lightmodel_parameters["voxel size"][0], 
-                                                self.__in_lightmodel_parameters["voxel size"][1], 
-                                                self.__in_lightmodel_parameters["voxel size"][2], 
-                                                xorig, yorig, zorig, 
-                                                self.__in_environment["coordinates"][0], self.__in_environment["coordinates"][1], self.__in_environment["coordinates"][2], 
-                                                nent, 
-                                                [0., 0.], 
-                                                toric=self.__in_environment["infinite"])
-
-            # subdivision des triangles pour matcher la grille
-            if self.__in_lightmodel_parameters["tesselation level"]>0:
-                # traite les triangles de la shape
-                new_tr_scene=[]
-                start=time.time()
-                for tr in self.__my_scene:
-                    level = 0
-                    isworking = iterate_trianglesingrid(tr, mygrid, level, self.__in_lightmodel_parameters["tesselation level"], new_tr_scene)
-                # print("tesselation time : ",time.time()-start)
-                # copie de la nouvelle triangulation
-                self.__my_scene = new_tr_scene
-                self.__tess_time = time.time() - start
-            
-            # préparation du fill
-            # pour chaque triangle, indice entité, x, y, z, aire, nitro
-            entity, barx, bary, barz, a, n = [],[], [], [], [], []
-            for tr in self.__my_scene:
-                bar = tr.barycenter
-                barx.append(bar[0])
-                bary.append(bar[1])
-                barz.append(bar[2])
-                
-                # id : id de la shape, val : [id shape en input, id de l'entité]
-                # c'est une tige on divise par 2 le LAD
-                if (self.__matching_ids[tr.id][0], self.__matching_ids[tr.id][1] - len(self.__in_geometry["scenes"])) in self.__in_geometry["stems id"] or \
-                    (self.__matching_ids[tr.id][0], self.__matching_ids[tr.id][1]) in self.__in_geometry["stems id"] :
-                    a.append(tr.area)
-                else:
-                    a.append(tr.area)
-                
-                n.append(0.)
-                entity.append(self.__matching_ids[tr.id][1])
-
-            mygrid, matching = grid.Grid.fill_1(entity, barx, bary, barz, a, n, mygrid)
-            self.__ratp_scene = mygrid
-            self.__tr_vox = matching 
-
-            # si la distribution d'angle est par voxel, on est
-            # obligé de prendre en compte les triangles après
-            # la tesselation
-            if self.__in_lightmodel_parameters["angle distrib algo"] == "compute voxel":
-                angles = list(np.linspace(90/self.__in_lightmodel_parameters["nb angle classes"], 91, self.__in_lightmodel_parameters["nb angle classes"]))
-                t_area=[]
-                # pour chaque voxel
-                for k in range(self.__ratp_scene.nveg):
-                    t_nent_area=[]
-                    distrib_nent=[]
-                    # pour chaque entité
-                    for n in range(nent):
-                        areatot=0
-                        classes = [0] * self.__in_lightmodel_parameters["nb angle classes"]
-                        # on parcourt le dico des correspondances triangle->voxel
-                        for idt, idv in self.__tr_vox.items():
-                            # si on est dans le bon voxel et le triangle appartient a la bonne entité
-                            if idv == k and self.__matching_ids[self.__my_scene[int(idt)].id][1] == n:
-                                areatot += self.__my_scene[int(idt)].area
-                                # recherche de la classe
-                                i=0
-                                while i<self.__in_lightmodel_parameters["nb angle classes"]:
-                                    if self.__my_scene[int(idt)].elevation < angles[i]:
-                                        classes[i] += self.__my_scene[int(idt)].area
-                                        # pour sortir de la boucle
-                                        i=self.__in_lightmodel_parameters["nb angle classes"]+10
-                                    i+=1
-                        t_nent_area.append(areatot)
-                        distrib_nent.append(classes)
-                    t_area.append(t_nent_area)
-                    distrib.append(distrib_nent)
-
-                to_remove=[]
-                # convertit en pourcentage
-                for k in range(self.__ratp_scene.nveg):
-                    for n in range(nent):
-                        # peut survenir si une entité n'est pas dans le voxel
-                        if t_area[k][n] != 0 :
-                            for i in range(self.__in_lightmodel_parameters["nb angle classes"]):
-                                distrib[k][n][i] *= 1/t_area[k][n]
+                    # calcul en dynamique
+                    # ele_option = nombre de classes
+                    # on fait le calcul de la distribution global avant la tesselation des triangles
+                    # pour optimiser les calculs
+                    if self.__in_lightmodel_parameters["angle distrib algo"] == "compute global" :
+                        # compte le nombre de triangles par entité
+                        t_nent_area=[]
+                        for k in range(nent):
+                            totA=0
+                            for t in self.__my_scene:
+                                if self.__matching_ids[t.id][1] == k:
+                                    totA+=t.area
+                            t_nent_area.append(totA)
                         
-                        # enleve les entités en trop
-                        else:
-                            to_remove.append((k,n))
-                for t in to_remove:
-                    del distrib[t[0]][t[1]]
+                        # on va jusqu'à 91° pour prendre en compte les plans
+                        angles = list(np.linspace(90/self.__in_lightmodel_parameters["nb angle classes"], 91, self.__in_lightmodel_parameters["nb angle classes"]))
 
-            self.__ratp_distrib = distrib
+                        # pour chaque entité
+                        for k in range(nent):
+                            classes = [0] * self.__in_lightmodel_parameters["nb angle classes"]
+                            # parcourt les triangles
+                            for t in self.__my_scene:
+                                # pour chaque triangle de l'entité
+                                if self.__matching_ids[t.id][1] == k:
+                                    # recherche de la classe
+                                    i=0
+                                    while i<self.__in_lightmodel_parameters["nb angle classes"]:
+                                        if t.elevation < angles[i]:
+                                            classes[i] += t.area
+                                            # pour sortir de la boucle
+                                            i=self.__in_lightmodel_parameters["nb angle classes"]+10
+                                        i+=1
+
+                            distrib.append(classes)
+
+                        # convertit en pourcentage
+                        for n in range(nent):
+                            for i in range(len(distrib[n])):
+                                distrib[n][i] *= 1/t_nent_area[n]
+                    
+                    # lecture du fichier
+                    # ele_option = chemin du fichier
+                    elif self.__in_lightmodel_parameters["angle distrib algo"] == "file" : 
+                        f_angle = open(self.__in_lightmodel_parameters["angle distrib file"], 'r')
+                        for i in range(len(self.__in_geometry["scenes"])):
+                            line = f_angle.readline()
+                            distrib.append([float(x) for x in line.split(',')[1:]])
+
+                    # on ajuste au besoin les min-max si la scène est plane pour avoir un espace 3D
+                    if xmin == xmax:
+                        xmax += self.__in_lightmodel_parameters["voxel size"][0]
+                        xmin -= self.__in_lightmodel_parameters["voxel size"][0]
+                    if ymin == ymax:
+                        ymax += self.__in_lightmodel_parameters["voxel size"][1]
+                        ymin -= self.__in_lightmodel_parameters["voxel size"][1]
+                    if zmin == zmax:
+                        zmax += self.__in_lightmodel_parameters["voxel size"][2]
+                        zmin -= self.__in_lightmodel_parameters["voxel size"][2]
+                    
+                    self.__pmax = Vector3(xmax, ymax, zmax)
+                    self.__pmin = Vector3(xmin, ymin, zmin)
+
+                    # nombre de voxels
+                    nx = int((self.__pmax[0] - self.__pmin[0]) // self.__in_lightmodel_parameters["voxel size"][0])
+                    ny = int((self.__pmax[1] - self.__pmin[1]) // self.__in_lightmodel_parameters["voxel size"][1])
+                    nz = int((self.__pmax[2] - self.__pmin[2]) // self.__in_lightmodel_parameters["voxel size"][2])
+                    if (self.__pmax[0] - self.__pmin[0]) % self.__in_lightmodel_parameters["voxel size"][0] > 0 : nx += 1
+                    if (self.__pmax[1] - self.__pmin[1]) % self.__in_lightmodel_parameters["voxel size"][1] > 0 : ny += 1
+                    if (self.__pmax[2] - self.__pmin[2]) % self.__in_lightmodel_parameters["voxel size"][2] > 0 : nz += 1
+                    
+                    # définit une origine en Pmin 
+                    xorig, yorig, zorig = self.__pmin[0], self.__pmin[1], -self.__pmin[2]
+
+                    # création de la grille
+                    # si pas de rayonnement réfléchi on annules la réflexion du sol
+                    if self.__in_environment["reflected"] :
+                        mygrid = grid.Grid.initialise(nx, ny, nz, 
+                                                        self.__in_lightmodel_parameters["voxel size"][0], 
+                                                        self.__in_lightmodel_parameters["voxel size"][1], 
+                                                        self.__in_lightmodel_parameters["voxel size"][2], 
+                                                        xorig, yorig, zorig, 
+                                                        self.__in_environment["coordinates"][0], self.__in_environment["coordinates"][1], self.__in_environment["coordinates"][2], 
+                                                        nent, 
+                                                        self.__in_lightmodel_parameters["soil reflectance"], 
+                                                        toric=self.__in_environment["infinite"])
+                    else :
+                        mygrid = grid.Grid.initialise(nx, ny, nz, 
+                                                        self.__in_lightmodel_parameters["voxel size"][0], 
+                                                        self.__in_lightmodel_parameters["voxel size"][1], 
+                                                        self.__in_lightmodel_parameters["voxel size"][2], 
+                                                        xorig, yorig, zorig, 
+                                                        self.__in_environment["coordinates"][0], self.__in_environment["coordinates"][1], self.__in_environment["coordinates"][2], 
+                                                        nent, 
+                                                        [0., 0.], 
+                                                        toric=self.__in_environment["infinite"])
+
+                    # subdivision des triangles pour matcher la grille
+                    if self.__in_lightmodel_parameters["tesselation level"]>0:
+                        # traite les triangles de la shape
+                        new_tr_scene=[]
+                        start=time.time()
+                        for tr in self.__my_scene:
+                            level = 0
+                            isworking = iterate_trianglesingrid(tr, mygrid, level, self.__in_lightmodel_parameters["tesselation level"], new_tr_scene)
+                        # print("tesselation time : ",time.time()-start)
+                        # copie de la nouvelle triangulation
+                        self.__my_scene = new_tr_scene
+                        self.__tess_time = time.time() - start
+                    
+                    # préparation du fill
+                    # pour chaque triangle, indice entité, x, y, z, aire, nitro
+                    entity, barx, bary, barz, a, n = [],[], [], [], [], []
+                    for tr in self.__my_scene:
+                        bar = tr.barycenter
+                        barx.append(bar[0])
+                        bary.append(bar[1])
+                        barz.append(bar[2])
+                        
+                        # id : id de la shape, val : [id shape en input, id de l'entité]
+                        # c'est une tige on divise par 2 le LAD
+                        if (self.__matching_ids[tr.id][0], self.__matching_ids[tr.id][1] - len(self.__in_geometry["scenes"])) in self.__in_geometry["stems id"] or \
+                            (self.__matching_ids[tr.id][0], self.__matching_ids[tr.id][1]) in self.__in_geometry["stems id"] :
+                            a.append(tr.area)
+                        else:
+                            a.append(tr.area)
+                        
+                        n.append(0.)
+                        entity.append(self.__matching_ids[tr.id][1])
+
+                    mygrid, matching = grid.Grid.fill_1(entity, barx, bary, barz, a, n, mygrid)
+                    self.__tr_vox = matching 
+
+                    # si la distribution d'angle est par voxel, on est
+                    # obligé de prendre en compte les triangles après
+                    # la tesselation
+                    if self.__in_lightmodel_parameters["angle distrib algo"] == "compute voxel":
+                        angles = list(np.linspace(90/self.__in_lightmodel_parameters["nb angle classes"], 91, self.__in_lightmodel_parameters["nb angle classes"]))
+                        t_area=[]
+                        # pour chaque voxel
+                        for k in range(self.__ratp_scene.nveg):
+                            t_nent_area=[]
+                            distrib_nent=[]
+                            # pour chaque entité
+                            for n in range(nent):
+                                areatot=0
+                                classes = [0] * self.__in_lightmodel_parameters["nb angle classes"]
+                                # on parcourt le dico des correspondances triangle->voxel
+                                for idt, idv in self.__tr_vox.items():
+                                    # si on est dans le bon voxel et le triangle appartient a la bonne entité
+                                    if idv == k and self.__matching_ids[self.__my_scene[int(idt)].id][1] == n:
+                                        areatot += self.__my_scene[int(idt)].area
+                                        # recherche de la classe
+                                        i=0
+                                        while i<self.__in_lightmodel_parameters["nb angle classes"]:
+                                            if self.__my_scene[int(idt)].elevation < angles[i]:
+                                                classes[i] += self.__my_scene[int(idt)].area
+                                                # pour sortir de la boucle
+                                                i=self.__in_lightmodel_parameters["nb angle classes"]+10
+                                            i+=1
+                                t_nent_area.append(areatot)
+                                distrib_nent.append(classes)
+                            t_area.append(t_nent_area)
+                            distrib.append(distrib_nent)
+
+                        to_remove=[]
+                        # convertit en pourcentage
+                        for k in range(self.__ratp_scene.nveg):
+                            for n in range(nent):
+                                # peut survenir si une entité n'est pas dans le voxel
+                                if t_area[k][n] != 0 :
+                                    for i in range(self.__in_lightmodel_parameters["nb angle classes"]):
+                                        distrib[k][n][i] *= 1/t_area[k][n]
+                                
+                                # enleve les entités en trop
+                                else:
+                                    to_remove.append((k,n))
+                        for t in to_remove:
+                            del distrib[t[0]][t[1]]
+
+                    self.__ratp_distrib = distrib
+
+                # si l'entrée est vide
+                else :
+                    mygrid = grid.Grid.initialise(0, 0, 0,
+                                                    self.__in_lightmodel_parameters["voxel size"][0], 
+                                                    self.__in_lightmodel_parameters["voxel size"][1], 
+                                                    self.__in_lightmodel_parameters["voxel size"][2], 
+                                                    0, 0, 0, 
+                                                    self.__in_environment["coordinates"][0], self.__in_environment["coordinates"][1], self.__in_environment["coordinates"][2], 
+                                                    0, 
+                                                    self.__in_lightmodel_parameters["soil reflectance"], 
+                                                    toric=self.__in_environment["infinite"])
+                    self.__ratp_distrib = [[1.]]
+            
+            # si la scene en entrée vient de l-egume
+            # scene est un dict et contient :
+            #   scene["LAD"] = m_lais / surf_refVOX
+            #   scene["distrib"] = ls_dif
+            #   scene["voxel size"] = [station["dz_aerien"]*2, station["dz_aerien"]*2, station["dz_aerien"]]
+            #   scene["origin"] = [0, 0, station['Hmaxcouv']]
+            else:
+                self.__ratp_distrib = self.__in_geometry["scenes"][0]["distrib"]
+                nent = self.__in_geometry["scenes"][0]["LAD"].shape[0]
+                nx = self.__in_geometry["scenes"][0]["LAD"].shape[3]
+                ny = self.__in_geometry["scenes"][0]["LAD"].shape[2]
+                nz = self.__in_geometry["scenes"][0]["LAD"].shape[1]
+                dx, dy, dz = self.__in_geometry["scenes"][0]["voxel size"]
+
+                # initialisation de la grille
+                # si pas de rayonnement réfléchi on annules la réflexion du sol
+                if self.__in_environment["reflected"] :
+                    mygrid = grid.Grid.initialise(nx, ny, nz, 
+                                                    dx, dy, dz,
+                                                    self.__in_geometry["scenes"][0]["origin"][0], 
+                                                    self.__in_geometry["scenes"][0]["origin"][1], 
+                                                    self.__in_geometry["scenes"][0]["origin"][2], 
+                                                    self.__in_environment["coordinates"][0], 
+                                                    self.__in_environment["coordinates"][1], 
+                                                    self.__in_environment["coordinates"][2], 
+                                                    nent, 
+                                                    self.__in_lightmodel_parameters["soil reflectance"], 
+                                                    toric=self.__in_environment["infinite"])
+                else :
+                    mygrid = grid.Grid.initialise(nx, ny, nz, 
+                                                    dx, dy, dz, 
+                                                    self.__in_geometry["scenes"][0]["origin"][0], 
+                                                    self.__in_geometry["scenes"][0]["origin"][1], 
+                                                    self.__in_geometry["scenes"][0]["origin"][2], 
+                                                    self.__in_environment["coordinates"][0], 
+                                                    self.__in_environment["coordinates"][1], 
+                                                    self.__in_environment["coordinates"][2], 
+                                                    nent, 
+                                                    [0., 0.], 
+                                                    toric=self.__in_environment["infinite"])
+
+                # remplissage des voxels
+                n_vox_per_nent = []
+                for ne in range(nent):
+                    k=0
+                    for ix in range(nx):
+                        for iy in range(ny):
+                            for iz in range(nz):
+                                if self.__in_geometry["scenes"][0]["LAD"][ne][iz][iy][ix] > 0 :
+                                    mygrid.kxyz[ix, iy, iz] = k + 1 #ajouter 1 pour utilisation f90
+                                    mygrid.numx[k] = ix + 1 #ajouter 1 pour utilisation f90
+                                    mygrid.numy[k] = iy + 1 #ajouter 1 pour utilisation f90
+                                    mygrid.numz[k] = iz + 1 #ajouter 1 pour utilisation f90
+                                    mygrid.nume[ne,k] = ne + 1
+                                    mygrid.nje[k] = max(ne + 1, mygrid.nje[k])
+                                    mygrid.nemax = max(mygrid.nemax, mygrid.nje[k])
+
+                                    mygrid.leafareadensity[ne,k] += self.__in_geometry["scenes"][0]["LAD"][ne][iz][iy][ix] / (dx * dy * dz)
+                                    mygrid.s_vt_vx[ne,k] += self.__in_geometry["scenes"][0]["LAD"][ne][iz][iy][ix]
+                                    mygrid.s_vx[k] += self.__in_geometry["scenes"][0]["LAD"][ne][iz][iy][ix]
+                                    mygrid.s_vt[ne] += self.__in_geometry["scenes"][0]["LAD"][ne][iz][iy][ix]
+                                    mygrid.s_canopy += self.__in_geometry["scenes"][0]["LAD"][ne][iz][iy][ix]
+                                    
+                                    k=k+1
+                    n_vox_per_nent.append(k)
+                   
+
+                mygrid.nveg=max(n_vox_per_nent)
+                mygrid.nsol=mygrid.njx*mygrid.njy   # Numbering soil surface areas
+                for jx in range(mygrid.njx):
+                    for jy in range(mygrid.njy):
+                        mygrid.kxyz[jx,jy,mygrid.njz] = mygrid.njy * jx + jy + 1
+
+                for k in range(mygrid.nveg):
+                    for je in range(mygrid.nje[k]):
+                        if je == 0:
+                            # !!! on considère que l-egume définit une hauteur fixe de voxel
+                            mygrid.volume_canopy[mygrid.nent] = mygrid.volume_canopy[mygrid.nent] + dx * dy * dz  # Incrementing total canopy volume
+                        if  mygrid.s_vt_vx[je,k] > 0. :
+                            mygrid.volume_canopy[mygrid.nume[je,k] - 1] = mygrid.volume_canopy[mygrid.nume[je,k] - 1] + dx * dy * dz
+                            mygrid.voxel_canopy[mygrid.nume[je,k] - 1] = mygrid.voxel_canopy[mygrid.nume[je,k] - 1] + 1
+
+
+
+            # on enregistre la grille dans les deux cas (plantGL ou l-egume)
+            self.__ratp_scene = mygrid
+            
+            if self.__matching_ids or not isinstance(self.__in_geometry["scenes"][0], pgl.Scene) :
+                for i in range(mygrid.nveg):
+                    print(i, mygrid.leafareadensity[0, i])
+                print("nb voxels", mygrid.nveg)
             
         elif self.__lightmodel == "caribu":    
             # copîe du minmax
@@ -1271,36 +1383,39 @@ class LightVegeManager:
             plantnames : liste de string, si l'on veut mettre un nom personnalisé pour chaque entité
             planttrianglevalues : liste de liste de float, si l'on veut mettre des grandeurs associées à chaque triangle pour chaque entité
         '''
-        nent = len(self.__in_geometry["scenes"])
-        if self.__lightmodel == "ratp":
-            nent = int(self._LightVegeManager__ratp_scene.nent)
-            # plot dans VTK
-            temp1, temp2, temp3 = [], [], []
-            # éviter les éléments en trop
-            for i in range(self.__ratp_scene.nveg)  :
-                for j in range(self.__ratp_scene.nje[i]):
-                    temp1.append(self.__ratp_scene.leafareadensity[j, i])
-                    temp2.append(self.__ratp_scene.nume[j,i])
-                    temp3.append(int(i)+1) # kxyz sort en fortran
-            lad = [np.array(temp1), np.array(temp2), np.array(temp3)]
+        # obligé de forcer ces variables...
+        plantnames=[]
+        planttrianglevalues=[]
+        if self.__matching_ids :
+            if self.__lightmodel == "ratp" :
+                nent = int(self._LightVegeManager__ratp_scene.nent)
+                # plot dans VTK
+                temp1, temp2, temp3 = [], [], []
+                # éviter les éléments en trop
+                for i in range(self.__ratp_scene.nveg)  :
+                    for j in range(self.__ratp_scene.nje[i]):
+                        temp1.append(self.__ratp_scene.leafareadensity[j, i])
+                        temp2.append(self.__ratp_scene.nume[j,i])
+                        temp3.append(int(i)+1) # kxyz sort en fortran
+                lad = [np.array(temp1), np.array(temp2), np.array(temp3)]
 
-            RATP2VTK.RATPVOXELS2VTK(self.__ratp_scene, lad, "LAD", path+"init_voxels.vtk")
+                RATP2VTK.RATPVOXELS2VTK(self.__ratp_scene, lad, "LAD", path+"init_voxels.vtk")
 
-        if plantnames==[]:
-            for i in range(nent):
-                plantnames.append("plant_"+str(i))
-        
-        # pour chaque plante on a une valeur par triangle
-        if planttrianglevalues==[]:
-            for i in range(nent):
-                planttrianglevalues.append([])
-
-            for tr in self.__my_scene :
-                planttrianglevalues[self.__matching_ids[tr.id][1]].append(10)
+            if not plantnames:
                 for i in range(nent):
-                    if i != self.__matching_ids[tr.id][1] : planttrianglevalues[i].append(0)
+                    plantnames.append("plant_"+str(i))
+            
+            # pour chaque plante on a une valeur par triangle
+            if not planttrianglevalues:
+                for i in range(nent):
+                    planttrianglevalues.append([])
+                
+                for tr in self.__my_scene :
+                    planttrianglevalues[self.__matching_ids[tr.id][1]].append(10)
+                    for i in range(nent):
+                        if i != self.__matching_ids[tr.id][1] : planttrianglevalues[i].append(0)
 
-        VTKtriangles(self.__my_scene, planttrianglevalues, plantnames, path+"init_triangles.vtk")
+            VTKtriangles(self.__my_scene, planttrianglevalues, plantnames, path+"init_triangles.vtk")
 
     def VTKout(self, path, iteration=None, voxels=False):
         '''construit des fichiers VTK de la triangulation avec les valeurs de PAR associées
