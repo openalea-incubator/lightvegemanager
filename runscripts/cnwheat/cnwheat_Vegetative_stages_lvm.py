@@ -45,7 +45,7 @@ def Create_OutputsFolders(parentfolderpath):
         print("Directory " , dirName ,  " already exists")
     
 
-def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_lightmodel="caribu", passive_lightmodel="", writing="append", device="local", dv=0.1, distrialgo="global"):
+def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_lightmodel="caribu", passive_lightmodel="", writing="append", device="local", dv=0.1, distrialgo="global", inputs=""):
     # -- SIMULATION PARAMETERS --
     START_TIME = 0
     PLANT_DENSITY = {1: 250.}
@@ -92,6 +92,7 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
     # Path of the directory which contains the inputs of the model
     if device=="local" : INPUTS_FOLDER = 'WheatFspm/fspm-wheat/example/Vegetative_stages/inputs'
     elif device=="docker" : INPUTS_FOLDER = '/lightvegemanager/WheatFspm/fspm-wheat/example/Vegetative_stages/inputs'
+    elif device=="extern" : INPUTS_FOLDER = inputs
     
     # Name of the CSV files which describes the initial state of the system
     AXES_INITIAL_STATE_FILENAME = 'axes_initial_state.csv'
@@ -495,7 +496,7 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
 if __name__ == "__main__":
     #definition d'arguments avec getopt
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "s: l: n: o: w: d: v: c:")
+        opts, args = getopt.getopt(sys.argv[1:], "s: l: n: o: w: d: v: c: in:")
     except getopt.GetoptError as err:
         print(str(err))
         sys.exit(2)
@@ -509,6 +510,7 @@ if __name__ == "__main__":
     device = "local" # docker
     dv = 0.01 #m taille des voxels
     distrialgo = "voxel"
+    inputs=""
 
     # récupère les arguments en entrée
     for opt, arg in opts:
@@ -528,18 +530,20 @@ if __name__ == "__main__":
             dv = float(arg)
         elif opt in ("-c"):
             distrialgo = str(arg)
+        elif opt in ("--in"):
+            inputs = str(arg)
     
     print("=== BEGIN ===")
     print("--- Simulation Cn-Wheat : niveau tesselation (RATP)=%i | iterations=%i | outputs=%s | voxel=%.2fm"%(level_tesselation, nstep, outfolderpath, dv))
     if sim==1:
         print("=== === LVM : CARIBU ACTIVE + RATP PASSVE === ===")
-        simulation(level_tesselation, nstep, outfolderpath, active_lightmodel="caribu", passive_lightmodel="ratp", writing=writing, device=device, dv=dv, distrialgo=distrialgo)
+        simulation(level_tesselation, nstep, outfolderpath, active_lightmodel="caribu", passive_lightmodel="ratp", writing=writing, device=device, dv=dv, distrialgo=distrialgo, inputs=inputs)
     elif sim==2:
         print("=== === LVM : CARIBU ACTIVE === ===")
-        simulation(level_tesselation, nstep, outfolderpath, active_lightmodel="caribu", writing=writing, device=device)
+        simulation(level_tesselation, nstep, outfolderpath, active_lightmodel="caribu", writing=writing, device=device, inputs=inputs)
     elif sim==3:
         print("=== === LVM : RATP ACTIVE === ===")
-        simulation(level_tesselation, nstep, outfolderpath, active_lightmodel="ratp", writing=writing, device=device, dv=dv, distrialgo=distrialgo)
+        simulation(level_tesselation, nstep, outfolderpath, active_lightmodel="ratp", writing=writing, device=device, dv=dv, distrialgo=distrialgo, inputs=inputs)
     elif sim==4:
         print("=== === DEFAULT === ===")
         runstring = "python runscripts/cnwheat/main_vegetative_stages.py -n "+str(nstep)+" -o "+str(outfolderpath)
