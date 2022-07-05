@@ -28,3 +28,4 @@ dist
 PyRATP/pyratp/pyratp.pyd
 s2v
 s5
+.vscode
