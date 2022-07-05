@@ -760,10 +760,10 @@ class LightVegeManager:
             # on enregistre la grille dans les deux cas (plantGL ou l-egume)
             self.__ratp_scene = mygrid
             
-            if self.__matching_ids or not isinstance(self.__in_geometry["scenes"][0], pgl.Scene) :
-                for i in range(mygrid.nveg):
-                    print(i, mygrid.leafareadensity[0, i])
-                print("nb voxels", mygrid.nveg)
+            # if self.__matching_ids or not isinstance(self.__in_geometry["scenes"][0], pgl.Scene) :
+            #     for i in range(mygrid.nveg):
+            #         print(i, mygrid.leafareadensity[0, i])
+            #     print("nb voxels", mygrid.nveg)
             
         elif self.__lightmodel == "caribu":    
             # copîe du minmax
