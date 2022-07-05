@@ -58,14 +58,14 @@ def grid_index(x, y, z, grid, toric=True):
     if toric:
         jx = index
     else:
-        jx = np.where((x >= 0) & (x < grid.njx * grid.dx), index, -1)
+        jx = np.where((x >= 0) & (x <= grid.njx * grid.dx), index, -1)
 
     index = relative_index(y, grid.dy) % grid.njy
     rev_index = grid.njy - index - 1
     if toric:
         jy = rev_index
     else:
-        jy = np.where((y >= 0) & (y < grid.njy * grid.dy), rev_index, -1)
+        jy = np.where((y >= 0) & (y <= grid.njy * grid.dy), rev_index, -1)
 
     # after init_Param, dz size is njz + 1. It contains njz voxel heights (from top to soil), PLUS an additional zero required for the soil.
     dz = grid.dz[:-1]
@@ -73,7 +73,7 @@ def grid_index(x, y, z, grid, toric=True):
     dh = dz[::-1].cumsum()
     index = np.searchsorted(dh, z, 'right')
     rev_index = grid.njz - index - 1
-    jz = np.where((z >= 0) & (z < dh.max()), rev_index, -1)
+    jz = np.where((z >= 0) & (z <= dh.max()), rev_index, -1)
 
     return map(lambda x: x.astype(int).tolist(), [jx, jy, jz])
 
