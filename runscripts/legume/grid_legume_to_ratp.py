@@ -1,5 +1,14 @@
-from src.LightVegeManager import *
-from src.l_egume_template import *
+import sys
+
+try :
+    from src.LightVegeManager import *
+    from src.l_egume_template import *
+
+# si on se place sur le méso@LR
+except :
+    sys.path.insert(1, "/lustre/woussenm/scratch/cnwheat_lightvegemanager/lightvegemanager/")
+    from src.LightVegeManager import *
+    from src.l_egume_template import *
 
 ## --> Installer la dernière version de lpy (3.9.2) pour la cohabitation cnwheat et legume
 

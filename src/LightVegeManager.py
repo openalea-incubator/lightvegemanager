@@ -8,21 +8,37 @@ from PyRATP.pyratp.micrometeo import MicroMeteo
 from PyRATP.pyratp.runratp import runRATP
 
 from alinea.caribu.CaribuScene import CaribuScene
-from alinea.caribu.sky_tools import GenSky, GetLight, Gensun, GetLightsSun, spitters_horaire, turtle, Sun
+from alinea.caribu.sky_tools import GenSky
+from alinea.caribu.sky_tools import GetLight
+from alinea.caribu.sky_tools import Gensun
+from alinea.caribu.sky_tools import GetLightsSun
+from alinea.caribu.sky_tools import spitters_horaire
+from alinea.caribu.sky_tools import turtle
+from alinea.caribu.sky_tools import Sun
 
-import os, subprocess
+import os 
+import subprocess
+import sys
 import itertools
 import numpy as np
 import pandas
-import concurrent.futures
 import time
 
-from src.Polygons import *
-from src.MyTesseletor import *
+try :
+    from src.Polygons import *
+    from src.MyTesseletor import *
+
+# si on se place sur le méso@LR
+except :
+    sys.path.insert(1, "/lustre/woussenm/scratch/cnwheat_lightvegemanager/lightvegemanager/")
+    from src.Polygons import *
+    from src.MyTesseletor import *
+
 
 '''
-Fonctions de gestion 
+Fonctions de gestion
 '''
+
 
 def PlantGL_translation(s, t):
     """Translation d'une scène plantgl
@@ -37,6 +53,7 @@ def PlantGL_translation(s, t):
     for shape in s:
         shapes_res.append(pgl.Shape(pgl.Translated(t[0], t[1], t[2], shape.geometry), shape.appearance))
     return pgl.Scene(shapes_res)
+
 
 def pgl_to_triangles(pgl_object, tesselator=None):
     """Transforme une scene PlantGL en triangulation
@@ -60,6 +77,7 @@ def pgl_to_triangles(pgl_object, tesselator=None):
         triangles = [Triangle3(*(Vector3(*pts[itri[0]]),Vector3(*pts[itri[1]]),Vector3(*pts[itri[2]]))) for itri in indices]
     return triangles
 
+
 def pgl_to_caribu(pgl_object, tesselator=None):
     """Transforme une scene PlantGL en triangulation
     inspiré de pgl_to_triangles dans CARIBU
@@ -82,6 +100,7 @@ def pgl_to_caribu(pgl_object, tesselator=None):
         triangles = [(pts[itri[0]],pts[itri[1]],pts[itri[2]]) for itri in indices]
     return triangles
 
+
 def whichstems_MTG(MTG, nent):
     stems=[]
     geom = MTG.property('geometry')
@@ -90,6 +109,7 @@ def whichstems_MTG(MTG, nent):
             stems.append((vid, nent))
     
     return stems
+
 
 def VTKtriangles(triangles, var, varname, filename):
     """Ecriture d'un fichier VTK à partir d'un maillage triangulation
@@ -157,6 +177,7 @@ def VTKtriangles(triangles, var, varname, filename):
     var=[]
     varname=[]
 
+
 def VTKline(start, end, filename):
     """Ecriture d'une ligne VTK
     
@@ -179,6 +200,7 @@ def VTKline(start, end, filename):
 
     f.close()
 
+
 class LightVegeManager:
     '''
     Classe gestion de la lumière et couplage de plusieurs modèles de plantes
@@ -186,9 +208,9 @@ class LightVegeManager:
     units = {'mm': 0.001, 'cm': 0.01, 'dm': 0.1, 'm': 1, 'dam': 10, 'hm': 100,'km': 1000}
 
     def __init__(self,
-                    environment = {},
+                    environment={},
                     lightmodel="ratp",
-                    lightmodel_parameters = {},
+                    lightmodel_parameters={},
                     main_unit="m"):
         '''Constructeur
         

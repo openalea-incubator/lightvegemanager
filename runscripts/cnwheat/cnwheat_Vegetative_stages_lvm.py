@@ -1,6 +1,3 @@
-from src.LightVegeManager import *
-from src.FSPMWheat_template import *
-
 import os
 import shutil
 import sys
@@ -8,6 +5,16 @@ import time
 import progressbar
 import getopt
 import random
+
+try :
+    from src.LightVegeManager import *
+    from src.FSPMWheat_template import *
+
+# si on se place sur le méso@LR
+except :
+    sys.path.insert(1, "/lustre/woussenm/scratch/cnwheat_lightvegemanager/lightvegemanager/")
+    from src.LightVegeManager import *
+    from src.FSPMWheat_template import *
 
 '''
 Comparaison sur un temps avec un couvert dense entre CARIBU et RATP

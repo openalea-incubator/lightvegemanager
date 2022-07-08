@@ -1,4 +1,12 @@
-from src.Polygons import *
+import sys
+
+try :
+    from src.Polygons import *
+
+# si on se place sur le méso@LR
+except :
+    sys.path.insert(1, "/lustre/woussenm/scratch/cnwheat_lightvegemanager/lightvegemanager/")
+    from src.Polygons import *
 
 from PyRATP.pyratp import grid
 
