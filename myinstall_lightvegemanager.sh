@@ -11,6 +11,7 @@ chmod +x runscripts/legume/*
 # Sur le méso@LR : à lancer dans un conda avec numpy!
 cd PyRATP/f90
 bash compile_pyratp_lin64.sh
+cd ../..
 
 # installe Wheat-Fspm pour avoir les données d'entrée
 git clone --recurse-submodules https://github.com/openalea-incubator/WheatFspm.git
