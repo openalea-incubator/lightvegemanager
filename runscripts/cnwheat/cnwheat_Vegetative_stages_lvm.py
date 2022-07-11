@@ -5,14 +5,15 @@ import time
 import progressbar
 import getopt
 import random
+import pathlib
 
 try :
     from src.LightVegeManager import *
     from src.FSPMWheat_template import *
 
-# si on se place sur le méso@LR
-except :
-    sys.path.insert(1, "/lustre/woussenm/scratch/cnwheat_lightvegemanager/lightvegemanager/")
+except ModuleNotFoundError:
+    # ajoute le dossier lightvegemanager dans le sys.path
+    sys.path.insert(1, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
     from src.LightVegeManager import *
     from src.FSPMWheat_template import *
 
