@@ -1,7 +1,7 @@
 # Gestion de la lumière entre des modèles de plantes
 
 ## Notes sur le fonctionnement
-Le package PyRATP est appelé en local et fait parti du package de lightvegemanager car en développement en parallèle de l'outil de gestion.
+Le package PyRATP est appelé en local et fait parti du package de lightvegemanager. Son développement est en parallèle de l'outil de gestion.
 
 ## Utilisation sur le meso@LR avec un conteneur singularity comme environnement d'exécution
 * avoir un pyratp.so compilé par le conteneur pour être utilisable
