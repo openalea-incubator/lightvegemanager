@@ -1,4 +1,3 @@
-import numpy as np
 import os, sys
 
 from openalea.lpy import *

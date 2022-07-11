@@ -18,21 +18,14 @@ from alinea.caribu.sky_tools import Sun
 
 import os 
 import subprocess
-import sys
 import itertools
 import numpy as np
 import pandas
 import time
 
-try :
-    from src.Polygons import *
-    from src.MyTesseletor import *
+from src.Polygons import *
+from src.MyTesseletor import *
 
-except ModuleNotFoundError:
-    # ajoute le dossier lightvegemanager dans le sys.path
-    sys.path.insert(1, os.path.dirname(os.path.dirname(__file__)))
-    from src.Polygons import *
-    from src.MyTesseletor import *
 
 
 '''

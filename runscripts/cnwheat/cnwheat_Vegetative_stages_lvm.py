@@ -5,7 +5,6 @@ import time
 import progressbar
 import getopt
 import random
-import pathlib
 
 try :
     from src.LightVegeManager import *
@@ -13,7 +12,7 @@ try :
 
 except ModuleNotFoundError:
     # ajoute le dossier lightvegemanager dans le sys.path
-    sys.path.insert(1, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+    sys.path.insert(1, os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
     from src.LightVegeManager import *
     from src.FSPMWheat_template import *
 

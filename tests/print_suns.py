@@ -1,5 +1,17 @@
-from src.LightVegeManager import *
+import os
+import sys
+
+# si le package est déjà installé
+try :
+    from src.LightVegeManager import *
+
+except ModuleNotFoundError:
+    # ajoute le dossier lightvegemanager dans le sys.path
+    sys.path.insert(1, os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
+    from src.LightVegeManager import *
+
 import openalea.plantgl.all as pgl_all
+
 
 # Paramètres scène en entrée
 geom1 = pgl_all.FaceSet([(0,0,2),(2,0,2), (2,2,0),(0,2,0)],[range(4)]) # plaque horizontale
@@ -32,10 +44,10 @@ def run_simu(day, hour, latitude, longitude, timezone, truesolartime):
     environment["coordinates"] = [latitude, longitude, timezone]
 
     # Objet calcul de la lumière
-    lghtcaribu = LightVegeManager(geometry=geometry,
-                                    environment=environment,
+    lghtcaribu = LightVegeManager(environment=environment,
                                     lightmodel="caribu",
                                     lightmodel_parameters=caribu_parameters)
+    lghtcaribu.init_scenes(geometry)                                
     lghtcaribu.run(PARi=PARi, day=day, hour=hour, parunit="micromol.m-2.s-1", truesolartime=truesolartime, printsun=True)
 
 run_simu(201, 12., 0., 0., 0., True)

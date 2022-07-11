@@ -1,13 +1,4 @@
-import sys
-import os
-
-try :
-    from src.Polygons import *
-
-except ModuleNotFoundError:
-    # ajoute le dossier lightvegemanager dans le sys.path
-    sys.path.insert(1, os.path.dirname(os.path.dirname(__file__)))
-    from src.Polygons import *
+from src.Polygons import *
 
 from PyRATP.pyratp import grid
 
