@@ -29,3 +29,12 @@ Ces scripts sont à lancer dans un environnement avec numpy d'installé (normale
     ```
 
 ### mise à jour du dépôt 
+1) revenir au dernier commit
+    ```bash
+    git reset --hard HEAD
+    ```
+2) lancer dernière ligne d'un fichier
+    ```bash
+    # lance dos2unix pour convertir le format des fichiers du depot
+    tail -1 myinstall_lightvegemanager.sh | bash
+    ```
