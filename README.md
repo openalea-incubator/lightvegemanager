@@ -29,12 +29,29 @@ Ces scripts sont à lancer dans un environnement avec numpy d'installé (normale
     ```
 
 ### mise à jour du dépôt 
-1) revenir au dernier commit
+1) on revient au dernier commit (nécessaire car dos2unix a modifié tous les fichiers et entraine des conflits)
     ```bash
     git reset --hard HEAD
     ```
-2) lancer dernière ligne d'un fichier
+
+2) on télécharge le nouveau commit du dépot
     ```bash
-    # lance dos2unix pour convertir le format des fichiers du depot
+    git pull origin master
+    ```
+
+3) on reconvertit les fichiers au format unix
+    ```bash
+    # lance la derniere ligne du fichier
     tail -1 myinstall_lightvegemanager.sh | bash
     ```
+    ou
+    ```bash
+    find . -type f -print0 | xargs -0 dos2unix
+    ```
+
+4) Regarde quels fichiers ont été modifiés au dernier commit
+    ```bash
+    git diff --name-only HEAD HEAD~1
+    ```
+
+5) Si la partie fortran de RATP a été modifiée on la recompile avec le conteneur et f2py

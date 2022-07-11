@@ -1,6 +1,6 @@
 Bootstrap: localimage
 From: miniconda3_py37_4.11.0.sif
-# on part d'un conteneur pré-construit
+# on part d'un conteneur pré-construit avec miniconda3 et python 3.7
 
 %environment
     export LC_ALL=C
@@ -34,7 +34,10 @@ From: miniconda3_py37_4.11.0.sif
     cd WheatFspm
     git submodule update --remote
     python setup.py develop
+    cd ..
 
 	# installe l-egume
 	git clone -b Develop https://github.com/glouarn/l-egume.git
+    cd l-egume
 	python setup.py develop
+    cd ..
