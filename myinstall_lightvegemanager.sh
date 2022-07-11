@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# convertit les retours chariots
+dos2unix PyRATP/f90/compile_pyratp_lin64.sh
+
 # rend exécutable les scripts du dossier runscripts
 chmod +x runscripts/cnwheat/*
 chmod +x runscripts/legume/*
