@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# conversion retour chariot windows to unix
-find . -type f -print0 | xargs -0 dos2unix
-
 # rend exécutable les scripts du dossier runscripts
 chmod +x runscripts/cnwheat/*
 chmod +x runscripts/legume/*
@@ -17,3 +14,6 @@ cd ../..
 git clone --recurse-submodules https://github.com/openalea-incubator/WheatFspm.git
 cd WheatFspm
 git submodule update --remote
+
+# conversion retour chariot windows to unix
+find . -type f -print0 | xargs -0 dos2unix
