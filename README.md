@@ -8,7 +8,7 @@ Le package PyRATP est appelé en local et fait parti du package de lightvegemana
 * les scripts python à exécuter doivent avoir la permission d'exécution : `chmod +x script.py`
 * tous les fichiers compatibles pour unix 
 
-##### compilation de la partie fortran de PyRATP
+### compilation de la partie fortran de PyRATP
 Il y a un script pour linux 64 bits et Windows 64 bits pour compiler la partie fortran avec f2py.
 Ces scripts sont à lancer dans un environnement avec numpy d'installé (normalement installé dans le conteneur), avant de run les simulations.
 
@@ -28,4 +28,4 @@ Ces scripts sont à lancer dans un environnement avec numpy d'installé (normale
     ls -lt PyRATP/pyratp/*.so
     ```
 
-##### mise à jour du dépôt 
+### mise à jour du dépôt 
