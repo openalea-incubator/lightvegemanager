@@ -71,45 +71,43 @@ contains
 !  ffvs=0.
 !  ffcs=0.
 
-!  write(*,*) 'debut hi_doall'
-
 !  Array initialisation
   do ks=1,nveg   ! source = vegetated voxels
-       do kr=1,nveg
-            do jes=1,nje(ks)  ! receptor = vegetated voxels
-            do jer=1,nje(kr)
-               ffvv(kr,jer,ks,jes)=0.
+    do kr=1,nveg
+      do jes=1,nje(ks)  ! receptor = vegetated voxels
+        do jer=1,nje(kr)
+          ffvv(kr,jer,ks,jes)=0.
+        end do
+      end do
     end do
+    do kr=1,nsol    ! receptor = ground zones
+      do jes=1,nje(ks)
+        ffsv(kr,ks,jes)=0.
+      end do
     end do
-   end do
-         do kr=1,nsol    ! receptor = ground zones
-            do jes=1,nje(ks)
-               ffsv(kr,ks,jes)=0.
+    do jes=1,nje(ks)
+      ffcv(ks,jes)=0.  ! receptor = sky (i.e. reflected radiation)
     end do
-   end do
-         do jes=1,nje(ks)
-            ffcv(ks,jes)=0.  ! receptor = sky (i.e. reflected radiation)
-   end do
-  end do  ! do-loop ks=1,nveg (source = vegetated voxels)
-      do ks=1,nsol   ! source = ground zones
-         do kr=1,nveg    ! receptor = vegetated voxels
-            do jer=1,nje(kr)
-               ffvs(kr,jer,ks)=0.
+  end do  ! do-loop ks=1,nveg (source = vegetated voxels)  
+  do ks=1,nsol   ! source = ground zones
+    do kr=1,nveg    ! receptor = vegetated voxels
+      do jer=1,nje(kr)
+        ffvs(kr,jer,ks)=0.
+      end do
     end do
-   end do
-         ffcs(ks)=0. ! receptor = sky
+    ffcs(ks)=0. ! receptor = sky
   end do   ! End of array initialisation
 
 
 !     For each sky direction jdir, jdir=1,ndir
-!     write(*,*) 'ndir',ndir
+    write(*,*) 'ndir',ndir
 
 !   Directional interception (includes computation of extinction coefficient, beam sampling, and exchange coefficients)
   do jdir=1,ndir
-!  write(*,*) 'jdir',jdir
-!  write(*,*) 'DEBUG: ARGS',hmoy(jdir)*180./pi 
-!  write(*,*) 'DEBUG: ARGS', azmoy(jdir)*180./pi 
-!  write(*,*) 'DEBUG: ARGS', omega(jdir),dpx0,dpy0,scattering,isolated_box
+ write(*,*) 'jdir',jdir
+ write(*,*) 'DEBUG: ARGS',hmoy(jdir)*180./pi 
+ write(*,*) 'DEBUG: ARGS', azmoy(jdir)*180./pi 
+ write(*,*) 'DEBUG: ARGS', omega(jdir),dpx0,dpy0,scattering,isolated_box
   
    call di_doall(hmoy(jdir)*180./pi, azmoy(jdir)*180./pi, omega(jdir),dpx0,dpy0,scattering,isolated_box) 
 
@@ -193,8 +191,8 @@ contains
   end do
 
   STARsky_canopy = STARsky_canopy / S_canopy
-  !write(*,*) 'STARsky_canopy =', STARsky_canopy
-  !write(*,*) 'S_canopy =', S_canopy
+  write(*,*) 'STARsky_canopy =', STARsky_canopy
+  write(*,*) 'S_canopy =', S_canopy
 
 
 ! Verification de la conservation des rayonnements
@@ -209,7 +207,7 @@ contains
    rtot = rtot +rdis(k)
   end do
   rtot=rtot/(float(njx)*dx*float(njy)*dy)
-!  write(*,*) '  Total diffuse intercepted radiation: ',rtot,' SHOULD BE 1'
+ write(*,*) '  Total diffuse intercepted radiation: ',rtot,' SHOULD BE 1'
 
   rtot=0.
   do ks=1,nsol
@@ -221,7 +219,7 @@ contains
    end do
   end do
 
-!     write(*,*)'Total scattered radiation by the ground: ',rtot/njx/njy,' SHOULD BE 1'
+    write(*,*)'Total scattered radiation by the ground: ',rtot/njx/njy,' SHOULD BE 1'
   do ks=1,nveg
   do jes=1,nje(ks)
    rtot=0.
@@ -234,7 +232,7 @@ contains
    do kr=1,nsol
     rtot=rtot+ffsv(kr,ks,jes)
    end do
-!   write(*,*)'Total scattered radiation by vegetation type ',jes,' in voxel ',ks, ': ',rtot,' SHOULD BE 1'
+  write(*,*)'Total scattered radiation by vegetation type ',jes,' in voxel ',ks, ': ',rtot,' SHOULD BE 1'
   end do
   end do
 

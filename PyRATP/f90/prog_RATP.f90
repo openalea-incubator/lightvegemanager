@@ -445,17 +445,17 @@ subroutine do_all
 
  subroutine do_interception
 
- !write(*,*)
- !write(*,*)  ' R. A. T. P.    Version 2.0'
- !write(*,*)  ' Radiation Absorption, Transpiration and Photosynthesis'
- !write(*,*)
- !write(*,*)  ' Spatial distribution in a 3D grid of voxels'
- !write(*,*)
- !write(*,*)  '                July 2003 - December 2012  '
- !write(*,*)
+ write(*,*)
+ write(*,*)  ' R. A. T. P.    Version 2.0'
+ write(*,*)  ' Radiation Absorption, Transpiration and Photosynthesis'
+ write(*,*)
+ write(*,*)  ' Spatial distribution in a 3D grid of voxels'
+ write(*,*)
+ write(*,*)  '                July 2003 - December 2012  '
+ write(*,*)
 
- !write(*,*)
- !write(*,*)
+ write(*,*)
+ write(*,*)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! spec_grid='grd'     ! definition de la grille
@@ -466,12 +466,12 @@ subroutine do_all
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 ! call qui permet de tester l existance des tableaux dynamiques et de les vider s'ils existent
- !write(*,*)  '                out_rayt_destroy ...  '
+ write(*,*)  '                out_rayt_destroy ...  '
  call out_rayt_destroy
- !write(*,*)  '             ...   out_rayt_destroy '
- !write(*,*)  '                cv_set ...  '
+ write(*,*)  '             ...   out_rayt_destroy '
+ write(*,*)  '                cv_set ...  '
  call cv_set
- !write(*,*)  '             ...   cv_set '
+ write(*,*)  '             ...   cv_set '
 
  dpx=dx/5.
  dpy=dy/5.
@@ -481,17 +481,17 @@ subroutine do_all
  else
   scattering=.FALSE.
  end if
- !write(*,*) "scattering", scattering
+ write(*,*) "scattering", scattering
 
  if (int_isolated_box.eq.1)  then
   isolated_box=.TRUE.
  else
   isolated_box=.FALSE.
  end if
- !write(*,*) "isolated", isolated_box
- !write(*,*)  '                hi_doall ...  '
+ write(*,*) "isolated", isolated_box
+ write(*,*)  '                hi_doall ...  '
  call hi_doall(dpx,dpy,isolated_box)  ! Compute interception of diffuse and scattering radiation, ie exchange
- !write(*,*)  '             ...   hi_doall   '
+ write(*,*)  '             ...   hi_doall   '
  ntime=0
  endmeteo=.FALSE.
  call mm_initiate
@@ -500,14 +500,13 @@ subroutine do_all
  iterspatial = 0
  do while (.NOT.((endmeteo)))
   ntime=ntime+1
-  !write(*,*) '...Iteration : ',ntime,nbli
+  write(*,*) '...Iteration : ',ntime,nbli
   call mm_read(ntime,nbli)  ! Read micrometeo data (line #ntime in file mmeteo.<spec>)
-  !write(*,*) '...mm_read : '
+  write(*,*) '...mm_read : '
   call swrb_doall     ! Compute short wave radiation balance
 
-  do k=1,nveg
-
-   do je=1,nje(k)
+  do k=1, nveg
+    do je=1,nje(k)
      iterspatial = iterspatial +1
      jent=nume(je,k)
 
@@ -524,7 +523,7 @@ subroutine do_all
        out_rayt(iterspatial,9) = S_detailed(1,je,k)
  !      out_rayt(iterspatial,10) = N_detailed(je,k)
        out_rayt(iterspatial,10) = xintav(je,k)/S_vt_vx(je,k) ! ajout mwoussen 
-       !write(12,90) ntime, day, hour, k, ts(0,1,k), ts(1,1,k), taref
+      !  write(12,90) ntime, day, hour, k, ts(0,1,k), ts(1,1,k), taref
    end do
   end do
   !end if
@@ -544,11 +543,11 @@ subroutine do_all
  call di_destroy
  call hi_destroy
  call swrb_destroy
- !write(*,*) 'CALCULS TERMINES INTERCEPTION'
+ write(*,*) 'CALCULS TERMINES INTERCEPTION'
  end subroutine do_interception
 
  subroutine out_rayt_destroy
-  !write(*,*) 'destroy out_rayt'
+  write(*,*) 'destroy out_rayt'
   if (allocated(out_rayt))  deallocate(out_rayt)
  end subroutine out_rayt_destroy
 

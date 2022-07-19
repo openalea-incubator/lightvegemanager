@@ -9,7 +9,6 @@ f2py -c --build-dir . --compiler=mingw32 --fcompiler=gnu95 pyratp.pyf mod_Cocnst
 
 # remplace la lib
 #include <setjmp.h> -> #include <setjmpex.h>
-(Get-Content src.win-amd64-3.7\pyratpmodule.c^) -replace 'string.h', 'coucoucoucou.h' | Set-Content src.win-amd64-3.7\pyratpmodule.c
 
 # f2py -c again
 

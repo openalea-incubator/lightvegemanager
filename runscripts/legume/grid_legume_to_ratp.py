@@ -48,7 +48,7 @@ environment["sky"] = "turtle46" # turtle à 46 directions par défaut
 environment["diffus"] = True
 environment["direct"] = False
 environment["reflected"] = False
-environment["reflectance coefficients"] = [[0.1, 0.05]]
+environment["reflectance coefficients"] = [[0., 0.]]
 environment["infinite"] = False
 
 ## PARAMETRES RATP scene grille l-egume ##
@@ -96,7 +96,7 @@ for i in range(nb_iter+1):
 
     ## Paramètres scene ##
     scene_legume = {}
-    scene_legume["LAD"] = m_lais / surf_refVOX
+    scene_legume["LAD"] = m_lais
     scene_legume["distrib"] = ls_dif    
     scene_legume["voxel size"] = [station["dz_aerien"]*2, station["dz_aerien"]*2, station["dz_aerien"]] # RIRI5.py l.32-33
     scene_legume["origin"] = [0, 0, station['Hmaxcouv']] # l-egume.lpy l.444;469 + RIRI5.py l.46
@@ -106,24 +106,30 @@ for i in range(nb_iter+1):
 
     # détail des LAD par voxel
     print("====     legume")
-    count = 0
-    for i in range(m_lais.shape[1]):
-        for j in range(m_lais.shape[2]):
-            for k in range(m_lais.shape[3]):
-                if m_lais[0][i][j][k] > 0. :
-                    print(count, m_lais[0][i][j][k]/surf_refVOX/(4*4*2))
-                    count += 1
-    print("nb vox : ",count)
+    # count = 0
+    # for i in range(m_lais.shape[1]):
+    #     for j in range(m_lais.shape[2]):
+    #         for k in range(m_lais.shape[3]):
+    #             if m_lais[0][i][j][k] > 0. :
+    #                 print(count, m_lais[0][i][j][k]/(4*4*2))
+    #                 count += 1
+    # print("nb vox : ",count)
+    
+    # print("====     lvm plantgl")
+    # geometry = {}
+    # geometry["scenes"] = [scene_plantgl]
+    # lghtratp_plantgl.init_scenes(geometry)
+    # impression du plantGL et de sa grille
+    #lghtratp_plantgl.VTKinit(foldout)
     
     print("====     lvm grid")
-    ## Process de la scene par lightvegemanager²
+    ## Process de la scene par lightvegemanager
     geometry["scenes"] = [scene_legume]
     lghtratp_legume.init_scenes(geometry)
 
-    print("====     lvm plantgl")
-    geometry["scenes"] = [scene_plantgl]
-    lghtratp_plantgl.init_scenes(geometry)
-    lghtratp_plantgl.VTKinit(foldout)
+    # calcul
+    # note : si pyratp.init -> plantgl.init -> pyratp.run : plante car objets de lvm.pyratp corrompus
+    lghtratp_legume.run(PARi=1, truesolartime=True)
     
     ############
     # step light transfer coupling
