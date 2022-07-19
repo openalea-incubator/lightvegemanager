@@ -807,7 +807,7 @@ class LightVegeManager:
             PARi : float, PARi en µmol.m-2.s-1 ou W.m-2
             day : float, day of the year 
             hour : float, hour TU
-            parunit : "micromol.m-2.s-1" ou "W.m-2"
+            parunit : "micromol.m-2.s-1" ou "W.m-2" ou "W.m-2.s-1"
             truesolartime : boolean, si hour est l'heure solaire réel ou l'heure locale
             printsun : option pour imprimer la position du soleil
 
@@ -891,16 +891,19 @@ class LightVegeManager:
             entity = {}
             for id, match in self.__matching_ids.items():
                 entity[id] = match[1] + 1
-            index = range(len(self.__tr_vox))
-            vox_id = [self.__tr_vox[str(i)] + 1 for i in index]
-            # and one additional map that allows retrieving shape_id from python_x_index
-            sh_id=[]
-            for tr in self.__my_scene:
-                sh_id.append(tr.id)
+            
+            # si il y a une triangulation en entrée (défini à partir d'une scene plantGL)
+            if isinstance(self.__in_geometry["scenes"][0], pgl.Scene):
+                index = range(len(self.__tr_vox))
+                vox_id = [self.__tr_vox[str(i)] + 1 for i in index]
+                # and one additional map that allows retrieving shape_id from python_x_index
+                sh_id=[]
+                for tr in self.__my_scene:
+                    sh_id.append(tr.id)
 
-            s=[]
-            for tr in self.__my_scene:
-                    s.append(tr.area)
+                s=[]
+                for tr in self.__my_scene:
+                        s.append(tr.area)
             
             # récupère les sorties de RATP
             # np.array en une dimension, de taille nbvoxels x nbiteration
@@ -929,6 +932,9 @@ class LightVegeManager:
                                 'day':day,
                                 'hour':hour,
                                 'VoxelId':VoxelId,
+                                'Nx':self.__ratp_scene.numx[:self.__ratp_scene.nveg],
+                                'Ny':self.__ratp_scene.numy[:self.__ratp_scene.nveg],
+                                'Nz':self.__ratp_scene.numz[:self.__ratp_scene.nveg],
                                 'ShadedPAR':ShadedPAR, # /4.6,
                                 'SunlitPAR':SunlitPAR, # /4.6,
                                 'ShadedArea':ShadedArea,
@@ -946,85 +952,87 @@ class LightVegeManager:
             # enregistre la dataframe des voxels
             self.__voxels_outputs = dfvox
 
-            # nouvelle data frame avec les triangles en index
-            dfmap = pandas.DataFrame({'primitive_index': index,'shape_id': sh_id, 'VoxelId':vox_id, 'VegetationType':[entity[sh_id] for sh_id in sh_id], 'primitive_area':s})
+            # si il y a une triangulation en entrée (défini à partir d'une scene plantGL)
+            if isinstance(self.__in_geometry["scenes"][0], pgl.Scene):
+                # nouvelle data frame avec les triangles en index
+                dfmap = pandas.DataFrame({'primitive_index': index,'shape_id': sh_id, 'VoxelId':vox_id, 'VegetationType':[entity[sh_id] for sh_id in sh_id], 'primitive_area':s})
 
-            # supposé copie dans les index avec des colonnes en commun
-            # colonnes en commun : VegetationType, VoxelId
-            output = pandas.merge(dfmap, dfvox)        
-            # tri les lignes par ordre de triangles
-            output =  output.sort_values('primitive_index')
+                # supposé copie dans les index avec des colonnes en commun
+                # colonnes en commun : VegetationType, VoxelId
+                output = pandas.merge(dfmap, dfvox)        
+                # tri les lignes par ordre de triangles
+                output =  output.sort_values('primitive_index')
 
-            # enregistre la dataframe dans l'instance
-            self.__outputs = output
+                # enregistre la dataframe dans l'instance
+                self.__outputs = output
 
-            # enregistre les valeurs par shape et plantes
-            #nshapes = sum([len(l) for l in self.__in_scenes])
-            nshapes = len(self.__matching_ids)
-            s_shapes = []
-            s_area=[]
-            s_para=[]
-            s_pari=[]
-            s_xintav=[]
-            s_ite=[]
-            s_day=[]
-            s_hour=[]
-            s_ent=[]
-            s_parsun=[]
-            s_parsha=[]
-            s_areasun=[]
-            s_areasha=[]
-            for id in range(nshapes):
-                # itérations commencent à 1
-                nent = self.__matching_ids[id][1]
-                for ite in range(int(max(output["Iteration"]))):
-                    dffil = output[(output.Iteration == ite+1) & (output.shape_id == id)]
-                    
-                    s_hour.append(dffil["hour"].values[0])
-                    s_day.append(dffil["day"].values[0])
-                    s_ite.append(ite+1)
-                    s_area.append(sum(dffil["primitive_area"]))
-
-                    # le rayonnemenbt réfléchi est calculé dans RATP
-                    if self.__in_environment["reflected"] :
-                        s_para.append(sum(dffil['primitive_area']*dffil['PARa']) / s_area[-1])
-                    
-                    # sinon on le rajoute manuellement
-                    else:
-                        # PAR incident
-                        s_pari.append(sum(dffil['primitive_area']*dffil['PARa']) / s_area[-1])
-                        s_para.append(s_pari[-1] - (s_pari[-1] * self.__in_environment["reflectance coefficients"][nent][0]))
+                # enregistre les valeurs par shape et plantes
+                #nshapes = sum([len(l) for l in self.__in_scenes])
+                nshapes = len(self.__matching_ids)
+                s_shapes = []
+                s_area=[]
+                s_para=[]
+                s_pari=[]
+                s_xintav=[]
+                s_ite=[]
+                s_day=[]
+                s_hour=[]
+                s_ent=[]
+                s_parsun=[]
+                s_parsha=[]
+                s_areasun=[]
+                s_areasha=[]
+                for id in range(nshapes):
+                    # itérations commencent à 1
+                    nent = self.__matching_ids[id][1]
+                    for ite in range(int(max(output["Iteration"]))):
+                        dffil = output[(output.Iteration == ite+1) & (output.shape_id == id)]
                         
-                        # # applique une réflectance et une transmittance sur le PAR incident
-                        # if (self.__matching_ids[id][0], nent - len(self.__in_geometry["scenes"])) in self.__in_geometry["stems id"] or \
-                        #     (self.__matching_ids[id][0], nent) in self.__in_geometry["stems id"] :
-                        #     
-                        # else:
-                        #     s_para.append(s_pari[-1] - (s_pari[-1] * self.__in_environment["reflectance coefficients"][nent][0] + \
-                        #                                 s_pari[-1] * self.__in_environment["reflectance coefficients"][nent][1]))
+                        s_hour.append(dffil["hour"].values[0])
+                        s_day.append(dffil["day"].values[0])
+                        s_ite.append(ite+1)
+                        s_area.append(sum(dffil["primitive_area"]))
 
-                    s_parsun.append(sum(dffil['primitive_area']*dffil['SunlitPAR']) / s_area[-1])
-                    s_parsha.append(sum(dffil['primitive_area']*dffil['ShadedPAR']) / s_area[-1])
-                    s_areasun.append(sum(dffil['primitive_area']*dffil['SunlitArea']) / s_area[-1])
-                    s_areasha.append(sum(dffil['primitive_area']*dffil['ShadedArea']) / s_area[-1])
-                    s_xintav.append(sum(dffil['primitive_area']*dffil['xintav']) / s_area[-1])
-                    s_ent.append(dffil["VegetationType"].values[0])
-                    s_shapes.append(self.__matching_ids[id][0])
-            self.__shape_outputs = pandas.DataFrame({
-                "Iteration" : s_ite,
-                "Day" : s_day,
-                "Hour" : s_hour,
-                "ShapeId" : s_shapes,
-                "VegetationType" : s_ent,
-                "Area" : s_area,
-                "PARi" : s_pari,
-                "PARa" : s_para,
-                "xintav" : s_xintav,
-                "SunlitPAR" : s_parsun,
-                "SunlitArea" : s_areasun,
-                "ShadedPAR" : s_parsha,
-                "ShadedArea" : s_areasha
-            })
+                        # le rayonnemenbt réfléchi est calculé dans RATP
+                        if self.__in_environment["reflected"] :
+                            s_para.append(sum(dffil['primitive_area']*dffil['PARa']) / s_area[-1])
+                        
+                        # sinon on le rajoute manuellement
+                        else:
+                            # PAR incident
+                            s_pari.append(sum(dffil['primitive_area']*dffil['PARa']) / s_area[-1])
+                            s_para.append(s_pari[-1] - (s_pari[-1] * self.__in_environment["reflectance coefficients"][nent][0]))
+                            
+                            # # applique une réflectance et une transmittance sur le PAR incident
+                            # if (self.__matching_ids[id][0], nent - len(self.__in_geometry["scenes"])) in self.__in_geometry["stems id"] or \
+                            #     (self.__matching_ids[id][0], nent) in self.__in_geometry["stems id"] :
+                            #     
+                            # else:
+                            #     s_para.append(s_pari[-1] - (s_pari[-1] * self.__in_environment["reflectance coefficients"][nent][0] + \
+                            #                                 s_pari[-1] * self.__in_environment["reflectance coefficients"][nent][1]))
+
+                        s_parsun.append(sum(dffil['primitive_area']*dffil['SunlitPAR']) / s_area[-1])
+                        s_parsha.append(sum(dffil['primitive_area']*dffil['ShadedPAR']) / s_area[-1])
+                        s_areasun.append(sum(dffil['primitive_area']*dffil['SunlitArea']) / s_area[-1])
+                        s_areasha.append(sum(dffil['primitive_area']*dffil['ShadedArea']) / s_area[-1])
+                        s_xintav.append(sum(dffil['primitive_area']*dffil['xintav']) / s_area[-1])
+                        s_ent.append(dffil["VegetationType"].values[0])
+                        s_shapes.append(self.__matching_ids[id][0])
+                self.__shape_outputs = pandas.DataFrame({
+                    "Iteration" : s_ite,
+                    "Day" : s_day,
+                    "Hour" : s_hour,
+                    "ShapeId" : s_shapes,
+                    "VegetationType" : s_ent,
+                    "Area" : s_area,
+                    "PARi" : s_pari,
+                    "PARa" : s_para,
+                    "xintav" : s_xintav,
+                    "SunlitPAR" : s_parsun,
+                    "SunlitArea" : s_areasun,
+                    "ShadedPAR" : s_parsha,
+                    "ShadedArea" : s_areasha
+                })
 
         # CARIBU
         elif self.__lightmodel == "caribu":

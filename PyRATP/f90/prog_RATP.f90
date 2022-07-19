@@ -36,7 +36,7 @@ contains
 
 
  !write(*,*)
- write(*,*)  ' R. A. T. P. Mineuse   Version 2.0'
+ !write(*,*)  ' R. A. T. P. Mineuse   Version 2.0'
  !write(*,*)  ' Radiation Absorption, Transpiration and Photosynthesis'
  !write(*,*)
  !write(*,*)  ' Spatial distribution in a 3D grid of voxels'
@@ -234,7 +234,7 @@ contains
 
  !pause
  !z = sin(x+y)
- write(*,*) 'CALCULS TERMINES 1'
+ !write(*,*) 'CALCULS TERMINES 1'
  end subroutine do_all_mine
 
 
@@ -242,7 +242,7 @@ contains
 subroutine do_all
 
  !write(*,*)
- write(*,*)  ' R. A. T. P.    Version 2.0'
+ !write(*,*)  ' R. A. T. P.    Version 2.0'
  !write(*,*)  ' Radiation Absorption, Transpiration and Photosynthesis'
  !write(*,*)
  !write(*,*)  ' Spatial distribution in a 3D grid of voxels'
@@ -280,14 +280,14 @@ subroutine do_all
  else
   scattering=.FALSE.
  end if
- write(*,*) "scattering", scattering
+ !write(*,*) "scattering", scattering
 
  if (int_isolated_box.eq.1)  then
   isolated_box=.TRUE.
  else
   isolated_box=.FALSE.
  end if
- write(*,*) "isolated", isolated_box
+ !write(*,*) "isolated", isolated_box
  !isolated_box=.TRUE.
  !scattering=.TRUE.
 
@@ -321,16 +321,16 @@ subroutine do_all
  
  do while (.NOT.((endmeteo)))
   ntime=ntime+1
-  write(*,*) '...Iteration : ',ntime,nbli
+  !write(*,*) '...Iteration : ',ntime,nbli
   call mm_read(ntime,nbli)  ! Read micrometeo data (line #ntime in file mmeteo.<spec>)
-  write(*,*) '...mm_read : '
+  !write(*,*) '...mm_read : '
   call swrb_doall     ! Compute short wave radiation balance
-  write(*,*) '...swrb_doall : '
+  !write(*,*) '...swrb_doall : '
 
   call eb_doall2
-  write(*,*) '...eb_doall : '
+  !write(*,*) '...eb_doall : '
   call ps_doall
-  write(*,*) '...ps_doall : '
+  !write(*,*) '...ps_doall : '
   
   do jent=1,nent
    itertree = itertree +1
@@ -345,7 +345,7 @@ subroutine do_all
    out_time_tree(itertree,9) = S_vt(jent)    ! Leaf Surface Area of entity jent
  !  out_time_tree(itertree,10) = hdeg               ! MARC pour test elevation soleil A ENLEVER 
   end do
-  write(*,*) '...writing out_time_tree done '  
+  !write(*,*) '...writing out_time_tree done '  
 
   !if (hour.eq.12) then 
   do k=1,nveg
@@ -378,9 +378,9 @@ subroutine do_all
      !write(12,90) ntime, day, hour, k, ts(0,1,k), ts(1,1,k), taref
    end do
   end do   
-  write(*,*) '...writing out_time_spatial done '  
+  !write(*,*) '...writing out_time_spatial done '  
   !end if 
-  write(*,*) '...writing outputs done '
+  !write(*,*) '...writing outputs done '
 ! A enlever pour version finale: ntime, taref, A_detailed(0, A_detailed(1, RA_detailed(1,0, RA_detailed(1,1,RA_detailed(2,0, RA_detailed(2,1 
 
 
@@ -432,7 +432,7 @@ subroutine do_all
  call ps_destroy      
  !write(*,*) '...ps_destroy ok '
 
- write(*,*) 'CALCULS TERMINES 2'
+ !write(*,*) 'CALCULS TERMINES 2'
  end subroutine do_all
 
 
@@ -445,17 +445,17 @@ subroutine do_all
 
  subroutine do_interception
 
- write(*,*)
- write(*,*)  ' R. A. T. P.    Version 2.0'
- write(*,*)  ' Radiation Absorption, Transpiration and Photosynthesis'
- write(*,*)
- write(*,*)  ' Spatial distribution in a 3D grid of voxels'
- write(*,*)
- write(*,*)  '                July 2003 - December 2012  '
- write(*,*)
+ !write(*,*)
+ !write(*,*)  ' R. A. T. P.    Version 2.0'
+ !write(*,*)  ' Radiation Absorption, Transpiration and Photosynthesis'
+ !write(*,*)
+ !write(*,*)  ' Spatial distribution in a 3D grid of voxels'
+ !write(*,*)
+ !write(*,*)  '                July 2003 - December 2012  '
+ !write(*,*)
 
- write(*,*)
- write(*,*)
+ !write(*,*)
+ !write(*,*)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! spec_grid='grd'     ! definition de la grille
@@ -466,12 +466,12 @@ subroutine do_all
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 ! call qui permet de tester l existance des tableaux dynamiques et de les vider s'ils existent
- write(*,*)  '                out_rayt_destroy ...  '
+ !write(*,*)  '                out_rayt_destroy ...  '
  call out_rayt_destroy
- write(*,*)  '             ...   out_rayt_destroy '
- write(*,*)  '                cv_set ...  '
+ !write(*,*)  '             ...   out_rayt_destroy '
+ !write(*,*)  '                cv_set ...  '
  call cv_set
- write(*,*)  '             ...   cv_set '
+ !write(*,*)  '             ...   cv_set '
 
  dpx=dx/5.
  dpy=dy/5.
@@ -481,17 +481,17 @@ subroutine do_all
  else
   scattering=.FALSE.
  end if
- write(*,*) "scattering", scattering
+ !write(*,*) "scattering", scattering
 
  if (int_isolated_box.eq.1)  then
   isolated_box=.TRUE.
  else
   isolated_box=.FALSE.
  end if
- write(*,*) "isolated", isolated_box
- write(*,*)  '                hi_doall ...  '
+ !write(*,*) "isolated", isolated_box
+ !write(*,*)  '                hi_doall ...  '
  call hi_doall(dpx,dpy,isolated_box)  ! Compute interception of diffuse and scattering radiation, ie exchange
- write(*,*)  '             ...   hi_doall   '
+ !write(*,*)  '             ...   hi_doall   '
  ntime=0
  endmeteo=.FALSE.
  call mm_initiate
@@ -500,9 +500,9 @@ subroutine do_all
  iterspatial = 0
  do while (.NOT.((endmeteo)))
   ntime=ntime+1
-  write(*,*) '...Iteration : ',ntime,nbli
+  !write(*,*) '...Iteration : ',ntime,nbli
   call mm_read(ntime,nbli)  ! Read micrometeo data (line #ntime in file mmeteo.<spec>)
-  write(*,*) '...mm_read : '
+  !write(*,*) '...mm_read : '
   call swrb_doall     ! Compute short wave radiation balance
 
   do k=1, nveg
@@ -543,11 +543,11 @@ subroutine do_all
  call di_destroy
  call hi_destroy
  call swrb_destroy
- write(*,*) 'CALCULS TERMINES INTERCEPTION'
+ !write(*,*) 'CALCULS TERMINES INTERCEPTION'
  end subroutine do_interception
 
  subroutine out_rayt_destroy
-  write(*,*) 'destroy out_rayt'
+  !write(*,*) 'destroy out_rayt'
   if (allocated(out_rayt))  deallocate(out_rayt)
  end subroutine out_rayt_destroy
 

@@ -1,6 +1,8 @@
 import sys
 import os
 
+import numpy as np
+
 try :
     from src.LightVegeManager import *
     from src.l_egume_template import *
@@ -34,6 +36,12 @@ lstring = lsystem_simulations[sim_id].axiom
 nb_iter = lsystem_simulations[sim_id].derivationLength #lire dans derivation_length #335 #30
 lsystem_simulations[sim_id].opt_external_coupling = 1 # met a un l'option external coupling
 
+# copie du lsystem pour récupérer la taille des voxels
+lsys_temp = lsystem_simulations[sim_id]
+lstring_temp = lsys_temp.derive(lstring, 0, 1)
+dxyz = lsys_temp.dxyz # récupère nouvelle taille de voxel
+nxyz = lsys_temp.na # récupère le nombre de voxels
+
 ## INITIALISATION LIGHTVEGEMANAGER
 geometry = {}
 environment = {}
@@ -52,8 +60,8 @@ environment["reflectance coefficients"] = [[0., 0.]]
 environment["infinite"] = False
 
 ## PARAMETRES RATP scene grille l-egume ##
-dx, dy, dz = 4, 4, 2 # cm
-ratp_parameters_legume["voxel size"] = [dx, dy, dz]
+# dx, dy, dz = 4, 4, 2 # cm # taille voxel modifié dans def_na_lims
+ratp_parameters_legume["voxel size"] = dxyz
 ratp_parameters_legume["soil reflectance"] = [0., 0.]
 ratp_parameters_legume["mu"] = [1.]
 
@@ -63,7 +71,7 @@ lghtratp_legume = LightVegeManager(environment=environment,
                                 main_unit="cm")
 
 ## PARAMETRES RATP scene PlantGL ##
-ratp_parameters_plantgl["voxel size"] = [dx, dy, dz]
+ratp_parameters_plantgl["voxel size"] = dxyz
 ratp_parameters_plantgl["soil reflectance"] = [0., 0.]
 ratp_parameters_plantgl["mu"] = [1.]
 ratp_parameters_plantgl["tesselation level"] = 2
@@ -129,22 +137,40 @@ for i in range(nb_iter+1):
 
     # calcul
     # note : si pyratp.init -> plantgl.init -> pyratp.run : plante car objets de lvm.pyratp corrompus
-    lghtratp_legume.run(PARi=1, truesolartime=True)
+    lghtratp_legume.run(PARi=meteo_j['I0'] * surf_refVOX, truesolartime=True, parunit="W.m-2.s-1")
+    
+    # transfert des sorties
+    ## TRES LENT !!
+    res_abs_i = np.zeros((m_lais.shape[0], nxyz[2], nxyz[1], nxyz[0]))
+    res_trans = np.zeros((nxyz[2], nxyz[1], nxyz[0]))
+    for ix in range(nxyz[0]):
+        for iy in range(nxyz[1]):
+            for iz in range(nxyz[2]):
+                vox_data = lghtratp_legume.voxels_outputs[(lghtratp_legume.voxels_outputs.Nx == ix+1) &  
+                                                                        (lghtratp_legume.voxels_outputs.Ny == iy+1) &
+                                                                        (lghtratp_legume.voxels_outputs.Nz == iz+1)]
+                
+                res_trans[iz, iy, ix] = (1 - sum(vox_data["xintav"]))
+                for ie in range(m_lais.shape[0]) :
+                    if len(vox_data) > 0 :
+                        res_abs_i[ie, iz, iy, ix] = vox_data[vox_data.VegetationType == ie+1]["PARa"].values[0]
+                    
     
     ############
     # step light transfer coupling
     ############
 
-    # PAR / Blue voxel
-    tag_light_inputs = [m_lais / surf_refVOX, triplets, ls_dif, meteo_j['I0'] * surf_refVOX]  # input tag
+    # # PAR / Blue voxel
+    # tag_light_inputs = [m_lais / surf_refVOX, triplets, ls_dif, meteo_j['I0'] * surf_refVOX]  # input tag
 
-    # mise a jour de res_trans, res_abs_i, res_rfr, ls_epsi
-    local_res_trans, local_res_abs_i = riri.calc_extinc_allray_multi_reduced(*tag_light_inputs, optsky=station['optsky'], opt=station['sky'])
+    # # mise a jour de res_trans, res_abs_i, res_rfr, ls_epsi
+    # local_res_trans, local_res_abs_i = riri.calc_extinc_allray_multi_reduced(*tag_light_inputs, optsky=station['optsky'], opt=station['sky'])
 
-    res_trans, res_abs_i = local_res_trans, local_res_abs_i  # mise a jour variables globales
+    # res_trans, res_abs_i = local_res_trans, local_res_abs_i  # mise a jour variables globales
 
     # R_FR voxel (calcul de zeta)
-    tag_light_inputs2 = [res_trans / (meteo_j['I0'] * surf_refVOX)]  # input tag
+    #tag_light_inputs2 = [res_trans / (meteo_j['I0'] * surf_refVOX)]  # input tag
+    tag_light_inputs2 = [res_trans]  # input tag
     local_res_rfr = riri.rfr_calc_relatif(*tag_light_inputs2)
 
     res_rfr = local_res_rfr  # mise a jour variables globales

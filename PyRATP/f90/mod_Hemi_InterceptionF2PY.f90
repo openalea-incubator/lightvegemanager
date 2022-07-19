@@ -100,14 +100,14 @@ contains
 
 
 !     For each sky direction jdir, jdir=1,ndir
-    write(*,*) 'ndir',ndir
+    !write(*,*) 'ndir',ndir
 
 !   Directional interception (includes computation of extinction coefficient, beam sampling, and exchange coefficients)
   do jdir=1,ndir
- write(*,*) 'jdir',jdir
- write(*,*) 'DEBUG: ARGS',hmoy(jdir)*180./pi 
- write(*,*) 'DEBUG: ARGS', azmoy(jdir)*180./pi 
- write(*,*) 'DEBUG: ARGS', omega(jdir),dpx0,dpy0,scattering,isolated_box
+ !write(*,*) 'jdir',jdir
+ !write(*,*) 'DEBUG: ARGS',hmoy(jdir)*180./pi 
+ !write(*,*) 'DEBUG: ARGS', azmoy(jdir)*180./pi 
+ !write(*,*) 'DEBUG: ARGS', omega(jdir),dpx0,dpy0,scattering,isolated_box
   
    call di_doall(hmoy(jdir)*180./pi, azmoy(jdir)*180./pi, omega(jdir),dpx0,dpy0,scattering,isolated_box) 
 
@@ -191,8 +191,8 @@ contains
   end do
 
   STARsky_canopy = STARsky_canopy / S_canopy
-  write(*,*) 'STARsky_canopy =', STARsky_canopy
-  write(*,*) 'S_canopy =', S_canopy
+  !write(*,*) 'STARsky_canopy =', STARsky_canopy
+  !write(*,*) 'S_canopy =', S_canopy
 
 
 ! Verification de la conservation des rayonnements
@@ -207,7 +207,7 @@ contains
    rtot = rtot +rdis(k)
   end do
   rtot=rtot/(float(njx)*dx*float(njy)*dy)
- write(*,*) '  Total diffuse intercepted radiation: ',rtot,' SHOULD BE 1'
+ !write(*,*) '  Total diffuse intercepted radiation: ',rtot,' SHOULD BE 1'
 
   rtot=0.
   do ks=1,nsol
@@ -219,7 +219,7 @@ contains
    end do
   end do
 
-    write(*,*)'Total scattered radiation by the ground: ',rtot/njx/njy,' SHOULD BE 1'
+    !write(*,*)'Total scattered radiation by the ground: ',rtot/njx/njy,' SHOULD BE 1'
   do ks=1,nveg
   do jes=1,nje(ks)
    rtot=0.
@@ -232,7 +232,7 @@ contains
    do kr=1,nsol
     rtot=rtot+ffsv(kr,ks,jes)
    end do
-  write(*,*)'Total scattered radiation by vegetation type ',jes,' in voxel ',ks, ': ',rtot,' SHOULD BE 1'
+  !write(*,*)'Total scattered radiation by vegetation type ',jes,' in voxel ',ks, ': ',rtot,' SHOULD BE 1'
   end do
   end do
 
