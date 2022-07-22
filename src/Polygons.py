@@ -133,6 +133,7 @@ class Triangle3:
     def set_id(self, id):
         self.__id = id
 
+    # id correspond à l'index de la shape dans LightVegeManager
     @property
     def id(self):
         return self.__id
@@ -148,6 +149,20 @@ class Triangle3:
         self.__vertices = tuple(newvert)
 
         self.__barycenter = (self.__vertices[0]+self.__vertices[1]+self.__vertices[2]).scale(1/3)
+
+    def transform_axis(self, axis_id, h=1, t=0):
+        newvert=[]
+        for s in self.__vertices:
+            if axis_id==0 : v = Vector3(s[0] * h + t, s[1], s[2])
+            elif axis_id==1 : v = Vector3(s[0], s[1] * h + t, s[2])
+            elif axis_id==2 : v = Vector3(s[0], s[1], s[2] * h + t)
+            newvert.append(v)
+        self.__vertices = tuple(newvert)
+
+        self.__barycenter = (self.__vertices[0]+self.__vertices[1]+self.__vertices[2]).scale(1/3)
+        side1 = self.__vertices[1]-self.__vertices[0]
+        side2 = self.__vertices[2]-self.__vertices[1]
+        self.__area = (side1^side2).norm * 0.5
     
     def rescale(self, h):
         '''Mise à l'échelle de self d'un float h

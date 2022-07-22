@@ -405,13 +405,6 @@ class LightVegeManager:
                             
                             if "translate" in  self.__in_geometry["transformations"]  : tr.translate(self.__in_geometry["transformations"]["translate"][i_esp])
                             
-                            if "scenes unit" in  self.__in_geometry["transformations"] :
-                                # recupère la variable pour la lisibilité
-                                scene_unit = self.__in_geometry["transformations"]["scenes unit"][i_esp]
-                                
-                                if (scene_unit != self.__main_unit) and (scene_unit in self.units):
-                                    tr.rescale(self.units[scene_unit]/self.units[self.__main_unit])
-                            
                             # la convention du repère xyz par rapport aux points cardinaux est précisée
                             # on ramène la scène à la convention x+ = N
                             # si non précisé, on ne change pas l'orientation de la scène
@@ -422,7 +415,19 @@ class LightVegeManager:
                                     tr.zrotate(90)
                                 elif self.__in_geometry["transformations"]["xyz orientation"][i_esp] == "x+ = E":
                                     tr.zrotate(-90)
-        
+                                # cas particulier pour l-egume
+                                elif self.__in_geometry["transformations"]["xyz orientation"][i_esp] == "y+ = y-":
+                                    y_id = 1
+                                    tr.transform_axis(y_id, h=-1, t=self.__in_lightmodel_parameters["xy max"])
+                                    # tr.zrotate(-90)
+                            
+                            if "scenes unit" in  self.__in_geometry["transformations"] :
+                                # recupère la variable pour la lisibilité
+                                scene_unit = self.__in_geometry["transformations"]["scenes unit"][i_esp]
+                                
+                                if (scene_unit != self.__main_unit) and (scene_unit in self.units):
+                                    tr.rescale(self.units[scene_unit]/self.units[self.__main_unit])
+                            
         # enregistre l'aire du plus grand triangle (indicateur par rapport au besoin de tesselation)
         self.__maxtrarea = 0.
         for tr in self.__my_scene:
@@ -559,13 +564,22 @@ class LightVegeManager:
                     # nombre de voxels
                     nx = int((self.__pmax[0] - self.__pmin[0]) // self.__in_lightmodel_parameters["voxel size"][0])
                     ny = int((self.__pmax[1] - self.__pmin[1]) // self.__in_lightmodel_parameters["voxel size"][1])
-                    nz = int((self.__pmax[2] - self.__pmin[2]) // self.__in_lightmodel_parameters["voxel size"][2])
+                    if "grid slicing" in self.__in_lightmodel_parameters :
+                        if self.__in_lightmodel_parameters["grid slicing"] == "ground = 0." :
+                            nz = int((self.__pmax[2] - 0.) // self.__in_lightmodel_parameters["voxel size"][2])
+                    else :
+                        nz = int((self.__pmax[2] - self.__pmin[2]) // self.__in_lightmodel_parameters["voxel size"][2])
                     if (self.__pmax[0] - self.__pmin[0]) % self.__in_lightmodel_parameters["voxel size"][0] > 0 : nx += 1
                     if (self.__pmax[1] - self.__pmin[1]) % self.__in_lightmodel_parameters["voxel size"][1] > 0 : ny += 1
                     if (self.__pmax[2] - self.__pmin[2]) % self.__in_lightmodel_parameters["voxel size"][2] > 0 : nz += 1
                     
-                    # définit une origine en Pmin 
-                    xorig, yorig, zorig = self.__pmin[0], self.__pmin[1], -self.__pmin[2]
+                    # définit une origine en Pmin
+                    if "origin" not in self.__in_lightmodel_parameters : xorig, yorig, zorig = self.__pmin[0], self.__pmin[1], -self.__pmin[2]
+                    else : 
+                        if len(self.__in_lightmodel_parameters["origin"]) == 2 :
+                            xorig, yorig, zorig = self.__in_lightmodel_parameters["origin"][0], self.__in_lightmodel_parameters["origin"][1], -self.__pmin[2]
+                        elif len(self.__in_lightmodel_parameters["origin"]) == 3 :
+                            xorig, yorig, zorig = self.__in_lightmodel_parameters["origin"][0], self.__in_lightmodel_parameters["origin"][1], self.__in_lightmodel_parameters["origin"][2]
 
                     # création de la grille
                     # si pas de rayonnement réfléchi on annules la réflexion du sol
@@ -700,16 +714,16 @@ class LightVegeManager:
                 nx = self.__in_geometry["scenes"][0]["LAD"].shape[3]
                 ny = self.__in_geometry["scenes"][0]["LAD"].shape[2]
                 nz = self.__in_geometry["scenes"][0]["LAD"].shape[1]
-                dx, dy, dz = self.__in_geometry["scenes"][0]["voxel size"]
+                
+                dx, dy, dz = self.__in_lightmodel_parameters["voxel size"][0], self.__in_lightmodel_parameters["voxel size"][1], self.__in_lightmodel_parameters["voxel size"][2]
+                xorig, yorig, zorig = self.__in_lightmodel_parameters["origin"][0], self.__in_lightmodel_parameters["origin"][1],self.__in_lightmodel_parameters["origin"][2]
 
                 # initialisation de la grille
                 # si pas de rayonnement réfléchi on annules la réflexion du sol
                 if self.__in_environment["reflected"] :
                     mygrid = grid.Grid.initialise(nx, ny, nz, 
                                                     dx, dy, dz,
-                                                    self.__in_geometry["scenes"][0]["origin"][0], 
-                                                    self.__in_geometry["scenes"][0]["origin"][1], 
-                                                    self.__in_geometry["scenes"][0]["origin"][2], 
+                                                    xorig, yorig, zorig,
                                                     self.__in_environment["coordinates"][0], 
                                                     self.__in_environment["coordinates"][1], 
                                                     self.__in_environment["coordinates"][2], 
@@ -719,9 +733,7 @@ class LightVegeManager:
                 else :
                     mygrid = grid.Grid.initialise(nx, ny, nz, 
                                                     dx, dy, dz, 
-                                                    self.__in_geometry["scenes"][0]["origin"][0], 
-                                                    self.__in_geometry["scenes"][0]["origin"][1], 
-                                                    self.__in_geometry["scenes"][0]["origin"][2], 
+                                                    xorig, yorig, zorig,
                                                     self.__in_environment["coordinates"][0], 
                                                     self.__in_environment["coordinates"][1], 
                                                     self.__in_environment["coordinates"][2], 
@@ -736,6 +748,7 @@ class LightVegeManager:
                     for ix in range(nx):
                         for iy in range(ny):
                             for iz in range(nz):
+                                # attention changement de direction en z (vers le bas dans RATP)
                                 if self.__in_geometry["scenes"][0]["LAD"][ne][iz][iy][ix] > 0 :
                                     mygrid.kxyz[ix, iy, iz] = k + 1 #ajouter 1 pour utilisation f90
                                     mygrid.numx[k] = ix + 1 #ajouter 1 pour utilisation f90
@@ -894,16 +907,17 @@ class LightVegeManager:
             
             # si il y a une triangulation en entrée (défini à partir d'une scene plantGL)
             if isinstance(self.__in_geometry["scenes"][0], pgl.Scene):
-                index = range(len(self.__tr_vox))
-                vox_id = [self.__tr_vox[str(i)] + 1 for i in index]
-                # and one additional map that allows retrieving shape_id from python_x_index
-                sh_id=[]
-                for tr in self.__my_scene:
-                    sh_id.append(tr.id)
+                if self.__matching_ids:
+                    index = range(len(self.__tr_vox))
+                    vox_id = [self.__tr_vox[str(i)] + 1 for i in index]
+                    # and one additional map that allows retrieving shape_id from python_x_index
+                    sh_id=[]
+                    for tr in self.__my_scene:
+                        sh_id.append(tr.id)
 
-                s=[]
-                for tr in self.__my_scene:
-                        s.append(tr.area)
+                    s=[]
+                    for tr in self.__my_scene:
+                            s.append(tr.area)
             
             # récupère les sorties de RATP
             # np.array en une dimension, de taille nbvoxels x nbiteration
@@ -926,113 +940,133 @@ class LightVegeManager:
                     erel_list.append(xintav[i])
                 else:
                     erel_list.append(0.)
-            
-            dfvox =  pandas.DataFrame({'VegetationType':VegetationType,
-                                'Iteration':Iteration,
-                                'day':day,
-                                'hour':hour,
-                                'VoxelId':VoxelId,
-                                'Nx':self.__ratp_scene.numx[:self.__ratp_scene.nveg],
-                                'Ny':self.__ratp_scene.numy[:self.__ratp_scene.nveg],
-                                'Nz':self.__ratp_scene.numz[:self.__ratp_scene.nveg],
-                                'ShadedPAR':ShadedPAR, # /4.6,
-                                'SunlitPAR':SunlitPAR, # /4.6,
-                                'ShadedArea':ShadedArea,
-                                'SunlitArea': SunlitArea,
-                                'Area': ShadedArea + SunlitArea,
-                                'PARa': para_list,
-                                'xintav': erel_list, 
+
+            # grille RATP non vide
+            if  self.__ratp_scene.nveg > 0 :
+                dfvox =  pandas.DataFrame({'VegetationType':VegetationType,
+                                    'Iteration':Iteration,
+                                    'day':day,
+                                    'hour':hour,
+                                    'VoxelId':VoxelId,
+                                    'Nx':self.__ratp_scene.numx[:self.__ratp_scene.nveg],
+                                    'Ny':self.__ratp_scene.numy[:self.__ratp_scene.nveg],
+                                    'Nz':self.__ratp_scene.numz[:self.__ratp_scene.nveg],
+                                    'ShadedPAR':ShadedPAR, # /4.6,
+                                    'SunlitPAR':SunlitPAR, # /4.6,
+                                    'ShadedArea':ShadedArea,
+                                    'SunlitArea': SunlitArea,
+                                    'Area': ShadedArea + SunlitArea,
+                                    'PARa': para_list,
+                                    'xintav': erel_list, 
                                 })
-            
-            # tri de la dataframe par rapport aux shapes et triangles
-            
-            # ne prend pas le sol
-            dfvox = dfvox[dfvox['VegetationType'] > 0]
-            
+                
+                # tri de la dataframe par rapport aux shapes et triangles
+                
+                # ne prend pas le sol
+                dfvox = dfvox[dfvox['VegetationType'] > 0]
+            else :
+                dfvox =  pandas.DataFrame({'VegetationType':VegetationType,
+                                    'Iteration':Iteration,
+                                    'day':day,
+                                    'hour':hour,
+                                    'VoxelId':VoxelId,
+                                    'Nx':0,
+                                    'Ny':0,
+                                    'Nz':0,
+                                    'ShadedPAR':ShadedPAR, # /4.6,
+                                    'SunlitPAR':SunlitPAR, # /4.6,
+                                    'ShadedArea':ShadedArea,
+                                    'SunlitArea': SunlitArea,
+                                    'Area': ShadedArea + SunlitArea,
+                                    'PARa': para_list,
+                                    'xintav': erel_list, 
+                                })
+                
             # enregistre la dataframe des voxels
             self.__voxels_outputs = dfvox
 
             # si il y a une triangulation en entrée (défini à partir d'une scene plantGL)
             if isinstance(self.__in_geometry["scenes"][0], pgl.Scene):
-                # nouvelle data frame avec les triangles en index
-                dfmap = pandas.DataFrame({'primitive_index': index,'shape_id': sh_id, 'VoxelId':vox_id, 'VegetationType':[entity[sh_id] for sh_id in sh_id], 'primitive_area':s})
+                if self.__matching_ids:
+                    # nouvelle data frame avec les triangles en index
+                    dfmap = pandas.DataFrame({'primitive_index': index,'shape_id': sh_id, 'VoxelId':vox_id, 'VegetationType':[entity[id] for id in sh_id], 'primitive_area':s})
 
-                # supposé copie dans les index avec des colonnes en commun
-                # colonnes en commun : VegetationType, VoxelId
-                output = pandas.merge(dfmap, dfvox)        
-                # tri les lignes par ordre de triangles
-                output =  output.sort_values('primitive_index')
+                    # supposé copie dans les index avec des colonnes en commun
+                    # colonnes en commun : VegetationType, VoxelId
+                    output = pandas.merge(dfmap, dfvox)        
+                    # tri les lignes par ordre de triangles
+                    output =  output.sort_values('primitive_index')
 
-                # enregistre la dataframe dans l'instance
-                self.__outputs = output
+                    # enregistre la dataframe dans l'instance
+                    self.__outputs = output
 
-                # enregistre les valeurs par shape et plantes
-                #nshapes = sum([len(l) for l in self.__in_scenes])
-                nshapes = len(self.__matching_ids)
-                s_shapes = []
-                s_area=[]
-                s_para=[]
-                s_pari=[]
-                s_xintav=[]
-                s_ite=[]
-                s_day=[]
-                s_hour=[]
-                s_ent=[]
-                s_parsun=[]
-                s_parsha=[]
-                s_areasun=[]
-                s_areasha=[]
-                for id in range(nshapes):
-                    # itérations commencent à 1
-                    nent = self.__matching_ids[id][1]
-                    for ite in range(int(max(output["Iteration"]))):
-                        dffil = output[(output.Iteration == ite+1) & (output.shape_id == id)]
-                        
-                        s_hour.append(dffil["hour"].values[0])
-                        s_day.append(dffil["day"].values[0])
-                        s_ite.append(ite+1)
-                        s_area.append(sum(dffil["primitive_area"]))
-
-                        # le rayonnemenbt réfléchi est calculé dans RATP
-                        if self.__in_environment["reflected"] :
-                            s_para.append(sum(dffil['primitive_area']*dffil['PARa']) / s_area[-1])
-                        
-                        # sinon on le rajoute manuellement
-                        else:
-                            # PAR incident
-                            s_pari.append(sum(dffil['primitive_area']*dffil['PARa']) / s_area[-1])
-                            s_para.append(s_pari[-1] - (s_pari[-1] * self.__in_environment["reflectance coefficients"][nent][0]))
+                    # enregistre les valeurs par shape et plantes
+                    #nshapes = sum([len(l) for l in self.__in_scenes])
+                    nshapes = len(self.__matching_ids)
+                    s_shapes = []
+                    s_area=[]
+                    s_para=[]
+                    s_pari=[]
+                    s_xintav=[]
+                    s_ite=[]
+                    s_day=[]
+                    s_hour=[]
+                    s_ent=[]
+                    s_parsun=[]
+                    s_parsha=[]
+                    s_areasun=[]
+                    s_areasha=[]
+                    for id in range(nshapes):
+                        # itérations commencent à 1
+                        nent = self.__matching_ids[id][1]
+                        for ite in range(int(max(output["Iteration"]))):
+                            dffil = output[(output.Iteration == ite+1) & (output.shape_id == id)]
                             
-                            # # applique une réflectance et une transmittance sur le PAR incident
-                            # if (self.__matching_ids[id][0], nent - len(self.__in_geometry["scenes"])) in self.__in_geometry["stems id"] or \
-                            #     (self.__matching_ids[id][0], nent) in self.__in_geometry["stems id"] :
-                            #     
-                            # else:
-                            #     s_para.append(s_pari[-1] - (s_pari[-1] * self.__in_environment["reflectance coefficients"][nent][0] + \
-                            #                                 s_pari[-1] * self.__in_environment["reflectance coefficients"][nent][1]))
+                            s_hour.append(dffil["hour"].values[0])
+                            s_day.append(dffil["day"].values[0])
+                            s_ite.append(ite+1)
+                            s_area.append(sum(dffil["primitive_area"]))
 
-                        s_parsun.append(sum(dffil['primitive_area']*dffil['SunlitPAR']) / s_area[-1])
-                        s_parsha.append(sum(dffil['primitive_area']*dffil['ShadedPAR']) / s_area[-1])
-                        s_areasun.append(sum(dffil['primitive_area']*dffil['SunlitArea']) / s_area[-1])
-                        s_areasha.append(sum(dffil['primitive_area']*dffil['ShadedArea']) / s_area[-1])
-                        s_xintav.append(sum(dffil['primitive_area']*dffil['xintav']) / s_area[-1])
-                        s_ent.append(dffil["VegetationType"].values[0])
-                        s_shapes.append(self.__matching_ids[id][0])
-                self.__shape_outputs = pandas.DataFrame({
-                    "Iteration" : s_ite,
-                    "Day" : s_day,
-                    "Hour" : s_hour,
-                    "ShapeId" : s_shapes,
-                    "VegetationType" : s_ent,
-                    "Area" : s_area,
-                    "PARi" : s_pari,
-                    "PARa" : s_para,
-                    "xintav" : s_xintav,
-                    "SunlitPAR" : s_parsun,
-                    "SunlitArea" : s_areasun,
-                    "ShadedPAR" : s_parsha,
-                    "ShadedArea" : s_areasha
-                })
+                            # le rayonnemenbt réfléchi est calculé dans RATP
+                            if self.__in_environment["reflected"] :
+                                s_para.append(sum(dffil['primitive_area']*dffil['PARa']) / s_area[-1])
+                            
+                            # sinon on le rajoute manuellement
+                            else:
+                                # PAR incident
+                                s_pari.append(sum(dffil['primitive_area']*dffil['PARa']) / s_area[-1])
+                                s_para.append(s_pari[-1] - (s_pari[-1] * self.__in_environment["reflectance coefficients"][nent][0]))
+                                
+                                # # applique une réflectance et une transmittance sur le PAR incident
+                                # if (self.__matching_ids[id][0], nent - len(self.__in_geometry["scenes"])) in self.__in_geometry["stems id"] or \
+                                #     (self.__matching_ids[id][0], nent) in self.__in_geometry["stems id"] :
+                                #     
+                                # else:
+                                #     s_para.append(s_pari[-1] - (s_pari[-1] * self.__in_environment["reflectance coefficients"][nent][0] + \
+                                #                                 s_pari[-1] * self.__in_environment["reflectance coefficients"][nent][1]))
+
+                            s_parsun.append(sum(dffil['primitive_area']*dffil['SunlitPAR']) / s_area[-1])
+                            s_parsha.append(sum(dffil['primitive_area']*dffil['ShadedPAR']) / s_area[-1])
+                            s_areasun.append(sum(dffil['primitive_area']*dffil['SunlitArea']) / s_area[-1])
+                            s_areasha.append(sum(dffil['primitive_area']*dffil['ShadedArea']) / s_area[-1])
+                            s_xintav.append(sum(dffil['primitive_area']*dffil['xintav']) / s_area[-1])
+                            s_ent.append(dffil["VegetationType"].values[0])
+                            s_shapes.append(self.__matching_ids[id][0])
+                    self.__shape_outputs = pandas.DataFrame({
+                        "Iteration" : s_ite,
+                        "Day" : s_day,
+                        "Hour" : s_hour,
+                        "ShapeId" : s_shapes,
+                        "VegetationType" : s_ent,
+                        "Area" : s_area,
+                        "PARi" : s_pari,
+                        "PARa" : s_para,
+                        "xintav" : s_xintav,
+                        "SunlitPAR" : s_parsun,
+                        "SunlitArea" : s_areasun,
+                        "ShadedPAR" : s_parsha,
+                        "ShadedArea" : s_areasha
+                    })
 
         # CARIBU
         elif self.__lightmodel == "caribu":
@@ -1395,7 +1429,7 @@ class LightVegeManager:
             # update the MTG
             mtg.property(param).update(dico_par[param])
 
-    def VTKinit(self, path, plantnames=[], planttrianglevalues=[]):
+    def VTKinit(self, path, plantnames=[], planttrianglevalues=[], printtriangles=True):
         '''construit des fichiers VTK de la triangulation et de la grille de voxels après leur construction
 
         Args :
@@ -1409,21 +1443,22 @@ class LightVegeManager:
         # obligé de forcer ces variables...
         plantnames=[]
         planttrianglevalues=[]
-        if self.__matching_ids :
-            if self.__lightmodel == "ratp" :
-                nent = int(self._LightVegeManager__ratp_scene.nent)
-                # plot dans VTK
-                temp1, temp2, temp3 = [], [], []
-                # éviter les éléments en trop
-                for i in range(self.__ratp_scene.nveg)  :
-                    for j in range(self.__ratp_scene.nje[i]):
-                        temp1.append(self.__ratp_scene.leafareadensity[j, i])
-                        temp2.append(self.__ratp_scene.nume[j,i])
-                        temp3.append(int(i)+1) # kxyz sort en fortran
-                lad = [np.array(temp1), np.array(temp2), np.array(temp3)]
+        
+        if self.__lightmodel == "ratp" :
+            nent = int(self._LightVegeManager__ratp_scene.nent)
+            # plot dans VTK
+            temp1, temp2, temp3 = [], [], []
+            # éviter les éléments en trop
+            for i in range(self.__ratp_scene.nveg)  :
+                for j in range(self.__ratp_scene.nje[i]):
+                    temp1.append(self.__ratp_scene.leafareadensity[j, i])
+                    # temp1.append(self.__ratp_scene.s_vt_vx[j, i])
+                    temp2.append(self.__ratp_scene.nume[j,i])
+                    temp3.append(int(i)+1) # kxyz sort en fortran
+            lad = [np.array(temp1), np.array(temp2), np.array(temp3)]
 
-                RATP2VTK.RATPVOXELS2VTK(self.__ratp_scene, lad, "LAD", path+"init_voxels.vtk")
-
+            RATP2VTK.RATPVOXELS2VTK(self.__ratp_scene, lad, "LAD", path+"init_voxels.vtk")
+        if self.__matching_ids and printtriangles:
             if not plantnames:
                 for i in range(nent):
                     plantnames.append("plant_"+str(i))

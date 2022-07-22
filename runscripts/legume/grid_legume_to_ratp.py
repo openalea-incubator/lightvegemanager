@@ -17,6 +17,12 @@ except ModuleNotFoundError:
 
 ### on vérifie le transfert de la grille entre l-egume et RATP
 
+# Note : l-egume même convention que RATP?
+# scene géométrique en cm MAIS surface foliaire (dans m_lais) en m²
+# plantgl commence un peu sous z=0.
+# taille des voxels et nb de voxels dans la scène recalculés dans l-egume à partir des dimensions de la scène
+# si pyratp.init -> plantgl.init -> pyratp.run : plante car objets de lvm.pyratp corrompus
+
 ### ETAPES
 # chemin des inputs
 # ouvre le excel usm et l'enregistre dans un dico
@@ -39,11 +45,23 @@ lsystem_simulations[sim_id].opt_external_coupling = 1 # met a un l'option extern
 # copie du lsystem pour récupérer la taille des voxels
 lsys_temp = lsystem_simulations[sim_id]
 lstring_temp = lsys_temp.derive(lstring, 0, 1)
+# récupère toutes les variables du lsystem
+tag_loop_inputs = lsystem_simulations[sim_id].tag_loop_inputs
+invar, outvar, invar_sc, ParamP, \
+    station, carto, meteo_j, mng_j,  \
+    DOY, cutNB, start_time, nbplantes,  \
+    surfsolref, m_lais, dicFeuilBilanR,  \
+    surf_refVOX, triplets, ls_dif, S, par_SN,  \
+    lims_sol, ls_roots, stateEV, Uval, b_,  \
+    ls_mat_res, vCC, ls_ftswStress, ls_NNIStress,  \
+    ls_TStress, lsApex, lsApexAll, dicOrgans,  \
+    deltaI_I0, nbI_I0, I_I0profilLfPlant, I_I0profilPetPlant,  \
+    I_I0profilInPlant, NlClasses, NaClasses, NlinClasses,  \
+    opt_stressW, opt_stressN, opt_stressGel, opt_residu = tag_loop_inputs
 dxyz = lsys_temp.dxyz # récupère nouvelle taille de voxel
 nxyz = lsys_temp.na # récupère le nombre de voxels
 
 ## INITIALISATION LIGHTVEGEMANAGER
-geometry = {}
 environment = {}
 ratp_parameters_legume = {}
 ratp_parameters_plantgl = {}
@@ -60,10 +78,10 @@ environment["reflectance coefficients"] = [[0., 0.]]
 environment["infinite"] = False
 
 ## PARAMETRES RATP scene grille l-egume ##
-# dx, dy, dz = 4, 4, 2 # cm # taille voxel modifié dans def_na_lims
 ratp_parameters_legume["voxel size"] = dxyz
 ratp_parameters_legume["soil reflectance"] = [0., 0.]
 ratp_parameters_legume["mu"] = [1.]
+ratp_parameters_legume["origin"] = [0., 0., 0.]
 
 lghtratp_legume = LightVegeManager(environment=environment,
                                 lightmodel="ratp",
@@ -71,17 +89,20 @@ lghtratp_legume = LightVegeManager(environment=environment,
                                 main_unit="cm")
 
 ## PARAMETRES RATP scene PlantGL ##
-ratp_parameters_plantgl["voxel size"] = dxyz
+ratp_parameters_plantgl["voxel size"] = [d*0.01 for d in dxyz]
+ratp_parameters_plantgl["xy max"] = lsys_temp.cote
 ratp_parameters_plantgl["soil reflectance"] = [0., 0.]
 ratp_parameters_plantgl["mu"] = [1.]
 ratp_parameters_plantgl["tesselation level"] = 2
 ratp_parameters_plantgl["angle distrib algo"] = "file"
 ratp_parameters_plantgl["angle distrib file"] = "runscripts/legume/luzerne_angle_distrib.data"
+# ratp_parameters_plantgl["origin"] = [0., 0., dxyz[2] * nxyz[2]] # [0., 0.]
+# ratp_parameters_plantgl["grid slicing"] = "ground = 0."
 
 lghtratp_plantgl = LightVegeManager(environment=environment,
                                 lightmodel="ratp",
                                 lightmodel_parameters=ratp_parameters_plantgl,
-                                main_unit="cm")
+                                main_unit="m")
 
 # début de la simulation
 for i in range(nb_iter+1):
@@ -102,75 +123,40 @@ for i in range(nb_iter+1):
         I_I0profilInPlant, NlClasses, NaClasses, NlinClasses,  \
         opt_stressW, opt_stressN, opt_stressGel, opt_residu = tag_loop_inputs
 
-    ## Paramètres scene ##
-    scene_legume = {}
-    scene_legume["LAD"] = m_lais
-    scene_legume["distrib"] = ls_dif    
-    scene_legume["voxel size"] = [station["dz_aerien"]*2, station["dz_aerien"]*2, station["dz_aerien"]] # RIRI5.py l.32-33
-    scene_legume["origin"] = [0, 0, station['Hmaxcouv']] # l-egume.lpy l.444;469 + RIRI5.py l.46
-
-    # récupère la scène PlantGL
-    scene_plantgl = lsystem_simulations[sim_id].sceneInterpretation(lstring)
-
-    # détail des LAD par voxel
-    print("====     legume")
-    # count = 0
-    # for i in range(m_lais.shape[1]):
-    #     for j in range(m_lais.shape[2]):
-    #         for k in range(m_lais.shape[3]):
-    #             if m_lais[0][i][j][k] > 0. :
-    #                 print(count, m_lais[0][i][j][k]/(4*4*2))
-    #                 count += 1
-    # print("nb vox : ",count)
-    
-    # print("====     lvm plantgl")
-    # geometry = {}
-    # geometry["scenes"] = [scene_plantgl]
-    # lghtratp_plantgl.init_scenes(geometry)
-    # impression du plantGL et de sa grille
-    #lghtratp_plantgl.VTKinit(foldout)
-    
-    print("====     lvm grid")
-    ## Process de la scene par lightvegemanager
-    geometry["scenes"] = [scene_legume]
-    lghtratp_legume.init_scenes(geometry)
-
-    # calcul
-    # note : si pyratp.init -> plantgl.init -> pyratp.run : plante car objets de lvm.pyratp corrompus
-    lghtratp_legume.run(PARi=meteo_j['I0'] * surf_refVOX, truesolartime=True, parunit="W.m-2.s-1")
+    m_lais_temp = m_lais
     
     # transfert des sorties
     ## TRES LENT !!
-    res_abs_i = np.zeros((m_lais.shape[0], nxyz[2], nxyz[1], nxyz[0]))
-    res_trans = np.zeros((nxyz[2], nxyz[1], nxyz[0]))
-    for ix in range(nxyz[0]):
-        for iy in range(nxyz[1]):
-            for iz in range(nxyz[2]):
-                vox_data = lghtratp_legume.voxels_outputs[(lghtratp_legume.voxels_outputs.Nx == ix+1) &  
-                                                                        (lghtratp_legume.voxels_outputs.Ny == iy+1) &
-                                                                        (lghtratp_legume.voxels_outputs.Nz == iz+1)]
+    # res_abs_i = np.zeros((m_lais.shape[0], nxyz[2], nxyz[1], nxyz[0]))
+    # res_trans = np.zeros((nxyz[2], nxyz[1], nxyz[0]))
+    # for ix in range(nxyz[0]):
+    #     for iy in range(nxyz[1]):
+    #         for iz in range(nxyz[2]):
+    #             vox_data = lghtratp_legume.voxels_outputs[(lghtratp_legume.voxels_outputs.Nx == ix+1) &  
+    #                                                                     (lghtratp_legume.voxels_outputs.Ny == iy+1) &
+    #                                                                     (lghtratp_legume.voxels_outputs.Nz == iz+1)]
                 
-                res_trans[iz, iy, ix] = (1 - sum(vox_data["xintav"]))
-                for ie in range(m_lais.shape[0]) :
-                    if len(vox_data) > 0 :
-                        res_abs_i[ie, iz, iy, ix] = vox_data[vox_data.VegetationType == ie+1]["PARa"].values[0]
+    #             res_trans[iz, iy, ix] = (1 - sum(vox_data["xintav"]))
+    #             for ie in range(m_lais.shape[0]) :
+    #                 if len(vox_data) > 0 :
+    #                     res_abs_i[ie, iz, iy, ix] = vox_data[vox_data.VegetationType == ie+1]["PARa"].values[0]
                     
     
     ############
     # step light transfer coupling
     ############
 
-    # # PAR / Blue voxel
-    # tag_light_inputs = [m_lais / surf_refVOX, triplets, ls_dif, meteo_j['I0'] * surf_refVOX]  # input tag
+    # PAR / Blue voxel
+    tag_light_inputs = [m_lais / surf_refVOX, triplets, ls_dif, meteo_j['I0'] * surf_refVOX]  # input tag
 
-    # # mise a jour de res_trans, res_abs_i, res_rfr, ls_epsi
-    # local_res_trans, local_res_abs_i = riri.calc_extinc_allray_multi_reduced(*tag_light_inputs, optsky=station['optsky'], opt=station['sky'])
+    # mise a jour de res_trans, res_abs_i, res_rfr, ls_epsi
+    local_res_trans, local_res_abs_i = riri.calc_extinc_allray_multi_reduced(*tag_light_inputs, optsky=station['optsky'], opt=station['sky'])
 
-    # res_trans, res_abs_i = local_res_trans, local_res_abs_i  # mise a jour variables globales
+    res_trans, res_abs_i = local_res_trans, local_res_abs_i  # mise a jour variables globales
 
     # R_FR voxel (calcul de zeta)
-    #tag_light_inputs2 = [res_trans / (meteo_j['I0'] * surf_refVOX)]  # input tag
-    tag_light_inputs2 = [res_trans]  # input tag
+    tag_light_inputs2 = [res_trans / (meteo_j['I0'] * surf_refVOX)]  # input tag
+    # tag_light_inputs2 = [res_trans]  # input tag
     local_res_rfr = riri.rfr_calc_relatif(*tag_light_inputs2)
 
     res_rfr = local_res_rfr  # mise a jour variables globales
@@ -235,5 +221,69 @@ for i in range(nb_iter+1):
     lsystem_simulations[sim_id].ls_TStress = ls_TStress
     lsystem_simulations[sim_id].I_I0profilInPlant = I_I0profilInPlant
 
-lsystem_simulations[sim_id].clear()
 print((''.join((sim_id, " - done"))))
+
+## Paramètres scene ##
+# Surface foliaire et distribution des angles de l-egume
+scene_legume = {}
+scene_legume["LAD"] = m_lais_temp
+scene_legume["distrib"] = ls_dif
+
+# récupère la scène PlantGL
+scene_plantgl = lsystem_simulations[sim_id].sceneInterpretation(lstring)
+
+# Scene PlantGL feuilles
+geometry = {}
+geometry["scenes"] = [scene_plantgl]
+geometry["transformations"] = {}
+geometry["transformations"]["scenes unit"] = ["cm"]
+geometry["transformations"]["xyz orientation"] = ["y+ = y-"]
+
+lghtratp_plantgl.init_scenes(geometry)
+lghtratp_plantgl.run(PARi=meteo_j['I0'] * surf_refVOX, truesolartime=True, parunit="W.m-2.s-1")
+# impression du plantGL et de sa grille
+lghtratp_plantgl.VTKinit(foldout+"plantgl")
+
+# Transfert grille l-egume vers RATP
+geometry = {}
+geometry["scenes"] = [scene_legume]
+
+lghtratp_legume.init_scenes(geometry)
+lghtratp_legume.run(PARi=meteo_j['I0'] * surf_refVOX, truesolartime=True, parunit="W.m-2.s-1")
+lghtratp_legume.VTKinit(foldout+"legume", printtriangles=False)
+
+# détail des LAD par voxel
+leg_aire = []
+ratp_aire = []
+plantgl_aire = []
+diff_ratp=[]
+diff_plantgl=[]
+t_nx=[]
+t_ny=[]
+for i in range(m_lais_temp.shape[1]):
+    for j in range(m_lais_temp.shape[2]):
+        for k in range(m_lais_temp.shape[3]):
+            if m_lais_temp[0][i][j][k] > 0. :
+                vox_legume = lghtratp_legume.voxels_outputs[(lghtratp_legume.voxels_outputs.Nx==k+1) & 
+                                                            (lghtratp_legume.voxels_outputs.Ny==j+1) & 
+                                                            (lghtratp_legume.voxels_outputs.Nz==i+1)]
+                vox_plantgl = lghtratp_plantgl.voxels_outputs[(lghtratp_plantgl.voxels_outputs.Nx==k+1) & 
+                                                            # (lghtratp_plantgl.voxels_outputs.Ny==nxyz[1] - j) & 
+                                                            (lghtratp_plantgl.voxels_outputs.Ny==j+1) & 
+                                                            (lghtratp_plantgl.voxels_outputs.Nz==1)]
+                t_nx.append(k+1)
+                t_ny.append(j+1)
+                leg_aire.append(m_lais_temp[0][i][j][k])
+                ratp_aire.append(vox_legume["Area"].values[0])
+                plantgl_aire.append(vox_plantgl["Area"].values[0])
+                diff_ratp.append(100*abs(m_lais_temp[0][i][j][k] - vox_legume["Area"].values[0])/m_lais_temp[0][i][j][k])
+                diff_plantgl.append(100*abs(m_lais_temp[0][i][j][k] - vox_plantgl["Area"].values[0])/m_lais_temp[0][i][j][k])
+
+df_area = pandas.DataFrame({"Nx" : t_nx, "Ny" : t_ny, "l-egume" : leg_aire, "lvm ratp" : ratp_aire, "lvm plantgl" : plantgl_aire, "% ecart ratp" : diff_ratp, "% ecart plantgl" : diff_plantgl})
+print(df_area)
+print(" --- Surface Foliaire totale m^2---")
+print("l-egume : ", sum(df_area["l-egume"]))
+print("lvm ratp", sum(df_area["lvm ratp"]))
+print("plantgl feuilles", sum(df_area["lvm plantgl"]))
+
+lsystem_simulations[sim_id].clear()
