@@ -473,8 +473,10 @@ subroutine do_all
  call cv_set
  !write(*,*)  '             ...   cv_set '
 
- dpx=dx/5.
- dpy=dy/5.
+!  dpx=dx/5.
+!  dpy=dy/5.
+ dpx=dx
+ dpy=dy
 
  if (int_scattering.eq.1)  then
   scattering=.TRUE.
@@ -496,7 +498,7 @@ subroutine do_all
  endmeteo=.FALSE.
  call mm_initiate
 
- allocate(out_rayt(nbli*nveg*nemax,10))
+ allocate(out_rayt(nbli*nveg*nemax,11))
  iterspatial = 0
  do while (.NOT.((endmeteo)))
   ntime=ntime+1
@@ -522,7 +524,9 @@ subroutine do_all
        out_rayt(iterspatial,8) = S_detailed(0,je,k)
        out_rayt(iterspatial,9) = S_detailed(1,je,k)
  !      out_rayt(iterspatial,10) = N_detailed(je,k)
-       out_rayt(iterspatial,10) = xintav(je,k)/S_vt_vx(je,k) ! ajout mwoussen 
+      !  out_rayt(iterspatial,10) = xintav(je,k)/S_vt_vx(je,k) ! ajout mwoussen 
+       out_rayt(iterspatial,10) = xintav(je,k) ! ajout mwoussen 
+       out_rayt(iterspatial,11) = rdtv(je,k) ! ajout mwoussen 
       !  write(12,90) ntime, day, hour, k, ts(0,1,k), ts(1,1,k), taref
    end do
   end do

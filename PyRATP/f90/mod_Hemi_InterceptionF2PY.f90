@@ -8,6 +8,7 @@ real, allocatable :: STARsky_vt(:)     ! Sky-integrated STAR at vegetation type 
 real ::      STARsky_canopy         ! Sky-integrated STAR at canopy scale (ie, summing up on vegetation types and voxels)
 
 real, allocatable :: rdiv(:,:)  ! Fraction of incident diffuse radiation intercepted by voxel k, k=1,nveg
+real, allocatable :: rdtv(:,:)  ! Fraction of incident diffuse radiation transmitted by voxel k, k=1,nveg
 real, allocatable :: rdis(:)   ! Fraction of incident diffuse radiation intercepted by ground_zone ksol, ksol=1,nsol
 
 real, allocatable :: ffvv(:,:,:,:) ! Exchange coeff between vegetation type js in voxel ks and vegetation type jr in voxel jr
@@ -26,7 +27,7 @@ contains
  use vegetation_types
  use dir_interception
 
- real :: aa, rtot
+ real :: aa, at, rtot
  real :: dpx0, dpy0
  logical :: ib0    ! TRUE if isolated box
  integer :: AllocateStatus
@@ -52,8 +53,10 @@ contains
 !  2- Facteurs de forme pour le rayonnement diffus incident
                                                        
   allocate(rdiv(nemax,nveg))
+  allocate(rdtv(nemax,nveg))
   allocate(rdis(nsol))
   rdiv=0.
+  rdtv=0.
   rdis=0.       
 
 !  3- Facteurs de forme pour le rayonnement rediffuse
@@ -100,22 +103,24 @@ contains
 
 
 !     For each sky direction jdir, jdir=1,ndir
-    !write(*,*) 'ndir',ndir
+    ! write(*,*) 'ndir',ndir
 
 !   Directional interception (includes computation of extinction coefficient, beam sampling, and exchange coefficients)
   do jdir=1,ndir
- !write(*,*) 'jdir',jdir
- !write(*,*) 'DEBUG: ARGS',hmoy(jdir)*180./pi 
- !write(*,*) 'DEBUG: ARGS', azmoy(jdir)*180./pi 
- !write(*,*) 'DEBUG: ARGS', omega(jdir),dpx0,dpy0,scattering,isolated_box
+!  write(*,*) 'jdir',jdir
+!  write(*,*) 'DEBUG: ARGS',hmoy(jdir)*180./pi 
+!  write(*,*) 'DEBUG: ARGS', azmoy(jdir)*180./pi 
+!  write(*,*) 'DEBUG: ARGS', omega(jdir),dpx0,dpy0,scattering,isolated_box
   
    call di_doall(hmoy(jdir)*180./pi, azmoy(jdir)*180./pi, omega(jdir),dpx0,dpy0,scattering,isolated_box) 
 
 !   Sky-vault integration of incident diffuse radiation interception
     do k=1,nveg
         aa = pc(jdir) * riv(k)
+        at = pc(jdir) * rtv(k)
         do je=1,nje(k)
             rdiv(je,k) = rdiv(je,k) + aa * share(je,k)
+            rdtv(je,k) = rdtv(je,k) + at * share(je,k)
         end do
     end do
     do k=1,nsol
@@ -128,6 +133,7 @@ contains
     do je=1, nje(k)
      jent=nume(je,k)
      STARsky_vt_vx(je,k) = STARsky_vt_vx(je,k) + riv(k)*share(je,k)* pc(jdir)
+    !  write(*,*)"rdiv",k,je,rdiv(je,k)
     end do
    end do
 
@@ -245,6 +251,7 @@ contains
   if (allocated(STARsky_vt))  deallocate(STARsky_vt)
 
   if (allocated(rdiv)) deallocate(rdiv)
+  if (allocated(rdtv)) deallocate(rdtv)
   if (allocated(rdis)) deallocate(rdis)
 
   if (allocated(ffvv)) deallocate(ffvv)

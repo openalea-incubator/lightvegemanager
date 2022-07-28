@@ -2,6 +2,7 @@ import sys
 import os
 
 import numpy as np
+from scipy import array
 
 try :
     from src.LightVegeManager import *
@@ -70,7 +71,7 @@ caribu_parameters = {}
 # Paramètres pré-simulation
 environment["names"] = ["l-egume"]
 environment["coordinates"] = [46.43,0,0] # latitude, longitude, timezone
-environment["sky"] = "turtle46" # turtle à 46 directions par défaut
+environment["sky"] ="turtle46" # ["file", "runscripts/legume/sky_5.data"] # "turtle46" # turtle à 46 directions par défaut
 environment["diffus"] = True
 environment["direct"] = False
 environment["reflected"] = False
@@ -78,7 +79,7 @@ environment["reflectance coefficients"] = [[0., 0.]]
 environment["infinite"] = False
 
 ## PARAMETRES RATP scene grille l-egume ##
-ratp_parameters_legume["voxel size"] = dxyz
+ratp_parameters_legume["voxel size"] = [d*0.01 for d in dxyz]
 ratp_parameters_legume["soil reflectance"] = [0., 0.]
 ratp_parameters_legume["mu"] = [1.]
 ratp_parameters_legume["origin"] = [0., 0., 0.]
@@ -86,7 +87,7 @@ ratp_parameters_legume["origin"] = [0., 0., 0.]
 lghtratp_legume = LightVegeManager(environment=environment,
                                 lightmodel="ratp",
                                 lightmodel_parameters=ratp_parameters_legume,
-                                main_unit="cm")
+                                main_unit="m")
 
 ## PARAMETRES RATP scene PlantGL ##
 ratp_parameters_plantgl["voxel size"] = [d*0.01 for d in dxyz]
@@ -124,7 +125,23 @@ for i in range(nb_iter+1):
         opt_stressW, opt_stressN, opt_stressGel, opt_residu = tag_loop_inputs
 
     m_lais_temp = m_lais
-                 
+    
+    # transfert des sorties
+    ## TRES LENT !!
+    # res_abs_i = np.zeros((m_lais.shape[0], nxyz[2], nxyz[1], nxyz[0]))
+    # res_trans = np.zeros((nxyz[2], nxyz[1], nxyz[0]))
+    # for ix in range(nxyz[0]):
+    #     for iy in range(nxyz[1]):
+    #         for iz in range(nxyz[2]):
+    #             vox_data = lghtratp_legume.voxels_outputs[(lghtratp_legume.voxels_outputs.Nx == ix+1) &  
+    #                                                                     (lghtratp_legume.voxels_outputs.Ny == iy+1) &
+    #                                                                     (lghtratp_legume.voxels_outputs.Nz == iz+1)]
+                
+    #             res_trans[iz, iy, ix] = (1 - sum(vox_data["xintav"]))
+    #             for ie in range(m_lais.shape[0]) :
+    #                 if len(vox_data) > 0 :
+    #                     res_abs_i[ie, iz, iy, ix] = vox_data[vox_data.VegetationType == ie+1]["PARa"].values[0]
+                    
     
     ############
     # step light transfer coupling
@@ -207,10 +224,38 @@ for i in range(nb_iter+1):
 
 print((''.join((sim_id, " - done"))))
 
+## Paramètres météo ## 
+doy = lsystem_simulations[sim_id].meteo["DOY"][i]
+hour = 12
+energy = meteo_j['I0']
+
+# Refait le dernier calcul de rayonnement
+tag_light_inputs = [m_lais / surf_refVOX, triplets, ls_dif, energy*surf_refVOX]  # input tag
+res_trans, res_abs_i = riri.calc_extinc_allray_multi_reduced(*tag_light_inputs, optsky=station['optsky'], opt=station['sky'])
+
+# combien/quelles lignes a zeros de LAI au dessus
+laicum = np.sum(m_lais, axis=0)
+laicumvert = np.sum(laicum, axis=(1, 2))
+nb0 = 0  # nb de couches sans feuilles/LAI
+for i in range(len(laicumvert)):
+    if laicumvert[i] == 0.:
+        nb0 += 1
+    else:
+        break
+
+# ajouter un if sur nb0 ou le faire a chaque fois?
+# redim des m_lai et triplets
+shp = np.shape(m_lais)
+reduced_mlai = []
+for plt in range(shp[0]):
+    reduced_mlai.append(m_lais[plt, (nb0 - 1):shp[1], :, :])
+
+reduced_mlai = array(reduced_mlai)
+
 ## Paramètres scene ##
 # Surface foliaire et distribution des angles de l-egume
 scene_legume = {}
-scene_legume["LAD"] = m_lais_temp
+scene_legume["LA"] = m_lais # /np.prod(np.array(ratp_parameters_legume["voxel size"]))
 scene_legume["distrib"] = ls_dif
 
 # récupère la scène PlantGL
@@ -224,17 +269,17 @@ geometry["transformations"]["scenes unit"] = ["cm"]
 geometry["transformations"]["xyz orientation"] = ["y+ = y-"]
 
 lghtratp_plantgl.init_scenes(geometry)
-lghtratp_plantgl.run(PARi=meteo_j['I0'] * surf_refVOX, truesolartime=True, parunit="W.m-2.s-1")
+lghtratp_plantgl.run(PARi=energy, day=doy, hour=hour, truesolartime=True, parunit="RG")
 # impression du plantGL et de sa grille
-lghtratp_plantgl.VTKinit(foldout+"plantgl")
+# lghtratp_plantgl.VTKinit(foldout+"plantgl")
 
 # Transfert grille l-egume vers RATP
 geometry = {}
 geometry["scenes"] = [scene_legume]
 
 lghtratp_legume.init_scenes(geometry)
-lghtratp_legume.run(PARi=meteo_j['I0'] * surf_refVOX, truesolartime=True, parunit="W.m-2.s-1")
-lghtratp_legume.VTKinit(foldout+"legume", printtriangles=False)
+lghtratp_legume.run(PARi=energy, day=doy, hour=hour, truesolartime=True, parunit="RG")
+# lghtratp_legume.VTKinit(foldout+"legume", printtriangles=False)
 
 # détail des LAD par voxel
 leg_aire = []
@@ -242,6 +287,12 @@ ratp_aire = []
 plantgl_aire = []
 diff_ratp=[]
 diff_plantgl=[]
+para_legume=[]
+part_legume=[]
+para_ratp=[]
+part_ratp=[]
+para_plantgl=[]
+part_plantgl=[]
 t_nx=[]
 t_ny=[]
 for i in range(m_lais_temp.shape[1]):
@@ -251,10 +302,11 @@ for i in range(m_lais_temp.shape[1]):
                 vox_legume = lghtratp_legume.voxels_outputs[(lghtratp_legume.voxels_outputs.Nx==k+1) & 
                                                             (lghtratp_legume.voxels_outputs.Ny==j+1) & 
                                                             (lghtratp_legume.voxels_outputs.Nz==i+1)]
+
                 vox_plantgl = lghtratp_plantgl.voxels_outputs[(lghtratp_plantgl.voxels_outputs.Nx==k+1) & 
-                                                            # (lghtratp_plantgl.voxels_outputs.Ny==nxyz[1] - j) & 
                                                             (lghtratp_plantgl.voxels_outputs.Ny==j+1) & 
-                                                            (lghtratp_plantgl.voxels_outputs.Nz==1)]
+                                                            (lghtratp_plantgl.voxels_outputs.Nz==1)]                
+                
                 t_nx.append(k+1)
                 t_ny.append(j+1)
                 leg_aire.append(m_lais_temp[0][i][j][k])
@@ -262,12 +314,30 @@ for i in range(m_lais_temp.shape[1]):
                 plantgl_aire.append(vox_plantgl["Area"].values[0])
                 diff_ratp.append(100*abs(m_lais_temp[0][i][j][k] - vox_legume["Area"].values[0])/m_lais_temp[0][i][j][k])
                 diff_plantgl.append(100*abs(m_lais_temp[0][i][j][k] - vox_plantgl["Area"].values[0])/m_lais_temp[0][i][j][k])
+                para_legume.append(res_abs_i[0][i][j][k])
+                part_legume.append(res_trans[i][j][k])
+                para_ratp.append(energy * vox_legume[vox_legume.VegetationType == 1]["xintav"].values[0])
+                part_ratp.append(energy * sum(vox_legume["transmitted"]))
+                para_plantgl.append(energy * vox_plantgl[vox_plantgl.VegetationType == 1]["xintav"].values[0])
+                part_plantgl.append(energy * sum(vox_plantgl["transmitted"]))
 
-df_area = pandas.DataFrame({"Nx" : t_nx, "Ny" : t_ny, "l-egume" : leg_aire, "lvm ratp" : ratp_aire, "lvm plantgl" : plantgl_aire, "% ecart ratp" : diff_ratp, "% ecart plantgl" : diff_plantgl})
-print(df_area)
+df_compare = pandas.DataFrame({"Nx" : t_nx, "Ny" : t_ny, 
+                            "l-egume" : leg_aire, 
+                            "lvm ratp" : ratp_aire, 
+                            "lvm plantgl" : plantgl_aire, 
+                            "% ecart ratp" : diff_ratp, 
+                            "% ecart plantgl" : diff_plantgl,
+                            "PARa legume" : para_legume,
+                            "PARa ratp" : para_ratp,
+                            "PARa plantgl" : para_plantgl,
+                            "PARt legume" : part_legume,
+                            "PARt ratp" : part_ratp,
+                            "PARt plantgl" : part_plantgl})
+print(df_compare)
+print("\n")
 print(" --- Surface Foliaire totale m^2---")
-print("l-egume : ", sum(df_area["l-egume"]))
-print("lvm ratp", sum(df_area["lvm ratp"]))
-print("plantgl feuilles", sum(df_area["lvm plantgl"]))
-
+print("l-egume : ", sum(df_compare["l-egume"]))
+print("lvm ratp", sum(df_compare["lvm ratp"]))
+print("plantgl feuilles", sum(df_compare["lvm plantgl"]))
+print("\n")
 lsystem_simulations[sim_id].clear()

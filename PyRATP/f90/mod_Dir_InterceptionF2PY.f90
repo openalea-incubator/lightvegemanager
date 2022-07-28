@@ -18,6 +18,7 @@ real, allocatable :: xk(:)   ! Optical density of voxel k (k=1,nveg), = somme(Ki
 real, allocatable :: rka(:)  ! Fraction of scattered radiation in current direction by vegetation type jent (jent=1,nent)
 real, allocatable :: rkavox(:,:)  ! Fraction of scattered radiation in current direction by vegetation type jent (jent=1,nent) and for each voxel
 real, allocatable :: riv(:)  ! fraction of directional incident radiation intercepted in voxel k (k=1,nveg)
+real, allocatable :: rtv(:)  ! fraction of directional incident radiation transmitted in voxel k (k=1,nveg)
 real, allocatable :: ris(:)  ! fraction of directional incident radiation intercepted by ground zone ksol (ksol=1,nsol)
 real, allocatable :: ffvvb(:,:) ! Exchange coeff between vegetated voxels and vegetated voxels
 real, allocatable :: ffsvb(:,:) ! Exchange coeff between vegetated voxels and soil surface
@@ -57,7 +58,7 @@ contains
  real, allocatable :: xka(:)
  real, allocatable :: xkavox(:,:) ! for each voxel and each entity
 
-!  write(*,*) 'di_doall debut'
+  ! write(*,*) 'di_doall debut', hmoy0,azmoy0
 
   hmoy0=hmoy0*pi/180.    ! Conversion to radians
   azmoy0=azmoy0*pi/180.
@@ -105,7 +106,6 @@ contains
           xm=acos(-tan(hmoy0)/tan(xic))
           G_function=(2*cos(hmoy0)*sin(xic)*sin(xm)-cos(xic)*sin(hmoy0)*(pi-2*xm))/pi
         endif
-        !    write(*,*) xic*180./pi, hmoy0*180./pi, G_function/sin(hmoy0)
         !    pause
         xka(jent)=xka(jent) + G_function/sin(hmoy0) * distinc(jent,jinc)
         rka(jent)=rka(jent) + G_function*omega0/(2.*pi) * distinc(jent,jinc)
@@ -146,6 +146,10 @@ else
     end do
   end do
 endif
+
+! do je=1,nent
+!   write(*,*) "xka", distinc(je,jinc), xka(je)
+! end do
 
 ! Calcul des coeff d'extinction de chaque voxel k: x
   
@@ -202,8 +206,10 @@ endif
 !  2- Facteurs de forme pour le rayonnement incident
 
   allocate(riv(0:nveg))
+  allocate(rtv(0:nveg))
   allocate(ris(nsol))
   riv=0.
+  rtv=0.
   ris=0.
 
 !  3- Facteurs de forme pour le rayonnement rediffuse
@@ -453,7 +459,6 @@ endif
   r00v=(dpx*dpy)/(dx*dy)
 !  r0s=(dpx*dpy)/(dx*dy)*omega0/(2.*pi)
   r0s=(dpx*dpy)/(dx*dy)*oaz*omega0/pi
-
   do jxx=1,njx
   do jyy=1,njy
    do kt=1,ktm   ! Storing voxel id. in variable num(kt)
@@ -463,7 +468,7 @@ endif
     jy=jynum(kt)+jyy-1
     if (jy.gt.njy) jy=jy-njy
 
-!   write(*,*) 'jx,jy,jz,num(kt)=kxyz(jx,jy,jz) :',jx,jy,jz,kxyz(jx,jy,jz)
+    ! write(*,*) 'jx,jy,jz,num(kt)=kxyz(jx,jy,jz) :',jx,jy,jz,kxyz(jx,jy,jz)
 
     num(kt)=kxyz(jx,jy,jz)
    end do  ! do-loop KT=1,KTM
@@ -471,6 +476,7 @@ endif
     ft=xk(num(kt))*dzp(kt)
     p0(kt)=exp(-ft)
     p(kt)=1.-p0(kt)
+    ! write(*,*)"xk",xk(num(kt)),"dz",dzp(kt),"p0",p0(kt),"1-p0",p(kt)
     if (ft.ne.0.) then
      pini(kt)=p(kt)/ft
     else
@@ -485,7 +491,8 @@ endif
    do kt=1,ktm-1
     riv(num(kt))=riv(num(kt))+r0*p(kt)
     r0=amax1(r0*p0(kt),sortdelascene(kt)*r0c)
-    !write(*,*)"sortscene",sortdelascene(kt)
+    rtv(num(kt))=rtv(num(kt))+r0*p0(kt)
+    !write(*,*)"sortscene",sortdelascene(kt)  
    end do
    ris(num(ktm))=ris(num(ktm))+r0
 
@@ -559,6 +566,7 @@ endif
   if (allocated(STAR_vt))  deallocate(STAR_vt)  ! STAR at voxel and vegetation type scale
 
   if (allocated(riv))   deallocate(riv)
+  if (allocated(rtv))   deallocate(rtv)
   if (allocated(ris))   deallocate(ris)
 
   if (allocated(ffvvb))  deallocate(ffvvb)  ! Exchange coeff between vegetated voxels and vegetated voxels

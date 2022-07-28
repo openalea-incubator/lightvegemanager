@@ -710,10 +710,10 @@ class LightVegeManager:
             #   scene["origin"] = [0, 0, station['Hmaxcouv']]
             else:
                 self.__ratp_distrib = self.__in_geometry["scenes"][0]["distrib"]
-                nent = self.__in_geometry["scenes"][0]["LAD"].shape[0]
-                nx = self.__in_geometry["scenes"][0]["LAD"].shape[3]
-                ny = self.__in_geometry["scenes"][0]["LAD"].shape[2]
-                nz = self.__in_geometry["scenes"][0]["LAD"].shape[1]
+                nent = self.__in_geometry["scenes"][0]["LA"].shape[0]
+                nx = self.__in_geometry["scenes"][0]["LA"].shape[3]
+                ny = self.__in_geometry["scenes"][0]["LA"].shape[2]
+                nz = self.__in_geometry["scenes"][0]["LA"].shape[1]
                 
                 dx, dy, dz = self.__in_lightmodel_parameters["voxel size"][0], self.__in_lightmodel_parameters["voxel size"][1], self.__in_lightmodel_parameters["voxel size"][2]
                 xorig, yorig, zorig = self.__in_lightmodel_parameters["origin"][0], self.__in_lightmodel_parameters["origin"][1],self.__in_lightmodel_parameters["origin"][2]
@@ -749,7 +749,7 @@ class LightVegeManager:
                         for iy in range(ny):
                             for iz in range(nz):
                                 # attention changement de direction en z (vers le bas dans RATP)
-                                if self.__in_geometry["scenes"][0]["LAD"][ne][iz][iy][ix] > 0 :
+                                if self.__in_geometry["scenes"][0]["LA"][ne][iz][iy][ix] > 0 :
                                     mygrid.kxyz[ix, iy, iz] = k + 1 #ajouter 1 pour utilisation f90
                                     mygrid.numx[k] = ix + 1 #ajouter 1 pour utilisation f90
                                     mygrid.numy[k] = iy + 1 #ajouter 1 pour utilisation f90
@@ -758,11 +758,11 @@ class LightVegeManager:
                                     mygrid.nje[k] = max(ne + 1, mygrid.nje[k])
                                     mygrid.nemax = max(mygrid.nemax, mygrid.nje[k])
 
-                                    mygrid.leafareadensity[ne,k] += self.__in_geometry["scenes"][0]["LAD"][ne][iz][iy][ix] / (dx * dy * dz)
-                                    mygrid.s_vt_vx[ne,k] += self.__in_geometry["scenes"][0]["LAD"][ne][iz][iy][ix]
-                                    mygrid.s_vx[k] += self.__in_geometry["scenes"][0]["LAD"][ne][iz][iy][ix]
-                                    mygrid.s_vt[ne] += self.__in_geometry["scenes"][0]["LAD"][ne][iz][iy][ix]
-                                    mygrid.s_canopy += self.__in_geometry["scenes"][0]["LAD"][ne][iz][iy][ix]
+                                    mygrid.leafareadensity[ne,k] += self.__in_geometry["scenes"][0]["LA"][ne][iz][iy][ix] / (dx * dy * dz)
+                                    mygrid.s_vt_vx[ne,k] += self.__in_geometry["scenes"][0]["LA"][ne][iz][iy][ix]
+                                    mygrid.s_vx[k] += self.__in_geometry["scenes"][0]["LA"][ne][iz][iy][ix]
+                                    mygrid.s_vt[ne] += self.__in_geometry["scenes"][0]["LA"][ne][iz][iy][ix]
+                                    mygrid.s_canopy += self.__in_geometry["scenes"][0]["LA"][ne][iz][iy][ix]
                                     
                                     k=k+1
                     n_vox_per_nent.append(k)
@@ -820,7 +820,7 @@ class LightVegeManager:
             PARi : float, PARi en µmol.m-2.s-1 ou W.m-2
             day : float, day of the year 
             hour : float, hour TU
-            parunit : "micromol.m-2.s-1" ou "W.m-2" ou "W.m-2.s-1"
+            parunit : "micromol.m-2.s-1" ou "W.m-2" ou  "RG"
             truesolartime : boolean, si hour est l'heure solaire réel ou l'heure locale
             printsun : option pour imprimer la position du soleil
 
@@ -921,44 +921,76 @@ class LightVegeManager:
             
             # récupère les sorties de RATP
             # np.array en une dimension, de taille nbvoxels x nbiteration
-            VegetationType,Iteration,day,hour,VoxelId,ShadedPAR,SunlitPAR,ShadedArea,SunlitArea, xintav= res.T
-
-            # ('PAR' is expected in  Watt.m-2 in RATP input, whereas output is in micromol => convert back to W.m2 (cf shortwavebalance, line 306))
-            # on reste en micromol !
-            # On enregistre tout dans une dataframe pandas
-            para_list=[]
-            for i in range(len(ShadedPAR)):
-                if (ShadedArea[i] + SunlitArea[i]) > 0 :
-                    para_list.append((ShadedPAR[i] * ShadedArea[i] + SunlitPAR[i] * SunlitArea[i]) / (ShadedArea[i] + SunlitArea[i]))
-                else:
-                    para_list.append(0.)
-            
-            # vérifie qu'on a pas de erel négatif
-            erel_list=[]
-            for i in range(len(xintav)):
-                if xintav[i] >= 1e-6 :
-                    erel_list.append(xintav[i])
-                else:
-                    erel_list.append(0.)
+            VegetationType,Iteration,day,hour,VoxelId,ShadedPAR,SunlitPAR,ShadedArea,SunlitArea, xintav, Ptransmitted= res.T
 
             # grille RATP non vide
             if  self.__ratp_scene.nveg > 0 :
-                dfvox =  pandas.DataFrame({'VegetationType':VegetationType,
-                                    'Iteration':Iteration,
-                                    'day':day,
-                                    'hour':hour,
-                                    'VoxelId':VoxelId,
-                                    'Nx':self.__ratp_scene.numx[:self.__ratp_scene.nveg],
-                                    'Ny':self.__ratp_scene.numy[:self.__ratp_scene.nveg],
-                                    'Nz':self.__ratp_scene.numz[:self.__ratp_scene.nveg],
-                                    'ShadedPAR':ShadedPAR, # /4.6,
-                                    'SunlitPAR':SunlitPAR, # /4.6,
-                                    'ShadedArea':ShadedArea,
-                                    'SunlitArea': SunlitArea,
-                                    'Area': ShadedArea + SunlitArea,
-                                    'PARa': para_list,
-                                    'xintav': erel_list, 
-                                })
+                if parunit == "RG" :
+                    # ('PAR' is expected in  Watt.m-2 in RATP input, whereas output is in micromol => convert back to W.m2 (cf shortwavebalance, line 306))
+                    # on reste en micromol !
+                    # On enregistre tout dans une dataframe pandas
+                    para_list=[]
+                    for i in range(len(ShadedPAR)):
+                        if (ShadedArea[i] + SunlitArea[i]) > 0 :
+                            para_list.append(((ShadedPAR[i]/4.6) * ShadedArea[i] + (SunlitPAR[i]/4.6) * SunlitArea[i]) / (ShadedArea[i] + SunlitArea[i]))
+                        else:
+                            para_list.append(0.)
+                    
+                    # vérifie qu'on a pas de erel négatif
+                    erel_list=[]
+                    for i in range(len(xintav)):
+                        if xintav[i] >= 1e-6 :
+                            erel_list.append(xintav[i])
+                        else:
+                            erel_list.append(0.)
+                    dfvox =  pandas.DataFrame({'VegetationType':VegetationType,
+                                        'Iteration':Iteration,
+                                        'day':day,
+                                        'hour':hour,
+                                        'VoxelId':VoxelId,
+                                        'Nx':self.__ratp_scene.numx[:self.__ratp_scene.nveg],
+                                        'Ny':self.__ratp_scene.numy[:self.__ratp_scene.nveg],
+                                        'Nz':self.__ratp_scene.numz[:self.__ratp_scene.nveg],
+                                        'ShadedPAR':ShadedPAR/4.6,
+                                        'SunlitPAR':SunlitPAR/4.6,
+                                        'ShadedArea':ShadedArea,
+                                        'SunlitArea': SunlitArea,
+                                        'Area': ShadedArea + SunlitArea,
+                                        'PARa': para_list,
+                                        'xintav': erel_list, 
+                                        'transmitted': Ptransmitted
+                                    })
+                else:
+                    para_list=[]
+                    for i in range(len(ShadedPAR)):
+                        if (ShadedArea[i] + SunlitArea[i]) > 0 :
+                            para_list.append((ShadedPAR[i] * ShadedArea[i] + SunlitPAR[i] * SunlitArea[i]) / (ShadedArea[i] + SunlitArea[i]))
+                        else:
+                            para_list.append(0.)
+                    
+                    # vérifie qu'on a pas de erel négatif
+                    erel_list=[]
+                    for i in range(len(xintav)):
+                        if xintav[i] >= 1e-6 :
+                            erel_list.append(xintav[i])
+                        else:
+                            erel_list.append(0.)
+                    dfvox =  pandas.DataFrame({'VegetationType':VegetationType,
+                                        'Iteration':Iteration,
+                                        'day':day,
+                                        'hour':hour,
+                                        'VoxelId':VoxelId,
+                                        'Nx':self.__ratp_scene.numx[:self.__ratp_scene.nveg],
+                                        'Ny':self.__ratp_scene.numy[:self.__ratp_scene.nveg],
+                                        'Nz':self.__ratp_scene.numz[:self.__ratp_scene.nveg],
+                                        'ShadedPAR':ShadedPAR,
+                                        'SunlitPAR':SunlitPAR,
+                                        'ShadedArea':ShadedArea,
+                                        'SunlitArea': SunlitArea,
+                                        'Area': ShadedArea + SunlitArea,
+                                        'PARa': para_list,
+                                        'xintav': erel_list, 
+                                    })
                 
                 # tri de la dataframe par rapport aux shapes et triangles
                 
