@@ -122,10 +122,18 @@ for i in range(nb_iter+1):
         ls_TStress, lsApex, lsApexAll, dicOrgans,  \
         deltaI_I0, nbI_I0, I_I0profilLfPlant, I_I0profilPetPlant,  \
         I_I0profilInPlant, NlClasses, NaClasses, NlinClasses,  \
-        opt_stressW, opt_stressN, opt_stressGel, opt_residu = tag_loop_inputs
-
-    m_lais_temp = m_lais
+        opt_stressW, opt_stressN, opt_stressGel, opt_residu = tag_loop_inputs                    
     
+    ############
+    # step light transfer coupling
+    ############
+
+    # PAR / Blue voxel
+    tag_light_inputs = [m_lais / surf_refVOX, triplets, ls_dif, meteo_j['I0'] * surf_refVOX]  # input tag
+
+    # mise a jour de res_trans, res_abs_i, res_rfr, ls_epsi
+    local_res_trans, local_res_abs_i = riri.calc_extinc_allray_multi_reduced(*tag_light_inputs, optsky=station['optsky'], opt=station['sky'])
+
     # transfert des sorties
     ## TRES LENT !!
     # res_abs_i = np.zeros((m_lais.shape[0], nxyz[2], nxyz[1], nxyz[0]))
@@ -141,86 +149,8 @@ for i in range(nb_iter+1):
     #             for ie in range(m_lais.shape[0]) :
     #                 if len(vox_data) > 0 :
     #                     res_abs_i[ie, iz, iy, ix] = vox_data[vox_data.VegetationType == ie+1]["PARa"].values[0]
-                    
-    
-    ############
-    # step light transfer coupling
-    ############
 
-    # PAR / Blue voxel
-    tag_light_inputs = [m_lais / surf_refVOX, triplets, ls_dif, meteo_j['I0'] * surf_refVOX]  # input tag
-
-    # mise a jour de res_trans, res_abs_i, res_rfr, ls_epsi
-    local_res_trans, local_res_abs_i = riri.calc_extinc_allray_multi_reduced(*tag_light_inputs, optsky=station['optsky'], opt=station['sky'])
-
-    res_trans, res_abs_i = local_res_trans, local_res_abs_i  # mise a jour variables globales
-
-    # R_FR voxel (calcul de zeta)
-    tag_light_inputs2 = [res_trans / (meteo_j['I0'] * surf_refVOX)]  # input tag
-    # tag_light_inputs2 = [res_trans]  # input tag
-    local_res_rfr = riri.rfr_calc_relatif(*tag_light_inputs2)
-
-    res_rfr = local_res_rfr  # mise a jour variables globales
-
-    # calul des interception feuille et ls_epsi plante
-    dicFeuilBilanR = sh.calc_paraF(dicFeuilBilanR, m_lais, res_abs_i)
-    ls_epsi, invar = loop.step_epsi(invar, res_trans, dicFeuilBilanR, meteo_j, surfsolref)
-
-    ##########
-    # Step Potential plant growth
-    ##########
-
-    invar, outvar, ls_demandeN_bis, temps = loop.daily_growth_loop(ParamP, invar, outvar, ls_epsi, meteo_j, mng_j,
-                                                                    nbplantes, surfsolref, ls_ftswStress,
-                                                                    ls_NNIStress, ls_TStress, lsApex, lsApexAll,
-                                                                    opt_stressW, opt_stressN, opt_stressGel)
-
-    ##########
-    # step soil
-    ##########
-
-    tag_inputs_soil_step = [S, par_SN, surfsolref, stateEV, Uval, b_, meteo_j, mng_j, ParamP, ls_epsi, ls_roots, ls_demandeN_bis, opt_residu] # input tag
-
-    res_soil_step = loop.step_bilanWN_sol(*tag_inputs_soil_step)
-    S, stateEV, ls_ftsw, ls_transp, ls_Act_Nuptake_plt, temps_sol = res_soil_step  # unpacks results from a list and updates global variables
-
-    ##########
-    # setp update plant stress variables
-    ##########
-
-    tag_inputs_stress = [ParamP, invar, invar_sc, temps, DOY, nbplantes, surfsolref, ls_epsi, ls_ftsw, ls_transp,
-                            ls_Act_Nuptake_plt, ls_demandeN_bis, ls_ftswStress, ls_TStress, dicOrgans, dicFeuilBilanR, lsApex,
-                            start_time, cutNB, deltaI_I0, nbI_I0, I_I0profilLfPlant, I_I0profilPetPlant,
-                            I_I0profilInPlant, NlClasses, NaClasses, NlinClasses, outvar]
-
-    invar, invar_sc, outvar, I_I0profilInPlant, ls_ftswStress, ls_NNIStress, ls_TStress = loop.Update_stress_loop(*tag_inputs_stress)
-
-    ##########
-    # step update soil residues senescence
-    ##########
-    tag_inputs_residue_updt = [ls_mat_res, vCC, S, ls_roots, par_SN['PROFHUMs'], ParamP, invar, opt_residu,opt_stressGel] # input tag
-
-    res_residue_step = loop.update_residue_mat(*tag_inputs_residue_updt)
-    ls_mat_res, S = res_residue_step  # unpacks results from a list and updates global variables
-
-    #########
-    # reinjecte les sorties midiee dans le lsystem
-    #########
-    lsystem_simulations[sim_id].invar = invar
-    lsystem_simulations[sim_id].outvar = outvar
-    lsystem_simulations[sim_id].invar_sc = invar_sc
-
-    lsystem_simulations[sim_id].S = S
-    lsystem_simulations[sim_id].stateEV = stateEV
-
-    lsystem_simulations[sim_id].res_trans = res_trans
-    lsystem_simulations[sim_id].res_abs_i = res_abs_i
-    lsystem_simulations[sim_id].res_rfr = res_rfr
-
-    lsystem_simulations[sim_id].ls_ftswStress = ls_ftswStress
-    lsystem_simulations[sim_id].ls_NNIStress = ls_NNIStress
-    lsystem_simulations[sim_id].ls_TStress = ls_TStress
-    lsystem_simulations[sim_id].I_I0profilInPlant = I_I0profilInPlant
+    iteration_legume_withoutlighting(lsystem_simulations[sim_id], local_res_trans, local_res_abs_i, tag_loop_inputs)
 
 print((''.join((sim_id, " - done"))))
 
@@ -295,10 +225,10 @@ para_plantgl=[]
 part_plantgl=[]
 t_nx=[]
 t_ny=[]
-for i in range(m_lais_temp.shape[1]):
-    for j in range(m_lais_temp.shape[2]):
-        for k in range(m_lais_temp.shape[3]):
-            if m_lais_temp[0][i][j][k] > 0. :
+for i in range(m_lais.shape[1]):
+    for j in range(m_lais.shape[2]):
+        for k in range(m_lais.shape[3]):
+            if m_lais[0][i][j][k] > 0. :
                 vox_legume = lghtratp_legume.voxels_outputs[(lghtratp_legume.voxels_outputs.Nx==k+1) & 
                                                             (lghtratp_legume.voxels_outputs.Ny==j+1) & 
                                                             (lghtratp_legume.voxels_outputs.Nz==i+1)]
@@ -309,11 +239,11 @@ for i in range(m_lais_temp.shape[1]):
                 
                 t_nx.append(k+1)
                 t_ny.append(j+1)
-                leg_aire.append(m_lais_temp[0][i][j][k])
+                leg_aire.append(m_lais[0][i][j][k])
                 ratp_aire.append(vox_legume["Area"].values[0])
                 plantgl_aire.append(vox_plantgl["Area"].values[0])
-                diff_ratp.append(100*abs(m_lais_temp[0][i][j][k] - vox_legume["Area"].values[0])/m_lais_temp[0][i][j][k])
-                diff_plantgl.append(100*abs(m_lais_temp[0][i][j][k] - vox_plantgl["Area"].values[0])/m_lais_temp[0][i][j][k])
+                diff_ratp.append(100*abs(m_lais[0][i][j][k] - vox_legume["Area"].values[0])/m_lais[0][i][j][k])
+                diff_plantgl.append(100*abs(m_lais[0][i][j][k] - vox_plantgl["Area"].values[0])/m_lais[0][i][j][k])
                 para_legume.append(res_abs_i[0][i][j][k])
                 part_legume.append(res_trans[i][j][k])
                 para_ratp.append(energy * vox_legume[vox_legume.VegetationType == 1]["xintav"].values[0])
