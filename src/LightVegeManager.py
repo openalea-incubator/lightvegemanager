@@ -1507,7 +1507,7 @@ class LightVegeManager:
 
             VTKtriangles(self.__my_scene, planttrianglevalues, plantnames, path+"init_triangles.vtk")
 
-    def VTKout(self, path, iteration=None, voxels=False):
+    def VTKout(self, path, iteration=None, triangles=True, voxels=False):
         '''construit des fichiers VTK de la triangulation avec les valeurs de PAR associées
 
         Args :
@@ -1520,47 +1520,43 @@ class LightVegeManager:
         '''    
         par = []
 
-        # si la lumière a été calculée sur plusieurs itération
-        if iteration is None:
-            for ite in range(int(max(self.__outputs['Iteration']))):
-                par = []
-                idtr=0
-                for tr in self.__my_scene:
-                    df = self.__outputs[(self.__outputs.Iteration == ite+1) & (self.__outputs.primitive_index == idtr)]
-                    voxpar = df['PARa'].values[0]
-                    
-                    # tentative de réduction du par selon l'aire du triangle mais peut etre déjà fait dans le tri de df
-                    #surfvox = mygrid.s_vt_vx[matching_id[id][1], int(d_E2[str(idtr)])]
-                    #if surfvox==0 : surfvox = mygrid.s_vt_vx[(matching_id[id][1]-1)%mygrid.nent, int(d_E2[str(idtr)])]
-                    #par.append(voxpar * min(area(tr)/surfvox, 1))
-                    
-                    par.append(voxpar)
-                    idtr += 1
+        if self.__matching_ids and triangles:
+            # si la lumière a été calculée sur plusieurs itération
+            if iteration is None:
+                for ite in range(int(max(self.__outputs['Iteration']))):
+                    par = []
+                    idtr=0
+                    for tr in self.__my_scene:
+                        df = self.__outputs[(self.__outputs.Iteration == ite+1) & (self.__outputs.primitive_index == idtr)]
+                        voxpar = df['PARa'].values[0]
+                        
+                        par.append(voxpar)
+                        idtr += 1
 
-                VTKtriangles(self.__my_scene, [par], ['PARa'], path+"triangles_PAR_"+str(ite)+".vtk")
-        
-        # ou alors sur une itération en particulier
-        else:
-            for i,tr in enumerate(self.__my_scene):
-                df = self.__outputs[(self.__outputs.primitive_index == i)]
-                par.append(df['PARa'].values[0])                
+                    VTKtriangles(self.__my_scene, [par], ['PARa'], path+"triangles_PAR_"+str(ite)+".vtk")
+            
+            # ou alors sur une itération en particulier
+            else:
+                for i,tr in enumerate(self.__my_scene):
+                    df = self.__outputs[(self.__outputs.primitive_index == i)]
+                    par.append(df['PARa'].values[0])                
 
-            VTKtriangles(self.__my_scene, [par], ['PARa'], path+"triangles_PAR_"+str(iteration)+".vtk")
+                VTKtriangles(self.__my_scene, [par], ['PARa'], path+"triangles_PAR_"+str(iteration)+".vtk")
 
-            # VTK des voxels
-            if self.__lightmodel == "ratp" and voxels:
-                # plot dans VTK
-                temp1, temp2, temp3 = [], [], []
-                # éviter les éléments en trop
-                for i in range(self.__ratp_scene.nveg)  :
-                    for j in range(self.__ratp_scene.nje[i]):
-                        dfvox = self.__outputs[(self.__outputs.VoxelId==i+1) & (self.__outputs.VegetationType==j+1) & (self.__outputs.Iteration==1)]
-                        temp1.append(dfvox["PARa"].values[0])
-                        temp2.append(self.__ratp_scene.nume[j,i])
-                        temp3.append(int(i)+1) # kxyz sort en fortran
-                para = [np.array(temp1), np.array(temp2), np.array(temp3)]
+        # VTK des voxels
+        if self.__lightmodel == "ratp" and voxels:
+            # plot dans VTK
+            temp1, temp2, temp3 = [], [], []
+            # éviter les éléments en trop
+            for i in range(self.__ratp_scene.nveg)  :
+                for j in range(self.__ratp_scene.nje[i]):
+                    dfvox = self.__voxels_outputs[(self.__voxels_outputs.VoxelId==i+1) & (self.__voxels_outputs.VegetationType==j+1) & (self.__voxels_outputs.Iteration==1)]
+                    temp1.append(dfvox["PARa"].values[0])
+                    temp2.append(self.__ratp_scene.nume[j,i])
+                    temp3.append(int(i)+1) # kxyz sort en fortran
+            para = [np.array(temp1), np.array(temp2), np.array(temp3)]
 
-                RATP2VTK.RATPVOXELS2VTK(self.__ratp_scene, para, "PARa", path+"PARa_voxels.vtk")
+            RATP2VTK.RATPVOXELS2VTK(self.__ratp_scene, para, "PARa", path+"PARa_voxels.vtk")
 
 
     def s5(self):
