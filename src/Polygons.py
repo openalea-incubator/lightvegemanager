@@ -65,7 +65,10 @@ class Vector3:
         '''normalisation de l'instance
         return : Vector3 (vecteur unitaire de self)
         '''
-        return Vector3(self.__coord[0] / self.__norm, self.__coord[1] / self.__norm, self.__coord[2] / self.__norm)
+        try:
+            return Vector3(self.__coord[0] / self.__norm, self.__coord[1] / self.__norm, self.__coord[2] / self.__norm)
+        except ZeroDivisionError :
+            return Vector3(0., 0., 0.)
     
     @staticmethod
     def middle(p1, p2):

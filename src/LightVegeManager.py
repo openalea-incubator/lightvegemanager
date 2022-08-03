@@ -272,45 +272,9 @@ class LightVegeManager:
                 if self.__in_environment["sky"][0] == "file" : self.__sky = Skyvault.read(self.__in_environment["sky"][1])
                 
                 elif len(self.__in_environment["sky"]) == 3 :
-                    ele=[]
-                    azi=[]
-                    da = 2 * math.pi / self.__in_environment["sky"][0]
-                    dz = math.pi / 2 / self.__in_environment["sky"][1]      
-                    todeg = 180/math.pi          
-                    for j in range(self.__in_environment["sky"][0]):
-                        for k in range(self.__in_environment["sky"][1]):
-                            azi.append((j * da + da / 2)*todeg)
-                            ele.append((k * dz + dz / 2)*todeg)
-                    n = self.__in_environment["sky"][0]*self.__in_environment["sky"][1]
                     
-                    omega=[2*math.pi/n]*n
-                    
-                    def uoc (teta, dt, dp):
-                        """ teta: angle zenithal; phi: angle azimutal du soleil """
-                        dt /= 2.
-                        x = math.cos(teta-dt)
-                        y = math.cos(teta+dt)
-                        E = (x*x-y*y)*dp/2./math.pi
-                        return E
-                    def soc (teta, dt, dp):
-                        """ teta: angle zenithal; phi: angle azimutal du soleil """
-                        dt /= 2.
-                        x = math.cos(teta-dt)
-                        y = math.cos(teta+dt)
-                        E = (3/14.*(x*x-y*y) + 6/21.*(x*x*x-y*y*y))*dp/math.pi
-                        return E
-                    pc=[]
-                    for j in range(self.__in_environment["sky"][0]):
-                        for k in range (self.__in_environment["sky"][1]):
-                            azim,elv = j * da + da / 2, k * dz + dz / 2
-                            I=0
-                            if(self.__in_environment["sky"][2]=='soc'):
-                                I = soc(elv, dz, da)
-                            else:
-                                I = uoc(elv, dz, da)
-
-                            pc.append(I) 
-                    
+                    self.__in_environment["sky"][1]
+                    ele, azi, omega, pc = self._discrete_sky(self.__in_environment["sky"][0], self.__in_environment["sky"][1], self.__in_environment["sky"][2])
                     self.__sky = Skyvault.initialise(ele, azi, omega, pc)
 
             # initialisation par défaut
@@ -381,7 +345,10 @@ class LightVegeManager:
         self.__matching_ids = {}
         self.__my_scene=[]
         count=0
+        
+        # def sceneplantgl_to_triangles()
         for i_esp, scene in enumerate(self.__in_geometry["scenes"]) :
+            # scene planteGL
             if isinstance(scene, pgl.Scene):
                 for id, pgl_objects in scene.todict().items():
                     lastid = len(self.__my_scene)
@@ -394,7 +361,31 @@ class LightVegeManager:
                     # on set le tableau des indices
                     self.__matching_ids[count] = (id, i_esp, list(range(lastid,lastid+len(tri_list))))
                     count += 1
+            
+            # fichier VGX
+            elif scene.split(".")[-1] == "vgx":
+                lastid = len(self.__my_scene)
+                f = open(scene, 'r')
+                lines = f.readlines()
+                for l in lines[1:]:                    
+                    l_list = l.split("\t")
+                    # if l_list[10] == '42' and l_list[11] == '42' and l_list[12] == '17':
+                    
+                    # on considère comme feuille les éléments R (RGB) != 42
+                    if l_list[10] != '42' :
+                        tr = Triangle3(*(Vector3(float(l_list[13]), float(l_list[14]), float(l_list[15])),
+                                            Vector3(float(l_list[16]), float(l_list[17]), float(l_list[18])),
+                                            Vector3(float(l_list[19]), float(l_list[20]), float(l_list[21]))))
+                        
+                        if tr.area > 0:
+                            tr.set_id(count)
+                            self.__my_scene.append(tr)
+                    
+                f.close()
+                self.__matching_ids[count] = (count, i_esp, list( range( lastid, len(self.__my_scene) - lastid ) ) )
+                count += 1
         
+        # def transform_triangulation()
         # applique les transformations sur les triangles
         if "transformations" in self.__in_geometry :
             for i_esp in range(len(self.__in_geometry["scenes"])):
@@ -463,11 +454,12 @@ class LightVegeManager:
 
         # RATP
         if self.__lightmodel == "ratp":
-            if isinstance(self.__in_geometry["scenes"][0], pgl.Scene):
-                # on sépare les tiges dans une nouvelle entité si il y a des shapes non tiges
-
+            if self.__my_scene:
+                
                 if self.__matching_ids:
-                    
+
+                    # on sépare les tiges dans une nouvelle entité si il y a des shapes non tiges    
+                    # def process_stems()
                     if "stems id" in self.__in_geometry and len(self.__in_geometry["stems id"]) < len(self.__matching_ids) :
                         mem_mu=[]
                         for stem in self.__in_geometry["stems id"]:
@@ -491,7 +483,8 @@ class LightVegeManager:
                                 mem_mu.append(stem[1])
 
                     ## distribution d'angles pour chaque entité
-                    distrib = []
+                    distrib = {}
+                    distrib_glob=[]
 
                     # recherche du nb d'entité
                     nent=0
@@ -503,7 +496,9 @@ class LightVegeManager:
                     # ele_option = nombre de classes
                     # on fait le calcul de la distribution global avant la tesselation des triangles
                     # pour optimiser les calculs
-                    if self.__in_lightmodel_parameters["angle distrib algo"] == "compute global" :
+                    if self.__in_lightmodel_parameters["angle distrib algo"] == "compute global" or \
+                        self.__in_lightmodel_parameters["angle distrib algo"] == "compute voxel" :
+                        
                         # compte le nombre de triangles par entité
                         t_nent_area=[]
                         for k in range(nent):
@@ -532,12 +527,12 @@ class LightVegeManager:
                                             i=self.__in_lightmodel_parameters["nb angle classes"]+10
                                         i+=1
 
-                            distrib.append(classes)
+                            distrib_glob.append(classes)
 
                         # convertit en pourcentage
                         for n in range(nent):
-                            for i in range(len(distrib[n])):
-                                distrib[n][i] *= 1/t_nent_area[n]
+                            for i in range(len(distrib_glob[n])):
+                                distrib_glob[n][i] *= 1/t_nent_area[n]
                     
                     # lecture du fichier
                     # ele_option = chemin du fichier
@@ -545,7 +540,9 @@ class LightVegeManager:
                         f_angle = open(self.__in_lightmodel_parameters["angle distrib file"], 'r')
                         for i in range(len(self.__in_geometry["scenes"])):
                             line = f_angle.readline()
-                            distrib.append([float(x) for x in line.split(',')[1:]])
+                            distrib_glob.append([float(x) for x in line.split(',')[1:]])
+
+                    distrib["global"] = distrib_glob
 
                     # on ajuste au besoin les min-max si la scène est plane pour avoir un espace 3D
                     if xmin == xmax:
@@ -644,10 +641,11 @@ class LightVegeManager:
                     # obligé de prendre en compte les triangles après
                     # la tesselation
                     if self.__in_lightmodel_parameters["angle distrib algo"] == "compute voxel":
+                        distrib_vox=[]
                         angles = list(np.linspace(90/self.__in_lightmodel_parameters["nb angle classes"], 91, self.__in_lightmodel_parameters["nb angle classes"]))
                         t_area=[]
                         # pour chaque voxel
-                        for k in range(self.__ratp_scene.nveg):
+                        for k in range(mygrid.nveg):
                             t_nent_area=[]
                             distrib_nent=[]
                             # pour chaque entité
@@ -670,23 +668,24 @@ class LightVegeManager:
                                 t_nent_area.append(areatot)
                                 distrib_nent.append(classes)
                             t_area.append(t_nent_area)
-                            distrib.append(distrib_nent)
+                            distrib_vox.append(distrib_nent)
 
                         to_remove=[]
                         # convertit en pourcentage
-                        for k in range(self.__ratp_scene.nveg):
+                        for k in range(mygrid.nveg):
                             for n in range(nent):
                                 # peut survenir si une entité n'est pas dans le voxel
                                 if t_area[k][n] != 0 :
                                     for i in range(self.__in_lightmodel_parameters["nb angle classes"]):
-                                        distrib[k][n][i] *= 1/t_area[k][n]
+                                        distrib_vox[k][n][i] *= 1/t_area[k][n]
                                 
                                 # enleve les entités en trop
                                 else:
                                     to_remove.append((k,n))
                         for t in to_remove:
-                            del distrib[t[0]][t[1]]
+                            del distrib_vox[t[0]][t[1]]
 
+                        distrib["voxel"] = distrib_vox
                     self.__ratp_distrib = distrib
 
                 # si l'entrée est vide
@@ -700,16 +699,14 @@ class LightVegeManager:
                                                     0, 
                                                     self.__in_lightmodel_parameters["soil reflectance"], 
                                                     toric=self.__in_environment["infinite"])
-                    self.__ratp_distrib = [[1.]]
+                    self.__ratp_distrib = {"global" : [[1.]]}
             
             # si la scene en entrée vient de l-egume
             # scene est un dict et contient :
             #   scene["LAD"] = m_lais / surf_refVOX
             #   scene["distrib"] = ls_dif
-            #   scene["voxel size"] = [station["dz_aerien"]*2, station["dz_aerien"]*2, station["dz_aerien"]]
-            #   scene["origin"] = [0, 0, station['Hmaxcouv']]
             else:
-                self.__ratp_distrib = self.__in_geometry["scenes"][0]["distrib"]
+                self.__ratp_distrib = {"global" : self.__in_geometry["scenes"][0]["distrib"]}
                 nent = self.__in_geometry["scenes"][0]["LA"].shape[0]
                 nx = self.__in_geometry["scenes"][0]["LA"].shape[3]
                 ny = self.__in_geometry["scenes"][0]["LA"].shape[2]
@@ -838,13 +835,13 @@ class LightVegeManager:
                     if self.__in_environment["reflected"] :
                         entities_param.append({
                                                 'mu' : mu_ent,
-                                                'distinc' : self.__ratp_distrib[id],
+                                                'distinc' : self.__ratp_distrib["global"][id],
                                                 'rf' : self.__in_environment["reflectance coefficients"][id]
                                                 })
                     else :
                         entities_param.append({
                                                 'mu' : mu_ent,
-                                                'distinc' : self.__ratp_distrib[id],
+                                                'distinc' : self.__ratp_distrib["global"][id],
                                                 'rf' : [0., 0.]
                                                 })
                 vegetation = Vegetation.initialise(entities_param)
@@ -860,7 +857,7 @@ class LightVegeManager:
                                             'mu' : mu_ent,
                                             'rf' : [0., 0.]
                                             })
-                vegetation = Vegetation.initialise(entities_param, pervoxel=True, distribvox=self.__ratp_distrib)
+                vegetation = Vegetation.initialise(entities_param, pervoxel=True, distribvox=self.__ratp_distrib["voxel"])
 
             # init météo, PARi en entrée en W.m-2
             if meteo_path == "":
@@ -1441,6 +1438,83 @@ class LightVegeManager:
         except AttributeError:
             return 0.
 
+    def RATP_info(self, writefile=False):
+        if self.__lightmodel == "ratp":
+            dict_global = {
+                "Origin" : [float(self.__ratp_scene.xorig), float(self.__ratp_scene.yorig), float(self.__ratp_scene.zorig) ],
+                "Global" : self.__ratp_distrib["global"]
+            }
+
+            VegetationType = []
+            VoxelId = []
+            t_nx = []
+            t_ny = []
+            t_nz = []
+            area = []
+
+            for k in range(self.__ratp_scene.nveg):
+                for j in range(self.__ratp_scene.nje[k]):
+                    VegetationType.append(j)
+                    VoxelId.append(k)
+                    t_nx.append(self.__ratp_scene.numx[k])
+                    t_ny.append(self.__ratp_scene.numy[k])
+                    t_nz.append(self.__ratp_scene.numz[k])
+                    area.append(self.__ratp_scene.s_vt_vx[j,k])
+
+
+            dfvox =  pandas.DataFrame({'VegetationType':VegetationType,
+                                        'VoxelId':VoxelId,
+                                        'Nx': t_nx,
+                                        'Ny': t_ny,
+                                        'Nz': t_nz,
+                                        'Area': area
+                                    })
+            
+            if self.__in_lightmodel_parameters["angle distrib algo"] == "compute voxel" :
+                nbangles = len(self.__ratp_distrib["voxel"][0][0])
+                
+                # ajoute nb colonnes
+                VegetationType = []
+                VoxelId = []
+                dict_angles={}
+                for k in range(self.__ratp_scene.nveg):
+                    for j in range(self.__ratp_scene.nje[k]):
+                        VegetationType.append(j)
+                        VoxelId.append(k)
+                        for i in range(nbangles):
+                            if i in dict_angles:
+                                dict_angles[i].append(self.__ratp_distrib["voxel"][k][j][i])
+                            else:
+                                dict_angles[i] = [self.__ratp_distrib["voxel"][k][j][i]]
+                dict_add={}
+                dict_add['VegetationType'] = VegetationType
+                dict_add['VoxelId'] = VoxelId
+                for key, value in dict_angles.items():
+                    title = "C"+str(key)
+                    dict_add[title] = value
+
+                dfvox = pandas.merge(dfvox, pandas.DataFrame(dict_add))  
+
+            if writefile:
+                f=open("RATP_info.data", 'w')
+                f.write("Xorigin\tYorigin\tZorigin\n")
+                f.write("%f\t%f\t%f\n" % (dict_global["Origin"][0], dict_global["Origin"][1], dict_global["Origin"][2]))
+                f.write("Global Foliar Angles Distribution For Each Entity\n")
+                for n in range(len(dict_global["Global"])):
+                    f.write("Entity %i\n" % (n))
+                    s=""
+                    for i in range(len(dict_global["Global"][n])):
+                        s=s+str(dict_global["Global"][n][i])+'\t'
+                    s+="\n"
+                    f.write(s)
+                f.write("\n")
+                f.close()
+
+                dfvox.to_csv("RATP_info.data", mode='a', index=False, header=True)
+                
+
+            return dict_global, dfvox
+
     def PAR_update_MTG(self, mtg):
         # crée un tableau comme dans caribu_facade de fspm-wheat
         dico_par = {}
@@ -1661,3 +1735,45 @@ class LightVegeManager:
 
         out += "\n-------------------------------------\n"
         return out
+
+
+    def _discrete_sky(self, n_azimuts, n_zeniths, sky_type) :
+        ele=[]
+        azi=[]
+        da = 2 * math.pi / n_azimuts
+        dz = math.pi / 2 / n_zeniths    
+        todeg = 180/math.pi          
+        for j in range(n_azimuts):
+            for k in range(n_zeniths):
+                azi.append((j * da + da / 2)*todeg)
+                ele.append((k * dz + dz / 2)*todeg)
+        n = n_azimuts*n_zeniths
+        
+        omega=[2*math.pi/n]*n
+        
+        def uoc (teta, dt, dp):
+            """ teta: angle zenithal; phi: angle azimutal du soleil """
+            dt /= 2.
+            x = math.cos(teta-dt)
+            y = math.cos(teta+dt)
+            E = (x*x-y*y)*dp/2./math.pi
+            return E
+        def soc (teta, dt, dp):
+            """ teta: angle zenithal; phi: angle azimutal du soleil """
+            dt /= 2.
+            x = math.cos(teta-dt)
+            y = math.cos(teta+dt)
+            E = (3/14.*(x*x-y*y) + 6/21.*(x*x*x-y*y*y))*dp/math.pi
+            return E
+        pc=[]
+        for j in range(n_azimuts):
+            for k in range(n_zeniths):
+                azim,elv = j * da + da / 2, k * dz + dz / 2
+                I=0
+                if(sky_type=='soc'):
+                    I = soc(elv, dz, da)
+                elif(sky_type=='uoc'):
+                    I = uoc(elv, dz, da)
+
+                pc.append(I) 
+        return ele, azi, omega, pc

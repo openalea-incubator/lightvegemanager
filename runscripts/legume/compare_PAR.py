@@ -82,6 +82,7 @@ def simulation(foldin, foldout, writegeo=False):
     ratp_parameters_plantgl["soil reflectance"] = [0., 0.]
     ratp_parameters_plantgl["mu"] = [1.]
     ratp_parameters_plantgl["tesselation level"] = 2
+    ratp_parameters_plantgl["filling"] = "l-egume"
     ratp_parameters_plantgl["angle distrib algo"] = "file"
     ratp_parameters_plantgl["angle distrib file"] = "runscripts/legume/luzerne_angle_distrib.data"
 
@@ -125,6 +126,9 @@ def simulation(foldin, foldout, writegeo=False):
 
     print((''.join((sim_id, " - done"))))
 
+    tag_light_inputs = [m_lais / surf_refVOX, triplets, ls_dif, meteo_j['I0'] * surf_refVOX]  # input tag
+    local_res_trans, local_res_abs_i = riri.calc_extinc_allray_multi_reduced(*tag_light_inputs, optsky=station['optsky'], opt=station['sky'])
+
     ## Paramètres météo ## 
     doy = lsystem_simulations[sim_id].meteo["DOY"][i]
     hour = 12
@@ -144,7 +148,7 @@ def simulation(foldin, foldout, writegeo=False):
     geometry["scenes"] = [scene_plantgl]
     geometry["transformations"] = {}
     geometry["transformations"]["scenes unit"] = ["cm"]
-    # geometry["transformations"]["xyz orientation"] = ["y+ = y-"]
+    geometry["transformations"]["xyz orientation"] = ["y+ = y-"]
 
     start = time.time()
     lghtratp_plantgl.init_scenes(geometry)
@@ -194,7 +198,7 @@ def simulation(foldin, foldout, writegeo=False):
 
                     vox_plantgl = lghtratp_plantgl.voxels_outputs[(lghtratp_plantgl.voxels_outputs.Nx==k+1) & 
                                                                 (lghtratp_plantgl.voxels_outputs.Ny==j+1) & 
-                                                                (lghtratp_plantgl.voxels_outputs.Nz==m_lais.shape[1]-(i+1))]                
+                                                                (lghtratp_plantgl.voxels_outputs.Nz==m_lais.shape[1]-i)]                
                     
                     t_nx.append(k+1)
                     t_ny.append(j+1)
