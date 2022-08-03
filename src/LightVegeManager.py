@@ -423,6 +423,10 @@ class LightVegeManager:
         self.__maxtrarea = 0.
         for tr in self.__my_scene:
             if tr.area > self.__maxtrarea: self.__maxtrarea = tr.area
+
+        
+        for tr in self.__my_scene:
+            if tr.area > self.__maxtrarea: self.__maxtrarea = tr.area
         
         # active tesselation sur la scène globale (pour avoir une triangulation plus fine)
         if global_scene_tesselate_level > 0:
@@ -434,11 +438,14 @@ class LightVegeManager:
             self.__my_scene = new_tr_scene
         
         # min-max de la scène
-        xmax, xmin, ymax, ymin, zmax, zmin = -999999,999999,-999999,999999,-999999,999999      
+        xmax, xmin, ymax, ymin, zmax, zmin = -999999,999999,-999999,999999,-999999,999999    
+        self.__triangleLmax  = -9999999
         if self.__my_scene :
             for tr in self.__my_scene:
+                trxmax, trxmin, trymax, trymin, trzmax, trzmin = -999999,999999,-999999,999999,-999999,999999 
                 for i in range(3) :
                     p = tr[i]
+                    # min-max global à la scene
                     if p[0] > xmax :
                         xmax = p[0]
                     if p[0] < xmin:
@@ -451,9 +458,34 @@ class LightVegeManager:
                         zmax = p[2]
                     if p[2] < zmin:
                         zmin = p[2]
-
+                    
+                    # min-max local au triangle
+                    if p[0] > trxmax :
+                        trxmax = p[0]
+                    if p[0] < trxmin:
+                        trxmin = p[0]
+                    if p[1] > trymax :
+                        trymax = p[1]
+                    if p[1] < trymin:
+                        trymin = p[1]
+                    if p[2] > trzmax :
+                        trzmax = p[2]
+                    if p[2] < trzmin:
+                        trzmin = p[2]
+                
+                # recherche de la différence de la longueur max d'un triangle max(xmax-xmin, ymax-ymin, zmax-zmin)
+                m = max(trxmax-trxmin, trymax-trymin, trzmax-trzmin)
+                if m > self.__triangleLmax : self.__triangleLmax = m
+        
         # RATP
         if self.__lightmodel == "ratp":
+            if self.__in_lightmodel_parameters["voxel size"] == "dynamic" :
+                dx, dy, dz = 2 * self.__triangleLmax
+            else:
+                dx = self.__in_lightmodel_parameters["voxel size"][0]
+                dy = self.__in_lightmodel_parameters["voxel size"][1]
+                dz = self.__in_lightmodel_parameters["voxel size"][2]
+            
             if self.__my_scene:
                 
                 if self.__matching_ids:
@@ -546,29 +578,29 @@ class LightVegeManager:
 
                     # on ajuste au besoin les min-max si la scène est plane pour avoir un espace 3D
                     if xmin == xmax:
-                        xmax += self.__in_lightmodel_parameters["voxel size"][0]
-                        xmin -= self.__in_lightmodel_parameters["voxel size"][0]
+                        xmax += dx
+                        xmin -= dx
                     if ymin == ymax:
-                        ymax += self.__in_lightmodel_parameters["voxel size"][1]
-                        ymin -= self.__in_lightmodel_parameters["voxel size"][1]
+                        ymax += dy
+                        ymin -= dy
                     if zmin == zmax:
-                        zmax += self.__in_lightmodel_parameters["voxel size"][2]
-                        zmin -= self.__in_lightmodel_parameters["voxel size"][2]
+                        zmax += dz
+                        zmin -= dz
                     
                     self.__pmax = Vector3(xmax, ymax, zmax)
                     self.__pmin = Vector3(xmin, ymin, zmin)
 
                     # nombre de voxels
-                    nx = int((self.__pmax[0] - self.__pmin[0]) // self.__in_lightmodel_parameters["voxel size"][0])
-                    ny = int((self.__pmax[1] - self.__pmin[1]) // self.__in_lightmodel_parameters["voxel size"][1])
+                    nx = int((self.__pmax[0] - self.__pmin[0]) // dx)
+                    ny = int((self.__pmax[1] - self.__pmin[1]) // dy)
                     if "grid slicing" in self.__in_lightmodel_parameters :
                         if self.__in_lightmodel_parameters["grid slicing"] == "ground = 0." :
-                            nz = int((self.__pmax[2] - 0.) // self.__in_lightmodel_parameters["voxel size"][2])
+                            nz = int((self.__pmax[2] - 0.) // dz)
                     else :
-                        nz = int((self.__pmax[2] - self.__pmin[2]) // self.__in_lightmodel_parameters["voxel size"][2])
-                    if (self.__pmax[0] - self.__pmin[0]) % self.__in_lightmodel_parameters["voxel size"][0] > 0 : nx += 1
-                    if (self.__pmax[1] - self.__pmin[1]) % self.__in_lightmodel_parameters["voxel size"][1] > 0 : ny += 1
-                    if (self.__pmax[2] - self.__pmin[2]) % self.__in_lightmodel_parameters["voxel size"][2] > 0 : nz += 1
+                        nz = int((self.__pmax[2] - self.__pmin[2]) // dz)
+                    if (self.__pmax[0] - self.__pmin[0]) % dx > 0 : nx += 1
+                    if (self.__pmax[1] - self.__pmin[1]) % dy > 0 : ny += 1
+                    if (self.__pmax[2] - self.__pmin[2]) % dz > 0 : nz += 1
                     
                     # définit une origine en Pmin
                     if "origin" not in self.__in_lightmodel_parameters : xorig, yorig, zorig = self.__pmin[0], self.__pmin[1], -self.__pmin[2]
@@ -582,9 +614,7 @@ class LightVegeManager:
                     # si pas de rayonnement réfléchi on annules la réflexion du sol
                     if self.__in_environment["reflected"] :
                         mygrid = grid.Grid.initialise(nx, ny, nz, 
-                                                        self.__in_lightmodel_parameters["voxel size"][0], 
-                                                        self.__in_lightmodel_parameters["voxel size"][1], 
-                                                        self.__in_lightmodel_parameters["voxel size"][2], 
+                                                        dx, dy, dz, 
                                                         xorig, yorig, zorig, 
                                                         self.__in_environment["coordinates"][0], self.__in_environment["coordinates"][1], self.__in_environment["coordinates"][2], 
                                                         nent, 
@@ -592,9 +622,7 @@ class LightVegeManager:
                                                         toric=self.__in_environment["infinite"])
                     else :
                         mygrid = grid.Grid.initialise(nx, ny, nz, 
-                                                        self.__in_lightmodel_parameters["voxel size"][0], 
-                                                        self.__in_lightmodel_parameters["voxel size"][1], 
-                                                        self.__in_lightmodel_parameters["voxel size"][2], 
+                                                        dx, dy, dz, 
                                                         xorig, yorig, zorig, 
                                                         self.__in_environment["coordinates"][0], self.__in_environment["coordinates"][1], self.__in_environment["coordinates"][2], 
                                                         nent, 
@@ -691,9 +719,7 @@ class LightVegeManager:
                 # si l'entrée est vide
                 else :
                     mygrid = grid.Grid.initialise(0, 0, 0,
-                                                    self.__in_lightmodel_parameters["voxel size"][0], 
-                                                    self.__in_lightmodel_parameters["voxel size"][1], 
-                                                    self.__in_lightmodel_parameters["voxel size"][2], 
+                                                    dx, dy, dz, 
                                                     0, 0, 0, 
                                                     self.__in_environment["coordinates"][0], self.__in_environment["coordinates"][1], self.__in_environment["coordinates"][2], 
                                                     0, 
@@ -712,7 +738,6 @@ class LightVegeManager:
                 ny = self.__in_geometry["scenes"][0]["LA"].shape[2]
                 nz = self.__in_geometry["scenes"][0]["LA"].shape[1]
                 
-                dx, dy, dz = self.__in_lightmodel_parameters["voxel size"][0], self.__in_lightmodel_parameters["voxel size"][1], self.__in_lightmodel_parameters["voxel size"][2]
                 xorig, yorig, zorig = self.__in_lightmodel_parameters["origin"][0], self.__in_lightmodel_parameters["origin"][1],self.__in_lightmodel_parameters["origin"][2]
 
                 # initialisation de la grille
@@ -1437,6 +1462,10 @@ class LightVegeManager:
             return self.__time_runmodel
         except AttributeError:
             return 0.
+
+    @property
+    def triangleLmax(self):
+        return self.__triangleLmax
 
     def RATP_info(self, writefile=False):
         if self.__lightmodel == "ratp":
