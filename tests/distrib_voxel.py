@@ -48,16 +48,16 @@ def simulation(dv):
     print("--- day %i, hour %i"%(day, hour))
 
     #  RATP
-    lghtratp = LightVegeManager(geometry=geometry,
-                                    environment=environment,
+    lghtratp = LightVegeManager(environment=environment,
                                     lightmodel="ratp",
                                     lightmodel_parameters=ratp_parameters)
+    lghtratp.init_scenes(geometry)
     lghtratp.run(PARi=PARi, day=day, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
     print(lghtratp.shapes_outputs)
 
-    # VTK de la scène avec x+ = North
-    path_out = "outputs/debug_distrib_voxel/ratp_"+str(day)+"_"+str(hour)+"h"
-    lghtratp.VTKout(path_out, 1, voxels=True)
+    # # VTK de la scène avec x+ = North
+    # path_out = "outputs/debug_distrib_voxel/ratp_"+str(day)+"_"+str(hour)+"h"
+    # lghtratp.VTKout(path_out, 1, voxels=True)
 
 
 if __name__ == "__main__":

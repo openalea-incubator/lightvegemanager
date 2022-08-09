@@ -52,11 +52,11 @@ def simulation(geom, hour, situation, direct, diffus, ratp_mu, dv):
     print("--- day %i, hour %i"%(day, hour))
     print("\n\t C A R I B U")
     #  CARIBU
-    lghtcaribu = LightVegeManager(geometry=geometry,
-                                    environment=environment,
+    lghtcaribu = LightVegeManager(environment=environment,
                                     lightmodel="caribu", 
                                     lightmodel_parameters=caribu_parameters, 
                                     global_scene_tesselate_level=5)
+    lghtcaribu.init_scenes(geometry)                                    
     lghtcaribu.run(PARi=PARi, day=day, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
     print(lghtcaribu.shapes_outputs)
 

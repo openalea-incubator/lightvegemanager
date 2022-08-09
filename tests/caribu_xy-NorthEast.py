@@ -47,11 +47,13 @@ PARi = 500 # forçage arbitraire en µmol.m-2.s-1
 day = 264 # jour arbitraire (21 septembre)
 
 # Déclaration de l'objet
-lghtcaribu = LightVegeManager(geometry=geometry,
-                                environment=environment,
+lghtcaribu = LightVegeManager(environment=environment,
                                 lightmodel="caribu",
                                 lightmodel_parameters=caribu_parameters,
                                 global_scene_tesselate_level=5)
+
+
+lghtcaribu.init_scenes(geometry)
 
 # heure matin, soleil arrive de l'est, les 2 plaques reçoivent tout le rayonnement
 hour = 8

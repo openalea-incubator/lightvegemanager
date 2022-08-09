@@ -480,7 +480,7 @@ class LightVegeManager:
         # RATP
         if self.__lightmodel == "ratp":
             if self.__in_lightmodel_parameters["voxel size"] == "dynamic" :
-                dx, dy, dz = 2 * self.__triangleLmax
+                dx, dy, dz = 5 * self.__triangleLmax
             else:
                 dx = self.__in_lightmodel_parameters["voxel size"][0]
                 dy = self.__in_lightmodel_parameters["voxel size"][1]
@@ -1467,7 +1467,7 @@ class LightVegeManager:
     def triangleLmax(self):
         return self.__triangleLmax
 
-    def RATP_info(self, writefile=False):
+    def RATP_info(self, filename="", writefile=False):
         if self.__lightmodel == "ratp":
             dict_global = {
                 "Origin" : [float(self.__ratp_scene.xorig), float(self.__ratp_scene.yorig), float(self.__ratp_scene.zorig) ],
@@ -1525,7 +1525,10 @@ class LightVegeManager:
                 dfvox = pandas.merge(dfvox, pandas.DataFrame(dict_add))  
 
             if writefile:
-                f=open("RATP_info.data", 'w')
+                if filename=="" : name= "RATP_info.data"
+                else: name = filename+"_RATP_info.data"
+
+                f=open(name, 'w')
                 f.write("Xorigin\tYorigin\tZorigin\n")
                 f.write("%f\t%f\t%f\n" % (dict_global["Origin"][0], dict_global["Origin"][1], dict_global["Origin"][2]))
                 f.write("Global Foliar Angles Distribution For Each Entity\n")
@@ -1539,7 +1542,7 @@ class LightVegeManager:
                 f.write("\n")
                 f.close()
 
-                dfvox.to_csv("RATP_info.data", mode='a', index=False, header=True)
+                dfvox.to_csv(name, mode='a', index=False, header=True)
                 
 
             return dict_global, dfvox
@@ -1665,8 +1668,12 @@ class LightVegeManager:
     def s5(self):
         '''construit les fichiers d'entrée pour s5 et l'exécute
         '''
-        # ecrit dans le dossier de s5
-        f=open("s5/fort.51", 'w')
+        s5folder = os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), os.path.normpath("s5"))
+        fort51 = os.path.join(s5folder, os.path.normpath("fort.51"))
+        s5par = os.path.join(s5folder, os.path.normpath("s5.par"))
+
+        # écriture du fichier fort.51 contenant la triangulation
+        f=open(fort51, 'w')
         c_tr=1
         for tr in self.__my_scene:
             if (self.__matching_ids[tr.id][0], self.__matching_ids[tr.id][1]) in self.__in_geometry["stems id"]:
@@ -1681,8 +1688,8 @@ class LightVegeManager:
             c_tr += 1
         f.close()
 
-        f=open("s5/s5.par", 'w')
-        
+        # écriture du fichier s5.par contenant les informations de la grille
+        f=open(s5par, 'w')    
         f.write("%i\t%i\t%i\t%i\t0\n"%(self.__ratp_scene.nent, 9, 9, self.__ratp_scene.njz))
         for i in range(self.__ratp_scene.njz):
             f.write("%f\t"%(self.__ratp_scene.dz[i]))
@@ -1693,24 +1700,24 @@ class LightVegeManager:
         dx = self.__ratp_scene.dx
         dy = self.__ratp_scene.dy
         f.write("%f\t%i\t%f\t%f\t%i\t%f\n"%(njx*dx, njx, dx, njy*dy, njy, dy))
+        f.close()
 
-        # on se place dans le dossier 
-        #os.path.dirname(os.path.abspath(__file__))
-        path = os.path.abspath(__file__)
-        lpath = path.split("\\")
-        path = "\\".join(lpath[:-2])
-        path = path + "\\s5\\"
-        print(path)
-        os.chdir(path)
-        subprocess.call(path+"s5.exe", cwd=path)
-        print("--- Fin de s5.f")
+        # exécution de s5 dans un sous process
+        subprocess.call(".\s5.exe", shell=True, cwd=s5folder)
+        
+        print("\n"+"--- Fin de s5.f")
 
     
     def s2v(self):
         '''construit les fichiers d'entrée pour s2v et l'exécute
         '''
+        
+        s2vfolder = os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), os.path.normpath("s2v"))
+        fort51 = os.path.join(s2vfolder, os.path.normpath("fort.51"))
+        s2vpar = os.path.join(s2vfolder, os.path.normpath("s2v.par"))
+
         # ecrit dans le dossier de s2v
-        f=open("s2v/fort.51", 'w')
+        f=open(fort51, 'w')
         c_tr=1
         for tr in self.__my_scene:
             if (self.__matching_ids[tr.id][0], self.__matching_ids[tr.id][1]) in self.__id_stems:
@@ -1725,7 +1732,7 @@ class LightVegeManager:
             c_tr += 1
         f.close()
 
-        f=open("s2v/s2v.par", 'w')
+        f=open(s2vpar, 'w')
         # ligne 1 
         f.write("9 9 %i\n"%(self.__ratp_scene.njz))
 
@@ -1746,7 +1753,9 @@ class LightVegeManager:
 
         f.close()
 
-        os.system(r"s2v\s2v++.exe")
+        # exécution de s5 dans un sous process
+        subprocess.call(".\s2v.exe", shell=True, cwd=s2vfolder)
+
         print("--- Fin de s2v.cpp")
 
     def __str__(self):
