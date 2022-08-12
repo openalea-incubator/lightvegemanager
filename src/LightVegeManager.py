@@ -480,7 +480,9 @@ class LightVegeManager:
         # RATP
         if self.__lightmodel == "ratp":
             if self.__in_lightmodel_parameters["voxel size"] == "dynamic" :
-                dx, dy, dz = 5 * self.__triangleLmax
+                dv = 5 * self.__triangleLmax
+                dx, dy, dz = dv, dv, dv
+
             else:
                 dx = self.__in_lightmodel_parameters["voxel size"][0]
                 dy = self.__in_lightmodel_parameters["voxel size"][1]
@@ -1566,6 +1568,29 @@ class LightVegeManager:
 
             # update the MTG
             mtg.property(param).update(dico_par[param])
+
+    def to_l_egume(self, m_lais, energy) :
+        nxyz = [self.__ratp_scene.njx, self.__ratp_scene.njy, self.__ratp_scene.njz]
+
+        # transfert des sorties
+        res_abs_i = np.zeros((m_lais.shape[0], m_lais.shape[1], m_lais.shape[2], m_lais.shape[3]))
+        res_trans = np.zeros((m_lais.shape[1], m_lais.shape[2], m_lais.shape[3]))
+        
+        iz=0
+        for legume_iz in range(m_lais.shape[1]):
+            for iy in range(m_lais.shape[2]):
+                for ix in range(m_lais.shape[3]):
+                    if m_lais[0][legume_iz][iy][ix] > 0. :
+                        vox_data = self.__voxels_outputs[(self.__voxels_outputs.Nx==ix+1) & 
+                                                                    (self.__voxels_outputs.Ny==iy+1) & 
+                                                                    (self.__voxels_outputs.Nz==iz+1)]
+                    
+                        res_trans[legume_iz, iy, ix] = energy * sum(vox_data["transmitted"])
+                        for ie in range(m_lais.shape[0]) :
+                            if len(vox_data) > 0 :
+                                res_abs_i[ie, legume_iz, iy, ix] = energy * vox_data[vox_data.VegetationType == ie+1]["xintav"].values[0]
+                        iz+=1
+        return res_trans, res_abs_i
 
     def VTKinit(self, path, plantnames=[], planttrianglevalues=[], printtriangles=True):
         '''construit des fichiers VTK de la triangulation et de la grille de voxels après leur construction

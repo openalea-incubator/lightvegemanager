@@ -56,7 +56,6 @@ def simulation(foldin, foldout, active, passive, ratpgeo, writegeo=False):
         I_I0profilInPlant, NlClasses, NaClasses, NlinClasses,  \
         opt_stressW, opt_stressN, opt_stressGel, opt_residu = tag_loop_inputs
     dxyz = lsys_temp.dxyz # récupère nouvelle taille de voxel
-    nxyz = lsys_temp.na # récupère le nombre de voxels
 
     if active=="ratp" or passive=="ratp" :
         ## INITIALISATION LIGHTVEGEMANAGER
@@ -161,27 +160,14 @@ def simulation(foldin, foldout, active, passive, ratpgeo, writegeo=False):
         ############
         if active=="legume":
             # PAR / Blue voxel
-            tag_light_inputs = [m_lais / surf_refVOX, triplets, ls_dif, meteo_j['I0'] * surf_refVOX]  # input tag
+            tag_light_inputs = [m_lais / surf_refVOX, triplets, ls_dif, energy * surf_refVOX]  # input tag
 
             # mise a jour de res_trans, res_abs_i, res_rfr, ls_epsi
             res_trans, res_abs_i = riri.calc_extinc_allray_multi_reduced(*tag_light_inputs, optsky=station['optsky'], opt=station['sky'])
 
         elif active=="ratp":
             # transfert des sorties
-            res_abs_i = np.zeros((m_lais.shape[0], nxyz[2], nxyz[1], nxyz[0]))
-            res_trans = np.zeros((nxyz[2], nxyz[1], nxyz[0]))
-            for iz in range(m_lais.shape[1]):
-                for iy in range(m_lais.shape[2]):
-                    for ix in range(m_lais.shape[3]):
-                        if m_lais[0][iz][iy][ix] > 0. :
-                            vox_data = lghtratp.voxels_outputs[(lghtratp.voxels_outputs.Nx==ix+1) & 
-                                                                        (lghtratp.voxels_outputs.Ny==iy+1) & 
-                                                                        (lghtratp.voxels_outputs.Nz==iz+1)]
-                        
-                            res_trans[iz, iy, ix] = energy * sum(vox_data["transmitted"])
-                            for ie in range(m_lais.shape[0]) :
-                                if len(vox_data) > 0 :
-                                    res_abs_i[ie, iz, iy, ix] = energy * vox_data[vox_data.VegetationType == ie+1]["xintav"].values[0]
+            res_trans, res_abs_i = lghtratp.to_l_egume(m_lais, energy)
 
         iteration_legume_withoutlighting(lsystem_simulations[sim_id], res_trans, res_abs_i, tag_loop_inputs)
 
