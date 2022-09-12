@@ -1,6 +1,7 @@
 import sys
 import os
 import getopt
+import time
 
 import numpy as np
 
@@ -15,18 +16,13 @@ except ModuleNotFoundError:
     from src.l_egume_template import *
 
 '''
-Comparaison sur un temps avec un couvert dense entre CARIBU et RATP
-Simu 1 : RATP seul
-Simu 2 : l-egume seul
-Simu 3 : l-egume + RATP sur la géométrie de l-egume
-
-NOTES :
-    vérifier le chemin de INPUTS_FOLDER et celui de runstring pour lancer le script par défaut
+Comparaison de la lumière entre l-egume (RiRi) et RATP
 
 '''
 
 def simulation(foldin, foldout, active, passive, ratpgeo, writegeo=False):
     
+    start = time.time()
     fusms = "liste_usms_exemple.xls"
     ongletBatch = "exemple"
 
@@ -54,8 +50,7 @@ def simulation(foldin, foldout, active, passive, ratpgeo, writegeo=False):
         ls_TStress, lsApex, lsApexAll, dicOrgans,  \
         deltaI_I0, nbI_I0, I_I0profilLfPlant, I_I0profilPetPlant,  \
         I_I0profilInPlant, NlClasses, NaClasses, NlinClasses,  \
-        opt_stressW, opt_stressN, opt_stressGel, opt_residu = tag_loop_inputs
-    dxyz = lsys_temp.dxyz # récupère nouvelle taille de voxel
+        opt_stressW, opt_stressN, opt_stressGel, opt_residu, dxyz = tag_loop_inputs
 
     if active=="ratp" or passive=="ratp" :
         ## INITIALISATION LIGHTVEGEMANAGER
@@ -116,14 +111,14 @@ def simulation(foldin, foldout, active, passive, ratpgeo, writegeo=False):
             ls_TStress, lsApex, lsApexAll, dicOrgans,  \
             deltaI_I0, nbI_I0, I_I0profilLfPlant, I_I0profilPetPlant,  \
             I_I0profilInPlant, NlClasses, NaClasses, NlinClasses,  \
-            opt_stressW, opt_stressN, opt_stressGel, opt_residu = tag_loop_inputs    
+            opt_stressW, opt_stressN, opt_stressGel, opt_residu, dxyz = tag_loop_inputs    
+
+        ## Paramètres météo ## 
+        doy = lsystem_simulations[sim_id].meteo["DOY"][i]
+        hour = 12
+        energy = 0.48*meteo_j['RG']*10000/(3600*24)#flux PAR journalier moyen en W.m-2 / RG en j.cm-2
 
         if active=="ratp" or passive=="ratp" :
-            ## Paramètres météo ## 
-            doy = lsystem_simulations[sim_id].meteo["DOY"][i]
-            hour = 12
-            energy = meteo_j['I0']     
-
             ## Paramètres scene ##
             # Transfert grille l-egume vers RATP
             if ratpgeo == "grid":
@@ -169,11 +164,12 @@ def simulation(foldin, foldout, active, passive, ratpgeo, writegeo=False):
             # transfert des sorties
             res_trans, res_abs_i = lghtratp.to_l_egume(m_lais, energy)
 
-        iteration_legume_withoutlighting(lsystem_simulations[sim_id], res_trans, res_abs_i, tag_loop_inputs)
+        iteration_legume_withoutlighting(lsystem_simulations[sim_id], res_trans, res_abs_i, tag_loop_inputs, energy)
 
     print((''.join((sim_id, " - done"))))
 
     lsystem_simulations[sim_id].clear()
+    print("simulation time : ", time.time() - start, " s")
 
 if __name__ == "__main__":
     #definition d'arguments avec getopt
@@ -186,10 +182,10 @@ if __name__ == "__main__":
     # valeur par défaut
     foldin = "C:/Users/mwoussen/cdd/codes/vegecouplelight/l-egume/legume/input/"
     foldout = "C:/Users/mwoussen/cdd/codes/vegecouplelight/outputs/legume/"
-    active = "legume"
-    passive = "legume"
-    ratpgeo = "grid"
-    writegeo = "no"
+    active = "legume" # legume ou ratp
+    passive = "legume" # legume ou ratp
+    ratpgeo = "grid" # grid ou plantgl
+    writegeo = "y" # "y" ou "no"
 
     # récupère les arguments en entrée
     for opt, arg in opts:
@@ -225,6 +221,6 @@ if __name__ == "__main__":
         
     if writegeo=="y":
         simulation(foldin, foldout, active, passive, ratpgeo, True)
-    simulation(foldin, foldout, active, passive, ratpgeo)
+    else : simulation(foldin, foldout, active, passive, ratpgeo)
     
     print("=== END ===")

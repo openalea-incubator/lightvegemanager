@@ -197,8 +197,8 @@ contains
   end do
 
   STARsky_canopy = STARsky_canopy / S_canopy
-  !write(*,*) 'STARsky_canopy =', STARsky_canopy
-  !write(*,*) 'S_canopy =', S_canopy
+  ! write(*,*) 'STARsky_canopy =', STARsky_canopy
+  ! write(*,*) 'S_canopy =', S_canopy
 
 
 ! Verification de la conservation des rayonnements
@@ -213,7 +213,7 @@ contains
    rtot = rtot +rdis(k)
   end do
   rtot=rtot/(float(njx)*dx*float(njy)*dy)
- !write(*,*) '  Total diffuse intercepted radiation: ',rtot,' SHOULD BE 1'
+!  write(*,*) '  Total diffuse intercepted radiation: ',rtot,' SHOULD BE 1'
 
   rtot=0.
   do ks=1,nsol
@@ -225,7 +225,7 @@ contains
    end do
   end do
 
-    !write(*,*)'Total scattered radiation by the ground: ',rtot/njx/njy,' SHOULD BE 1'
+    ! write(*,*)'Total scattered radiation by the ground: ',rtot/njx/njy,' SHOULD BE 1'
   do ks=1,nveg
   do jes=1,nje(ks)
    rtot=0.
@@ -238,7 +238,7 @@ contains
    do kr=1,nsol
     rtot=rtot+ffsv(kr,ks,jes)
    end do
-  !write(*,*)'Total scattered radiation by vegetation type ',jes,' in voxel ',ks, ': ',rtot,' SHOULD BE 1'
+  ! write(*,*)'Total scattered radiation by vegetation type ',jes,' in voxel ',ks, ': ',rtot,' SHOULD BE 1'
   end do
   end do
 

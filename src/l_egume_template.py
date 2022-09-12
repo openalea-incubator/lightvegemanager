@@ -35,7 +35,7 @@ def initialisation_legume(foldin, foldout, fusms, ongletBatch):
 
 
 
-def iteration_legume_withoutlighting(lsystem, res_trans, res_abs_i, tag_loop_inputs):
+def iteration_legume_withoutlighting(lsystem, res_trans, res_abs_i, tag_loop_inputs, energy):
 
     invar, outvar, invar_sc, ParamP, \
         station, carto, meteo_j, mng_j,  \
@@ -47,10 +47,10 @@ def iteration_legume_withoutlighting(lsystem, res_trans, res_abs_i, tag_loop_inp
         ls_TStress, lsApex, lsApexAll, dicOrgans,  \
         deltaI_I0, nbI_I0, I_I0profilLfPlant, I_I0profilPetPlant,  \
         I_I0profilInPlant, NlClasses, NaClasses, NlinClasses,  \
-        opt_stressW, opt_stressN, opt_stressGel, opt_residu = tag_loop_inputs
+        opt_stressW, opt_stressN, opt_stressGel, opt_residu, dxyz = tag_loop_inputs
     
     # R_FR voxel (calcul de zeta)
-    tag_light_inputs2 = [res_trans / (meteo_j['I0'] * surf_refVOX)]  # input tag
+    tag_light_inputs2 = [res_trans / (energy * surf_refVOX)]  # input tag
     # tag_light_inputs2 = [res_trans]  # input tag
     local_res_rfr = riri.rfr_calc_relatif(*tag_light_inputs2)
 
@@ -59,6 +59,8 @@ def iteration_legume_withoutlighting(lsystem, res_trans, res_abs_i, tag_loop_inp
     # calul des interception feuille et ls_epsi plante
     dicFeuilBilanR = sh.calc_paraF(dicFeuilBilanR, m_lais, res_abs_i)
     ls_epsi, invar = loop.step_epsi(invar, res_trans, dicFeuilBilanR, meteo_j, surfsolref)
+
+    print('epsi', sum(ls_epsi))
 
     ##########
     # Step Potential plant growth
@@ -92,10 +94,11 @@ def iteration_legume_withoutlighting(lsystem, res_trans, res_abs_i, tag_loop_inp
     ##########
     # step update soil residues senescence
     ##########
-    tag_inputs_residue_updt = [ls_mat_res, vCC, S, ls_roots, par_SN['PROFHUMs'], ParamP, invar, opt_residu,opt_stressGel] # input tag
+    if opt_residu == 1:  # option residu activee: mise a jour des cres
+        tag_inputs_residue_updt = [ls_mat_res, vCC, S, ls_roots, par_SN['PROFHUMs'], ParamP, invar, opt_residu,opt_stressGel] # input tag
 
-    res_residue_step = loop.update_residue_mat(*tag_inputs_residue_updt)
-    ls_mat_res, S = res_residue_step  # unpacks results from a list and updates global variables
+        res_residue_step = loop.update_residue_mat(*tag_inputs_residue_updt)
+        ls_mat_res, S = res_residue_step  # unpacks results from a list and updates global variables
 
     #########
     # reinjecte les sorties midiee dans le lsystem
@@ -106,6 +109,7 @@ def iteration_legume_withoutlighting(lsystem, res_trans, res_abs_i, tag_loop_inp
 
     lsystem.S = S
     lsystem.stateEV = stateEV
+    lsystem.ls_mat_res = ls_mat_res
 
     lsystem.res_trans = res_trans
     lsystem.res_abs_i = res_abs_i

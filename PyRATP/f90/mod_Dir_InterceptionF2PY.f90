@@ -169,7 +169,7 @@ endif
         share(je,k) = xkavox(k, je) * leafareadensity(je,k) *mu(nume(je,k))  ! Inclusion of a leaf dispersion parameter per voxel   (done on 06 April 2022)
       endif
       xk(k) = xk(k) + share(je,k)  ! optical density = sum(Kje*LADje)
-      
+       
     end do
     do je=1,nje(k)
       share(je,k) = share(je,k) / xk(k) ! sharing coefficient

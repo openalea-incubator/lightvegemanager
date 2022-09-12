@@ -401,7 +401,6 @@ class Grid(object):
             if any(np.in1d(-1, Jz)):
                 raise ValueError('Some z coordinates fail outside the grid boundaries, consider increasing grid size or change grid origin')
 
-
             if entity.max() >  grid.nent:
                 raise ValueError('Number of entity is too great')
 

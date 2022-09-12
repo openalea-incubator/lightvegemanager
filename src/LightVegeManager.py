@@ -335,6 +335,9 @@ class LightVegeManager:
 
         '''
         self.__in_geometry = geometry
+
+        legume_grid = False
+        self.__id_legume_scene = -9999
         
         # paramètre par défaut des tiges
         if "stems id" not in self.__in_geometry : self.__in_geometry["stems id"] = []
@@ -359,32 +362,40 @@ class LightVegeManager:
                         tr.set_id(count)
                     self.__my_scene.extend(tri_list)
                     # on set le tableau des indices
-                    self.__matching_ids[count] = (id, i_esp, list(range(lastid,lastid+len(tri_list))))
+                    self.__matching_ids[count] = [id, i_esp, list(range(lastid,lastid+len(tri_list)))]
                     count += 1
             
             # fichier VGX
-            elif scene.split(".")[-1] == "vgx":
-                lastid = len(self.__my_scene)
-                f = open(scene, 'r')
-                lines = f.readlines()
-                for l in lines[1:]:                    
-                    l_list = l.split("\t")
-                    # if l_list[10] == '42' and l_list[11] == '42' and l_list[12] == '17':
-                    
-                    # on considère comme feuille les éléments R (RGB) != 42
-                    if l_list[10] != '42' :
-                        tr = Triangle3(*(Vector3(float(l_list[13]), float(l_list[14]), float(l_list[15])),
-                                            Vector3(float(l_list[16]), float(l_list[17]), float(l_list[18])),
-                                            Vector3(float(l_list[19]), float(l_list[20]), float(l_list[21]))))
+            elif isinstance(scene, str) :
+                if scene.split(".")[-1] == "vgx":
+                    lastid = len(self.__my_scene)
+                    f = open(scene, 'r')
+                    lines = f.readlines()
+                    for l in lines[1:]:                    
+                        l_list = l.split("\t")
+
+                        # on considère comme feuille les éléments R (RGB) != 42
+                        if l_list[10] != '42' :
+                            tr = Triangle3(*(Vector3(float(l_list[13]), float(l_list[14]), float(l_list[15])),
+                                                Vector3(float(l_list[16]), float(l_list[17]), float(l_list[18])),
+                                                Vector3(float(l_list[19]), float(l_list[20]), float(l_list[21]))))
+                            
+                            if tr.area > 0:
+                                tr.set_id(count)
+                                self.__my_scene.append(tr)
                         
-                        if tr.area > 0:
-                            tr.set_id(count)
-                            self.__my_scene.append(tr)
-                    
-                f.close()
-                self.__matching_ids[count] = (count, i_esp, list( range( lastid, len(self.__my_scene) - lastid ) ) )
-                count += 1
-        
+                    f.close()
+                    self.__matching_ids[count] = [count, i_esp, list( range( lastid, len(self.__my_scene) - lastid ) ) ]
+                    count += 1
+
+            # Grille RiRi (de l-egume)
+            else: 
+                # on active la prise de la grille
+                legume_grid = True 
+
+                # on retient l'id de la scène l-egume
+                self.__id_legume_scene = i_esp
+
         # def transform_triangulation()
         # applique les transformations sur les triangles
         if "transformations" in self.__in_geometry :
@@ -423,7 +434,6 @@ class LightVegeManager:
         self.__maxtrarea = 0.
         for tr in self.__my_scene:
             if tr.area > self.__maxtrarea: self.__maxtrarea = tr.area
-
         
         for tr in self.__my_scene:
             if tr.area > self.__maxtrarea: self.__maxtrarea = tr.area
@@ -487,9 +497,30 @@ class LightVegeManager:
                 dx = self.__in_lightmodel_parameters["voxel size"][0]
                 dy = self.__in_lightmodel_parameters["voxel size"][1]
                 dz = self.__in_lightmodel_parameters["voxel size"][2]
+
+            # on ajuste au besoin les min-max si la scène est plane pour avoir un espace 3D
+            if xmin == xmax:
+                xmax += dx
+                xmin -= dx
+            if ymin == ymax:
+                ymax += dy
+                ymin -= dy
+            if zmin == zmax:
+                zmax += dz
+                zmin -= dz
             
-            if self.__my_scene:
-                
+            self.__pmax = Vector3(xmax, ymax, zmax)
+            self.__pmin = Vector3(xmin, ymin, zmin)
+
+            # définit une origine en Pmin
+            if "origin" not in self.__in_lightmodel_parameters : xorig, yorig, zorig = self.__pmin[0], self.__pmin[1], -self.__pmin[2]
+            else : 
+                if len(self.__in_lightmodel_parameters["origin"]) == 2 :
+                    xorig, yorig, zorig = self.__in_lightmodel_parameters["origin"][0], self.__in_lightmodel_parameters["origin"][1], -self.__pmin[2]
+                elif len(self.__in_lightmodel_parameters["origin"]) == 3 :
+                    xorig, yorig, zorig = self.__in_lightmodel_parameters["origin"][0], self.__in_lightmodel_parameters["origin"][1], self.__in_lightmodel_parameters["origin"][2]
+            
+            if not legume_grid :
                 if self.__matching_ids:
 
                     # on sépare les tiges dans une nouvelle entité si il y a des shapes non tiges    
@@ -578,20 +609,6 @@ class LightVegeManager:
 
                     distrib["global"] = distrib_glob
 
-                    # on ajuste au besoin les min-max si la scène est plane pour avoir un espace 3D
-                    if xmin == xmax:
-                        xmax += dx
-                        xmin -= dx
-                    if ymin == ymax:
-                        ymax += dy
-                        ymin -= dy
-                    if zmin == zmax:
-                        zmax += dz
-                        zmin -= dz
-                    
-                    self.__pmax = Vector3(xmax, ymax, zmax)
-                    self.__pmin = Vector3(xmin, ymin, zmin)
-
                     # nombre de voxels
                     nx = int((self.__pmax[0] - self.__pmin[0]) // dx)
                     ny = int((self.__pmax[1] - self.__pmin[1]) // dy)
@@ -604,14 +621,6 @@ class LightVegeManager:
                     if (self.__pmax[1] - self.__pmin[1]) % dy > 0 : ny += 1
                     if (self.__pmax[2] - self.__pmin[2]) % dz > 0 : nz += 1
                     
-                    # définit une origine en Pmin
-                    if "origin" not in self.__in_lightmodel_parameters : xorig, yorig, zorig = self.__pmin[0], self.__pmin[1], -self.__pmin[2]
-                    else : 
-                        if len(self.__in_lightmodel_parameters["origin"]) == 2 :
-                            xorig, yorig, zorig = self.__in_lightmodel_parameters["origin"][0], self.__in_lightmodel_parameters["origin"][1], -self.__pmin[2]
-                        elif len(self.__in_lightmodel_parameters["origin"]) == 3 :
-                            xorig, yorig, zorig = self.__in_lightmodel_parameters["origin"][0], self.__in_lightmodel_parameters["origin"][1], self.__in_lightmodel_parameters["origin"][2]
-
                     # création de la grille
                     # si pas de rayonnement réfléchi on annules la réflexion du sol
                     if self.__in_environment["reflected"] :
@@ -729,18 +738,58 @@ class LightVegeManager:
                                                     toric=self.__in_environment["infinite"])
                     self.__ratp_distrib = {"global" : [[1.]]}
             
-            # si la scene en entrée vient de l-egume
+            # si une scene en entrée vient de l-egume
             # scene est un dict et contient :
             #   scene["LAD"] = m_lais / surf_refVOX
             #   scene["distrib"] = ls_dif
             else:
-                self.__ratp_distrib = {"global" : self.__in_geometry["scenes"][0]["distrib"]}
-                nent = self.__in_geometry["scenes"][0]["LA"].shape[0]
-                nx = self.__in_geometry["scenes"][0]["LA"].shape[3]
-                ny = self.__in_geometry["scenes"][0]["LA"].shape[2]
-                nz = self.__in_geometry["scenes"][0]["LA"].shape[1]
+                # copie les paramètres d'entrée dans l'instance
+                self.__ratp_distrib = {"global" : self.__in_geometry["scenes"][self.__id_legume_scene]["distrib"]}               
+
+                # compte sur le nombre d'entité en plus de la grille l-egume
+                nent_triangles = 0
+                for key, val in self.__matching_ids.items():
+                    if val[1]+1 > nent_triangles:
+                        nent_triangles = val[1]+1
+                    # corrige la numérotation des entités pour les triangles si on a une grille l-egume en entrée
+                    val[1] += self.__in_geometry["scenes"][self.__id_legume_scene]["LA"].shape[0]
                 
-                xorig, yorig, zorig = self.__in_lightmodel_parameters["origin"][0], self.__in_lightmodel_parameters["origin"][1],self.__in_lightmodel_parameters["origin"][2]
+                # on ajoute au nombre d'entités dans l-egume
+                nent = self.__in_geometry["scenes"][self.__id_legume_scene]["LA"].shape[0] + nent_triangles
+
+                # dimensions de la grille l-egume
+                nx = self.__in_geometry["scenes"][self.__id_legume_scene]["LA"].shape[3]
+                ny = self.__in_geometry["scenes"][self.__id_legume_scene]["LA"].shape[2]
+                nz = self.__in_geometry["scenes"][self.__id_legume_scene]["LA"].shape[1]
+
+                
+
+                # on regarde si la liste de triangles rentre dans la grille
+                if self.__pmax[0] > nx*dx :
+                    nx += int((self.__pmax[0] - nx*dx) // dx)+1
+                if self.__pmax[1] > ny*dy :
+                    ny += int((self.__pmax[1] - ny*dy) // dy)+1
+                
+                # la triangulation dépasse de la grille (normalement 126 * dz)
+                if self.__pmax[2] > nz*dz :
+                    nz += int((self.__pmax[2] - nz*dz) // dz)+1
+                
+                # sinon on enlève les couches vides
+                else :
+                    # combien/quelles lignes a zeros de LAI au dessus
+                    laicum = np.sum(self.__in_geometry["scenes"][self.__id_legume_scene]["LA"], axis=0)
+                    laicumvert = np.sum(laicum, axis=(1, 2))
+                    nb0 = 0  # nb de couches sans feuilles/LAI
+                    for i in range(len(laicumvert)):
+                        if laicumvert[i] == 0.:
+                            nb0 += 1
+                        else:
+                            break
+                    nz = nz - nb0
+                    
+                    # on réajuste si la triangulation dépasse le nouveau nz
+                    if self.__pmax[2] > nz*dz :
+                        nz += int((self.__pmax[2] - nz*dz) // dz)+1                    
 
                 # initialisation de la grille
                 # si pas de rayonnement réfléchi on annules la réflexion du sol
@@ -765,15 +814,17 @@ class LightVegeManager:
                                                     [0., 0.], 
                                                     toric=self.__in_environment["infinite"])
 
-                # remplissage des voxels
+                # remplissage des voxels avec la grille 
                 n_vox_per_nent = []
-                for ne in range(nent):
+                for ne in range(nent-nent_triangles):
                     k=0
                     for ix in range(nx):
                         for iy in range(ny):
-                            for iz in range(nz):
+                            # attention z de RATP != z de RiRi (126 couches)
+                            iz=0
+                            for legume_iz in range(self.__in_geometry["scenes"][self.__id_legume_scene]["LA"].shape[1]):
                                 # attention changement de direction en z (vers le bas dans RATP)
-                                if self.__in_geometry["scenes"][0]["LA"][ne][iz][iy][ix] > 0 :
+                                if self.__in_geometry["scenes"][self.__id_legume_scene]["LA"][ne][legume_iz][iy][ix] > 0 :
                                     mygrid.kxyz[ix, iy, iz] = k + 1 #ajouter 1 pour utilisation f90
                                     mygrid.numx[k] = ix + 1 #ajouter 1 pour utilisation f90
                                     mygrid.numy[k] = iy + 1 #ajouter 1 pour utilisation f90
@@ -782,15 +833,15 @@ class LightVegeManager:
                                     mygrid.nje[k] = max(ne + 1, mygrid.nje[k])
                                     mygrid.nemax = max(mygrid.nemax, mygrid.nje[k])
 
-                                    mygrid.leafareadensity[ne,k] += self.__in_geometry["scenes"][0]["LA"][ne][iz][iy][ix] / (dx * dy * dz)
-                                    mygrid.s_vt_vx[ne,k] += self.__in_geometry["scenes"][0]["LA"][ne][iz][iy][ix]
-                                    mygrid.s_vx[k] += self.__in_geometry["scenes"][0]["LA"][ne][iz][iy][ix]
-                                    mygrid.s_vt[ne] += self.__in_geometry["scenes"][0]["LA"][ne][iz][iy][ix]
-                                    mygrid.s_canopy += self.__in_geometry["scenes"][0]["LA"][ne][iz][iy][ix]
+                                    mygrid.leafareadensity[ne,k] += self.__in_geometry["scenes"][self.__id_legume_scene]["LA"][ne][legume_iz][iy][ix] / (dx * dy * dz)
+                                    mygrid.s_vt_vx[ne,k] += self.__in_geometry["scenes"][self.__id_legume_scene]["LA"][ne][legume_iz][iy][ix]
+                                    mygrid.s_vx[k] += self.__in_geometry["scenes"][self.__id_legume_scene]["LA"][ne][legume_iz][iy][ix]
+                                    mygrid.s_vt[ne] += self.__in_geometry["scenes"][self.__id_legume_scene]["LA"][ne][legume_iz][iy][ix]
+                                    mygrid.s_canopy += self.__in_geometry["scenes"][self.__id_legume_scene]["LA"][ne][legume_iz][iy][ix]
                                     
                                     k=k+1
+                                    iz+=1
                     n_vox_per_nent.append(k)
-                   
 
                 mygrid.nveg=max(n_vox_per_nent)
                 mygrid.nsol=mygrid.njx*mygrid.njy   # Numbering soil surface areas
@@ -806,13 +857,35 @@ class LightVegeManager:
                         if  mygrid.s_vt_vx[je,k] > 0. :
                             mygrid.volume_canopy[mygrid.nume[je,k] - 1] = mygrid.volume_canopy[mygrid.nume[je,k] - 1] + dx * dy * dz
                             mygrid.voxel_canopy[mygrid.nume[je,k] - 1] = mygrid.voxel_canopy[mygrid.nume[je,k] - 1] + 1
+                
+                if self.__my_scene :
+                    # complète avec la liste de triangles
+                    # pour chaque triangle, indice entité, x, y, z, aire, nitro
+                    entity, barx, bary, barz, a, n = [],[], [], [], [], []
+                    for tr in self.__my_scene:
+                        bar = tr.barycenter
+                        barx.append(bar[0])
+                        bary.append(bar[1])
+                        barz.append(bar[2])
+                        
+                        # id : id de la shape, val : [id shape en input, id de l'entité]
+                        # c'est une tige on divise par 2 le LAD
+                        if (self.__matching_ids[tr.id][0], self.__matching_ids[tr.id][1] - len(self.__in_geometry["scenes"])) in self.__in_geometry["stems id"] or \
+                            (self.__matching_ids[tr.id][0], self.__matching_ids[tr.id][1]) in self.__in_geometry["stems id"] :
+                            a.append(tr.area)
+                        else:
+                            a.append(tr.area)
+                        
+                        n.append(0.)
+                        entity.append(self.__matching_ids[tr.id][1])
 
-
+                    mygrid, matching = grid.Grid.fill_1(entity, barx, bary, barz, a, n, mygrid)
+                    self.__tr_vox = matching 
 
             # on enregistre la grille dans les deux cas (plantGL ou l-egume)
             self.__ratp_scene = mygrid
             
-            # if self.__matching_ids or not isinstance(self.__in_geometry["scenes"][0], pgl.Scene) :
+            # if self.__matching_ids or not isinstance(self.__in_geometry["scenes"][id_legume], pgl.Scene) :
             #     for i in range(mygrid.nveg):
             #         print(i, mygrid.leafareadensity[0, i])
             #     print("nb voxels", mygrid.nveg)
@@ -930,7 +1003,8 @@ class LightVegeManager:
                 entity[id] = match[1] + 1
             
             # si il y a une triangulation en entrée (défini à partir d'une scene plantGL)
-            if isinstance(self.__in_geometry["scenes"][0], pgl.Scene):
+            # if isinstance(self.__in_geometry["scenes"][self.__id_legume_scene], pgl.Scene):
+            if self.__my_scene:
                 if self.__matching_ids:
                     index = range(len(self.__tr_vox))
                     vox_id = [self.__tr_vox[str(i)] + 1 for i in index]
@@ -1042,7 +1116,8 @@ class LightVegeManager:
             self.__voxels_outputs = dfvox
 
             # si il y a une triangulation en entrée (défini à partir d'une scene plantGL)
-            if isinstance(self.__in_geometry["scenes"][0], pgl.Scene):
+            # if isinstance(self.__in_geometry["scenes"][id_legume], pgl.Scene):
+            if self.__my_scene:
                 if self.__matching_ids:
                     # nouvelle data frame avec les triangles en index
                     dfmap = pandas.DataFrame({'primitive_index': index,'shape_id': sh_id, 'VoxelId':vox_id, 'VegetationType':[entity[id] for id in sh_id], 'primitive_area':s})
@@ -1570,8 +1645,6 @@ class LightVegeManager:
             mtg.property(param).update(dico_par[param])
 
     def to_l_egume(self, m_lais, energy) :
-        nxyz = [self.__ratp_scene.njx, self.__ratp_scene.njy, self.__ratp_scene.njz]
-
         # transfert des sorties
         res_abs_i = np.zeros((m_lais.shape[0], m_lais.shape[1], m_lais.shape[2], m_lais.shape[3]))
         res_trans = np.zeros((m_lais.shape[1], m_lais.shape[2], m_lais.shape[3]))

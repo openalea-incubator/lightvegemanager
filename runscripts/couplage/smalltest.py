@@ -3,7 +3,6 @@ import shutil
 import sys
 import time
 import progressbar
-import getopt
 import random
 
 try :
@@ -161,7 +160,7 @@ def main_init_legume(foldin, foldout):
         ls_TStress, lsApex, lsApexAll, dicOrgans,  \
         deltaI_I0, nbI_I0, I_I0profilLfPlant, I_I0profilPetPlant,  \
         I_I0profilInPlant, NlClasses, NaClasses, NlinClasses,  \
-        opt_stressW, opt_stressN, opt_stressGel, opt_residu = tag_loop_inputs
+        opt_stressW, opt_stressN, opt_stressGel, opt_residu, dxyz = tag_loop_inputs
     dxyz = lsys_temp.dxyz # récupère nouvelle taille de voxel
     
     return lsystem_simulations, sim_id, lstring, dxyz, lsys_temp.cote
@@ -182,15 +181,18 @@ def run_light_legume(current_day, next_day_from_next_hour, meteo):
         mean_pari = filterday["PARi"].sum(axis=0)/len(filterday)
 
         # micromol.m-2.s-2 to J.cm²
+        
         # conversion en global W.m-2
-        mean_pari = mean_pari/2.02
+        mean_pari = mean_pari/4.6
 
         # W.m-2 = J.s-1.m-2
-        # conversion en J.s-1.m-2
-        mean_pari = mean_pari/10000
+        # conversion en J.s-1.cm-2
+        # mean_pari = mean_pari/10000
 
         # conversion en W.s-1.m-2 (8.64 tiré d'un fichier météo de l-egume)
-        RG = mean_pari / 8.64
+        # RG = mean_pari / 8.64
+
+        RG = mean_pari
 
         return RG, True
     
@@ -261,6 +263,7 @@ def simulation(level_tesselation, SIMULATION_LENGTH, legumeinputs="", cnwheatinp
     environment["direct"] = False
     ratp_parameters["voxel size"] = [d*0.01 for d in dxyz] # on convertit en m
     ratp_parameters["xy max"] = cote
+    ratp_parameters["origin"] = [0,0,0]
     lghtratplegume = LightVegeManager(environment=environment,
                                     lightmodel="ratp",
                                     lightmodel_parameters=ratp_parameters,
@@ -344,7 +347,7 @@ def simulation(level_tesselation, SIMULATION_LENGTH, legumeinputs="", cnwheatinp
                 ls_TStress, lsApex, lsApexAll, dicOrgans,  \
                 deltaI_I0, nbI_I0, I_I0profilLfPlant, I_I0profilPetPlant,  \
                 I_I0profilInPlant, NlClasses, NaClasses, NlinClasses,  \
-                opt_stressW, opt_stressN, opt_stressGel, opt_residu = tag_loop_inputs
+                opt_stressW, opt_stressN, opt_stressGel, opt_residu, dxyz = tag_loop_inputs
 
             geometry = {}
 
@@ -352,10 +355,17 @@ def simulation(level_tesselation, SIMULATION_LENGTH, legumeinputs="", cnwheatinp
             cnwheat_scene = adel_wheat.scene(g)
 
             # scene l-egume : PlantGL
-            legume_scene = lsystem_simulations[sim_id].sceneInterpretation(lstring)
+            # legume_scene = lsystem_simulations[sim_id].sceneInterpretation(lstring)
+
+            # scene l-egume : grille RiRi
+            legume_scene = {}
+            legume_scene["LA"] = m_lais
+            legume_scene["distrib"] = ls_dif
 
             # copie de la scène
             geometry["scenes"] = [cnwheat_scene, legume_scene]
+            geometry["transformations"] = {}
+            geometry["transformations"]["scenes unit"] = ["m", "m"]
             
             lghtratplegume.init_scenes(geometry)
             lghtratplegume.run(PARi=RG, day=DOY, hour=hour, truesolartime=True, parunit="RG") 
@@ -393,7 +403,7 @@ def simulation(level_tesselation, SIMULATION_LENGTH, legumeinputs="", cnwheatinp
                                             tillers_replications=tillers_replications)
 
         if writegeo :
-            lghtratpcnwheat.VTKout(os.path.join(outfolderpath, "vtk/smallcouplage")+"_"+str(t_light)+"_", voxels=True)
+            lghtratpcnwheat.VTKout(os.path.join(outfolderpath, "vtk/smallcouplage")+"_", iteration=t_light, voxels=True)
     
     write_outputs_fspmwheat(OUTPUTS_DIRPATH,
                                 POSTPROCESSING_DIRPATH,
