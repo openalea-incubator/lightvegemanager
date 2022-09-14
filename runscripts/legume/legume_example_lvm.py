@@ -20,7 +20,7 @@ Comparaison de la lumière entre l-egume (RiRi) et RATP
 
 '''
 
-def simulation(foldin, foldout, active, passive, ratpgeo, writegeo=False):
+def simulation(foldin, foldout, active, passive, ratpgeo, writegeo=False,triangles="n"):
     
     start = time.time()
     fusms = "liste_usms_exemple.xls"
@@ -61,7 +61,7 @@ def simulation(foldin, foldout, active, passive, ratpgeo, writegeo=False):
         # Paramètres pré-simulation
         environment["names"] = ["l-egume"]
         environment["coordinates"] = [46.43,0,0] # latitude, longitude, timezone
-        environment["sky"] ="turtle46" # ["file", "runscripts/legume/sky_5.data"] # "turtle46" # turtle à 46 directions par défaut
+        environment["sky"] = ["file", "runscripts/legume/sky_5.data"] # ["file", "runscripts/legume/sky_5.data"] # "turtle46" # turtle à 46 directions par défaut
         environment["diffus"] = True
         environment["direct"] = False
         environment["reflected"] = False
@@ -97,8 +97,10 @@ def simulation(foldin, foldout, active, passive, ratpgeo, writegeo=False):
     # début de la simulation
     for i in range(nb_iter+1):
         print('time step: ',i)
+        if i==51:
+            print("stop")
         lstring = lsystem_simulations[sim_id].derive(lstring, i, 1)
-        
+
         # récupère toutes les variables du lsystem
         tag_loop_inputs = lsystem_simulations[sim_id].tag_loop_inputs
         invar, outvar, invar_sc, ParamP, \
@@ -142,11 +144,25 @@ def simulation(foldin, foldout, active, passive, ratpgeo, writegeo=False):
                 geometry["transformations"]["xyz orientation"] = ["y+ = y-"]
 
             lghtratp.init_scenes(geometry)
-            lghtratp.run(PARi=energy, day=doy, hour=hour, truesolartime=True, parunit="RG")         
+            lghtratp.run(PARi=energy, day=doy, hour=hour, truesolartime=True, parunit="RG")     
+            # print(lghtratp.voxels_outputs)
+
+            # print("V \t X \t Y \t Z")
+            # v=0
+            # for iz in range(m_lais.shape[1]):
+            #     for iy in range(m_lais.shape[2]):
+            #         for ix in range(m_lais.shape[3]):
+            #             if m_lais[0][iz][iy][ix] > 0. :
+            #                 print("%i \t %i \t %i \t %i" % (v,ix,iy,iz))
+            #                 v+=1
 
             if writegeo:
                 if ratpgeo == "grid":
                     lghtratp.VTKinit(foldout+"grid_"+str(i)+"_",printtriangles=False)
+                    if triangles == "y":
+                        scene_plantgl = lsystem_simulations[sim_id].sceneInterpretation(lstring)
+                        lghtratp.PlantGL_to_VTK(scene_plantgl, i, foldout+"ratpgrid_")
+
                 elif ratpgeo == "plantgl":
                     lghtratp.VTKinit(foldout+"plantgl_"+str(i)+"_")
         
@@ -182,10 +198,11 @@ if __name__ == "__main__":
     # valeur par défaut
     foldin = "C:/Users/mwoussen/cdd/codes/vegecouplelight/l-egume/legume/input/"
     foldout = "C:/Users/mwoussen/cdd/codes/vegecouplelight/outputs/legume/"
-    active = "legume" # legume ou ratp
+    active = "ratp" # legume ou ratp
     passive = "legume" # legume ou ratp
     ratpgeo = "grid" # grid ou plantgl
-    writegeo = "y" # "y" ou "no"
+    writegeo = "n" # "y" ou "no"
+    triangles = "y"
 
     # récupère les arguments en entrée
     for opt, arg in opts:
@@ -220,7 +237,7 @@ if __name__ == "__main__":
             print("=== === LVM : RATP  (PLANTGL) === ===")
         
     if writegeo=="y":
-        simulation(foldin, foldout, active, passive, ratpgeo, True)
+        simulation(foldin, foldout, active, passive, ratpgeo, True, triangles)
     else : simulation(foldin, foldout, active, passive, ratpgeo)
     
     print("=== END ===")

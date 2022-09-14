@@ -729,11 +729,11 @@ class LightVegeManager:
 
                 # si l'entrée est vide
                 else :
-                    mygrid = grid.Grid.initialise(0, 0, 0,
+                    mygrid = grid.Grid.initialise(1, 1, 1,
                                                     dx, dy, dz, 
-                                                    0, 0, 0, 
+                                                    xorig, yorig, zorig,
                                                     self.__in_environment["coordinates"][0], self.__in_environment["coordinates"][1], self.__in_environment["coordinates"][2], 
-                                                    0, 
+                                                    1, 
                                                     self.__in_lightmodel_parameters["soil reflectance"], 
                                                     toric=self.__in_environment["infinite"])
                     self.__ratp_distrib = {"global" : [[1.]]}
@@ -762,24 +762,22 @@ class LightVegeManager:
                 ny = self.__in_geometry["scenes"][self.__id_legume_scene]["LA"].shape[2]
                 nz = self.__in_geometry["scenes"][self.__id_legume_scene]["LA"].shape[1]
 
-                
-
                 # on regarde si la liste de triangles rentre dans la grille
                 if self.__pmax[0] > nx*dx :
                     nx += int((self.__pmax[0] - nx*dx) // dx)+1
                 if self.__pmax[1] > ny*dy :
                     ny += int((self.__pmax[1] - ny*dy) // dy)+1
                 
+                nb0 = 0  # nb de couches sans feuilles/LAI
                 # la triangulation dépasse de la grille (normalement 126 * dz)
                 if self.__pmax[2] > nz*dz :
                     nz += int((self.__pmax[2] - nz*dz) // dz)+1
                 
                 # sinon on enlève les couches vides
                 else :
-                    # combien/quelles lignes a zeros de LAI au dessus
+                    # combien/quelles lignes == 0 dans la grille l-egume
                     laicum = np.sum(self.__in_geometry["scenes"][self.__id_legume_scene]["LA"], axis=0)
                     laicumvert = np.sum(laicum, axis=(1, 2))
-                    nb0 = 0  # nb de couches sans feuilles/LAI
                     for i in range(len(laicumvert)):
                         if laicumvert[i] == 0.:
                             nb0 += 1
@@ -789,7 +787,9 @@ class LightVegeManager:
                     
                     # on réajuste si la triangulation dépasse le nouveau nz
                     if self.__pmax[2] > nz*dz :
-                        nz += int((self.__pmax[2] - nz*dz) // dz)+1                    
+                        nz += int((self.__pmax[2] - nz*dz) // dz)+1          
+
+                    self.__legume_nb0 = self.__in_geometry["scenes"][self.__id_legume_scene]["LA"].shape[1] - nz   
 
                 # initialisation de la grille
                 # si pas de rayonnement réfléchi on annules la réflexion du sol
@@ -820,11 +820,12 @@ class LightVegeManager:
                     k=0
                     for ix in range(nx):
                         for iy in range(ny):
-                            # attention z de RATP != z de RiRi (126 couches)
-                            iz=0
-                            for legume_iz in range(self.__in_geometry["scenes"][self.__id_legume_scene]["LA"].shape[1]):
-                                # attention changement de direction en z (vers le bas dans RATP)
-                                if self.__in_geometry["scenes"][self.__id_legume_scene]["LA"][ne][legume_iz][iy][ix] > 0 :
+                            for iz in range(nz):
+                                legume_iz = iz + self.__legume_nb0
+                                s_entity = 0
+                                for kt in range(self.__in_geometry["scenes"][self.__id_legume_scene]["LA"].shape[0]) : 
+                                    s_entity+=self.__in_geometry["scenes"][self.__id_legume_scene]["LA"][kt][legume_iz][iy][ix]
+                                if s_entity > 0. :
                                     mygrid.kxyz[ix, iy, iz] = k + 1 #ajouter 1 pour utilisation f90
                                     mygrid.numx[k] = ix + 1 #ajouter 1 pour utilisation f90
                                     mygrid.numy[k] = iy + 1 #ajouter 1 pour utilisation f90
@@ -840,7 +841,6 @@ class LightVegeManager:
                                     mygrid.s_canopy += self.__in_geometry["scenes"][self.__id_legume_scene]["LA"][ne][legume_iz][iy][ix]
                                     
                                     k=k+1
-                                    iz+=1
                     n_vox_per_nent.append(k)
 
                 mygrid.nveg=max(n_vox_per_nent)
@@ -884,12 +884,7 @@ class LightVegeManager:
 
             # on enregistre la grille dans les deux cas (plantGL ou l-egume)
             self.__ratp_scene = mygrid
-            
-            # if self.__matching_ids or not isinstance(self.__in_geometry["scenes"][id_legume], pgl.Scene) :
-            #     for i in range(mygrid.nveg):
-            #         print(i, mygrid.leafareadensity[0, i])
-            #     print("nb voxels", mygrid.nveg)
-            
+                        
         elif self.__lightmodel == "caribu":    
             # copîe du minmax
             self.__pmax = Vector3(xmax, ymax, zmax)
@@ -991,38 +986,38 @@ class LightVegeManager:
                 from PyRATP.pyratp import pyratp    
                 self._print_sun(day, hour, pyratp, truesolartime)
 
-            start=time.time()
-            # Calcul du bilan radiatif sur chaque pas de temps du fichier météo
-            res = runRATP.DoIrradiation(self.__ratp_scene, vegetation, self.__sky, met)
-            self.__time_runmodel = time.time() - start
-
-            # Mise en forme des sorties
-            # création de plusieurs tableaux intermédiaires qui serviront à trier les sorties
-            entity = {}
-            for id, match in self.__matching_ids.items():
-                entity[id] = match[1] + 1
-            
-            # si il y a une triangulation en entrée (défini à partir d'une scene plantGL)
-            # if isinstance(self.__in_geometry["scenes"][self.__id_legume_scene], pgl.Scene):
-            if self.__my_scene:
-                if self.__matching_ids:
-                    index = range(len(self.__tr_vox))
-                    vox_id = [self.__tr_vox[str(i)] + 1 for i in index]
-                    # and one additional map that allows retrieving shape_id from python_x_index
-                    sh_id=[]
-                    for tr in self.__my_scene:
-                        sh_id.append(tr.id)
-
-                    s=[]
-                    for tr in self.__my_scene:
-                            s.append(tr.area)
-            
-            # récupère les sorties de RATP
-            # np.array en une dimension, de taille nbvoxels x nbiteration
-            VegetationType,Iteration,day,hour,VoxelId,ShadedPAR,SunlitPAR,ShadedArea,SunlitArea, xintav, Ptransmitted= res.T
-
             # grille RATP non vide
             if  self.__ratp_scene.nveg > 0 :
+                start=time.time()
+                # Calcul du bilan radiatif sur chaque pas de temps du fichier météo
+                res = runRATP.DoIrradiation(self.__ratp_scene, vegetation, self.__sky, met)
+                self.__time_runmodel = time.time() - start
+
+                # Mise en forme des sorties
+                # création de plusieurs tableaux intermédiaires qui serviront à trier les sorties
+                entity = {}
+                for id, match in self.__matching_ids.items():
+                    entity[id] = match[1] + 1
+                
+                # si il y a une triangulation en entrée (défini à partir d'une scene plantGL)
+                # if isinstance(self.__in_geometry["scenes"][self.__id_legume_scene], pgl.Scene):
+                if self.__my_scene:
+                    if self.__matching_ids:
+                        index = range(len(self.__tr_vox))
+                        vox_id = [self.__tr_vox[str(i)] + 1 for i in index]
+                        # and one additional map that allows retrieving shape_id from python_x_index
+                        sh_id=[]
+                        for tr in self.__my_scene:
+                            sh_id.append(tr.id)
+
+                        s=[]
+                        for tr in self.__my_scene:
+                                s.append(tr.area)
+                
+                # récupère les sorties de RATP
+                # np.array en une dimension, de taille nbvoxels x nbiteration
+                VegetationType,Iteration,day,hour,VoxelId,ShadedPAR,SunlitPAR,ShadedArea,SunlitArea, xintav, Ptransmitted= res.T
+
                 if parunit == "RG" :
                     # ('PAR' is expected in  Watt.m-2 in RATP input, whereas output is in micromol => convert back to W.m2 (cf shortwavebalance, line 306))
                     # on reste en micromol !
@@ -1089,9 +1084,7 @@ class LightVegeManager:
                                         'PARa': para_list,
                                         'xintav': erel_list, 
                                     })
-                
-                # tri de la dataframe par rapport aux shapes et triangles
-                
+                            
                 # ne prend pas le sol
                 dfvox = dfvox[dfvox['VegetationType'] > 0]
             else :
@@ -1109,7 +1102,7 @@ class LightVegeManager:
                                     'SunlitArea': SunlitArea,
                                     'Area': ShadedArea + SunlitArea,
                                     'PARa': para_list,
-                                    'xintav': erel_list, 
+                                    'xintav': erel_list
                                 })
                 
             # enregistre la dataframe des voxels
@@ -1647,13 +1640,16 @@ class LightVegeManager:
     def to_l_egume(self, m_lais, energy) :
         # transfert des sorties
         res_abs_i = np.zeros((m_lais.shape[0], m_lais.shape[1], m_lais.shape[2], m_lais.shape[3]))
-        res_trans = np.zeros((m_lais.shape[1], m_lais.shape[2], m_lais.shape[3]))
-        
-        iz=0
-        for legume_iz in range(m_lais.shape[1]):
+        # si le voxel est vide, on considère le transmis comme ce qui sort d'une de ses surfaces
+        res_trans = np.ones((m_lais.shape[1], m_lais.shape[2], m_lais.shape[3])) * (energy * self.__ratp_scene.dx * self.__ratp_scene.dy)
+                
+        for ix in range(m_lais.shape[3]):
             for iy in range(m_lais.shape[2]):
-                for ix in range(m_lais.shape[3]):
-                    if m_lais[0][legume_iz][iy][ix] > 0. :
+                for iz in range(self.__ratp_scene.njz):
+                    legume_iz = iz + self.__legume_nb0
+                    s_entity = 0
+                    for k in range(m_lais.shape[0]) : s_entity+=m_lais[k][legume_iz][iy][ix]
+                    if s_entity > 0. :
                         vox_data = self.__voxels_outputs[(self.__voxels_outputs.Nx==ix+1) & 
                                                                     (self.__voxels_outputs.Ny==iy+1) & 
                                                                     (self.__voxels_outputs.Nz==iz+1)]
@@ -1662,7 +1658,7 @@ class LightVegeManager:
                         for ie in range(m_lais.shape[0]) :
                             if len(vox_data) > 0 :
                                 res_abs_i[ie, legume_iz, iy, ix] = energy * vox_data[vox_data.VegetationType == ie+1]["xintav"].values[0]
-                        iz+=1
+
         return res_trans, res_abs_i
 
     def VTKinit(self, path, plantnames=[], planttrianglevalues=[], printtriangles=True):
@@ -1761,6 +1757,17 @@ class LightVegeManager:
             para = [np.array(temp1), np.array(temp2), np.array(temp3)]
 
             RATP2VTK.RATPVOXELS2VTK(self.__ratp_scene, para, "PARa", path+"PARa_voxels.vtk")
+
+    @staticmethod
+    def PlantGL_to_VTK(scene, ite, path):
+        triangleslist=[]
+        for id, pgl_objects in scene.todict().items():           
+            tri_list = list(itertools.chain(*[pgl_to_triangles(pgl_object) for pgl_object in pgl_objects]))
+            for tr in tri_list:
+                tr.set_id(0)
+            triangleslist.extend(tri_list)
+
+        VTKtriangles(triangleslist, [], [], path+"triangles_plantgl_"+str(ite)+".vtk")
 
 
     def s5(self):
