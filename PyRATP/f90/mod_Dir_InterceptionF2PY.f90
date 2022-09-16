@@ -326,6 +326,7 @@ endif
 
  real :: p0(nraymax),p(nraymax),pini(nraymax)
  real :: sortdelascene(nraymax)    ! 1 if the beam enters the scene, 0 if not
+ real :: downlayer(nraymax)    ! 1 if the beam downs one layer, 0 if not
  real :: dzp(nraymax)
  integer :: num(nraymax),jxnum(nraymax),jynum(nraymax),jznum(nraymax)
 
@@ -359,93 +360,94 @@ endif
   jznum(1)=jz
 
   sortdelascene=0.
+  downlayer=0.
 
   do while (jz.lt.njz+1)  ! while the beam does not reach the soil surface
+    nx=jvx+int((sign(1.,oax)-1.)/2.)
+    ny=jvy+int((sign(1.,oay)-1.)/2.)
+    xlx= abs((real(nx)*dx-x0)/oax)
+    xly= abs((real(ny)*dy-y0)/oay)
+    xlz= abs((dzz-z0)/oaz)
+    xlt=amin1(xlx,xly,xlz)
+    x1=x0+xlt*oax     ! co-ordinates of the beam output point
+    y1=y0+xlt*oay
+    z1=z0+xlt*oaz
+    dzp(kt)=z1-z0     ! foliage thickness crossed by the beam in voxel kt
 
-   nx=jvx+int((sign(1.,oax)-1.)/2.)
-   ny=jvy+int((sign(1.,oay)-1.)/2.)
-   xlx= abs((real(nx)*dx-x0)/oax)
-   xly= abs((real(ny)*dy-y0)/oay)
-   xlz= abs((dzz-z0)/oaz)
-   xlt=amin1(xlx,xly,xlz)
-   x1=x0+xlt*oax     ! co-ordinates of the beam output point
-   y1=y0+xlt*oay
-   z1=z0+xlt*oaz
-   dzp(kt)=z1-z0     ! foliage thickness crossed by the beam in voxel kt
-
-   if (xlt.eq.xlx) then      ! voxel indices of next visited voxel
-    jvx=jvx+int(sign(1.,oax))
-    jx=jx+int(sign(1.,oax))
-   endif
-   if (xlt.eq.xly) then
-    jvy=jvy+int(sign(1.,oay))
-    jy=jy+int(sign(1.,oay))
-   endif
-   if (xlt.eq.xlz) then
-    jz=jz+1
-    dzz=dzz+dz(jz)
-   endif
-   x0=x1
-   y0=y1
-   z0=z1
-
-!   Normalising voxel indices in case of beam output from the 3D grid
-!   The scene is assumed infinite, ie the beam enters the 3D grid from the opposite side
-
-   if (jx.gt.njx) then
-    jx=jx-njx
-    jy=jy-idecaly
-!    Decalage de jy si les mailles ne sont pas alignees (quinconce)
-    if (isolated_box) then
-    !sortdelascene(kt)=abs(1.*isolated_box)  ! Rem:  .TRUE.=-1 and .FALSE.=0
-     sortdelascene(kt)=1
-    else
-     sortdelascene(kt)=0
+    if (xlt.eq.xlx) then      ! voxel indices of next visited voxel
+      jvx=jvx+int(sign(1.,oax))
+      jx=jx+int(sign(1.,oax))
     endif
-   endif
-   if (jx.lt.1) then
-    jx=jx+njx
-    jy=jy-idecaly
-!    Decalage de jy si les mailles ne sont pas alignees (quinconce)
-    if (isolated_box) then
-    !sortdelascene(kt)=abs(1.*isolated_box)  ! Rem:  .TRUE.=-1 and .FALSE.=0
-     sortdelascene(kt)=1
-    else
-     sortdelascene(kt)=0
+    if (xlt.eq.xly) then
+      jvy=jvy+int(sign(1.,oay))
+      jy=jy+int(sign(1.,oay))
     endif
-   endif
-   if (jy.gt.njy) then
-    jy=jy-njy
-    if (isolated_box) then
-    !sortdelascene(kt)=abs(1.*isolated_box)  ! Rem:  .TRUE.=-1 and .FALSE.=0
-     sortdelascene(kt)=1
-    else
-     sortdelascene(kt)=0
+    if (xlt.eq.xlz) then
+      jz=jz+1
+      dzz=dzz+dz(jz)
+      ! if we down one layer
+      downlayer(kt) = 1
     endif
-   endif
-   if (jy.lt.1) then
-    jy=jy+njy
-    if (isolated_box) then
-    !sortdelascene(kt)=abs(1.*isolated_box)  ! Rem:  .TRUE.=-1 and .FALSE.=0
-     sortdelascene(kt)=1
-    else
-     sortdelascene(kt)=0
+    x0=x1
+    y0=y1
+    z0=z1
+
+    !   Normalising voxel indices in case of beam output from the 3D grid
+    !   The scene is assumed infinite, ie the beam enters the 3D grid from the opposite side
+
+    if (jx.gt.njx) then
+      jx=jx-njx
+      jy=jy-idecaly
+      !    Decalage de jy si les mailles ne sont pas alignees (quinconce)
+      if (isolated_box) then
+        !sortdelascene(kt)=abs(1.*isolated_box)  ! Rem:  .TRUE.=-1 and .FALSE.=0
+        sortdelascene(kt)=1
+      else
+        sortdelascene(kt)=0
+      endif
     endif
-   endif
+    if (jx.lt.1) then
+      jx=jx+njx
+      jy=jy-idecaly
+      !    Decalage de jy si les mailles ne sont pas alignees (quinconce)
+      if (isolated_box) then
+        !sortdelascene(kt)=abs(1.*isolated_box)  ! Rem:  .TRUE.=-1 and .FALSE.=0
+        sortdelascene(kt)=1
+      else
+        sortdelascene(kt)=0
+      endif
+    endif
+    if (jy.gt.njy) then
+      jy=jy-njy
+      if (isolated_box) then
+        !sortdelascene(kt)=abs(1.*isolated_box)  ! Rem:  .TRUE.=-1 and .FALSE.=0
+        sortdelascene(kt)=1
+      else
+        sortdelascene(kt)=0
+      endif
+    endif
+    if (jy.lt.1) then
+      jy=jy+njy
+      if (isolated_box) then
+        !sortdelascene(kt)=abs(1.*isolated_box)  ! Rem:  .TRUE.=-1 and .FALSE.=0
+        sortdelascene(kt)=1
+      else
+        sortdelascene(kt)=0
+      endif
+    endif
 
-   !write(*,*) 'kt=',kt,'jx=',jx,'jy=',jy,'jz=',jz
+    !write(*,*) 'kt=',kt,'jx=',jx,'jy=',jy,'jz=',jz
 
-   kt=kt+1
-   if (kt.gt.nraymax) then
-    !write(*,*) 'Fin intempestive dans Beampath'
-    !write(*,*) 'Too much voxels crossed by the beam (>',nraymax,')'
-    return
-   endif
+    kt=kt+1
+    if (kt.gt.nraymax) then
+      !write(*,*) 'Fin intempestive dans Beampath'
+      !write(*,*) 'Too much voxels crossed by the beam (>',nraymax,')'
+      return
+    endif
 
-   jxnum(kt)=jx
-   jynum(kt)=jy
-   jznum(kt)=jz
-
+    jxnum(kt)=jx
+    jynum(kt)=jy
+    jznum(kt)=jz
   end do ! (while (jz.lt.njz+1)
 
   ktm=kt
@@ -460,39 +462,37 @@ endif
 !  r0s=(dpx*dpy)/(dx*dy)*omega0/(2.*pi)
   r0s=(dpx*dpy)/(dx*dy)*oaz*omega0/pi
   do jxx=1,njx
-  do jyy=1,njy
-   do kt=1,ktm   ! Storing voxel id. in variable num(kt)
-    jz=jznum(kt)
-    jx=jxnum(kt)+jxx-1
-    if (jx.gt.njx) jx=jx-njx
-    jy=jynum(kt)+jyy-1
-    if (jy.gt.njy) jy=jy-njy
-
-    ! write(*,*) 'jx,jy,jz,num(kt)=kxyz(jx,jy,jz) :',jx,jy,jz,kxyz(jx,jy,jz)
-
-    num(kt)=kxyz(jx,jy,jz)
-   end do  ! do-loop KT=1,KTM
-   do kt=1,ktm-1      ! Computing light interception properties of grid voxels
-    ft=xk(num(kt))*dzp(kt)
-    p0(kt)=exp(-ft)
-    p(kt)=1.-p0(kt)
-    ! write(*,*)"xk",xk(num(kt)),"dz",dzp(kt),"p0",p0(kt),"1-p0",p(kt)
-    if (ft.ne.0.) then
-     pini(kt)=p(kt)/ft
-    else
-     pini(kt)=0.
-    endif
-    !write(*,*)"pini",pini(kt),num(kt)
-   end do  ! do-loop KT=1,KTM-1
+    do jyy=1,njy
+      do kt=1,ktm   ! Storing voxel id. in variable num(kt)
+        jz=jznum(kt)
+        jx=jxnum(kt)+jxx-1
+        if (jx.gt.njx) jx=jx-njx
+        jy=jynum(kt)+jyy-1
+        if (jy.gt.njy) jy=jy-njy
+        ! write(*,*) 'jx,jy,jz,num(kt)=kxyz(jx,jy,jz) :',jx,jy,jz,kxyz(jx,jy,jz)
+        num(kt)=kxyz(jx,jy,jz)
+      end do  ! do-loop KT=1,KTM
+    do kt=1,ktm-1      ! Computing light interception properties of grid voxels
+      ft=xk(num(kt))*dzp(kt)
+      p0(kt)=exp(-ft)
+      p(kt)=1.-p0(kt)
+      ! write(*,*)"xk",xk(num(kt)),"dz",dzp(kt),"p0",p0(kt),"1-p0",p(kt)
+      if (ft.ne.0.) then
+        pini(kt)=p(kt)/ft
+      else
+        pini(kt)=0.
+      endif
+      !write(*,*)"pini",pini(kt),num(kt)
+    end do  ! do-loop KT=1,KTM-1
 !
 !     1- Facteurs de forme entre ciel et tubes
 !
    r0=r0c
    do kt=1,ktm-1
     riv(num(kt))=riv(num(kt))+r0*p(kt)
+    ! transmitted light downwise direction
+    rtv(num(kt))=rtv(num(kt))+r0*p0(kt)*downlayer(kt)
     r0=amax1(r0*p0(kt),sortdelascene(kt)*r0c)
-    rtv(num(kt))=rtv(num(kt))+r0*p0(kt)
-    !write(*,*)"sortscene",sortdelascene(kt)  
    end do
    ris(num(ktm))=ris(num(ktm))+r0
 

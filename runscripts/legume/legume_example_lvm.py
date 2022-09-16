@@ -66,7 +66,7 @@ def simulation(foldin, foldout, active, passive, ratpgeo, writegeo=False,triangl
         environment["direct"] = False
         environment["reflected"] = False
         environment["reflectance coefficients"] = [[0., 0.]]
-        environment["infinite"] = False
+        environment["infinite"] = True
 
         if ratpgeo == "grid":
             ## PARAMETRES RATP scene grille l-egume ##
@@ -97,8 +97,7 @@ def simulation(foldin, foldout, active, passive, ratpgeo, writegeo=False,triangl
     # début de la simulation
     for i in range(nb_iter+1):
         print('time step: ',i)
-        if i==51:
-            print("stop")
+
         lstring = lsystem_simulations[sim_id].derive(lstring, i, 1)
 
         # récupère toutes les variables du lsystem
@@ -144,17 +143,7 @@ def simulation(foldin, foldout, active, passive, ratpgeo, writegeo=False,triangl
                 geometry["transformations"]["xyz orientation"] = ["y+ = y-"]
 
             lghtratp.init_scenes(geometry)
-            lghtratp.run(PARi=energy, day=doy, hour=hour, truesolartime=True, parunit="RG")     
-            # print(lghtratp.voxels_outputs)
-
-            # print("V \t X \t Y \t Z")
-            # v=0
-            # for iz in range(m_lais.shape[1]):
-            #     for iy in range(m_lais.shape[2]):
-            #         for ix in range(m_lais.shape[3]):
-            #             if m_lais[0][iz][iy][ix] > 0. :
-            #                 print("%i \t %i \t %i \t %i" % (v,ix,iy,iz))
-            #                 v+=1
+            lghtratp.run(PARi=energy, day=doy, hour=hour, truesolartime=True, parunit="RG")   
 
             if writegeo:
                 if ratpgeo == "grid":

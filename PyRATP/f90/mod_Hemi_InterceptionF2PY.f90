@@ -112,16 +112,16 @@ contains
 !  write(*,*) 'DEBUG: ARGS', azmoy(jdir)*180./pi 
 !  write(*,*) 'DEBUG: ARGS', omega(jdir),dpx0,dpy0,scattering,isolated_box
   
-   call di_doall(hmoy(jdir)*180./pi, azmoy(jdir)*180./pi, omega(jdir),dpx0,dpy0,scattering,isolated_box) 
+    call di_doall(hmoy(jdir)*180./pi, azmoy(jdir)*180./pi, omega(jdir),dpx0,dpy0,scattering,isolated_box) 
 
 !   Sky-vault integration of incident diffuse radiation interception
     do k=1,nveg
-        aa = pc(jdir) * riv(k)
-        at = pc(jdir) * rtv(k)
-        do je=1,nje(k)
-            rdiv(je,k) = rdiv(je,k) + aa * share(je,k)
-            rdtv(je,k) = rdtv(je,k) + at * share(je,k)
-        end do
+      aa = pc(jdir) * riv(k)
+      at = pc(jdir) * rtv(k)
+      do je=1,nje(k)
+        rdiv(je,k) = rdiv(je,k) + aa * share(je,k)
+        rdtv(je,k) = rdtv(je,k) + at * share(je,k)
+      end do
     end do
     do k=1,nsol
         rdis(k) = rdis(k) + pc(jdir) * ris(k)
@@ -129,13 +129,13 @@ contains
 
 !   STAR computations (from coefficients riv and share)
 
-   do k=1,nveg
-    do je=1, nje(k)
-     jent=nume(je,k)
-     STARsky_vt_vx(je,k) = STARsky_vt_vx(je,k) + riv(k)*share(je,k)* pc(jdir)
-    !  write(*,*)"rdiv",k,je,rdiv(je,k)
+    do k=1,nveg
+      do je=1, nje(k)
+        jent=nume(je,k)
+        STARsky_vt_vx(je,k) = STARsky_vt_vx(je,k) + riv(k)*share(je,k)* pc(jdir)
+        !  write(*,*)"rdtv",k,je,rdtv(je,k)
+      end do
     end do
-   end do
 
     !   Sky-vault integration of scattered radiation interception
     do ks=1,nveg   ! source = vegetated voxels
