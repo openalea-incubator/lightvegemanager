@@ -1638,10 +1638,13 @@ class LightVegeManager:
             mtg.property(param).update(dico_par[param])
 
     def to_l_egume(self, m_lais, energy) :
+        epsilon = 1e-14
+
         # transfert des sorties
         res_abs_i = np.zeros((m_lais.shape[0], m_lais.shape[1], m_lais.shape[2], m_lais.shape[3]))
         # si le voxel est vide, on considère le transmis comme ce qui sort d'une de ses surfaces
-        res_trans = np.ones((m_lais.shape[1], m_lais.shape[2], m_lais.shape[3])) * (energy * self.__ratp_scene.dx * self.__ratp_scene.dy)
+        dS = self.__ratp_scene.dx * self.__ratp_scene.dy
+        res_trans = np.ones((m_lais.shape[1], m_lais.shape[2], m_lais.shape[3])) * (energy * dS)
                 
         for ix in range(m_lais.shape[3]):
             for iy in range(m_lais.shape[2]):
@@ -1654,10 +1657,15 @@ class LightVegeManager:
                                                                     (self.__voxels_outputs.Ny==iy+1) & 
                                                                     (self.__voxels_outputs.Nz==iz+1)]
                     
-                        res_trans[legume_iz, iy, ix] = energy * sum(vox_data["transmitted"])
+                        res_trans[legume_iz, iy, ix] = energy * min(sum(vox_data["transmitted"]), dS)
+                        if sum(vox_data["transmitted"]) > dS : print("Warning : transmitted energy > dx.dy")
                         for ie in range(m_lais.shape[0]) :
                             if len(vox_data) > 0 :
-                                res_abs_i[ie, legume_iz, iy, ix] = energy * vox_data[vox_data.VegetationType == ie+1]["xintav"].values[0]
+                                if vox_data[vox_data.VegetationType == ie+1]["xintav"].values[0] > epsilon :
+                                    res_abs_i[ie, legume_iz, iy, ix] = energy * vox_data[vox_data.VegetationType == ie+1]["xintav"].values[0]
+                                # si le voxel est non vide, on fixe quand même une valeur min
+                                else:
+                                    res_abs_i[ie, legume_iz, iy, ix] = epsilon
 
         return res_trans, res_abs_i
 

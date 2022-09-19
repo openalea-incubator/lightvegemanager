@@ -2,6 +2,8 @@ import os, sys
 
 from openalea.lpy import *
 
+import numpy as np
+
 import legume
 # import des modules à partir du chemin local de legume
 path_ = os.path.dirname(os.path.abspath(legume.__file__))
@@ -57,9 +59,14 @@ def iteration_legume_withoutlighting(lsystem, res_trans, res_abs_i, tag_loop_inp
     res_rfr = local_res_rfr  # mise a jour variables globales
 
     # calul des interception feuille et ls_epsi plante
-    dicFeuilBilanR = sh.calc_paraF(dicFeuilBilanR, m_lais, res_abs_i)
-    ls_epsi, invar = loop.step_epsi(invar, res_trans, dicFeuilBilanR, meteo_j, surfsolref)
-
+    dicFeuilBilanR = sh.calc_paraF(dicFeuilBilanR, m_lais, res_abs_i, force_id_grid = 0)
+    sh.calc_para_Plt(invar, dicFeuilBilanR)
+    # ls_epsi, invar = loop.step_epsi(invar, res_trans, dicFeuilBilanR, meteo_j, surfsolref)
+    
+    # ls_epsi
+    transmi_sol = np.sum(res_trans[-1][:][:]) / (energy * surfsolref)
+    epsi = 1. - transmi_sol  # bon
+    ls_epsi = epsi * invar['parip'] / (np.sum(invar['parip']) + np.sum(invar['parip']) + 10e-15)
     print('epsi', sum(ls_epsi))
 
     ##########
@@ -112,7 +119,7 @@ def iteration_legume_withoutlighting(lsystem, res_trans, res_abs_i, tag_loop_inp
     lsystem.ls_mat_res = ls_mat_res
 
     lsystem.res_trans = res_trans
-    lsystem.res_abs_i = res_abs_i
+    lsystem.res_abs_i = np.array([res_abs_i[0]])
     lsystem.res_rfr = res_rfr
 
     lsystem.ls_ftswStress = ls_ftswStress
