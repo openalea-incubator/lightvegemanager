@@ -67,7 +67,8 @@ def iteration_legume_withoutlighting(lsystem, res_trans, res_abs_i, tag_loop_inp
     transmi_sol = np.sum(res_trans[-1][:][:]) / (energy * surfsolref)
     epsi = 1. - transmi_sol  # bon
     ls_epsi = epsi * invar['parip'] / (np.sum(invar['parip']) + np.sum(invar['parip']) + 10e-15)
-    print('epsi', sum(ls_epsi))
+    sumparap = 1 / (np.sum(invar['parip']) + np.sum(invar['parip']) + 10e-15)
+    print('epsi', sum(ls_epsi), sum(invar['parip']), sumparap,epsi)
 
     ##########
     # Step Potential plant growth

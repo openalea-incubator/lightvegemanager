@@ -473,10 +473,10 @@ subroutine do_all
  call cv_set
  !write(*,*)  '             ...   cv_set '
 
- dpx=dx/5.
- dpy=dy/5.
-!  dpx=dx
-!  dpy=dy
+!  dpx=dx/5.
+!  dpy=dy/5.
+ dpx=dx
+ dpy=dy
 
  if (int_scattering.eq.1)  then
   scattering=.TRUE.

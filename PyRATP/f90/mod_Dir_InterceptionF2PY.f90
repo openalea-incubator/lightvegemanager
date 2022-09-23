@@ -148,7 +148,7 @@ else
 endif
 
 ! do je=1,nent
-!   write(*,*) "xka", distinc(je,jinc), xka(je)
+!   write(*,*) "xka", je, distinc(je,jinc), xka(je)
 ! end do
 
 ! Calcul des coeff d'extinction de chaque voxel k: x
@@ -472,68 +472,68 @@ endif
         ! write(*,*) 'jx,jy,jz,num(kt)=kxyz(jx,jy,jz) :',jx,jy,jz,kxyz(jx,jy,jz)
         num(kt)=kxyz(jx,jy,jz)
       end do  ! do-loop KT=1,KTM
-    do kt=1,ktm-1      ! Computing light interception properties of grid voxels
-      ft=xk(num(kt))*dzp(kt)
-      p0(kt)=exp(-ft)
-      p(kt)=1.-p0(kt)
-      ! write(*,*)"xk",xk(num(kt)),"dz",dzp(kt),"p0",p0(kt),"1-p0",p(kt)
-      if (ft.ne.0.) then
-        pini(kt)=p(kt)/ft
-      else
-        pini(kt)=0.
-      endif
-      !write(*,*)"pini",pini(kt),num(kt)
-    end do  ! do-loop KT=1,KTM-1
+      do kt=1,ktm-1      ! Computing light interception properties of grid voxels
+        ft=xk(num(kt))*dzp(kt)
+        p0(kt)=exp(-ft)
+        p(kt)=1.-p0(kt)
+        ! write(*,*)"xk",xk(num(kt)),"dz",dzp(kt),"p0",p0(kt),"1-p0",p(kt)
+        if (ft.ne.0.) then
+          pini(kt)=p(kt)/ft
+        else
+          pini(kt)=0.
+        endif
+        !write(*,*)"pini",pini(kt),num(kt)
+      end do  ! do-loop KT=1,KTM-1
 !
 !     1- Facteurs de forme entre ciel et tubes
 !
-   r0=r0c
-   do kt=1,ktm-1
-    riv(num(kt))=riv(num(kt))+r0*p(kt)
-    ! transmitted light downwise direction
-    rtv(num(kt))=rtv(num(kt))+r0*p0(kt)*downlayer(kt)
-    r0=amax1(r0*p0(kt),sortdelascene(kt)*r0c)
-   end do
-   ris(num(ktm))=ris(num(ktm))+r0
+      r0=r0c
+      do kt=1,ktm-1
+        riv(num(kt))=riv(num(kt))+r0*p(kt)
+        ! transmitted light downwise direction
+        rtv(num(kt))=rtv(num(kt))+r0*p0(kt)*downlayer(kt)
+        r0=amax1(r0*p0(kt),sortdelascene(kt)*r0c)
+      end do
+      ris(num(ktm))=ris(num(ktm))+r0
 
-   if (scattering) then
+      if (scattering) then
 
 !
 !     2- Facteurs de forme entre vegetated voxels et le reste
 !
-    do kts=1,ktm-1  ! For each voxel along the beam, as a potential source of scattered radiation
-     ks=num(kts)
+        do kts=1,ktm-1  ! For each voxel along the beam, as a potential source of scattered radiation
+        ks=num(kts)
 
-     if (ks.gt.0) then
+        if (ks.gt.0) then
 
-      r00=r00v*dzp(kts)/dz(numz(ks))
-      ffvvb(ks,ks)=ffvvb(ks,ks) + r00 * 2.*(1-pini(kts))
+          r00=r00v*dzp(kts)/dz(numz(ks))
+          ffvvb(ks,ks)=ffvvb(ks,ks) + r00 * 2.*(1-pini(kts))
 
-!      Downward flux
+    !      Downward flux
 
-      r0=pini(kts)*r00
-      if (kts.ne.ktm-1) then
-       do ktr=kts+1,ktm-1
-        ffvvb(num(ktr),ks)=ffvvb(num(ktr),ks) + r0 * p(ktr)
-        r0=r0*p0(ktr)
-       end do
-      endif
-      ffsvb(num(ktm),ks)=ffsvb(num(ktm),ks) + r0
+          r0=pini(kts)*r00
+          if (kts.ne.ktm-1) then
+          do ktr=kts+1,ktm-1
+            ffvvb(num(ktr),ks)=ffvvb(num(ktr),ks) + r0 * p(ktr)
+            r0=r0*p0(ktr)
+          end do
+          endif
+          ffsvb(num(ktm),ks)=ffsvb(num(ktm),ks) + r0
 
-!      Upward flux
+    !      Upward flux
 
-      r0=pini(kts)*r00
-      if (kts.ne.1) then
-       do ktr=kts-1,1,-1
-        ffvvb(num(ktr),ks)=ffvvb(num(ktr),ks) + r0 * p(ktr)
-        r0=r0*p0(ktr)
-       end do
-      endif
-      ffcvb(ks)=ffcvb(ks) + r0
+          r0=pini(kts)*r00
+          if (kts.ne.1) then
+          do ktr=kts-1,1,-1
+            ffvvb(num(ktr),ks)=ffvvb(num(ktr),ks) + r0 * p(ktr)
+            r0=r0*p0(ktr)
+          end do
+          endif
+          ffcvb(ks)=ffcvb(ks) + r0
 
-     endif  ! if (ks.gt.0)
+        endif  ! if (ks.gt.0)
 
-    end do  ! do kts=1,ktm-1
+        end do  ! do kts=1,ktm-1
 
 
 !

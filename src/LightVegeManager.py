@@ -950,7 +950,7 @@ class LightVegeManager:
                     else :
                         entities_param.append({
                                             'mu' : mu_ent,
-                                            'rf' : [0., 0.]
+                                            'rf' :o [0., 0.]
                                             })
                 vegetation = Vegetation.initialise(entities_param, pervoxel=True, distribvox=self.__ratp_distrib["voxel"])
 

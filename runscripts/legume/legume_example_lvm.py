@@ -1,9 +1,11 @@
+from ftplib import error_reply
 import sys
 import os
 import getopt
 import time
 
 import numpy as np
+import pandas as pd
 
 try :
     from src.LightVegeManager import *
@@ -61,7 +63,7 @@ def simulation(foldin, foldout, active, passive, ratpgeo, writegeo=False,triangl
         # Paramètres pré-simulation
         environment["names"] = ["l-egume"]
         environment["coordinates"] = [46.43,0,0] # latitude, longitude, timezone
-        environment["sky"] = ["file", "runscripts/legume/sky_5.data"] # ["file", "runscripts/legume/sky_5.data"] # "turtle46" # turtle à 46 directions par défaut
+        environment["sky"] = "turtle46" # ["file", "runscripts/legume/sky_5.data"] # "turtle46" # turtle à 46 directions par défaut
         environment["diffus"] = True
         environment["direct"] = False
         environment["reflected"] = False
@@ -94,9 +96,26 @@ def simulation(foldin, foldout, active, passive, ratpgeo, writegeo=False,triangl
                                             lightmodel_parameters=ratp_parameters_plantgl,
                                             main_unit="m")
 
+        l_epsi_passive = []
+
+    # tableau de comparaison entre riri et ratp
+    trans_min_diff_vox = []
+    trans_max_diff_vox = []
+    trans_mean_diff_vox = []
+    trans_median_diff_vox = []
+    trans_sd_diff_vox = []
+    abs_min_diff_vox = []
+    abs_max_diff_vox = []
+    abs_mean_diff_vox = []
+    abs_median_diff_vox = []
+    abs_sd_diff_vox = []
+
     # début de la simulation
     for i in range(nb_iter+1):
         print('time step: ',i)
+
+        if i == 90:
+            print("spot")
 
         lstring = lsystem_simulations[sim_id].derive(lstring, i, 1)
 
@@ -165,16 +184,80 @@ def simulation(foldin, foldout, active, passive, ratpgeo, writegeo=False,triangl
             # mise a jour de res_trans, res_abs_i, res_rfr, ls_epsi
             res_trans, res_abs_i = riri.calc_extinc_allray_multi_reduced(*tag_light_inputs, optsky=station['optsky'], opt=station['sky'])
 
-        elif active=="ratp":
+        if active=="ratp" or passive=="ratp":
             # transfert des sorties
-            res_trans, res_abs_i = lghtratp.to_l_egume(m_lais, energy)
+            res_trans_2, res_abs_i_2 = lghtratp.to_l_egume(m_lais, energy)
+
+            if active=="ratp":
+                res_trans, res_abs_i = res_trans_2, res_abs_i_2
+            elif passive=="ratp":
+                # calcul du epsi
+                nblignes = len(dicFeuilBilanR['nump']) #- 1
+                temp_paraf = []
+                if nblignes > 0:
+                    for i in range(nblignes):
+                        surf = dicFeuilBilanR['surf'][i]
+                        vox = [dicFeuilBilanR['Vox0'][i], dicFeuilBilanR['Vox1'][i], dicFeuilBilanR['Vox2'][i]]
+                        sVOX = m_lais[0][vox[2]][vox[1]][vox[0]]
+                        paraF = res_abs_i_2[0][vox[2]][vox[1]][vox[0]] * surf / sVOX * 3600. * 24 / 1000000.
+                        temp_paraf.append(paraF)
+                # ls_epsi
+                transmi_sol = np.sum(res_trans_2[-1][:][:]) / (energy * surfsolref)
+                epsi = 1. - transmi_sol  # bon
+                ls_epsi = epsi * np.array(temp_paraf)/ (np.sum(np.array(temp_paraf)) + np.sum(np.array(temp_paraf)) + 10e-15)
+                l_epsi_passive.append(sum(ls_epsi))
+                print('epsi ratp passive', sum(ls_epsi))
+
+                # comparaison erreur relative
+                trans_err_diff = []
+                abs_err_diff = []
+                for ix in range(res_trans.shape[2]):
+                    for iy in range(res_trans.shape[1]):
+                        for iz in range(res_trans.shape[0]):
+                            if m_lais[0][iz][iy][ix] > 0:
+                                trans_err_diff.append(100*(res_trans[iz][iy][ix] - res_trans_2[iz][iy][ix])/res_trans[iz][iy][ix])
+                                abs_err_diff.append(100*(res_abs_i[0][iz][iy][ix] - res_abs_i_2[0][iz][iy][ix])/res_abs_i[0][iz][iy][ix])
+
+                trans_min_diff_vox.append(np.min(trans_err_diff))
+                trans_max_diff_vox.append(np.max(trans_err_diff))
+                trans_mean_diff_vox.append(np.mean(trans_err_diff))
+                trans_median_diff_vox.append(np.median(trans_err_diff))
+                # trans_sd_diff_vox.append(np.sd(trans_err_diff))
+                abs_min_diff_vox.append(np.min(abs_err_diff))
+                abs_max_diff_vox.append(np.max(abs_err_diff))
+                abs_mean_diff_vox.append(np.mean(abs_err_diff))
+                abs_median_diff_vox.append(np.median(abs_err_diff))
+                # abs_sd_diff_vox = []
+
 
         iteration_legume_withoutlighting(lsystem_simulations[sim_id], res_trans, res_abs_i, tag_loop_inputs, energy)
 
     print((''.join((sim_id, " - done"))))
+    print("simulation time : ", time.time() - start, " s")
+
+    # impression
+    if passive=="ratp":
+        df_ratp_passive = pd.DataFrame({
+                                            'var' : ['epsi']*(len(l_epsi_passive)-2),
+                                            'steps' : list(range(lsystem_simulations[sim_id].DOYdeb, lsystem_simulations[sim_id].DOYend-1)),
+                                            'epsi' : l_epsi_passive[:-2]
+                                        })
+        df_ratp_passive.to_csv(foldout+"outputs_ratp_passive.csv", index=False)
+
+        df_vox_compare = pd.DataFrame({
+                                            'trans min' : trans_min_diff_vox,
+                                            'trans max' : trans_max_diff_vox,
+                                            'trans mean' : trans_mean_diff_vox,
+                                            'trans median' : trans_median_diff_vox,
+                                            'abs min' : abs_min_diff_vox,
+                                            'abs max' : abs_max_diff_vox,
+                                            'abs mean' : abs_mean_diff_vox,
+                                            'abs median' : abs_median_diff_vox
+                                        })
+        df_vox_compare.to_csv(foldout+"diff_voxels_ratp_passive.csv", index=False)
 
     lsystem_simulations[sim_id].clear()
-    print("simulation time : ", time.time() - start, " s")
+
 
 if __name__ == "__main__":
     #definition d'arguments avec getopt
@@ -185,10 +268,10 @@ if __name__ == "__main__":
         sys.exit(2)
 
     # valeur par défaut
-    foldin = "C:/Users/mwoussen/cdd/codes/vegecouplelight/l-egume/legume/input/"
-    foldout = "C:/Users/mwoussen/cdd/codes/vegecouplelight/outputs/legume/"
-    active = "ratp" # legume ou ratp
-    passive = "legume" # legume ou ratp
+    foldin = "l-egume/legume/input/"
+    foldout = "outputs/legume/"
+    active = "legume" # legume ou ratp
+    passive = "ratp" # legume ou ratp
     ratpgeo = "grid" # grid ou plantgl
     writegeo = "n" # "y" ou "no"
     triangles = "y"
