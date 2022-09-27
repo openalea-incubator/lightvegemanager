@@ -148,7 +148,7 @@ else
 endif
 
 ! do je=1,nent
-!   write(*,*) "xka", je, distinc(je,jinc), xka(je)
+!   write(*,*) "xka", xka(je)
 ! end do
 
 ! Calcul des coeff d'extinction de chaque voxel k: x
@@ -165,6 +165,7 @@ endif
     do je=1,nje(k)
       if (.NOT. pervoxel) then
         share(je,k) = xka(nume(je,k)) * leafareadensity(je,k) *mu(nume(je,k))  ! Inclusion of a leaf dispersion parameter   (done on 11 March 2008)
+        ! write(*,*) "lad",k,je,leafareadensity(je,k)
       else
         share(je,k) = xkavox(k, je) * leafareadensity(je,k) *mu(nume(je,k))  ! Inclusion of a leaf dispersion parameter per voxel   (done on 06 April 2022)
       endif
@@ -173,6 +174,7 @@ endif
     end do
     do je=1,nje(k)
       share(je,k) = share(je,k) / xk(k) ! sharing coefficient
+      ! write(*,*)"xk",k,xk(k)
     end do
   end do
 
@@ -377,10 +379,12 @@ endif
     if (xlt.eq.xlx) then      ! voxel indices of next visited voxel
       jvx=jvx+int(sign(1.,oax))
       jx=jx+int(sign(1.,oax))
+      downlayer(kt) = 0
     endif
     if (xlt.eq.xly) then
       jvy=jvy+int(sign(1.,oay))
       jy=jy+int(sign(1.,oay))
+      downlayer(kt) = 0
     endif
     if (xlt.eq.xlz) then
       jz=jz+1
@@ -436,7 +440,7 @@ endif
       endif
     endif
 
-    !write(*,*) 'kt=',kt,'jx=',jx,'jy=',jy,'jz=',jz
+    ! write(*,*) 'kt=',kt,'jx=',jx,'jy=',jy,'jz=',jz
 
     kt=kt+1
     if (kt.gt.nraymax) then
@@ -492,6 +496,7 @@ endif
         riv(num(kt))=riv(num(kt))+r0*p(kt)
         ! transmitted light downwise direction
         rtv(num(kt))=rtv(num(kt))+r0*p0(kt)*downlayer(kt)
+        ! write(*,*) "riv",kt,num(kt), riv(num(kt)),rtv(num(kt))
         r0=amax1(r0*p0(kt),sortdelascene(kt)*r0c)
       end do
       ris(num(ktm))=ris(num(ktm))+r0

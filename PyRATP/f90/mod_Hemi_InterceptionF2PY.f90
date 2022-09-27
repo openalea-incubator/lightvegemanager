@@ -121,6 +121,7 @@ contains
       do je=1,nje(k)
         rdiv(je,k) = rdiv(je,k) + aa * share(je,k)
         rdtv(je,k) = rdtv(je,k) + at * share(je,k)
+        ! write(*,*)"inter",k,je,rdiv(je,k),rdtv(je,k),aa,pc(jdir),riv(k),rtv(k)
       end do
     end do
     do k=1,nsol

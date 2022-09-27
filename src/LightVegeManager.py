@@ -793,6 +793,7 @@ class LightVegeManager:
 
                 # initialisation de la grille
                 # si pas de rayonnement réfléchi on annules la réflexion du sol
+                # on ajoute une couche au-dessus
                 if self.__in_environment["reflected"] :
                     mygrid = grid.Grid.initialise(nx, ny, nz, 
                                                     dx, dy, dz,
@@ -815,6 +816,7 @@ class LightVegeManager:
                                                     toric=self.__in_environment["infinite"])
 
                 # remplissage des voxels avec la grille 
+                # test : rotation de +90 du plan xy
                 n_vox_per_nent = []
                 for ne in range(nent-nent_triangles):
                     k=0
@@ -822,25 +824,30 @@ class LightVegeManager:
                         for iy in range(ny):
                             for iz in range(nz):
                                 legume_iz = iz + self.__legume_nb0
-                                s_entity = 0
-                                for kt in range(self.__in_geometry["scenes"][self.__id_legume_scene]["LA"].shape[0]) : 
-                                    s_entity+=self.__in_geometry["scenes"][self.__id_legume_scene]["LA"][kt][legume_iz][iy][ix]
-                                if s_entity > 0. :
-                                    mygrid.kxyz[ix, iy, iz] = k + 1 #ajouter 1 pour utilisation f90
-                                    mygrid.numx[k] = ix + 1 #ajouter 1 pour utilisation f90
-                                    mygrid.numy[k] = iy + 1 #ajouter 1 pour utilisation f90
-                                    mygrid.numz[k] = iz + 1 #ajouter 1 pour utilisation f90
-                                    mygrid.nume[ne,k] = ne + 1
-                                    mygrid.nje[k] = max(ne + 1, mygrid.nje[k])
-                                    mygrid.nemax = max(mygrid.nemax, mygrid.nje[k])
+                                # s_entity = 0
+                                # for kt in range(self.__in_geometry["scenes"][self.__id_legume_scene]["LA"].shape[0]) : 
+                                #     s_entity+=self.__in_geometry["scenes"][self.__id_legume_scene]["LA"][kt][legume_iz][iy][ix]
 
-                                    mygrid.leafareadensity[ne,k] += self.__in_geometry["scenes"][self.__id_legume_scene]["LA"][ne][legume_iz][iy][ix] / (dx * dy * dz)
-                                    mygrid.s_vt_vx[ne,k] += self.__in_geometry["scenes"][self.__id_legume_scene]["LA"][ne][legume_iz][iy][ix]
-                                    mygrid.s_vx[k] += self.__in_geometry["scenes"][self.__id_legume_scene]["LA"][ne][legume_iz][iy][ix]
-                                    mygrid.s_vt[ne] += self.__in_geometry["scenes"][self.__id_legume_scene]["LA"][ne][legume_iz][iy][ix]
-                                    mygrid.s_canopy += self.__in_geometry["scenes"][self.__id_legume_scene]["LA"][ne][legume_iz][iy][ix]
+                                # if s_entity > 0. : 
+
+                                # on force les voxels vides à être interpréter par RATP
+                                S_voxel = max(1e-14, self.__in_geometry["scenes"][self.__id_legume_scene]["LA"][ne][legume_iz][iy][ix])
+
+                                mygrid.kxyz[ny-(iy+1), ix, iz] = k + 1 #ajouter 1 pour utilisation f90
+                                mygrid.numx[k] = (ny-(iy+1)) + 1 #ajouter 1 pour utilisation f90
+                                mygrid.numy[k] = ix + 1 #ajouter 1 pour utilisation f90
+                                mygrid.numz[k] = iz + 1 #ajouter 1 pour utilisation f90
+                                mygrid.nume[ne,k] = ne + 1
+                                mygrid.nje[k] = max(ne + 1, mygrid.nje[k])
+                                mygrid.nemax = max(mygrid.nemax, mygrid.nje[k])
+
+                                mygrid.leafareadensity[ne,k] += S_voxel / (dx * dy * dz)
+                                mygrid.s_vt_vx[ne,k] += S_voxel
+                                mygrid.s_vx[k] += S_voxel
+                                mygrid.s_vt[ne] += S_voxel
+                                mygrid.s_canopy += S_voxel
                                     
-                                    k=k+1
+                                k=k+1
                     n_vox_per_nent.append(k)
 
                 mygrid.nveg=max(n_vox_per_nent)
@@ -857,6 +864,17 @@ class LightVegeManager:
                         if  mygrid.s_vt_vx[je,k] > 0. :
                             mygrid.volume_canopy[mygrid.nume[je,k] - 1] = mygrid.volume_canopy[mygrid.nume[je,k] - 1] + dx * dy * dz
                             mygrid.voxel_canopy[mygrid.nume[je,k] - 1] = mygrid.voxel_canopy[mygrid.nume[je,k] - 1] + 1
+                
+                # print("verif transfert LA : l-egume: %.6f ratp: %.6f " % (np.sum(self.__in_geometry["scenes"][self.__id_legume_scene]["LA"]), mygrid.s_canopy))
+                # leg_nve=0
+                # for ix in range(self.__in_geometry["scenes"][self.__id_legume_scene]["LA"].shape[3]):
+                #         for iy in range(self.__in_geometry["scenes"][self.__id_legume_scene]["LA"].shape[2]):
+                #             for iz in range(self.__in_geometry["scenes"][self.__id_legume_scene]["LA"].shape[1]):
+                #                 s_entity = 0
+                #                 for kt in range(self.__in_geometry["scenes"][self.__id_legume_scene]["LA"].shape[0]) : 
+                #                     s_entity+=self.__in_geometry["scenes"][self.__id_legume_scene]["LA"][kt][iz][iy][ix]
+                #                 if s_entity>0 : leg_nve += 1
+                # print("nb voxels : l-egume: %i ratp: %i " % (leg_nve, mygrid.nveg))
                 
                 if self.__my_scene :
                     # complète avec la liste de triangles
@@ -950,7 +968,7 @@ class LightVegeManager:
                     else :
                         entities_param.append({
                                             'mu' : mu_ent,
-                                            'rf' :o [0., 0.]
+                                            'rf' : [0., 0.]
                                             })
                 vegetation = Vegetation.initialise(entities_param, pervoxel=True, distribvox=self.__ratp_distrib["voxel"])
 
@@ -1518,6 +1536,11 @@ class LightVegeManager:
     @property
     def maxtrianglearea(self):
         return self.__maxtrarea
+  
+    @property
+    def legume_empty_layers(self):
+        return self.__legume_nb0
+
 
     @property
     def tesselationtime(self):
@@ -1650,15 +1673,17 @@ class LightVegeManager:
             for iy in range(m_lais.shape[2]):
                 for iz in range(self.__ratp_scene.njz):
                     legume_iz = iz + self.__legume_nb0
+
+                    vox_data = self.__voxels_outputs[(self.__voxels_outputs.Nx==m_lais.shape[2] - iy) & 
+                                                                    (self.__voxels_outputs.Ny==ix+1) & 
+                                                                    (self.__voxels_outputs.Nz==iz+1)]
+                    
+                    res_trans[legume_iz, iy, ix] = energy * min(sum(vox_data["transmitted"]), dS)
+                    # if sum(vox_data["transmitted"]) > dS : print("Warning : transmitted energy > dx.dy")
+
                     s_entity = 0
                     for k in range(m_lais.shape[0]) : s_entity+=m_lais[k][legume_iz][iy][ix]
                     if s_entity > 0. :
-                        vox_data = self.__voxels_outputs[(self.__voxels_outputs.Nx==ix+1) & 
-                                                                    (self.__voxels_outputs.Ny==iy+1) & 
-                                                                    (self.__voxels_outputs.Nz==iz+1)]
-                    
-                        res_trans[legume_iz, iy, ix] = energy * min(sum(vox_data["transmitted"]), dS)
-                        if sum(vox_data["transmitted"]) > dS : print("Warning : transmitted energy > dx.dy")
                         for ie in range(m_lais.shape[0]) :
                             if len(vox_data) > 0 :
                                 if vox_data[vox_data.VegetationType == ie+1]["xintav"].values[0] > epsilon :
@@ -1666,7 +1691,7 @@ class LightVegeManager:
                                 # si le voxel est non vide, on fixe quand même une valeur min
                                 else:
                                     res_abs_i[ie, legume_iz, iy, ix] = epsilon
-
+                    
         return res_trans, res_abs_i
 
     def VTKinit(self, path, plantnames=[], planttrianglevalues=[], printtriangles=True):
@@ -1767,11 +1792,16 @@ class LightVegeManager:
             RATP2VTK.RATPVOXELS2VTK(self.__ratp_scene, para, "PARa", path+"PARa_voxels.vtk")
 
     @staticmethod
-    def PlantGL_to_VTK(scene, ite, path):
+    def PlantGL_to_VTK(scene, ite, path, in_unit="m", out_unit="m"):
+        units = {'mm': 0.001, 'cm': 0.01, 'dm': 0.1, 'm': 1, 'dam': 10, 'hm': 100,'km': 1000}
         triangleslist=[]
+        rescale=False
+        if (in_unit != out_unit) : rescale=True
+            
         for id, pgl_objects in scene.todict().items():           
             tri_list = list(itertools.chain(*[pgl_to_triangles(pgl_object) for pgl_object in pgl_objects]))
             for tr in tri_list:
+                if rescale : tr.rescale(units[in_unit]/units[out_unit])
                 tr.set_id(0)
             triangleslist.extend(tri_list)
 

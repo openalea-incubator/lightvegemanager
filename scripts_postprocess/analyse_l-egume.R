@@ -1,11 +1,11 @@
 library(ggplot2)
 
 # se place dans le dossier
-setwd('C:/Users/mngauthier/mwoussen_2022/postprocess_legume_ratp')
+setwd('C:/Users/mwoussen/cdd/codes/vegecouplelight/outputs/ratp_legume_postprocessing')
 
 legume_default <- read.table('toto_17112_l-egume_seul.csv', sep=';',stringsAsFactors = FALSE)
-legume_ratp <- read.table('toto_17112_l-egume_ratp_1.csv', sep=';', stringsAsFactors = FALSE)
-legume_ratp_passive <- read.table('outputs_ratp_passive.csv', sep=',', stringsAsFactors = TRUE)
+legume_ratp <- read.table('toto_17112_l-egume_ratp_8.csv', sep=';', stringsAsFactors = FALSE)
+legume_ratp_passive <- read.table('outputs_ratp_passive_2.csv', sep=',', stringsAsFactors = TRUE)
 
 # trace des graphes
 # inputs : 
@@ -29,7 +29,7 @@ plot_dataframe_canopy <- function(variable, dataframe_list, name_list, t_start=-
     steps <- append(steps, sapply(dataframe_list[[i]][dataframe_list[[i]]$V1 == variable ,][,2], function(x) as.numeric(as.character(x))))
     names <- append(names, rep(name_list[[i]], length(dataframe_list[[i]][dataframe_list[[i]]$V1 == variable ,][,2])))
   }
-  df = data.frame(x=sapply(steps,c), values=sapply(values,c), light=sapply(names,c))
+  df <- data.frame(x=sapply(steps,c), values=sapply(values,c), light=sapply(names,c))
   if (t_start > -1)
   {
     if (t_end > -1)
@@ -46,7 +46,7 @@ plot_dataframe_canopy <- function(variable, dataframe_list, name_list, t_start=-
 # df <- plot_dataframe_canopy("epsi", list(legume_default, legume_ratp_passive), list("default", "ratp"))
 df <- plot_dataframe_canopy("epsi", list(legume_default, legume_ratp_passive), list("default", "ratp"))
 # df <- plot_dataframe_canopy("epsi", list(legume_ratp_passive), list("ratp"))
-df <- plot_dataframe_canopy("epsi", list(legume_default, legume_ratp, legume_ratp_passive), list("default", "ratp active", "ratp passive"))
+df <- plot_dataframe_canopy("epsi", list(legume_default, legume_ratp, legume_ratp_passive), list("default", "ratp active", "ratp passive"), 60, 180)
 
 p <- ggplot(data=df, aes(x=x, y=values, group=light)) + 
       geom_line(aes(color=light)) +
@@ -60,6 +60,16 @@ p
 df <- plot_dataframe_canopy("epsi", list(legume_default, legume_ratp_passive), list("default", "ratp"))
 # df <- plot_dataframe_canopy("epsi", list(legume_ratp_passive), list("ratp"))
 df <- plot_dataframe_canopy("epsi", list(legume_default, legume_ratp, legume_ratp_passive), list("default", "ratp active", "ratp passive"))
+
+p <- ggplot(data=df, aes(x=x, y=values, group=light)) + 
+  geom_line(aes(color=light)) +
+  ggtitle('Epsi sommé sur le couvert') +
+  xlab("DOY") +
+  ylab("epsi")
+p
+
+## PARaPlante ##
+df <- plot_dataframe_canopy("PARaplante", list(legume_default, legume_ratp), list("default", "ratp active"))
 
 p <- ggplot(data=df, aes(x=x, y=values, group=light)) + 
   geom_line(aes(color=light)) +
