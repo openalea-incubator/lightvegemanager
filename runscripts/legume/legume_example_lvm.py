@@ -62,6 +62,9 @@ def simulation(foldin, foldout, active, passive, ratpgeo, writegeo=False,triangl
         ratp_parameters_legume = {}
         ratp_parameters_plantgl = {}
 
+        # nombre d'entité à prendre en compte
+        nent = len(names_simulations)
+
         # Paramètres pré-simulation
         environment["names"] = ["l-egume"]
         environment["coordinates"] = [46.43,0,0] # latitude, longitude, timezone
@@ -69,14 +72,14 @@ def simulation(foldin, foldout, active, passive, ratpgeo, writegeo=False,triangl
         environment["diffus"] = True
         environment["direct"] = False
         environment["reflected"] = False
-        environment["reflectance coefficients"] = [[0., 0.]]
+        environment["reflectance coefficients"] = [[0., 0.]] * nent
         environment["infinite"] = True
 
         if ratpgeo == "grid":
             ## PARAMETRES RATP scene grille l-egume ##
             ratp_parameters_legume["voxel size"] = [d*0.01 for d in dxyz]
             ratp_parameters_legume["soil reflectance"] = [0., 0.]
-            ratp_parameters_legume["mu"] = [1.]
+            ratp_parameters_legume["mu"] = [1.] * nent
             ratp_parameters_legume["origin"] = [0., 0., 0.]
             ratp_parameters_legume["transmitted"] = True
 
@@ -247,10 +250,10 @@ if __name__ == "__main__":
     # valeur par défaut
     foldin = "l-egume/legume/input/"
     foldout = "outputs/legume/"
-    active = "legume" # legume ou ratp
+    active = "ratp" # legume ou ratp
     passive = "legume" # legume ou ratp
     ratpgeo = "grid" # grid ou plantgl
-    writegeo = "n" # "y" ou "no"
+    writegeo = "y" # "y" ou "no"
     triangles = "y"
 
     # récupère les arguments en entrée

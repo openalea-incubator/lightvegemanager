@@ -837,7 +837,7 @@ class LightVegeManager:
                             for iz in range(nz):
                                 legume_iz = iz + self.__legume_nb0
 
-                                # on force les voxels vides à être interpréter par RATP
+                                # on force les voxels vides dans les couches non vides à être interprétés par RATP
                                 S_voxel = max(1e-14, self.__in_geometry["scenes"][self.__id_legume_scene]["LA"][ne][legume_iz][iy][ix])
 
                                 mygrid.kxyz[ny-(iy+1), ix, iz] = k + 1 #ajouter 1 pour utilisation f90
@@ -1050,14 +1050,24 @@ class LightVegeManager:
                             erel_list.append(xintav[i])
                         else:
                             erel_list.append(0.)
+
+                    # liste des indices
+                    numx=[]
+                    numy=[]
+                    numz=[]
+                    for v in VoxelId :
+                        numx.append(self.__ratp_scene.numx[int(v)-1])
+                        numy.append(self.__ratp_scene.numy[int(v)-1])
+                        numz.append(self.__ratp_scene.numz[int(v)-1])
+
                     dfvox =  pandas.DataFrame({'VegetationType':VegetationType,
                                         'Iteration':Iteration,
                                         'day':day,
                                         'hour':hour,
                                         'VoxelId':VoxelId,
-                                        'Nx':self.__ratp_scene.numx[:self.__ratp_scene.nveg],
-                                        'Ny':self.__ratp_scene.numy[:self.__ratp_scene.nveg],
-                                        'Nz':self.__ratp_scene.numz[:self.__ratp_scene.nveg],
+                                        'Nx':numx,
+                                        'Ny':numy,
+                                        'Nz':numz,
                                         'ShadedPAR':ShadedPAR/4.6,
                                         'SunlitPAR':SunlitPAR/4.6,
                                         'ShadedArea':ShadedArea,
@@ -1788,18 +1798,27 @@ class LightVegeManager:
             RATP2VTK.RATPVOXELS2VTK(self.__ratp_scene, para, "PARa", path+"PARa_voxels.vtk")
 
     @staticmethod
-    def PlantGL_to_VTK(scene, ite, path, in_unit="m", out_unit="m"):
+    def PlantGL_to_VTK(scenes, ite, path, in_unit="m", out_unit="m"):
         units = {'mm': 0.001, 'cm': 0.01, 'dm': 0.1, 'm': 1, 'dam': 10, 'hm': 100,'km': 1000}
         triangleslist=[]
         rescale=False
         if (in_unit != out_unit) : rescale=True
-            
-        for id, pgl_objects in scene.todict().items():           
-            tri_list = list(itertools.chain(*[pgl_to_triangles(pgl_object) for pgl_object in pgl_objects]))
-            for tr in tri_list:
-                if rescale : tr.rescale(units[in_unit]/units[out_unit])
-                tr.set_id(0)
-            triangleslist.extend(tri_list)
+
+        if type(scenes) == list :
+            for s in scenes :   
+                for id, pgl_objects in s.todict().items():           
+                    tri_list = list(itertools.chain(*[pgl_to_triangles(pgl_object) for pgl_object in pgl_objects]))
+                    for tr in tri_list:
+                        if rescale : tr.rescale(units[in_unit]/units[out_unit])
+                        tr.set_id(0)
+                    triangleslist.extend(tri_list)
+        else :
+            for id, pgl_objects in scenes.todict().items():           
+                tri_list = list(itertools.chain(*[pgl_to_triangles(pgl_object) for pgl_object in pgl_objects]))
+                for tr in tri_list:
+                    if rescale : tr.rescale(units[in_unit]/units[out_unit])
+                    tr.set_id(0)
+                triangleslist.extend(tri_list)
 
         VTKtriangles(triangleslist, [], [], path+"triangles_plantgl_"+str(ite)+".vtk")
 
