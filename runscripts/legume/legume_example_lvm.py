@@ -31,17 +31,19 @@ def simulation(foldin, foldout, active, passive, ratpgeo, writegeo=False,triangl
     # prépare une liste de l-system à lancer
     lsystem_simulations, names_simulations = initialisation_legume(foldin, foldout, fusms, ongletBatch)
 
-    index_simulation = 0
-    sim_id = names_simulations[index_simulation]
-    lstring = lsystem_simulations[sim_id].axiom
-    nb_iter = lsystem_simulations[sim_id].derivationLength #lire dans derivation_length #335 #30
-    lsystem_simulations[sim_id].opt_external_coupling = 1 # met a un l'option external coupling
+    # initialisation pour chaque lsystem
+    nb_iter = lsystem_simulations[names_simulations[0]].derivationLength
+    lstring = []
+    for n in names_simulations :
+        lstring.append(lsystem_simulations[n].axiom)
+        #lire dans derivation_length #335 #30
+        lsystem_simulations[n].opt_external_coupling = 1 # met a un l'option external coupling
 
     # copie du lsystem pour récupérer la taille des voxels
-    lsys_temp = lsystem_simulations[sim_id]
-    lstring_temp = lsys_temp.derive(lstring, 0, 1)
+    lsys_temp = lsystem_simulations[names_simulations[0]]
+    lstring_temp = lsys_temp.derive(lstring[0], 0, 1)
     # récupère toutes les variables du lsystem
-    tag_loop_inputs = lsystem_simulations[sim_id].tag_loop_inputs
+    tag_loop_inputs = lsystem_simulations[names_simulations[0]].tag_loop_inputs
     invar, outvar, invar_sc, ParamP, \
         station, carto, meteo_j, mng_j,  \
         DOY, cutNB, start_time, nbplantes,  \
@@ -63,7 +65,7 @@ def simulation(foldin, foldout, active, passive, ratpgeo, writegeo=False,triangl
         # Paramètres pré-simulation
         environment["names"] = ["l-egume"]
         environment["coordinates"] = [46.43,0,0] # latitude, longitude, timezone
-        environment["sky"] = "turtle46" # ["file", "runscripts/legume/sky_5.data"] # "turtle46" # turtle à 46 directions par défaut
+        environment["sky"] = ["file", "runscripts/legume/sky_5.data"] #  # "turtle46" # turtle à 46 directions par défaut
         environment["diffus"] = True
         environment["direct"] = False
         environment["reflected"] = False
@@ -76,48 +78,40 @@ def simulation(foldin, foldout, active, passive, ratpgeo, writegeo=False,triangl
             ratp_parameters_legume["soil reflectance"] = [0., 0.]
             ratp_parameters_legume["mu"] = [1.]
             ratp_parameters_legume["origin"] = [0., 0., 0.]
+            ratp_parameters_legume["transmitted"] = True
 
             lghtratp = LightVegeManager(environment=environment,
                                             lightmodel="ratp",
                                             lightmodel_parameters=ratp_parameters_legume,
                                             main_unit="m")
-        elif ratpgeo == "plantgl":
-            ## PARAMETRES RATP scene PlantGL ##
-            ratp_parameters_plantgl["voxel size"] = [d*0.01 for d in dxyz]
-            ratp_parameters_plantgl["xy max"] = lsys_temp.cote
-            ratp_parameters_plantgl["soil reflectance"] = [0., 0.]
-            ratp_parameters_plantgl["mu"] = [1.]
-            ratp_parameters_plantgl["tesselation level"] = 2
-            ratp_parameters_plantgl["angle distrib algo"] = "file"
-            ratp_parameters_plantgl["angle distrib file"] = "runscripts/legume/luzerne_angle_distrib.data"
+        # elif ratpgeo == "plantgl":
+        #     ## PARAMETRES RATP scene PlantGL ##
+        #     ratp_parameters_plantgl["voxel size"] = [d*0.01 for d in dxyz]
+        #     ratp_parameters_plantgl["number voxels"] = [m_lais.shape[3], m_lais.shape[2], m_lais.shape[1]]
+        #     ratp_parameters_legume["origin"] = [0., 0., 0.]
+        #     ratp_parameters_plantgl["xy max"] = lsys_temp.cote
+        #     ratp_parameters_plantgl["soil reflectance"] = [0., 0.]
+        #     ratp_parameters_plantgl["mu"] = [1.]
+        #     ratp_parameters_plantgl["tesselation level"] = 2
+        #     ratp_parameters_plantgl["angle distrib algo"] = "file"
+        #     ratp_parameters_plantgl["angle distrib file"] = "runscripts/legume/luzerne_angle_distrib.data"
 
-            lghtratp = LightVegeManager(environment=environment,
-                                            lightmodel="ratp",
-                                            lightmodel_parameters=ratp_parameters_plantgl,
-                                            main_unit="m")
+        #     lghtratp = LightVegeManager(environment=environment,
+        #                                     lightmodel="ratp",
+        #                                     lightmodel_parameters=ratp_parameters_plantgl,
+        #                                     main_unit="m")
 
         l_epsi_passive = []
-
-    # tableau de comparaison entre riri et ratp
-    trans_min_diff_vox = []
-    trans_max_diff_vox = []
-    trans_mean_diff_vox = []
-    trans_median_diff_vox = []
-    trans_sd_diff_vox = []
-    abs_min_diff_vox = []
-    abs_max_diff_vox = []
-    abs_mean_diff_vox = []
-    abs_median_diff_vox = []
-    abs_sd_diff_vox = []
 
     # début de la simulation
     for i in range(nb_iter+1):
         print('time step: ',i)
 
-        lstring = lsystem_simulations[sim_id].derive(lstring, i, 1)
+        for k, n in enumerate(names_simulations):
+            lstring[k] = lsystem_simulations[n].derive(lstring[k], i, 1)
 
-        # récupère toutes les variables du lsystem
-        tag_loop_inputs = lsystem_simulations[sim_id].tag_loop_inputs
+        # récupère toutes les variables du lsystem (on retient seulement les variables communes)
+        tag_loop_inputs = lsystem_simulations[names_simulations[0]].tag_loop_inputs
         invar, outvar, invar_sc, ParamP, \
             station, carto, meteo_j, mng_j,  \
             DOY, cutNB, start_time, nbplantes,  \
@@ -129,9 +123,30 @@ def simulation(foldin, foldout, active, passive, ratpgeo, writegeo=False,triangl
             deltaI_I0, nbI_I0, I_I0profilLfPlant, I_I0profilPetPlant,  \
             I_I0profilInPlant, NlClasses, NaClasses, NlinClasses,  \
             opt_stressW, opt_stressN, opt_stressGel, opt_residu, dxyz = tag_loop_inputs    
+        
+        if len(names_simulations) > 1 :
+                    #gere difference de dsitib par especes
+            list_ls_dif = []
+            list_m_lais = []
+            for n in names_simulations:
+                list_ls_dif.append(lsystem_simulations[n].tag_loop_inputs[17])
+                list_m_lais.append(lsystem_simulations[n].tag_loop_inputs[13])
+            
+            same_entity = False
+            
+            for dis in list_ls_dif[1:]:
+                same_entity = (list_ls_dif[0][0] == dis[0]).all()
+            if same_entity : 
+                ls_dif = list_ls_dif[0][0]
+                m_lais = list_m_lais[0]
+                for m in list_m_lais[1:]: m_lais = m_lais + m
+            else:
+                ls_dif = list_ls_dif[0]
+                for d in list_ls_dif[1:]: ls_dif = ls_dif + d
+                m_lais = np.array([m[0] for m in list_m_lais])
 
         ## Paramètres météo ## 
-        doy = lsystem_simulations[sim_id].meteo["DOY"][i]
+        doy = DOY
         hour = 12
         energy = 0.48*meteo_j['RG']*10000/(3600*24)#flux PAR journalier moyen en W.m-2 / RG en j.cm-2
 
@@ -148,25 +163,26 @@ def simulation(foldin, foldout, active, passive, ratpgeo, writegeo=False,triangl
                 geometry["scenes"] = [scene_legume]
 
              # # Scene PlantGL feuilles
-            elif ratpgeo == "plantgl":
-                # # récupère la scène PlantGL
-                scene_plantgl = lsystem_simulations[sim_id].sceneInterpretation(lstring)
+            # elif ratpgeo == "plantgl":
+            #     # # récupère la scène PlantGL
+            #     scene_plantgl = lsystem_simulations[names_simulations[0]].sceneInterpretation(lstring)
 
-                geometry = {}
-                geometry["scenes"] = [scene_plantgl]
-                geometry["transformations"] = {}
-                geometry["transformations"]["scenes unit"] = ["cm"]
-                geometry["transformations"]["xyz orientation"] = ["y+ = y-"]
+            #     geometry = {}
+            #     geometry["scenes"] = [scene_plantgl]
+            #     geometry["transformations"] = {}
+            #     geometry["transformations"]["scenes unit"] = ["cm"]
+            #     geometry["transformations"]["xyz orientation"] = ["y+ = y-"]
 
             lghtratp.init_scenes(geometry)
-            lghtratp.run(PARi=energy, day=doy, hour=hour, truesolartime=True, parunit="RG")   
+            lghtratp.run(PARi=energy, day=doy, hour=hour, truesolartime=True, parunit="RG")
 
             if writegeo:
                 if ratpgeo == "grid":
                     lghtratp.VTKinit(foldout+"grid_"+str(i)+"_",printtriangles=False)
                     if triangles == "y":
-                        scene_plantgl = lsystem_simulations[sim_id].sceneInterpretation(lstring)
-                        lghtratp.PlantGL_to_VTK(scene_plantgl, i, foldout+"ratpgrid_", "cm")
+                        scenes_plantgl = [lsystem_simulations[names_simulations[0]].sceneInterpretation(lstring[0])]
+                        for k,n in enumerate(names_simulations[1:]) : scenes_plantgl.append(lsystem_simulations[n].sceneInterpretation(lstring[k]))
+                        lghtratp.PlantGL_to_VTK(scenes_plantgl, i, foldout+"ratpgrid_", "cm")
 
                 elif ratpgeo == "plantgl":
                     lghtratp.VTKinit(foldout+"plantgl_"+str(i)+"_")
@@ -187,103 +203,37 @@ def simulation(foldin, foldout, active, passive, ratpgeo, writegeo=False,triangl
 
             if active=="ratp":
                 res_trans, res_abs_i = res_trans_2, res_abs_i_2
-        #     elif passive=="ratp":
-        #         # calcul du epsi
-        #         dicFeuilBilanR = sh.calc_paraF(dicFeuilBilanR, m_lais, res_abs_i_2, force_id_grid = 0)
-        #         sh.calc_para_Plt(invar, dicFeuilBilanR)
-        #         # ls_epsi
-        #         transmi_sol = np.sum(res_trans_2[-1][:][:]) / (energy * surfsolref)
-        #         epsi = 1. - transmi_sol  # bon
-        #         ls_epsi = epsi * invar['parip'] / (np.sum(invar['parip']) + np.sum(invar['parip']) + 10e-15)
-        #         l_epsi_passive.append(sum(ls_epsi))
-        #         print('epsi ratp passive', sum(ls_epsi),'sum res_trans : ',np.sum(res_trans_2), "sum res_abs", np.sum(res_abs_i_2))
+            
+            # calcul du epsi sur les résultats de RATP (non utilisé dans la simulation)
+            elif passive=="ratp":
+                # calcul du epsi
+                dicFeuilBilanR = sh.calc_paraF(dicFeuilBilanR, m_lais, res_abs_i_2, force_id_grid = 0)
+                sh.calc_para_Plt(invar, dicFeuilBilanR)
+                # ls_epsi
+                transmi_sol = np.sum(res_trans_2[-1][:][:]) / (energy * surfsolref)
+                epsi = 1. - transmi_sol  # bon
+                ls_epsi = epsi * invar['parip'] / (np.sum(invar['parip']) + np.sum(invar['parip']) + 10e-15)
+                l_epsi_passive.append(sum(ls_epsi))
+                print('--- epsi ratp passive', sum(ls_epsi))
 
-        #         # comparaison erreur relative
-        #         trans_err_diff = []
-        #         abs_err_diff = []
-        #         for ix in range(res_trans.shape[2]):
-        #             for iy in range(res_trans.shape[1]):
-        #                 for iz in range(res_trans.shape[0]):
-        #                     if m_lais[0][iz][iy][ix] > 0:
-        #                         trans_err_diff.append(100*(res_trans[iz][iy][ix] - res_trans_2[iz][iy][ix])/res_trans[iz][iy][ix])
-        #                         abs_err_diff.append(100*(res_abs_i[0][iz][iy][ix] - res_abs_i_2[0][iz][iy][ix])/res_abs_i[0][iz][iy][ix])
+        iteration_legume_withoutlighting(i, lsystem_simulations, names_simulations, 
+                                        m_lais, res_trans, res_abs_i, 
+                                        meteo_j, surf_refVOX, surfsolref, 
+                                        energy)
 
-        #         trans_min_diff_vox.append(np.min(trans_err_diff))
-        #         trans_max_diff_vox.append(np.max(trans_err_diff))
-        #         trans_mean_diff_vox.append(np.mean(trans_err_diff))
-        #         trans_median_diff_vox.append(np.median(trans_err_diff))
-        #         # trans_sd_diff_vox.append(np.sd(trans_err_diff))
-        #         abs_min_diff_vox.append(np.min(abs_err_diff))
-        #         abs_max_diff_vox.append(np.max(abs_err_diff))
-        #         abs_mean_diff_vox.append(np.mean(abs_err_diff))
-        #         abs_median_diff_vox.append(np.median(abs_err_diff))
-        #         # abs_sd_diff_vox = []
-
-        # # vérification par couche
-        # for iz in range(m_lais.shape[1]) : 
-        #     if np.sum(res_abs_i[0][iz][:][:]) > 0 :
-        #         vox_data = lghtratp.voxels_outputs[lghtratp.voxels_outputs.Nz==(iz-lghtratp.legume_empty_layers)+1]
-        #         print("couche %i -> area : l-egume : %.8f ratp : %.8f | sum res_trans l-egume : %.8f ratp : %.8f  | sum res_abs l-egume : %.8f ratp : %.8f  " % 
-        #                                                                                                                 (iz, 
-        #                                                                                                                     np.sum(m_lais[0][iz][:][:]), 
-        #                                                                                                                     np.sum(vox_data['Area']),
-        #                                                                                                                     np.sum(res_trans[iz][:][:]), 
-        #                                                                                                                     np.sum(res_trans_2[iz][:][:]), 
-        #                                                                                                                     np.sum(res_abs_i[0][iz][:][:]), 
-        #                                                                                                                     np.sum(res_abs_i_2[0][iz][:][:])))        
-        # externe_trans_legume = 0
-        # externe_trans_ratp = 0
-        # externe_abs_legume = 0
-        # externe_abs_ratp = 0
-        # for ix in range(10) :
-        #     for iy in range(10) :  
-        #         if ix == 0 or ix == 9 or iy == 0 or iy == 9 :
-        #            externe_trans_legume += res_trans[125][iy][ix]
-        #            externe_trans_ratp += res_trans_2[125][iy][ix]
-        #            externe_abs_legume += res_abs_i[0][125][iy][ix]
-        #            externe_abs_ratp += res_abs_i_2[0][125][iy][ix]
-        # print("couronne externe sol : res_trans l-egume : %.8f ratp : %.8f |  res_abs l-egume : %.8f ratp : %.8f " % (externe_trans_legume, externe_trans_ratp, externe_abs_legume, externe_abs_ratp))
-
-        # intern_trans_legume = 0
-        # intern_trans_ratp = 0
-        # intern_abs_legume = 0
-        # intern_abs_ratp = 0
-        # for ix in range(10) :
-        #     for iy in range(10) :  
-        #         if ix != 0 and ix != 9 and iy != 0 and iy != 9 :
-        #            intern_trans_legume += res_trans[125][iy][ix]
-        #            intern_trans_ratp += res_trans_2[125][iy][ix]
-        #            intern_abs_legume += res_abs_i[0][125][iy][ix]
-        #            intern_abs_ratp += res_abs_i_2[0][125][iy][ix]
-        # print("couronne intern sol : res_trans l-egume : %.8f ratp : %.8f |  res_abs l-egume : %.8f ratp : %.8f " % (intern_trans_legume, intern_trans_ratp, intern_abs_legume, intern_abs_ratp))
-
-        iteration_legume_withoutlighting(lsystem_simulations[sim_id], res_trans, res_abs_i, tag_loop_inputs, energy)
-
-    print((''.join((sim_id, " - done"))))
+    for n in names_simulations : print((''.join((n, " - done"))))
     print("simulation time : ", time.time() - start, " s")
 
     # impression
     if passive=="ratp":
         df_ratp_passive = pd.DataFrame({
                                             'var' : ['epsi']*(len(l_epsi_passive)-2),
-                                            'steps' : list(range(lsystem_simulations[sim_id].DOYdeb, lsystem_simulations[sim_id].DOYend-1)),
+                                            'steps' : list(range(lsystem_simulations[names_simulations[0]].DOYdeb, lsystem_simulations[sim_id].DOYend-1)),
                                             'epsi' : l_epsi_passive[:-2]
                                         })
         df_ratp_passive.to_csv(foldout+"outputs_ratp_passive.csv", index=False)
 
-        # df_vox_compare = pd.DataFrame({
-        #                                     'trans min' : trans_min_diff_vox,
-        #                                     'trans max' : trans_max_diff_vox,
-        #                                     'trans mean' : trans_mean_diff_vox,
-        #                                     'trans median' : trans_median_diff_vox,
-        #                                     'abs min' : abs_min_diff_vox,
-        #                                     'abs max' : abs_max_diff_vox,
-        #                                     'abs mean' : abs_mean_diff_vox,
-        #                                     'abs median' : abs_median_diff_vox
-        #                                 })
-        # df_vox_compare.to_csv(foldout+"diff_voxels_ratp_passive.csv", index=False)
-
-    lsystem_simulations[sim_id].clear()
+    for n in names_simulations : lsystem_simulations[n].clear()
 
 
 if __name__ == "__main__":
@@ -297,7 +247,7 @@ if __name__ == "__main__":
     # valeur par défaut
     foldin = "l-egume/legume/input/"
     foldout = "outputs/legume/"
-    active = "ratp" # legume ou ratp
+    active = "legume" # legume ou ratp
     passive = "legume" # legume ou ratp
     ratpgeo = "grid" # grid ou plantgl
     writegeo = "n" # "y" ou "no"

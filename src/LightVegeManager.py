@@ -610,16 +610,21 @@ class LightVegeManager:
                     distrib["global"] = distrib_glob
 
                     # nombre de voxels
-                    nx = int((self.__pmax[0] - self.__pmin[0]) // dx)
-                    ny = int((self.__pmax[1] - self.__pmin[1]) // dy)
-                    if "grid slicing" in self.__in_lightmodel_parameters :
-                        if self.__in_lightmodel_parameters["grid slicing"] == "ground = 0." :
-                            nz = int((self.__pmax[2] - 0.) // dz)
+                    if "number voxels" in self.__in_lightmodel_parameters :
+                        nx = self.__in_lightmodel_parameters["number voxels"][0]
+                        ny = self.__in_lightmodel_parameters["number voxels"][1]
+                        nz = self.__in_lightmodel_parameters["number voxels"][2]
                     else :
-                        nz = int((self.__pmax[2] - self.__pmin[2]) // dz)
-                    if (self.__pmax[0] - self.__pmin[0]) % dx > 0 : nx += 1
-                    if (self.__pmax[1] - self.__pmin[1]) % dy > 0 : ny += 1
-                    if (self.__pmax[2] - self.__pmin[2]) % dz > 0 : nz += 1
+                        nx = int((self.__pmax[0] - self.__pmin[0]) // dx)
+                        ny = int((self.__pmax[1] - self.__pmin[1]) // dy)
+                        if "grid slicing" in self.__in_lightmodel_parameters :
+                            if self.__in_lightmodel_parameters["grid slicing"] == "ground = 0." :
+                                nz = int((self.__pmax[2] - 0.) // dz)
+                        else :
+                            nz = int((self.__pmax[2] - self.__pmin[2]) // dz)
+                        if (self.__pmax[0] - self.__pmin[0]) % dx > 0 : nx += 1
+                        if (self.__pmax[1] - self.__pmin[1]) % dy > 0 : ny += 1
+                        if (self.__pmax[2] - self.__pmin[2]) % dz > 0 : nz += 1
                     
                     # création de la grille
                     # si pas de rayonnement réfléchi on annules la réflexion du sol
@@ -729,7 +734,14 @@ class LightVegeManager:
 
                 # si l'entrée est vide
                 else :
-                    mygrid = grid.Grid.initialise(1, 1, 1,
+                    # nombre de voxels
+                    if "number voxels" in self.__in_lightmodel_parameters :
+                        nx = self.__in_lightmodel_parameters["number voxels"][0]
+                        ny = self.__in_lightmodel_parameters["number voxels"][1]
+                        nz = self.__in_lightmodel_parameters["number voxels"][2]
+                    else :
+                        nx,ny,nz = 1,1,1
+                    mygrid = grid.Grid.initialise(nx, ny, nz,
                                                     dx, dy, dz, 
                                                     xorig, yorig, zorig,
                                                     self.__in_environment["coordinates"][0], self.__in_environment["coordinates"][1], self.__in_environment["coordinates"][2], 
@@ -824,11 +836,6 @@ class LightVegeManager:
                         for iy in range(ny):
                             for iz in range(nz):
                                 legume_iz = iz + self.__legume_nb0
-                                # s_entity = 0
-                                # for kt in range(self.__in_geometry["scenes"][self.__id_legume_scene]["LA"].shape[0]) : 
-                                #     s_entity+=self.__in_geometry["scenes"][self.__id_legume_scene]["LA"][kt][legume_iz][iy][ix]
-
-                                # if s_entity > 0. : 
 
                                 # on force les voxels vides à être interpréter par RATP
                                 S_voxel = max(1e-14, self.__in_geometry["scenes"][self.__id_legume_scene]["LA"][ne][legume_iz][iy][ix])
@@ -864,18 +871,7 @@ class LightVegeManager:
                         if  mygrid.s_vt_vx[je,k] > 0. :
                             mygrid.volume_canopy[mygrid.nume[je,k] - 1] = mygrid.volume_canopy[mygrid.nume[je,k] - 1] + dx * dy * dz
                             mygrid.voxel_canopy[mygrid.nume[je,k] - 1] = mygrid.voxel_canopy[mygrid.nume[je,k] - 1] + 1
-                
-                # print("verif transfert LA : l-egume: %.6f ratp: %.6f " % (np.sum(self.__in_geometry["scenes"][self.__id_legume_scene]["LA"]), mygrid.s_canopy))
-                # leg_nve=0
-                # for ix in range(self.__in_geometry["scenes"][self.__id_legume_scene]["LA"].shape[3]):
-                #         for iy in range(self.__in_geometry["scenes"][self.__id_legume_scene]["LA"].shape[2]):
-                #             for iz in range(self.__in_geometry["scenes"][self.__id_legume_scene]["LA"].shape[1]):
-                #                 s_entity = 0
-                #                 for kt in range(self.__in_geometry["scenes"][self.__id_legume_scene]["LA"].shape[0]) : 
-                #                     s_entity+=self.__in_geometry["scenes"][self.__id_legume_scene]["LA"][kt][iz][iy][ix]
-                #                 if s_entity>0 : leg_nve += 1
-                # print("nb voxels : l-egume: %i ratp: %i " % (leg_nve, mygrid.nveg))
-                
+                                
                 if self.__my_scene :
                     # complète avec la liste de triangles
                     # pour chaque triangle, indice entité, x, y, z, aire, nitro
@@ -1106,21 +1102,21 @@ class LightVegeManager:
                 # ne prend pas le sol
                 dfvox = dfvox[dfvox['VegetationType'] > 0]
             else :
-                dfvox =  pandas.DataFrame({'VegetationType':VegetationType,
-                                    'Iteration':Iteration,
+                dfvox =  pandas.DataFrame({'VegetationType':[0],
+                                    'Iteration':[1],
                                     'day':day,
                                     'hour':hour,
-                                    'VoxelId':VoxelId,
-                                    'Nx':0,
-                                    'Ny':0,
-                                    'Nz':0,
-                                    'ShadedPAR':ShadedPAR, # /4.6,
-                                    'SunlitPAR':SunlitPAR, # /4.6,
-                                    'ShadedArea':ShadedArea,
-                                    'SunlitArea': SunlitArea,
-                                    'Area': ShadedArea + SunlitArea,
-                                    'PARa': para_list,
-                                    'xintav': erel_list
+                                    'VoxelId':[0],
+                                    'Nx':[0],
+                                    'Ny':[0],
+                                    'Nz':[0],
+                                    'ShadedPAR':[0], # /4.6,
+                                    'SunlitPAR':[0], # /4.6,
+                                    'ShadedArea':[0],
+                                    'SunlitArea': [0],
+                                    'Area': [0],
+                                    'PARa': [0],
+                                    'xintav': [0]
                                 })
                 
             # enregistre la dataframe des voxels

@@ -3,9 +3,10 @@ library(ggplot2)
 # se place dans le dossier
 setwd('C:/Users/mwoussen/cdd/codes/vegecouplelight/outputs/ratp_legume_postprocessing')
 
-legume_default <- read.table('toto_17112_l-egume_seul.csv', sep=';',stringsAsFactors = FALSE)
-legume_ratp <- read.table('toto_17112_l-egume_ratp_8.csv', sep=';', stringsAsFactors = FALSE)
-legume_ratp_passive <- read.table('outputs_ratp_passive_2.csv', sep=',', stringsAsFactors = TRUE)
+legume_default <- read.table('toto_17112_l-egume_seul_2.csv', sep=';',stringsAsFactors = FALSE)
+legume_ratp_s46 <- read.table('toto_17112_l-egume_ratp_resolu.csv', sep=';', stringsAsFactors = FALSE)
+legume_ratp_s5 <- read.table('toto_17112_l-egume_ratp_sky5.csv', sep=';', stringsAsFactors = FALSE)
+legume_ratp_passive <- read.table('outputs_ratp_passive_resolu.csv', sep=',', stringsAsFactors = TRUE)
 
 # trace des graphes
 # inputs : 
@@ -46,7 +47,7 @@ plot_dataframe_canopy <- function(variable, dataframe_list, name_list, t_start=-
 # df <- plot_dataframe_canopy("epsi", list(legume_default, legume_ratp_passive), list("default", "ratp"))
 df <- plot_dataframe_canopy("epsi", list(legume_default, legume_ratp_passive), list("default", "ratp"))
 # df <- plot_dataframe_canopy("epsi", list(legume_ratp_passive), list("ratp"))
-df <- plot_dataframe_canopy("epsi", list(legume_default, legume_ratp, legume_ratp_passive), list("default", "ratp active", "ratp passive"), 60, 180)
+df <- plot_dataframe_canopy("epsi", list(legume_default, legume_ratp_s5, legume_ratp_s46, legume_ratp_passive), list("default", "ratp active ciel sky_5", "ratp active ciel turtle46", "ratp passive"), 60, 180)
 
 p <- ggplot(data=df, aes(x=x, y=values, group=light)) + 
       geom_line(aes(color=light)) +
@@ -57,25 +58,23 @@ p
 
 ## SurfPlante ##
 # df <- plot_dataframe_canopy("epsi", list(legume_default, legume_ratp_passive), list("default", "ratp"))
-df <- plot_dataframe_canopy("epsi", list(legume_default, legume_ratp_passive), list("default", "ratp"))
-# df <- plot_dataframe_canopy("epsi", list(legume_ratp_passive), list("ratp"))
-df <- plot_dataframe_canopy("epsi", list(legume_default, legume_ratp, legume_ratp_passive), list("default", "ratp active", "ratp passive"))
+df <- plot_dataframe_canopy("SurfPlante", list(legume_default, legume_ratp_s5, legume_ratp_s46), list("default", "ratp active ciel sky_5", "ratp active ciel turtle46"))
 
 p <- ggplot(data=df, aes(x=x, y=values, group=light)) + 
   geom_line(aes(color=light)) +
-  ggtitle('Epsi sommé sur le couvert') +
+  ggtitle('SurfPlante sommé sur le couvert') +
   xlab("DOY") +
-  ylab("epsi")
+  ylab("Surface foliaire en m²")
 p
 
-## PARaPlante ##
-df <- plot_dataframe_canopy("PARaplante", list(legume_default, legume_ratp), list("default", "ratp active"))
+## Hplante ##
+df <- plot_dataframe_canopy("Hplante", list(legume_default, legume_ratp_s5, legume_ratp_s46), list("default", "ratp active ciel sky_5", "ratp active ciel turtle46"))
 
 p <- ggplot(data=df, aes(x=x, y=values, group=light)) + 
   geom_line(aes(color=light)) +
-  ggtitle('Epsi sommé sur le couvert') +
+  ggtitle('Hplante sommé sur le couvert') +
   xlab("DOY") +
-  ylab("epsi")
+  ylab("Hauteur en m")
 p
 
 

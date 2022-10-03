@@ -509,6 +509,7 @@ class Grid(object):
 
         grid3d.volume_canopy = np.zeros(nent+1)
         grid3d.voxel_canopy = np.zeros(nent)
+        grid3d.s_canopy = 0
         #grid3d.int_isolated_box = 1
         grid3d.int_scattering = 1 # scattering is currently forced to TRUE in RATP (mod_Hemi_Interception.f90, line 35)
         #print("GRILLE OK")

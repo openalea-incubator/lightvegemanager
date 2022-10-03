@@ -9,6 +9,7 @@ PyRATP/saved_pyratp_pyd/*
 *.pyc
 *.pyf
 *.so
+*.mod0
 PyRATP/f90/Release/*
 PyRATP/f90/SConscript
 WheatFspm
@@ -29,3 +30,4 @@ PyRATP/pyratp/pyratp.pyd
 s2v
 s5
 .vscode
+runscripts/legume/debug_tests.py
