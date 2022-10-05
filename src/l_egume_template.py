@@ -126,7 +126,7 @@ def iteration_legume_withoutlighting(iter, lsystem_simulations, names_simulation
         sh.calc_para_Plt(list_invar[k], list_dicFeuilBilanR[k])
 
         list_ls_epsi.append(epsi * list_invar[k]['parip'] / (np.sum(list_invar[k]['parip']) + np.sum(list_invar[k]['parip']) + 10e-15))
-        print('epsi', sum(list_ls_epsi[-1]))
+        print('main', names_simulations[k], 'epsi', sum(list_ls_epsi[-1]))
 
     ##########
     # Step Potential plant growth

@@ -22,7 +22,7 @@ Comparaison de la lumière entre l-egume (RiRi) et RATP
 
 '''
 
-def simulation(foldin, foldout, active, passive, ratpgeo, writegeo=False,triangles="n"):
+def simulation(foldin, foldout, active, passive, ratpgeo, skytype=2, writegeo=False,triangles="n"):
     
     start = time.time()
     fusms = "liste_usms_exemple.xls"
@@ -67,7 +67,9 @@ def simulation(foldin, foldout, active, passive, ratpgeo, writegeo=False,triangl
         # Paramètres pré-simulation
         environment["names"] = ["l-egume"]
         environment["coordinates"] = [46.43,0,0] # latitude, longitude, timezone
-        environment["sky"] = ["file", "runscripts/legume/sky_5.data"] #  # "turtle46" # turtle à 46 directions par défaut
+        if skytype == 1 : environment["sky"] = ["file", "runscripts/legume/sky_5.data"]
+        elif skytype == 2 : environment["sky"] = "turtle46"
+        elif skytype == 3 : environment["sky"] = [10, 10, "soc"]
         environment["diffus"] = True
         environment["direct"] = False
         environment["reflected"] = False
@@ -216,7 +218,7 @@ def simulation(foldin, foldout, active, passive, ratpgeo, writegeo=False,triangl
             # calcul du epsi sur les résultats de RATP (non utilisé dans la simulation)
             elif passive=="ratp":
                 # ls_epsi
-                transmi_sol = np.sum(res_trans[-1][:][:]) / (energy * surfsolref)
+                transmi_sol = np.sum(res_trans_2[-1][:][:]) / (energy * surfsolref)
                 epsi = 1. - transmi_sol  # bon
 
                 # calcul paramètres par entité
@@ -224,10 +226,10 @@ def simulation(foldin, foldout, active, passive, ratpgeo, writegeo=False,triangl
                 for k in range(len(names_simulations)) :  
                     dicFeuilBilanR = lsystem_simulations[names_simulations[k]].tag_loop_inputs[14]    
                     invar_temp =   lsystem_simulations[names_simulations[k]].tag_loop_inputs[0]   
-                    dicFeuilBilanR = sh.calc_paraF(dicFeuilBilanR, m_lais, res_abs_i, force_id_grid = k)
+                    dicFeuilBilanR = sh.calc_paraF(dicFeuilBilanR, m_lais, res_abs_i_2, force_id_grid = k)
                     sh.calc_para_Plt(invar_temp, dicFeuilBilanR)
                     ls_epsi = epsi * invar_temp['parip'] / (np.sum(invar_temp['parip']) + np.sum(invar_temp['parip']) + 10e-15)
-                    print('lsystem: ',names_simulations[k],'epsi', sum(ls_epsi))
+                    print('RATP passive',names_simulations[k],'epsi', sum(ls_epsi))
                     
                     for p in range(lsystem_simulations[names_simulations[k]].nbplantes):
                         epsi_passive[k][p].append(ls_epsi[p])
@@ -289,10 +291,11 @@ if __name__ == "__main__":
 
     # valeur par défaut
     foldin = "l-egume/legume/input/"
-    foldout = "outputs/legume/"
-    active = "legume" # legume ou ratp
-    passive = "ratp" # legume ou ratp
+    foldout = "outputs/legume_ratp/photomorpho_ramif_ratp_sky5_25t/"
+    active = "ratp" # legume ou ratp
+    passive = "legume" # legume ou ratp
     ratpgeo = "grid" # grid ou plantgl
+    skytype = 1 # type de ciel : 1=sky5, 2=sky46, 3=sky100
     writegeo = "y" # "y" ou "no"
     triangles = "y"
 
@@ -329,7 +332,7 @@ if __name__ == "__main__":
             print("=== === LVM : RATP  (PLANTGL) === ===")
         
     if writegeo=="y":
-        simulation(foldin, foldout, active, passive, ratpgeo, True, triangles)
-    else : simulation(foldin, foldout, active, passive, ratpgeo)
+        simulation(foldin, foldout, active, passive, ratpgeo, skytype, True, triangles)
+    else : simulation(foldin, foldout, active, passive, ratpgeo, skytype)
     
     print("=== END ===")
