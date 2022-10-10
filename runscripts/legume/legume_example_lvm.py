@@ -24,7 +24,7 @@ Comparaison de la lumière entre l-egume (RiRi) et RATP
 
 def simulation(foldin, foldout, active, passive, ratpgeo, skytype=2, writegeo=False,triangles="n"):
     
-    start = time.time()
+    
     fusms = "liste_usms_exemple.xls"
     ongletBatch = "exemple"
 
@@ -78,11 +78,11 @@ def simulation(foldin, foldout, active, passive, ratpgeo, skytype=2, writegeo=Fa
 
         if ratpgeo == "grid":
             ## PARAMETRES RATP scene grille l-egume ##
-            ratp_parameters_legume["voxel size"] = [d*0.01 for d in dxyz]
+            ratp_parameters_legume["voxel size"] = [d*0.01 for d in dxyz] # en m
             ratp_parameters_legume["soil reflectance"] = [0., 0.]
             ratp_parameters_legume["mu"] = [1.] * nent
             ratp_parameters_legume["origin"] = [0., 0., 0.]
-            ratp_parameters_legume["transmitted"] = True
+            # ratp_parameters_legume["transmitted"] = True
 
             lghtratp = LightVegeManager(environment=environment,
                                             lightmodel="ratp",
@@ -104,7 +104,8 @@ def simulation(foldin, foldout, active, passive, ratpgeo, skytype=2, writegeo=Fa
         #                                     lightmodel="ratp",
         #                                     lightmodel_parameters=ratp_parameters_plantgl,
         #                                     main_unit="m")
-
+        
+        # tableaux de sorties spécifiques 
         epsi_passive = []
         para_passive = []
         for k,n in enumerate(names_simulations) :
@@ -113,6 +114,11 @@ def simulation(foldin, foldout, active, passive, ratpgeo, skytype=2, writegeo=Fa
             para_passive.append([[] for i in range(lsystem_simulations[n].nbplantes)])
         diff_voxel_para = []
         diff_voxel_part = []
+
+        # temps de calcul
+        time_legume = 0
+        time_ratp_tot = 0
+        time_ratp_run = 0
 
     # début de la simulation
     for i in range(nb_iter+1):
@@ -184,8 +190,13 @@ def simulation(foldin, foldout, active, passive, ratpgeo, skytype=2, writegeo=Fa
             #     geometry["transformations"]["scenes unit"] = ["cm"]
             #     geometry["transformations"]["xyz orientation"] = ["y+ = y-"]
 
+            start=time.time()
             lghtratp.init_scenes(geometry)
             lghtratp.run(PARi=energy, day=doy, hour=hour, truesolartime=True, parunit="RG")
+            time_ratp_tot += (time.time() - start)
+            time_ratp_run += lghtratp.modelruntime
+
+            print("ratp",lghtratp.modelruntime)
 
             if writegeo:
                 if ratpgeo == "grid":
@@ -205,50 +216,54 @@ def simulation(foldin, foldout, active, passive, ratpgeo, skytype=2, writegeo=Fa
             # PAR / Blue voxel
             tag_light_inputs = [m_lais / surf_refVOX, triplets, ls_dif, energy * surf_refVOX]  # input tag
 
+            start=time.time()
             # mise a jour de res_trans, res_abs_i, res_rfr, ls_epsi
             res_trans, res_abs_i = riri.calc_extinc_allray_multi_reduced(*tag_light_inputs, optsky=station['optsky'], opt=station['sky'])
-
-        if active=="ratp" or passive=="ratp":
-            # transfert des sorties
-            res_trans_2, res_abs_i_2 = lghtratp.to_l_egume(m_lais, energy)
-
-            if active=="ratp":
-                res_trans, res_abs_i = res_trans_2, res_abs_i_2
+            print("legume", (time.time() - start))
+            time_legume += (time.time() - start)
             
-            # calcul du epsi sur les résultats de RATP (non utilisé dans la simulation)
-            elif passive=="ratp":
-                # ls_epsi
-                transmi_sol = np.sum(res_trans_2[-1][:][:]) / (energy * surfsolref)
-                epsi = 1. - transmi_sol  # bon
 
-                # calcul paramètres par entité
-                list_diff_para=[]
-                for k in range(len(names_simulations)) :  
-                    dicFeuilBilanR = lsystem_simulations[names_simulations[k]].tag_loop_inputs[14]    
-                    invar_temp =   lsystem_simulations[names_simulations[k]].tag_loop_inputs[0]   
-                    dicFeuilBilanR = sh.calc_paraF(dicFeuilBilanR, m_lais, res_abs_i_2, force_id_grid = k)
-                    sh.calc_para_Plt(invar_temp, dicFeuilBilanR)
-                    ls_epsi = epsi * invar_temp['parip'] / (np.sum(invar_temp['parip']) + np.sum(invar_temp['parip']) + 10e-15)
-                    print('RATP passive',names_simulations[k],'epsi', sum(ls_epsi))
+        # if active=="ratp" or passive=="ratp":
+        #     # transfert des sorties
+        #     res_trans_2, res_abs_i_2 = lghtratp.to_l_egume(m_lais, energy)
+
+        #     if active=="ratp":
+        #         res_trans, res_abs_i = res_trans_2, res_abs_i_2
+            
+        #     # calcul du epsi sur les résultats de RATP (non utilisé dans la simulation)
+        #     elif passive=="ratp":
+        #         # ls_epsi
+        #         transmi_sol = np.sum(res_trans_2[-1][:][:]) / (energy * surfsolref)
+        #         epsi = 1. - transmi_sol  # bon
+
+        #         # calcul paramètres par entité
+        #         list_diff_para=[]
+        #         for k in range(len(names_simulations)) :  
+        #             dicFeuilBilanR = lsystem_simulations[names_simulations[k]].tag_loop_inputs[14]    
+        #             invar_temp =   lsystem_simulations[names_simulations[k]].tag_loop_inputs[0]   
+        #             dicFeuilBilanR = sh.calc_paraF(dicFeuilBilanR, m_lais, res_abs_i_2, force_id_grid = k)
+        #             sh.calc_para_Plt(invar_temp, dicFeuilBilanR)
+        #             ls_epsi = epsi * invar_temp['parip'] / (np.sum(invar_temp['parip']) + np.sum(invar_temp['parip']) + 10e-15)
+        #             print('RATP passive',names_simulations[k],'epsi', sum(ls_epsi))
                     
-                    for p in range(lsystem_simulations[names_simulations[k]].nbplantes):
-                        epsi_passive[k][p].append(ls_epsi[p])
-                        para_passive[k][p].append(invar_temp['parip'][p])       
+        #             for p in range(lsystem_simulations[names_simulations[k]].nbplantes):
+        #                 epsi_passive[k][p].append(ls_epsi[p])
+        #                 para_passive[k][p].append(invar_temp['parip'][p])       
 
-                    diffpara_ent = []
-                    for ix in range(m_lais.shape[3]):
-                        for iy in range(m_lais.shape[2]):
-                            for iz in range(lghtratp.legume_empty_layers, m_lais.shape[1]):
-                                diffpara_ent.append((res_abs_i[k][iz][iy][ix]-res_abs_i_2[k][iz][iy][ix]))
-                    list_diff_para.append(diffpara_ent)
-                diffpart=[]
-                for ix in range(m_lais.shape[3]):
-                    for iy in range(m_lais.shape[2]):
-                        for iz in range(lghtratp.legume_empty_layers, m_lais.shape[1]):
-                            diffpart.append((res_trans[iz][iy][ix]-res_trans_2[iz][iy][ix]))
+        #             diffpara_ent = []
+        #             for ix in range(m_lais.shape[3]):
+        #                 for iy in range(m_lais.shape[2]):
+        #                     for iz in range(lghtratp.legume_empty_layers, m_lais.shape[1]):
+        #                         diffpara_ent.append((res_abs_i[k][iz][iy][ix]-res_abs_i_2[k][iz][iy][ix]))
+        #             list_diff_para.append(diffpara_ent)
+        #         diffpart=[]
+        #         for ix in range(m_lais.shape[3]):
+        #             for iy in range(m_lais.shape[2]):
+        #                 for iz in range(lghtratp.legume_empty_layers, m_lais.shape[1]):
+        #                     diffpart.append((res_trans[iz][iy][ix]-res_trans_2[iz][iy][ix]))
 
-                diff_voxel_para.append(list_diff_para)
-                diff_voxel_part.append(diffpart)
+        #         diff_voxel_para.append(list_diff_para)
+        #         diff_voxel_part.append(diffpart)
 
         iteration_legume_withoutlighting(i, lsystem_simulations, names_simulations, 
                                             m_lais, res_trans, res_abs_i, 
@@ -259,22 +274,24 @@ def simulation(foldin, foldout, active, passive, ratpgeo, skytype=2, writegeo=Fa
     print("simulation time : ", time.time() - start, " s")
 
     # impression
-    if passive=="ratp":
-        deb = lsystem_simulations[names_simulations[0]].DOYdeb
-        fin = lsystem_simulations[names_simulations[0]].DOYend-1
-        for k,n in enumerate(names_simulations):
-            dict_ratp_passive = {
-                                    'var' : ['epsi']*(len(epsi_passive[k][0])-2) + ['PARi']*(len(epsi_passive[k][0])-2),
-                                    'steps' : list(range(deb, fin)) + list(range(deb, fin))
-                                }
-            for p in range(lsystem_simulations[names_simulations[k]].nbplantes) :
-                dict_ratp_passive['plante'+str(p)] = epsi_passive[k][p][0:fin-deb] + para_passive[k][p][0:fin-deb]
-            pd.DataFrame(dict_ratp_passive).to_csv(foldout+"outputs_ratp_passive_"+str(n)+".csv", index=False)
+    # if passive=="ratp":
+        # deb = lsystem_simulations[names_simulations[0]].DOYdeb
+        # fin = lsystem_simulations[names_simulations[0]].DOYend-1
+        # for k,n in enumerate(names_simulations):
+        #     dict_ratp_passive = {
+        #                             'var' : ['epsi']*(len(epsi_passive[k][0])-2) + ['PARi']*(len(epsi_passive[k][0])-2),
+        #                             'steps' : list(range(deb, fin)) + list(range(deb, fin))
+        #                         }
+        #     for p in range(lsystem_simulations[names_simulations[k]].nbplantes) :
+        #         dict_ratp_passive['plante'+str(p)] = epsi_passive[k][p][0:fin-deb] + para_passive[k][p][0:fin-deb]
+        #     pd.DataFrame(dict_ratp_passive).to_csv(foldout+"outputs_ratp_passive_"+str(n)+".csv", index=False)
 
-        for i in range(len(diff_voxel_para)):
-            for k,n in enumerate(names_simulations):
-                pd.DataFrame({"Diff PARa" : diff_voxel_para[i][k]}).to_csv(foldout+"diff_para_"+str(n)+"_"+str(i)+".csv", index=False)
-            pd.DataFrame({"Diff PARt" : diff_voxel_part[i]}).to_csv(foldout+"diff_part_"+str(i)+".csv", index=False)
+        # for i in range(len(diff_voxel_para)):
+        #     for k,n in enumerate(names_simulations):
+        #         pd.DataFrame({"Diff PARa" : diff_voxel_para[i][k]}).to_csv(foldout+"diff_para_"+str(n)+"_"+str(i)+".csv", index=False)
+        #     pd.DataFrame({"Diff PARt" : diff_voxel_part[i]}).to_csv(foldout+"diff_part_"+str(i)+".csv", index=False)
+
+    pd.DataFrame({"legume" : [time_legume], "ratp run" : [time_ratp_run], "ratp tot" : [time_ratp_tot]}).to_csv(foldout+"cputime.csv", index=False)
 
 
     # désallocation des lsystem
@@ -284,19 +301,19 @@ def simulation(foldin, foldout, active, passive, ratpgeo, skytype=2, writegeo=Fa
 if __name__ == "__main__":
     #definition d'arguments avec getopt
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "i: o: a: p: r: w:")
+        opts, args = getopt.getopt(sys.argv[1:], "i: o: a: p: r: w: s:")
     except getopt.GetoptError as err:
         print(str(err))
         sys.exit(2)
 
     # valeur par défaut
     foldin = "l-egume/legume/input/"
-    foldout = "outputs/legume_ratp/photomorpho_ramif_ratp_sky5_25t/"
-    active = "ratp" # legume ou ratp
-    passive = "legume" # legume ou ratp
+    foldout = "outputs/legume_ratp/photomorpho_ramif_leg_sky5_25t/"
+    active = "legume" # legume ou ratp
+    passive = "ratp" # legume ou ratp
     ratpgeo = "grid" # grid ou plantgl
     skytype = 1 # type de ciel : 1=sky5, 2=sky46, 3=sky100
-    writegeo = "y" # "y" ou "no"
+    writegeo = "n" # "y" ou "no"
     triangles = "y"
 
     # récupère les arguments en entrée
@@ -313,6 +330,8 @@ if __name__ == "__main__":
             ratpgeo = str(arg)
         elif opt in ("-w"):
             writegeo = str(arg)
+        elif opt in ("-s"):
+            skytype = str(arg)
     
     print("=== BEGIN ===")
     print("--- Simulation l-egume")
