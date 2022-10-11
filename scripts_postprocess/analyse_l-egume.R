@@ -3,6 +3,85 @@ source("my_functions.R")
 
 library(ggplot2)
 
+
+
+## TEMPS CPU ##
+file_list <- list(
+                  
+                  'legume_ratp_leg_sky5_1t_cputime_2ent.csv',
+                  'legume_ratp_leg_sky5_25t_cputime_2ent.csv',
+                  'legume_ratp_leg_sky46_cputime_2ent.csv',
+                  'legume_ratp_leg_sky100_cputime_2ent.csv',
+                  'legume_ratp_leg_sky5_1t_cputime_1ent.csv',
+                  'legume_ratp_leg_sky5_25t_cputime_1ent.csv',
+                  'legume_ratp_leg_sky46_cputime_1ent.csv',
+                  'legume_ratp_leg_sky100_cputime_1ent.csv'
+                  )
+situation_list <- list("RATP: sky5 | 1tube", "RATP: sky5 | 25 tubes", "RATP: sky46 | 25 tubes", "RATP: sky100 | 25 tubes")
+setwd('C:/Users/mwoussen/cdd/codes/vegecouplelight/outputs/legume_ratp/cputimes/')
+
+values <- list()
+situation <- list()
+nb_entity <- list()
+for (i in 1:8)
+{
+  df <- read.table(file_list[[i]], sep=',',stringsAsFactors = FALSE)
+  
+  values <- append(values, as.numeric(df$V3[2]))
+  if (i < 5)
+  {
+    situation <- append(situation, situation_list[[i]])
+    nb_entity <- append(nb_entity, "2 entités") 
+  }
+  else
+  {
+    situation <- append(situation, situation_list[[i-4]])
+    nb_entity <- append(nb_entity, "1 entité")
+  }
+}
+# cas particulier de l-egume
+df <- read.table(file_list[[1]], sep=',',stringsAsFactors = FALSE)
+values <- append(values, as.numeric(df$V1[2]))
+situation <- append(situation, "l-egume")
+nb_entity <- append(nb_entity, "2 entités") 
+
+df <- read.table(file_list[[5]], sep=',',stringsAsFactors = FALSE)
+values <- append(values, as.numeric(df$V1[2]))
+situation <- append(situation, "l-egume")
+nb_entity <- append(nb_entity, "1 entité") 
+
+data_cputime <- data.frame(x=sapply(situation,c), values=sapply(values,c), n_entity=sapply(nb_entity, c))
+
+p <- ggplot(data=data_cputime, aes(x=reorder(x, values), y=values, group=n_entity)) + 
+  geom_line(aes(color=n_entity)) +
+  ggtitle('Epsi sommÃ© sur le couvert') +
+  xlab("Situation") +
+  ylab("CPU time en s")
+p
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # se place dans le dossier
 setwd('C:/Users/mwoussen/cdd/codes/vegecouplelight/outputs/legume_ratp')
 legume_default_1 <- read.table('nophotomorpho_ramif_leg_sky5_1t/toto_17111_l-egume.csv', sep=';',stringsAsFactors = FALSE)
@@ -61,9 +140,9 @@ df <- read.table(filename, sep=',', stringsAsFactors = FALSE)
 values <- append(values, sapply(df[2:length(df),], function(x) as.numeric(as.character(x))))
 
 
-df <- plot_dataframe_diffvoxel_perstep("diff_para_17111_l-egume", 120, mean, "mean")
+df <- plot_dataframe_diffvoxel_perstep("diff_part", 120, list(max, min), list("max", "min"))
 p <- ggplot(data=df, aes(x=x, y=values, group=names)) + 
-  geom_line() +
+  geom_line(aes(color=names)) +
   ggtitle('Epsi sommÃ© sur le couvert') +
   xlab("DOY") +
   ylab("epsi")

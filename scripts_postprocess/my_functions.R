@@ -108,7 +108,7 @@ plot_dataframe_diffvoxel_perstep <- function(keyword, nsteps, functions, func_na
       df <- read.table(filename, sep=',', stringsAsFactors = FALSE)
       modify_input <- sapply(df[[1]][2:nrow(df)], function(x) as.numeric(as.character(x)))
       values <- append(values, functions[[k]](modify_input))
-      steps <- append(steps, as.character(i))
+      steps <- append(steps, as.numeric(i))
       names <- append(names, func_names[[k]])
       
     }
