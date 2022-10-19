@@ -26,6 +26,13 @@ import time
 from src.Polygons import *
 from src.MyTesseletor import *
 
+# Pour utilisation de RiRi (à partir de l-egume)
+try:
+    import RIRI5 as riri
+except:
+    print("Error : l-egume not installed")
+    
+
 
 
 '''
@@ -899,6 +906,9 @@ class LightVegeManager:
             # on enregistre la grille dans les deux cas (plantGL ou l-egume)
             self.__ratp_scene = mygrid
                         
+        # elif self.__lightmodel == "riri":
+        #     self.__legume_triplets = riri.get_ls_triplets(self.__in_geometry["scenes"][self.__id_legume_scene]["LA"], opt=self.__in_geometry["scenes"][self.__id_legume_scene]["sky"][0])
+
         elif self.__lightmodel == "caribu":    
             # copîe du minmax
             self.__pmax = Vector3(xmax, ymax, zmax)
@@ -1216,6 +1226,19 @@ class LightVegeManager:
                         "ShadedArea" : s_areasha
                     })
 
+        elif self.__lightmodel == "riri":
+            dS = self.__in_lightmodel_parameters["voxel size"][0] * self.__in_lightmodel_parameters["voxel size"][1]
+            tag_light_inputs = [self.__in_geometry["scenes"][self.__id_legume_scene]["LA"] / dS, 
+                                self.__in_geometry["scenes"][self.__id_legume_scene]["triplets"], 
+                                self.__in_geometry["scenes"][self.__id_legume_scene]["distrib"], 
+                                PARi * dS]  # input tag
+
+            # mise a jour de res_trans, res_abs_i, res_rfr, ls_epsi
+            self.__legume_transmitted_light, \
+                self.__legume_intercepted_light = riri.calc_extinc_allray_multi_reduced(*tag_light_inputs, 
+                                                                            optsky=self.__in_environment["sky"][0], 
+                                                                            opt=self.__in_environment["sky"][1])
+
         # CARIBU
         elif self.__lightmodel == "caribu":
             ## Création du ciel et du soleil
@@ -1520,6 +1543,15 @@ class LightVegeManager:
         print("\t azimut: %0.3f \t zenith: %0.3f" % (-suncaribu.azim*180/math.pi, 90-(suncaribu.elev*180/math.pi)))
         print("\t x: %0.3f \t y: %0.3f \t z: %0.3f" % (float(sun_str_split[1]),float(sun_str_split[2]),float(sun_str_split[3])))
         print("\n")
+
+    
+    @property
+    def legume_transmitted_light(self):
+        return self.__legume_transmitted_light 
+    
+    @property
+    def legume_intercepted_light(self):
+        return self.__legume_intercepted_light 
 
     @property
     def shapes_outputs(self):

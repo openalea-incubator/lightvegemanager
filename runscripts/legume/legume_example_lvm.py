@@ -113,6 +113,7 @@ def simulation(foldin, foldout, active, passive, ratpgeo, skytype=2, writegeo=Fa
             para_passive.append([[] for i in range(lsystem_simulations[n].nbplantes)])
         diff_voxel_para = []
         diff_voxel_part = []
+        surf_vox = []
 
         # temps de calcul
         time_legume = 0
@@ -127,6 +128,42 @@ def simulation(foldin, foldout, active, passive, ratpgeo, skytype=2, writegeo=Fa
         S_part_legume = 0
         S_para_ratp = 0
         S_part_ratp = 0
+
+    if active == "riri":
+        # copie du lsystem pour récupérer la taille des voxels
+        lsys_temp = lsystem_simulations[names_simulations[0]]
+        lstring_temp = lsys_temp.derive(lstring[0], 0, 1)
+        # récupère toutes les variables du lsystem
+        tag_loop_inputs = lsystem_simulations[names_simulations[0]].tag_loop_inputs
+        invar, outvar, invar_sc, ParamP, \
+            station, carto, meteo_j, mng_j,  \
+            DOY, cutNB, start_time, nbplantes,  \
+            surfsolref, m_lais, dicFeuilBilanR,  \
+            surf_refVOX, triplets, ls_dif, S, par_SN,  \
+            lims_sol, ls_roots, stateEV, Uval, b_,  \
+            ls_mat_res, vCC, ls_ftswStress, ls_NNIStress,  \
+            ls_TStress, lsApex, lsApexAll, dicOrgans,  \
+            deltaI_I0, nbI_I0, I_I0profilLfPlant, I_I0profilPetPlant,  \
+            I_I0profilInPlant, NlClasses, NaClasses, NlinClasses,  \
+            opt_stressW, opt_stressN, opt_stressGel, opt_residu, dxyz = tag_loop_inputs
+        ## INITIALISATION LIGHTVEGEMANAGER
+        environment = {}
+        riri_parameters_legume = {}
+
+        # nombre d'entité à prendre en compte
+        nent = len(names_simulations)
+
+        # Paramètres pré-simulation
+        environment["names"] = ["l-egume"]
+        environment["sky"] = [station['optsky'], station['sky']]
+
+        ## PARAMETRES RATP scene grille l-egume ##
+        riri_parameters_legume["voxel size"] = [d*0.01 for d in dxyz] # en m
+
+        lghtriri = LightVegeManager(environment=environment,
+                                        lightmodel="riri",
+                                        lightmodel_parameters=ratp_parameters_legume,
+                                        main_unit="m")
 
     # début de la simulation
     for i in range(nb_iter+1):
@@ -233,6 +270,18 @@ def simulation(foldin, foldout, active, passive, ratpgeo, skytype=2, writegeo=Fa
             time_legume += t_legume
             step_time_leg.append(t_legume)
             
+        elif active=="riri":
+            scene_legume = {}
+            scene_legume["LA"] = m_lais
+            scene_legume["distrib"] = ls_dif
+            scene_legume["triplets"] = triplets
+
+            geometry = {}
+            geometry["scenes"] = [scene_legume]
+
+            lghtriri.run(PARi=energy, day=doy, hour=hour, truesolartime=True, parunit="RG")
+
+            res_trans, res_abs_i = lghtriri.legume_transmitted_light, lghtriri.legume_intercepted_light
 
         if active=="ratp" or passive=="ratp":
             # transfert des sorties
@@ -249,6 +298,7 @@ def simulation(foldin, foldout, active, passive, ratpgeo, skytype=2, writegeo=Fa
 
                 # calcul paramètres par entité
                 list_diff_para=[]
+                surf_ent=[]
                 for k in range(len(names_simulations)) :  
                     dicFeuilBilanR = lsystem_simulations[names_simulations[k]].tag_loop_inputs[14]    
                     invar_temp =   lsystem_simulations[names_simulations[k]].tag_loop_inputs[0]   
@@ -262,15 +312,21 @@ def simulation(foldin, foldout, active, passive, ratpgeo, skytype=2, writegeo=Fa
                         para_passive[k][p].append(invar_temp['parip'][p])       
 
                     diffpara_ent = []
+                    list_surf_vox = []
                     for iz in range(lghtratp.legume_empty_layers, m_lais.shape[1]):
                         layer_diffpara_ent = []
+                        layer_surf_vox = []
                         for ix in range(m_lais.shape[3]):
                             for iy in range(m_lais.shape[2]):
                                 layer_diffpara_ent.append((res_abs_i[k][iz][iy][ix]-res_abs_i_2[k][iz][iy][ix]))
+                                layer_surf_vox.append(m_lais[k][iz][iy][ix])
+
                                 S_para_legume += res_abs_i[k][iz][iy][ix]
                                 S_para_ratp += res_abs_i_2[k][iz][iy][ix]
                         diffpara_ent.append(layer_diffpara_ent)
+                        list_surf_vox.append(layer_surf_vox)
                     list_diff_para.append(diffpara_ent)
+                    surf_ent.append(list_surf_vox)
                 diffpart=[]
                 for iz in range(lghtratp.legume_empty_layers, m_lais.shape[1]):
                     layer_diffpart = []
@@ -283,6 +339,7 @@ def simulation(foldin, foldout, active, passive, ratpgeo, skytype=2, writegeo=Fa
 
                 diff_voxel_para.append(list_diff_para)
                 diff_voxel_part.append(diffpart)
+                surf_vox.append(surf_ent)
 
         iteration_legume_withoutlighting(i, lsystem_simulations, names_simulations, 
                                             m_lais, res_trans, res_abs_i, 
@@ -309,12 +366,20 @@ def simulation(foldin, foldout, active, passive, ratpgeo, skytype=2, writegeo=Fa
             dic_part = {}
             for k,n in enumerate(names_simulations):
                 dic_para = {}
+                dic_surf = {}
                 for j in range(len(diff_voxel_para[i][k])) :
                     dic_para["Layer"+str(j)] = diff_voxel_para[i][k][j]
+                    dic_surf["Layer"+str(j)] = surf_vox[i][k][j]
                 pd.DataFrame(dic_para).to_csv(foldout+"diff_para_"+str(n)+"_"+str(i)+".csv", index=False)
+                pd.DataFrame(dic_surf).to_csv(foldout+"surf_vox_"+str(n)+"_"+str(i)+".csv", index=False)
             for j in range(len(diff_voxel_para[i][k])) :
                 dic_part["Layer"+str(j)] = diff_voxel_part[i][j]
             pd.DataFrame(dic_part).to_csv(foldout+"diff_part_"+str(i)+".csv", index=False)
+        pd.DataFrame({
+            "legume" : step_time_leg, 
+            "ratp run" : step_time_ratp_run, 
+            "ratp tot" : step_time_ratp                   
+            }).to_csv(foldout+"cputime_steps.csv", index=False)
 
     pd.DataFrame({
                     "legume" : [time_legume], 
@@ -324,13 +389,7 @@ def simulation(foldin, foldout, active, passive, ratpgeo, skytype=2, writegeo=Fa
                     "PARt l-egume" : [S_part_legume],
                     "PARa RATP" : [S_para_ratp],
                     "PARt RATP" : [S_part_ratp]
-                    
                     }).to_csv(foldout+"global_outputs.csv", index=False)
-    pd.DataFrame({
-                "legume" : step_time_leg, 
-                "ratp run" : step_time_ratp_run, 
-                "ratp tot" : step_time_ratp                   
-                }).to_csv(foldout+"cputime_steps.csv", index=False)
 
 
     # désallocation des lsystem
@@ -347,50 +406,64 @@ if __name__ == "__main__":
 
     # valeur par défaut
     foldin = "l-egume/legume/input/"
-    foldout = "outputs/legume_ratp/test/"
-    active = "legume" # legume ou ratp
-    passive = "ratp" # legume ou ratp
+    foldout = "outputs/legume_ratp/photomorpho_ramif_leg_sky100_1ent/"
+    active = "ratp" # legume ou ratp
+    passive = "legume" # legume ou ratp
     ratpgeo = "grid" # grid ou plantgl
-    skytype = 1 # type de ciel : 1=sky5, 2=sky46, 3=sky100
+    skytype = 3 # type de ciel : 1=sky5, 2=sky46, 3=sky100
     writegeo = "n" # "y" ou "no"
     triangles = "y"
 
-    # récupère les arguments en entrée
-    for opt, arg in opts:
-        if opt in ("-i"):
-            foldin = str(arg)
-        elif opt in ("-o"):
-            foldout = str(arg)
-        elif opt in ("-a"):
-            active = str(arg)
-        elif opt in ("-p"):
-            passive = str(arg)
-        elif opt in ("-r"):
-            ratpgeo = str(arg)
-        elif opt in ("-w"):
-            writegeo = str(arg)
-        elif opt in ("-s"):
-            skytype = str(arg)
+    # # récupère les arguments en entrée
+    # for opt, arg in opts:
+    #     if opt in ("-i"):
+    #         foldin = str(arg)
+    #     elif opt in ("-o"):
+    #         foldout = str(arg)
+    #     elif opt in ("-a"):
+    #         active = str(arg)
+    #     elif opt in ("-p"):
+    #         passive = str(arg)
+    #     elif opt in ("-r"):
+    #         ratpgeo = str(arg)
+    #     elif opt in ("-w"):
+    #         writegeo = str(arg)
+    #     elif opt in ("-s"):
+    #         skytype = str(arg)
     
-    print("=== BEGIN ===")
-    print("--- Simulation l-egume")
-    if active=="legume":
-        if passive=="ratp":
-            if ratpgeo=="grid":
-                print("=== === L-EGUME + LVM : RATP PASSIVE (GRID) === ===")
-            elif ratpgeo=="plantgl":
-                print("=== === L-EGUME + LVM : RATP PASSVE (PLANTGL) === ===")
-        else:
-            print("=== === L-EGUME  === ===")
+    # print("=== BEGIN ===")
+    # print("--- Simulation l-egume")
+    # if active=="legume":
+    #     if passive=="ratp":
+    #         if ratpgeo=="grid":
+    #             print("=== === L-EGUME + LVM : RATP PASSIVE (GRID) === ===")
+    #         elif ratpgeo=="plantgl":
+    #             print("=== === L-EGUME + LVM : RATP PASSVE (PLANTGL) === ===")
+    #     else:
+    #         print("=== === L-EGUME  === ===")
         
-    elif active=="ratp":
-        if ratpgeo=="grid":
-                print("=== === LVM : RATP  (GRID) === ===")
-        elif ratpgeo=="plantgl":
-            print("=== === LVM : RATP  (PLANTGL) === ===")
+    # elif active=="ratp":
+    #     if ratpgeo=="grid":
+    #             print("=== === LVM : RATP  (GRID) === ===")
+    #     elif ratpgeo=="plantgl":
+    #         print("=== === LVM : RATP  (PLANTGL) === ===")
         
-    if writegeo=="y":
-        simulation(foldin, foldout, active, passive, ratpgeo, skytype, True, triangles)
-    else : simulation(foldin, foldout, active, passive, ratpgeo, skytype)
+    # if writegeo=="y":
+    #     simulation(foldin, foldout, active, passive, ratpgeo, skytype, True, triangles)
+    # else : simulation(foldin, foldout, active, passive, ratpgeo, skytype)
+
+
+    foldout = "outputs/legume_ratp/photomorpho_noramif_ratp_skt/"
+    skytype = 1 # type de ciel : 1=sky5, 2=sky46, 3=sky100
+    simulation(foldin, foldout, active, passive, ratpgeo, skytype)
+
+    # foldout = "outputs/legume_ratp/nophotomorpho_ramif_ratp_sky46_vtk/"
+    # skytype = 2 # type de ciel : 1=sky5, 2=sky46, 3=sky100
+    # simulation(foldin, foldout, active, passive, ratpgeo, skytype)
+
+    # foldout = "outputs/legume_ratp/nophotomorpho_ramif_ratp_sky100/"
+    # skytype = 3 # type de ciel : 1=sky5, 2=sky46, 3=sky100
+    # simulation(foldin, foldout, active, passive, ratpgeo, skytype)
+
     
     print("=== END ===")
