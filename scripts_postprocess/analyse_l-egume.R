@@ -3,7 +3,9 @@ source("my_functions.R")
 
 library(ggplot2)
 library(cowplot)
-
+library(Metrics)
+library(MLmetrics)
+library(gridExtra)
 
 ########################
 #                      #
@@ -968,3 +970,274 @@ df <- max_per_plant(var_name, c_listes_entite_2[[3]][[4]])
 print(df[order(df$max),])
 
 
+#### CORRELATION PAR PLANTE
+setwd('C:/Users/mwoussen/cdd/codes/vegecouplelight/outputs/legume_ratp/')
+photo_ram_legume_default_1 <- read.table('photomorpho_ramif_leg_sky5_1t/toto_17111_l-egume.csv', sep=';',stringsAsFactors = FALSE)
+photo_ram_ratp_sky5_1t_1 <- read.table('photomorpho_ramif_ratp_sky5_1t/toto_17111_l-egume.csv', sep=';', stringsAsFactors = FALSE)
+photo_ram_legume_default_2 <- read.table('photomorpho_ramif_leg_sky5_1t/toto_17112_l-egume.csv', sep=';',stringsAsFactors = FALSE)
+photo_ram_ratp_sky5_1t_2 <- read.table('photomorpho_ramif_ratp_sky5_1t/toto_17112_l-egume.csv', sep=';', stringsAsFactors = FALSE)
+
+pass_ratp_sky5_1t_1 <- read.table('photomorpho_ramif_leg_sky5_1t/outputs_ratp_passive_17111_l-egume.csv', sep=',', stringsAsFactors = FALSE)
+pass_ratp_sky5_1t_2 <- read.table('photomorpho_ramif_leg_sky5_1t/outputs_ratp_passive_17112_l-egume.csv', sep=',', stringsAsFactors = FALSE)
+
+nophoto_1tige_legume_default_1 <- read.table('nophotomorpho_1tige_leg_sky5_1t/toto_17111_l-egume.csv', sep=';',stringsAsFactors = FALSE)
+pass_nophoto_1tige_ratp_sky5_1t_1 <- read.table('nophotomorpho_1tige_leg_sky5_1t/outputs_ratp_passive_17111_l-egume.csv', sep=',', stringsAsFactors = FALSE)
+nophoto_1tige_legume_default_2 <- read.table('nophotomorpho_1tige_leg_sky5_1t/toto_17112_l-egume.csv', sep=';',stringsAsFactors = FALSE)
+pass_nophoto_1tige_ratp_sky5_1t_2 <- read.table('nophotomorpho_1tige_leg_sky5_1t/outputs_ratp_passive_17112_l-egume.csv', sep=',', stringsAsFactors = FALSE)
+
+nophoto_1tige_ratp_sky5_1t_1 <- read.table('nophotomorpho_1tige_ratp_sky5_1t/toto_17111_l-egume.csv', sep=';', stringsAsFactors = FALSE)
+nophoto_1tige_ratp_sky5_1t_2 <- read.table('nophotomorpho_1tige_ratp_sky5_1t/toto_17112_l-egume.csv', sep=';',stringsAsFactors = FALSE)
+
+# pour chaque situation, pour chaque plante observation % predicted
+# nouvelle liste colonne : steps, value, name
+
+
+df <- df_correlation_plante("PARiPlante", list(photo_ram_legume_default_1, 
+                                         photo_ram_legume_default_2, 
+                                         nophoto_1tige_legume_default_1, 
+                                         nophoto_1tige_legume_default_2), list(pass_ratp_sky5_1t_1,
+                                                                               pass_ratp_sky5_1t_2,
+                                                                               pass_nophoto_1tige_ratp_sky5_1t_1,
+                                                                               pass_nophoto_1tige_ratp_sky5_1t_2), list("photomorpho ON",
+                                                                                                                        "photomorpho ON",
+                                                                                                                        "photomorpho OFF",
+                                                                                                                   "photomorpho OFF"))
+                                                        
+df <- df[rowSums(df[,1:2]) >0,]
+
+df_xy <- data.frame(x=c(0,0.16),y=c(0,0.16))
+
+p <- ggplot() + 
+  geom_point(data=df, aes(x=default, y=ratp, group=situation, color=situation, shape=situation),alpha=0.5) +
+  geom_line(data=df_xy,aes(x=x,y=y)) +
+  labs(x="Défaut",y="RATP passif sky5 1 tube",title="PAR intercepté par plante  en W.m-2")
+
+rmse_on <- rmse(df[df$situation=="photomorpho ON",]$default, df[df$situation=="photomorpho ON",]$ratp)
+rmse_off <- rmse(df[df$situation=="photomorpho OFF",]$default, df[df$situation=="photomorpho OFF",]$ratp) 
+
+mape_on <- mean(
+  abs(
+    (df[df$situation=="photomorpho ON",]$default - df[df$situation=="photomorpho ON",]$ratp)/
+      df[df$situation=="photomorpho ON",]$default)*100)
+
+mae_off <- mae(df[df$situation=="photomorpho OFF",]$default, df[df$situation=="photomorpho OFF",]$ratp) 
+mae_on <- mae(df[df$situation=="photomorpho ON",]$default, df[df$situation=="photomorpho ON",]$ratp) 
+
+
+df_rmse <- data.frame(Situation=c("photomorpho ON", "photomorpho OFF"), RMSE=c(rmse_on, rmse_off), MAE=c(mae_on, mae_off))
+
+t <- tableGrob(df_rmse, rows = NULL)
+
+plot_grid(p, t, nrow=2, rel_heights = c(1, 0.5))
+
+
+df <- df_correlation_plante("epsi", list(photo_ram_legume_default_1, 
+                                               photo_ram_legume_default_2, 
+                                               nophoto_1tige_legume_default_1, 
+                                               nophoto_1tige_legume_default_2), list(photo_ram_ratp_sky5_1t_1,
+                                                                                     photo_ram_ratp_sky5_1t_2,
+                                                                                     nophoto_1tige_ratp_sky5_1t_1,
+                                                                                     nophoto_1tige_ratp_sky5_1t_1), list("photomorpho ON",
+                                                                                                                              "photomorpho ON",
+                                                                                                                              "photomorpho OFF",
+                                                                                                                              "photomorpho OFF"))
+df <- df[rowSums(df[,1:2]) >0,]
+
+df_xy <- data.frame(x=c(0,0.16),y=c(0,0.16))
+
+p <- ggplot() + 
+  geom_point(data=df, aes(x=default, y=ratp, group=situation, color=situation, shape=situation),alpha=0.5) +
+  geom_line(data=df_xy,aes(x=x,y=y)) +
+  labs(x="Défaut",y="RATP actif sky5 1 tube",title="Epsi par plante [0, 1]")
+
+rmse_on <- rmse(df[df$situation=="photomorpho ON",]$default, df[df$situation=="photomorpho ON",]$ratp)
+rmse_off <- rmse(df[df$situation=="photomorpho OFF",]$default, df[df$situation=="photomorpho OFF",]$ratp) 
+
+mae_off <- mae(df[df$situation=="photomorpho OFF",]$default, df[df$situation=="photomorpho OFF",]$ratp) 
+mae_on <- mae(df[df$situation=="photomorpho ON",]$default, df[df$situation=="photomorpho ON",]$ratp) 
+
+
+df_rmse <- data.frame(Situation=c("photomorpho ON", "photomorpho OFF"), RMSE=c(rmse_on, rmse_off), MAE=c(mae_on, mae_off))
+
+t <- tableGrob(df_rmse, rows = NULL)
+
+plot_grid(p, t, nrow=2, rel_heights = c(1, 0.5))
+
+## effet de la sénescence ?
+# situation 1 tige, ratp actif, comparer LAI
+#### LAI
+varname <- "SurfPlante"
+ytitle <- "LAI"
+globaltitle <- "LAI sur tout le couvert, sans photomorpho"
+start <- 60
+end <- 180
+surfsol <- 0.16
+
+l1 <- list(
+  nophoto_1tige_legume_default_1, 
+  nophoto_1tige_ratp_sky5_1t_1
+           )
+l2 <- list(
+  nophoto_1tige_legume_default_2, 
+  nophoto_1tige_ratp_sky5_1t_2
+)
+
+p <- subplot_variable_canopy(varname, start, end, l1, l2, list("default", "ratp"), "LAI sur la couvert", "LAI", surfsol)
+p
+
+# LAI par plante
+p1 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(3),paste("plante",as.character(0)," "), "LAI", surfsol)
+p2 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(4),paste("plante",as.character(1)," "), "LAI", surfsol)
+p3 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(5),paste("plante",as.character(2)," "), "LAI", surfsol)
+p4 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(6),paste("plante",as.character(3)," "), "LAI", surfsol)
+p5 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(7),paste("plante",as.character(4)," "), "LAI", surfsol)
+p6 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(8),paste("plante",as.character(5)," "), surfsol)
+p7 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(9),paste("plante",as.character(6)," "), surfsol)
+p8 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(10),paste("plante",as.character(7)," "), surfsol)
+p9 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(11),paste("plante",as.character(8)," "), surfsol)
+p10 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(12),paste("plante",as.character(9)," "), surfsol)
+p11 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(13),paste("plante",as.character(10)," "), surfsol)
+p12 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(14),paste("plante",as.character(11)," "), surfsol)
+p13 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(15),paste("plante",as.character(12)," "), surfsol)
+p14 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(16),paste("plante",as.character(13)," "), surfsol)
+p15 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(17),paste("plante",as.character(14)," "), surfsol)
+p16 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(18),paste("plante",as.character(15)," "), surfsol)
+p <- plot_grid(
+  p1 + theme(legend.position = "none"),
+  p2 + theme(legend.position = "none"),
+  p3 + theme(legend.position = "none"),
+  p4 + theme(legend.position = "none"),
+  p5 + theme(legend.position = "none"),
+  p6 + theme(legend.position = "none"),
+  p7 + theme(legend.position = "none"),
+  p8 + theme(legend.position = "none"),
+  p9 + theme(legend.position = "none"),
+  p10 + theme(legend.position = "none"),
+  p11 + theme(legend.position = "none"),
+  p12 + theme(legend.position = "none"),
+  p13 + theme(legend.position = "none"),
+  p14 + theme(legend.position = "none"),
+  p15 + theme(legend.position = "none"),
+  p16 + theme(legend.position = "none"),
+  nrow=4,ncol=4)
+legend <- get_legend(
+  p2 + theme(legend.box.margin = margin(0,0,0,12))
+)
+plot_grid(p, legend, ncol=1, rel_heights = c(1, 0.2))
+
+p1 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(19),paste("plante",as.character(16)," "), "LAI", surfsol)
+p2 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(20),paste("plante",as.character(17)," "), "LAI", surfsol)
+p3 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(21),paste("plante",as.character(18)," "), "LAI", surfsol)
+p4 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(22),paste("plante",as.character(19)," "), "LAI", surfsol)
+p5 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(23),paste("plante",as.character(20)," "), "LAI", surfsol)
+p6 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(24),paste("plante",as.character(21)," "), surfsol)
+p7 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(25),paste("plante",as.character(22)," "), surfsol)
+p8 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(26),paste("plante",as.character(23)," "), surfsol)
+p9 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(27),paste("plante",as.character(24)," "), surfsol)
+p10 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(28),paste("plante",as.character(25)," "), surfsol)
+p11 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(29),paste("plante",as.character(26)," "), surfsol)
+p12 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(30),paste("plante",as.character(27)," "), surfsol)
+p13 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(31),paste("plante",as.character(28)," "), surfsol)
+p14 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(32),paste("plante",as.character(29)," "), surfsol)
+p15 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(33),paste("plante",as.character(30)," "), surfsol)
+p16 <- subplot_variable_plant(varname, start, end, l1, list("default", "ratp"), list(34),paste("plante",as.character(31)," "), surfsol)
+p<-plot_grid(
+  p1 + theme(legend.position = "none"),
+  p2 + theme(legend.position = "none"),
+  p3 + theme(legend.position = "none"),
+  p4 + theme(legend.position = "none"),
+  p5 + theme(legend.position = "none"),
+  p6 + theme(legend.position = "none"),
+  p7 + theme(legend.position = "none"),
+  p8 + theme(legend.position = "none"),
+  p9 + theme(legend.position = "none"),
+  p10 + theme(legend.position = "none"),
+  p11 + theme(legend.position = "none"),
+  p12 + theme(legend.position = "none"),
+  p13 + theme(legend.position = "none"),
+  p14 + theme(legend.position = "none"),
+  p15 + theme(legend.position = "none"),
+  p16 + theme(legend.position = "none"),
+  nrow=4,ncol=4)
+legend <- get_legend(
+  p2 + theme(legend.box.margin = margin(0,0,0,12))
+)
+plot_grid(p, legend, ncol=1, rel_heights = c(1, 0.2))
+
+p1 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(3),paste("plante",as.character(0)," "), "LAI", surfsol)
+p2 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(4),paste("plante",as.character(1)," "), "LAI", surfsol)
+p3 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(5),paste("plante",as.character(2)," "), "LAI", surfsol)
+p4 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(6),paste("plante",as.character(3)," "), "LAI", surfsol)
+p5 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(7),paste("plante",as.character(4)," "), "LAI", surfsol)
+p6 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(8),paste("plante",as.character(5)," "), surfsol)
+p7 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(9),paste("plante",as.character(6)," "), surfsol)
+p8 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(10),paste("plante",as.character(7)," "), surfsol)
+p9 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(11),paste("plante",as.character(8)," "), surfsol)
+p10 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(12),paste("plante",as.character(9)," "), surfsol)
+p11 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(13),paste("plante",as.character(10)," "), surfsol)
+p12 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(14),paste("plante",as.character(11)," "), surfsol)
+p13 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(15),paste("plante",as.character(12)," "), surfsol)
+p14 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(16),paste("plante",as.character(13)," "), surfsol)
+p15 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(17),paste("plante",as.character(14)," "), surfsol)
+p16 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(18),paste("plante",as.character(15)," "), surfsol)
+p<-plot_grid(
+  p1 + theme(legend.position = "none"),
+  p2 + theme(legend.position = "none"),
+  p3 + theme(legend.position = "none"),
+  p4 + theme(legend.position = "none"),
+  p5 + theme(legend.position = "none"),
+  p6 + theme(legend.position = "none"),
+  p7 + theme(legend.position = "none"),
+  p8 + theme(legend.position = "none"),
+  p9 + theme(legend.position = "none"),
+  p10 + theme(legend.position = "none"),
+  p11 + theme(legend.position = "none"),
+  p12 + theme(legend.position = "none"),
+  p13 + theme(legend.position = "none"),
+  p14 + theme(legend.position = "none"),
+  p15 + theme(legend.position = "none"),
+  p16 + theme(legend.position = "none"),
+  nrow=4,ncol=4)
+legend <- get_legend(
+  p2 + theme(legend.box.margin = margin(0,0,0,12))
+)
+plot_grid(p, legend, ncol=1, rel_heights = c(1, 0.2))
+
+p1 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(19),paste("plante",as.character(16)," "), "LAI", surfsol)
+p2 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(20),paste("plante",as.character(17)," "), "LAI", surfsol)
+p3 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(21),paste("plante",as.character(18)," "), "LAI", surfsol)
+p4 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(22),paste("plante",as.character(19)," "), "LAI", surfsol)
+p5 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(23),paste("plante",as.character(20)," "), "LAI", surfsol)
+p6 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(24),paste("plante",as.character(21)," "), surfsol)
+p7 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(25),paste("plante",as.character(22)," "), surfsol)
+p8 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(26),paste("plante",as.character(23)," "), surfsol)
+p9 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(27),paste("plante",as.character(24)," "), surfsol)
+p10 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(28),paste("plante",as.character(25)," "), surfsol)
+p11 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(29),paste("plante",as.character(26)," "), surfsol)
+p12 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(30),paste("plante",as.character(27)," "), surfsol)
+p13 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(31),paste("plante",as.character(28)," "), surfsol)
+p14 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(32),paste("plante",as.character(29)," "), surfsol)
+p15 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(33),paste("plante",as.character(30)," "), surfsol)
+p16 <- subplot_variable_plant(varname, start, end, l2, list("default", "ratp"), list(34),paste("plante",as.character(31)," "), surfsol)
+p<-plot_grid(
+  p1 + theme(legend.position = "none"),
+  p2 + theme(legend.position = "none"),
+  p3 + theme(legend.position = "none"),
+  p4 + theme(legend.position = "none"),
+  p5 + theme(legend.position = "none"),
+  p6 + theme(legend.position = "none"),
+  p7 + theme(legend.position = "none"),
+  p8 + theme(legend.position = "none"),
+  p9 + theme(legend.position = "none"),
+  p10 + theme(legend.position = "none"),
+  p11 + theme(legend.position = "none"),
+  p12 + theme(legend.position = "none"),
+  p13 + theme(legend.position = "none"),
+  p14 + theme(legend.position = "none"),
+  p15 + theme(legend.position = "none"),
+  p16 + theme(legend.position = "none"),
+  nrow=4,ncol=4)
+legend <- get_legend(
+  p2 + theme(legend.box.margin = margin(0,0,0,12))
+)
+plot_grid(p, legend, ncol=1, rel_heights = c(1, 0.2))

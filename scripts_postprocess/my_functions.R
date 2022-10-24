@@ -63,7 +63,7 @@ plot_dataframe_plant <- function(variable, dataframe_list, name_list, plant_list
     {
       values <- append(values, sapply(dataframe_list[[i]][dataframe_list[[i]]$V1 == variable ,][,plant_list[[j]]], function(x) as.numeric(as.character(x))))
       steps <- append(steps, sapply(dataframe_list[[i]][dataframe_list[[i]]$V1 == variable ,][,2], function(x) as.numeric(as.character(x))))
-      names <- append(names, rep(paste(name_list[[i]], as.character(plant_list[[j]] -3), sep=" plante "), 
+      names <- append(names, rep(name_list[[i]], #paste(name_list[[i]], as.character(plant_list[[j]] -3), sep=" plante "), 
                                  length(dataframe_list[[i]][dataframe_list[[i]]$V1 == variable ,][,2])))
     }
   }
@@ -507,8 +507,22 @@ max_per_plant <- function(var_name, df)
   df_final
 }
 
-
-
-
+df_correlation_plante <- function(var_name, default_list, ratp_list, situation_list)
+{
+  ratp <- list()
+  default <- list()
+  situation <- list()
+  for (i in 1 : length(default_list))
+  {
+    for (j in 3 : ncol(default_list[[i]]))
+    {
+      default <- append(default, as.numeric(default_list[[i]][default_list[[i]]$V1 == var_name,][,j]))
+      ratp <- append(ratp, as.numeric(ratp_list[[i]][ratp_list[[i]]$V1 == var_name,][,j]))
+      situation <- append(situation, rep(situation_list[[i]], length(ratp_list[[i]][ratp_list[[i]]$V1 == var_name,][,j])))
+    }
+  }
+  df <- data.frame(default = sapply(default, c), ratp=sapply(ratp, c), situation=sapply(situation, c))
+  df
+}
 
 

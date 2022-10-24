@@ -87,22 +87,22 @@ def simulation(foldin, foldout, active, passive, ratpgeo, skytype=2, writegeo=Fa
                                             lightmodel="ratp",
                                             lightmodel_parameters=ratp_parameters_legume,
                                             main_unit="m")
-        # elif ratpgeo == "plantgl":
-        #     ## PARAMETRES RATP scene PlantGL ##
-        #     ratp_parameters_plantgl["voxel size"] = [d*0.01 for d in dxyz]
-        #     ratp_parameters_plantgl["number voxels"] = [m_lais.shape[3], m_lais.shape[2], m_lais.shape[1]]
-        #     ratp_parameters_legume["origin"] = [0., 0., 0.]
-        #     ratp_parameters_plantgl["xy max"] = lsys_temp.cote
-        #     ratp_parameters_plantgl["soil reflectance"] = [0., 0.]
-        #     ratp_parameters_plantgl["mu"] = [1.]
-        #     ratp_parameters_plantgl["tesselation level"] = 2
-        #     ratp_parameters_plantgl["angle distrib algo"] = "file"
-        #     ratp_parameters_plantgl["angle distrib file"] = "runscripts/legume/luzerne_angle_distrib.data"
+        elif ratpgeo == "plantgl":
+            ## PARAMETRES RATP scene PlantGL ##
+            ratp_parameters_plantgl["voxel size"] = [d*0.01 for d in dxyz]
+            ratp_parameters_plantgl["number voxels"] = [m_lais.shape[3], m_lais.shape[2], m_lais.shape[1]]
+            ratp_parameters_legume["origin"] = [0., 0., 0.]
+            ratp_parameters_plantgl["xy max"] = lsys_temp.cote
+            ratp_parameters_plantgl["soil reflectance"] = [0., 0.]
+            ratp_parameters_plantgl["mu"] = [1.]
+            ratp_parameters_plantgl["tesselation level"] = 2
+            ratp_parameters_plantgl["angle distrib algo"] = "file"
+            ratp_parameters_plantgl["angle distrib file"] = "runscripts/legume/luzerne_angle_distrib.data"
 
-        #     lghtratp = LightVegeManager(environment=environment,
-        #                                     lightmodel="ratp",
-        #                                     lightmodel_parameters=ratp_parameters_plantgl,
-        #                                     main_unit="m")
+            lghtratp = LightVegeManager(environment=environment,
+                                            lightmodel="ratp",
+                                            lightmodel_parameters=ratp_parameters_plantgl,
+                                            main_unit="m")
         
         # tableaux de sorties spécifiques 
         epsi_passive = []
@@ -453,13 +453,16 @@ if __name__ == "__main__":
     # else : simulation(foldin, foldout, active, passive, ratpgeo, skytype)
 
 
-    foldout = "outputs/legume_ratp/photomorpho_noramif_ratp_skt/"
+    foldout = "outputs/legume_ratp/nophotomorpho_1tige_leg_sky5_1t/"
     skytype = 1 # type de ciel : 1=sky5, 2=sky46, 3=sky100
+    active = "legume" # legume ou ratp
+    passive = "ratp" # legume ou ratp
     simulation(foldin, foldout, active, passive, ratpgeo, skytype)
 
-    # foldout = "outputs/legume_ratp/nophotomorpho_ramif_ratp_sky46_vtk/"
-    # skytype = 2 # type de ciel : 1=sky5, 2=sky46, 3=sky100
-    # simulation(foldin, foldout, active, passive, ratpgeo, skytype)
+    foldout = "outputs/legume_ratp/nophotomorpho_1tige_ratp_sky5_1t/"
+    active = "ratp" # legume ou ratp
+    passive = "legume" # legume ou ratp
+    simulation(foldin, foldout, active, passive, ratpgeo, skytype)
 
     # foldout = "outputs/legume_ratp/nophotomorpho_ramif_ratp_sky100/"
     # skytype = 3 # type de ciel : 1=sky5, 2=sky46, 3=sky100

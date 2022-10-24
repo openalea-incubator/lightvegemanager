@@ -255,9 +255,9 @@ def simulation(level_tesselation, SIMULATION_LENGTH, legumeinputs="", cnwheatinp
     environment["direct"] = True 
     ratp_parameters["voxel size"] = "dynamic"
     lghtratpcnwheat = LightVegeManager(environment=environment,
-                                    lightmodel="ratp",
-                                    lightmodel_parameters=ratp_parameters,
-                                    main_unit="m")
+                                        lightmodel="ratp",
+                                        lightmodel_parameters=ratp_parameters,
+                                        main_unit="m")
 
     # l-egume : diffus, taille de voxel de la grille RIRI de l-egume
     environment["direct"] = False
@@ -265,9 +265,9 @@ def simulation(level_tesselation, SIMULATION_LENGTH, legumeinputs="", cnwheatinp
     ratp_parameters["xy max"] = cote
     ratp_parameters["origin"] = [0,0,0]
     lghtratplegume = LightVegeManager(environment=environment,
-                                    lightmodel="ratp",
-                                    lightmodel_parameters=ratp_parameters,
-                                    main_unit="m")
+                                        lightmodel="ratp",
+                                        lightmodel_parameters=ratp_parameters,
+                                        main_unit="m")
 
 
     # ---------------------------------------------
