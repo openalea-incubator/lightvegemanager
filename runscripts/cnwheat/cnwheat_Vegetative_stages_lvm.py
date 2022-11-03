@@ -168,8 +168,10 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
     environment["diffus"] = True
     environment["direct"] = False
     environment["reflected"] = False
-    environment["reflectance coefficients"] = [[0.1, 0.05]]
     environment["infinite"] = True
+    
+    environment["caribu opt"] = {}
+    environment["caribu opt"]["par"] = (0.1, 0.05)
     
     ## Paramètres CARIBU ##
     caribu_parameters["sun algo"] = "caribu"

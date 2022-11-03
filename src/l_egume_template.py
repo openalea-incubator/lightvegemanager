@@ -41,7 +41,7 @@ def initialisation_legume(foldin, foldout, fusms, ongletBatch):
 def iteration_legume_withoutlighting(iter, lsystem_simulations, names_simulations, 
                                         m_lais_simu, res_trans, res_abs_i, 
                                         meteo_j, surf_refVOX, surfsolref, 
-                                        energy):
+                                        energy, compute_epsi=True):
 
     # rassemble les paramètres propres à chaque lsystem
     list_invar, list_outvar, list_invar_sc, list_ParamP, \
@@ -109,24 +109,25 @@ def iteration_legume_withoutlighting(iter, lsystem_simulations, names_simulation
     I_I0profilInPlant, NlClasses, NaClasses, NlinClasses,  \
     opt_stressW, opt_stressN, opt_stressGel, opt_residu, dxyz = lsystem_simulations[names_simulations[0]].tag_loop_inputs
     
-    m_lais = m_lais_simu
-    # R_FR voxel (calcul de zeta)
-    tag_light_inputs2 = [res_trans / (energy * surf_refVOX)]  # input tag
-    # tag_light_inputs2 = [res_trans]  # input tag
-    res_rfr = riri.rfr_calc_relatif(*tag_light_inputs2)
+    if compute_epsi :
+        m_lais = m_lais_simu
+        # R_FR voxel (calcul de zeta)
+        tag_light_inputs2 = [res_trans / (energy * surf_refVOX)]  # input tag
+        # tag_light_inputs2 = [res_trans]  # input tag
+        res_rfr = riri.rfr_calc_relatif(*tag_light_inputs2)
 
-    # ls_epsi
-    transmi_sol = np.sum(res_trans[-1][:][:]) / (energy * surfsolref)
-    epsi = 1. - transmi_sol  # bon
+        # ls_epsi
+        transmi_sol = np.sum(res_trans[-1][:][:]) / (energy * surfsolref)
+        epsi = 1. - transmi_sol  # bon
 
-    # calul des interception feuille et ls_epsi plante
-    list_ls_epsi = []
-    for k in range(len(names_simulations)) :        
-        list_dicFeuilBilanR[k] = sh.calc_paraF(list_dicFeuilBilanR[k], m_lais, res_abs_i, force_id_grid = k)
-        sh.calc_para_Plt(list_invar[k], list_dicFeuilBilanR[k])
+        # calul des interception feuille et ls_epsi plante
+        list_ls_epsi = []
+        for k in range(len(names_simulations)) :        
+            list_dicFeuilBilanR[k] = sh.calc_paraF(list_dicFeuilBilanR[k], m_lais, res_abs_i, force_id_grid = k)
+            sh.calc_para_Plt(list_invar[k], list_dicFeuilBilanR[k])
 
-        list_ls_epsi.append(epsi * list_invar[k]['parip'] / (np.sum(list_invar[k]['parip']) + np.sum(list_invar[k]['parip']) + 10e-15))
-        print('main', names_simulations[k], 'epsi', sum(list_ls_epsi[-1]))
+            list_ls_epsi.append(epsi * list_invar[k]['parip'] / (np.sum(list_invar[k]['parip']) + np.sum(list_invar[k]['parip']) + 10e-15))
+            print('main', names_simulations[k], 'epsi', sum(list_ls_epsi[-1]))
 
     ##########
     # Step Potential plant growth

@@ -22,6 +22,7 @@ import itertools
 import numpy as np
 import pandas
 import time
+import scipy
 
 from src.Polygons import *
 from src.MyTesseletor import *
@@ -549,6 +550,7 @@ class LightVegeManager:
                                             self.__matching_ids[ids][2])
                             self.__matching_ids[ids] = tuple_temp
 
+                            # ajoute des propriétés optiques et mu sur la nouvelle entité tige
                             if stem[1] not in mem_mu:
                                 self.__in_lightmodel_parameters["mu"].append(self.__in_lightmodel_parameters["mu"][stem[1]])
                                 self.__in_environment["reflectance coefficients"].append(self.__in_environment["reflectance coefficients"][stem[1]])
@@ -909,7 +911,7 @@ class LightVegeManager:
         # elif self.__lightmodel == "riri":
         #     self.__legume_triplets = riri.get_ls_triplets(self.__in_geometry["scenes"][self.__id_legume_scene]["LA"], opt=self.__in_geometry["scenes"][self.__id_legume_scene]["sky"][0])
 
-        elif self.__lightmodel == "caribu":    
+        elif self.__lightmodel == "caribu":
             # copîe du minmax
             self.__pmax = Vector3(xmax, ymax, zmax)
             self.__pmin = Vector3(xmin, ymin, zmin)
@@ -929,11 +931,11 @@ class LightVegeManager:
         else:
             raise ValueError("Unknown lightmodel : can be either 'ratp' or 'caribu' ")
 
-    def run(self, meteo_path="", PARi=0, day=0, hour=0, parunit="micromol.m-2.s-1", truesolartime=False, printsun=False):
+    def run(self, meteo_path="", energy=0, day=0, hour=0, parunit="micromol.m-2.s-1", truesolartime=False, printsun=False):
         '''calcul du bilan radiatif
         Args :
             meteo_path : string, chemin du fichier meteo
-            PARi : float, PARi en µmol.m-2.s-1 ou W.m-2
+            energy : float, light energy en µmol.m-2.s-1 ou W.m-2
             day : float, day of the year 
             hour : float, hour TU
             parunit : "micromol.m-2.s-1" ou "W.m-2" ou  "RG"
@@ -978,28 +980,28 @@ class LightVegeManager:
                                             })
                 vegetation = Vegetation.initialise(entities_param, pervoxel=True, distribvox=self.__ratp_distrib["voxel"])
 
-            # init météo, PARi en entrée en W.m-2
+            # init météo, energy en entrée en W.m-2
             if meteo_path == "":
                 if parunit == "micromol.m-2.s-1" :
                     #: Spitters's model estimating for the diffuse:direct ratio
                     # coefficient 2.02 : 4.6 (conversion en W.m-2) x 0.439 (PAR -> global)
-                    RdRs = spitters_horaire.RdRsH(Rg=PARi/2.02, DOY=day, heureTU=hour, latitude=self.__in_environment["coordinates"][0])
+                    RdRs = spitters_horaire.RdRsH(Rg=energy/2.02, DOY=day, heureTU=hour, latitude=self.__in_environment["coordinates"][0])
                     
                     # coeff 4.6 : https://www.researchgate.net/post/Can-I-convert-PAR-photo-active-radiation-value-of-micro-mole-M2-S-to-Solar-radiation-in-Watt-m2
-                    PARi = PARi / 4.6  # W.m-2
+                    energy = energy / 4.6  # W.m-2
                 else:
-                    RdRs = spitters_horaire.RdRsH(Rg=PARi/0.439, DOY=day, heureTU=hour, latitude=self.__in_environment["coordinates"][0])
+                    RdRs = spitters_horaire.RdRsH(Rg=energy/0.439, DOY=day, heureTU=hour, latitude=self.__in_environment["coordinates"][0])
                 
                 # PAR et Dif en W.m^-2
                 if self.__in_environment["diffus"] :
                     # Direct et diffus
                     if self.__in_environment["direct"]: 
-                        met = MicroMeteo.initialise(doy=day, hour=hour, Rglob=PARi, Rdif=PARi*RdRs, truesolartime=truesolartime)
+                        met = MicroMeteo.initialise(doy=day, hour=hour, Rglob=energy, Rdif=energy*RdRs, truesolartime=truesolartime)
                     # uniquement diffus
                     else:
-                        met = MicroMeteo.initialise(doy=day, hour=hour, Rglob=PARi, Rdif=PARi, truesolartime=truesolartime)
+                        met = MicroMeteo.initialise(doy=day, hour=hour, Rglob=energy, Rdif=energy, truesolartime=truesolartime)
                 # uniquement direct
-                else :  met = MicroMeteo.initialise(doy=day, hour=hour, Rglob=PARi, Rdif=0, truesolartime=truesolartime)
+                else :  met = MicroMeteo.initialise(doy=day, hour=hour, Rglob=energy, Rdif=0, truesolartime=truesolartime)
             
             # lecture d'un fichier
             else:
@@ -1231,7 +1233,7 @@ class LightVegeManager:
             tag_light_inputs = [self.__in_geometry["scenes"][self.__id_legume_scene]["LA"] / dS, 
                                 self.__in_geometry["scenes"][self.__id_legume_scene]["triplets"], 
                                 self.__in_geometry["scenes"][self.__id_legume_scene]["distrib"], 
-                                PARi * dS]  # input tag
+                                energy * dS]  # input tag
 
             # mise a jour de res_trans, res_abs_i, res_rfr, ls_epsi
             self.__legume_transmitted_light, \
@@ -1241,251 +1243,336 @@ class LightVegeManager:
 
         # CARIBU
         elif self.__lightmodel == "caribu":
-            ## Création du ciel et du soleil
-            #: Direct light sources (sun positions)
-            if self.__in_lightmodel_parameters["sun algo"]=="ratp":
-                from PyRATP.pyratp import pyratp
-                
-                az, ele = 5.,9. # variables fantômes (non récupérées)
-                pyratp.shortwave_balance.sundirection(ele, az, 
-                                                            self.__in_environment["coordinates"][0], 
-                                                            self.__in_environment["coordinates"][1], 
-                                                            self.__in_environment["coordinates"][2], 
-                                                            day, hour, truesolartime)            
-                degtorad = math.pi/180
+            if self.__matching_ids:
+                ## Création du ciel et du soleil
+                #: Direct light sources (sun positions)
+                if self.__in_lightmodel_parameters["sun algo"]=="ratp":
+                    from PyRATP.pyratp import pyratp
+                    
+                    az, ele = 5.,9. # variables fantômes (non récupérées)
+                    pyratp.shortwave_balance.sundirection(ele, az, 
+                                                                self.__in_environment["coordinates"][0], 
+                                                                self.__in_environment["coordinates"][1], 
+                                                                self.__in_environment["coordinates"][2], 
+                                                                day, hour, truesolartime)            
+                    degtorad = math.pi/180
 
-                azrad = pyratp.shortwave_balance.azdeg
-                # peut avoir un nan à 12h 
-                if math.isnan(azrad) and hour==12. : 
-                    # critère empirique basé sur l'algo de CARIBU (GenSun)
-                    if self.__in_environment["coordinates"][0] >= 21.11:
-                        azrad = 0.
+                    azrad = pyratp.shortwave_balance.azdeg
+                    # peut avoir un nan à 12h 
+                    if math.isnan(azrad) and hour==12. : 
+                        # critère empirique basé sur l'algo de CARIBU (GenSun)
+                        if self.__in_environment["coordinates"][0] >= 21.11:
+                            azrad = 0.
+                        else:
+                            azrad = 180.
+                    # passage de l'azimuth en South=0° clockwise (RATP) à North=0° clockwise (CARIBU.Gensun)
+                    azrad = -azrad * degtorad
+
+                    zenirad = pyratp.shortwave_balance.hdeg * degtorad
+
+                    # le vecteur pointe du ciel vers le sol
+                    sunx = suny = math.cos(zenirad)
+                    sunx *= math.cos(azrad)
+                    suny *= math.sin(azrad)
+                    sunz = -math.sin(zenirad)
+                    
+                    # list soleil
+                    self.__sun = [tuple((1., tuple((sunx, suny, sunz))))]
+                
+                # algo de CARIBU
+                else:
+                    # si l'heure est locale, calcul de l'heure solaire (algorithme pris dans RATP, sundirection: shortwave_balance.f90)
+                    if not truesolartime:
+                        om =0.017202*(day-3.244)
+                        teta=om+0.03344*math.sin(om)*(1+0.021*math.cos(om))-1.3526
+                        tphi=0.91747*math.sin(teta)/math.cos(teta)
+                        dphi=math.atan(tphi)-om+1.3526
+                        if dphi+1. <= 0: dphi=(dphi+1+1000.*math.pi % math.pi)-1.
+                        eqntime=dphi*229.2
+                        hour =hour+self.__in_environment["coordinates"][2]+self.__in_environment["coordinates"][1]/15.-eqntime/60. % 24.
+
+                    # Conversion de la latitude en radian!
+                    sun = Gensun.Gensun()(1., day, hour, self.__in_environment["coordinates"][0]*math.pi/180)
+                    sun = GetLightsSun.GetLightsSun(sun)
+                    sun_str_split = sun.split(' ')
+                    
+                    # format d'entrée de CaribuScene
+                    self.__sun = [tuple((float(sun_str_split[0]), tuple((float(sun_str_split[1]), float(sun_str_split[2]), float(sun_str_split[3])))))]
+
+                # affichage des coordonnées du soleil
+                if printsun: 
+                    from PyRATP.pyratp import pyratp    
+                    self._print_sun(day, hour, pyratp, truesolartime)
+                    
+                # active le calcul si le soleil est levé
+                # critère élévation min fixé à 2° comme dans RATP (shortwave_balance.F90 -> DirectBeam_Interception, l.68 ou l.148)
+                sun_up = math.asin(-self.__sun[0][1][2])*(180/math.pi) > 2.
+                if sun_up:
+                    # conversion en µmol/m-2.s-1
+                    if parunit == "W.m-2": PAR=PAR*4.6
+
+                    # opt (dict): a {band_name: {primitive_id: material}} dict of dict
+                    #             or a {band_name: material} dict of tuples.
+                    #             In the second form the material is used for all primitives.
+                    #             A material is a 1-, 2- or 4-tuple depending on its optical behavior.
+                    #             A 1-tuple encode an opaque material characterised by its reflectance
+                    #             A 2-tuple encode a symmetric translucent material defined
+                    #             by a reflectance and a transmittance
+                    #             A 4-tuple encode an asymmetric translucent material defined
+                    #             the reflectance and transmittance
+                    #             of the upper and lower side respectively
+                    #             Alternatively, a list of band_name.opt files (require scene
+                    #             to be given as a *.can file)
+                    #             If None (default), all primitive are associated to the
+                    #             default material of the class.
+
+                    #: Optical properties
+                    # opt = {'par': {}}
+                    # for id, val in self.__matching_ids.items():
+                    #     # id : id de la shape, val : [id shape en input, id de l'entité]
+                    #     # c'est une tige il n'y a pas de transmission
+                    #     if (val[0], val[1]) in self.__in_geometry["stems id"]:
+                    #         opt['par'][id] = (self.__in_environment["reflectance coefficients"][val[1]][0],)  #: (reflectance,) of the stems ou organe opaque
+                    #     else:
+                    #         opt['par'][id] = (self.__in_environment["reflectance coefficients"][val[1]][0], self.__in_environment["reflectance coefficients"][val[1]][1]) #: (reflectance, transmittance) of the adaxial side of the leaves, élément translucide symétrique
+
+                    opt = {}
+                    for band, coef in self.__in_environment["caribu opt"].items() :
+                        opt[band] = {}
+                    for id, val in self.__matching_ids.items():
+                        for band, coef in self.__in_environment["caribu opt"].items() :
+                            # id : id de la shape, val : [id shape en input, id de l'entité]
+                            # c'est une tige il n'y a pas de transmission
+                            if (val[0], val[1]) in self.__in_geometry["stems id"]:
+                                opt[band][id] = (coef[0],)  #: (reflectance,) of the stems ou organe opaque
+                            else:
+                                # A 2-tuple encode a symmetric translucent material defined
+                                # by a reflectance and a transmittance
+                                # A 4-tuple encode an asymmetric translucent material defined
+                                # the reflectance and transmittance
+                                # of the upper and lower side respectively 
+                                #: (reflectance, transmittance) of the adaxial side of the leaves, élément translucide symétrique
+                                opt[band][id] = coef 
+
+
+                    # construction d'une scène ciel et soleil
+                    if self.__in_environment["infinite"] : # on ajoute un domaine pour la création du pattern
+                        c_scene_sky = CaribuScene(scene=self.__caribu_scene, light=self.__sky, opt=opt, scene_unit=self.__main_unit, pattern=self.__in_geometry["domain"])
+                        c_scene_sun = CaribuScene(scene=self.__caribu_scene, light=self.__sun, opt=opt, scene_unit=self.__main_unit, pattern=self.__in_geometry["domain"])
                     else:
-                        azrad = 180.
-                # passage de l'azimuth en South=0° clockwise (RATP) à North=0° clockwise (CARIBU.Gensun)
-                azrad = -azrad * degtorad
+                        c_scene_sky = CaribuScene(scene=self.__caribu_scene, light=self.__sky, opt=opt, scene_unit=self.__main_unit)
+                        c_scene_sun = CaribuScene(scene=self.__caribu_scene, light=self.__sun, opt=opt, scene_unit=self.__main_unit)
 
-                zenirad = pyratp.shortwave_balance.hdeg * degtorad
+                    if self.__in_environment["diffus"] :
+                        # Direct et diffus
+                        if self.__in_environment["direct"] :
+                            sun_sky_option = "mix"
+                        else:
+                            sun_sky_option = "sky"
+                    else:
+                        sun_sky_option = "sun"
 
-                # le vecteur pointe du ciel vers le sol
-                sunx = suny = math.cos(zenirad)
-                sunx *= math.cos(azrad)
-                suny *= math.sin(azrad)
-                sunz = -math.sin(zenirad)
-                
-                # list soleil
-                self.__sun = [tuple((1., tuple((sunx, suny, sunz))))]
+                    # rayonnement réfléchis
+                    if self.__in_environment["reflected"] : direct_active = False
+                    else : direct_active = True
+                    
+                    # choix du type de rayonnement
+                    # direct=False : active la rediffusion
+                    # infinite=False : désactive la répétition infinie de la scène (pas de pattern défini ici)
+                    if sun_sky_option == "mix":
+                        start=time.time()
+                        raw_sun, aggregated_sun = c_scene_sun.run(direct=direct_active, infinite=self.__in_environment["infinite"])
+                        raw_sky, aggregated_sky = c_scene_sky.run(direct=direct_active, infinite=self.__in_environment["infinite"])
+                        self.__time_runmodel = time.time() - start
+                                               
+                        #: Spitters's model estimating for the diffuse:direct ratio
+                        # % de sky dans la valeur d'énergie finale
+                        Rg = energy / 2.02  #: Global Radiation (W.m-2)
+                        RdRs = spitters_horaire.RdRsH(Rg=Rg, DOY=day, heureTU=hour, latitude=self.__in_environment["coordinates"][0])  #: Diffuse fraction of the global irradiance
+                        
+                        PARa_output_shape = {}
+                        PARi_output_shape = {}
+                        for band, coef in self.__in_environment["caribu opt"].items() : 
+                            Erel = {}
+                            Ei_output_shape = {}
+                            for element_id, Erel_value in aggregated_sky[band]['Eabs'].items():
+                                Erel[element_id] = RdRs * Erel_value + (1 - RdRs) * aggregated_sun[band]['Eabs'][element_id]
+                                Ei_output_shape[element_id] = RdRs * aggregated_sky[band]['Ei'][element_id] + (1 - RdRs) * aggregated_sun[band]['Ei'][element_id]
+
+                            PARa_output_shape[band] = {k: v * energy for k, v in Erel.items()}
+                            PARi_output_shape[band] = {k: v * energy for k, v in Ei_output_shape.items()}
+                        
+                        # dataframe des triangles
+                        # même numération que caribu
+                        PARa_output_tr = {}
+                        PARi_output_tr = {}
+                        for band, coef in self.__in_environment["caribu opt"].items() : 
+                            Erel_output_tr = {}
+                            Ei_output_tr = {}
+                            count=0
+                            for key, val in raw_sky[band]['Eabs'].items():
+                                for i,par in enumerate(val):
+                                    Erel_output_tr[count] = RdRs*par+(1-RdRs)*raw_sun[band]['Eabs'][key][i]
+                                    Ei_output_tr[count] = RdRs*raw_sky[band]['Ei'][key][i]+(1-RdRs)*raw_sun[band]['Ei'][key][i]
+                                    count+=1
+                            PARa_output_tr[band] = {k: v * energy for k, v in Erel_output_tr.items()}
+                            PARi_output_tr[band] = {k: v * energy for k, v in Ei_output_tr.items()}
+                    
+                    elif sun_sky_option == "sun":
+                        start=time.time()
+                        raw_sun, aggregated_sun = c_scene_sun.run(direct=direct_active, infinite=self.__in_environment["infinite"])
+                        self.__time_runmodel = time.time() - start
+                        
+                        PARa_output_shape = {}
+                        PARi_output_shape = {}
+                        for band, coef in self.__in_environment["caribu opt"].items() :                 
+                            PARa_output_shape[band] = {k: v * energy for k, v in aggregated_sun[band]['Eabs'].items()}
+                            PARi_output_shape[band] = {k: v * energy for k, v in aggregated_sun[band]['Ei'].items()}
+                        
+                        # dataframe des triangles
+                        PARa_output_tr = {}
+                        PARi_output_tr = {}
+                        for band, coef in self.__in_environment["caribu opt"].items() :  
+                            Erel_output_tr = {}
+                            Ei_output_tr = {}
+                            count=0
+                            for key, val in raw_sun[band]['Eabs'].items():
+                                for i,par in enumerate(val):
+                                    Erel_output_tr[count] = raw_sun[band]['Eabs'][key][i]
+                                    Ei_output_tr[count] = raw_sun[band]['Ei'][key][i]
+                                    count+=1
+                            PARa_output_tr[band] = {k: v * energy for k, v in Erel_output_tr.items()}
+                            PARi_output_tr[band] = {k: v * energy for k, v in Ei_output_tr.items()}
+                    
+                    elif sun_sky_option == "sky":
+                        start=time.time()
+                        raw_sky, aggregated_sky = c_scene_sky.run(direct=direct_active, infinite=self.__in_environment["infinite"])
+                        self.__time_runmodel = time.time() - start
+                        
+                        PARa_output_shape = {}
+                        PARi_output_shape = {}
+                        for band, coef in self.__in_environment["caribu opt"].items() :                 
+                            PARa_output_shape[band] = {k: v * energy for k, v in aggregated_sky[band]['Eabs'].items()}
+                            PARi_output_shape[band] = {k: v * energy for k, v in aggregated_sky[band]['Ei'].items()}
+                        
+                        # dataframe des triangles
+                        PARa_output_tr = {}
+                        PARi_output_tr = {}
+                        for band, coef in self.__in_environment["caribu opt"].items() :  
+                            Erel_output_tr = {}
+                            Ei_output_tr = {}
+                            count=0
+                            for key, val in raw_sky[band]['Eabs'].items():
+                                for i,par in enumerate(val):
+                                    Erel_output_tr[count] = raw_sky[band]['Eabs'][key][i]
+                                    Ei_output_tr[count] = raw_sky[band]['Ei'][key][i]
+                                    count+=1
+                            PARa_output_tr[band] = {k: v * energy for k, v in Erel_output_tr.items()}
+                            PARi_output_tr[band] = {k: v * energy for k, v in Ei_output_tr.items()}
+                        
+                    else:
+                        raise ValueError("Unknown sun_sky_option : can be either 'mix', 'sun' or 'sky'.")
             
-            # algo de CARIBU
+                # enregistre les valeurs par shape et plantes
+                s_shapes = [0]*len(self.__matching_ids)
+                s_area = [0]*len(self.__matching_ids)
+                s_Eabs = {}
+                s_Ei = {}
+                s_day = [0]*len(self.__matching_ids)
+                s_hour = [0]*len(self.__matching_ids)
+                s_ent = [0]*len(self.__matching_ids)
+
+                for key,val in self.__matching_ids.items():
+                    s_shapes[key] = val[0]
+                    if sun_up: 
+                        tr_shape = [self.__my_scene[t] for t in val[2]]
+                        s_area[key] = sum([tr.area for tr in tr_shape])
+                    s_day[key] = day
+                    s_hour[key] = hour
+                    s_ent[key] = self.__matching_ids[key][1]
+                
+                for band, coef in self.__in_environment["caribu opt"].items() : 
+                    s_Eabs[band] = [0]*len(self.__matching_ids)
+                    s_Ei[band] = [0]*len(self.__matching_ids)
+                    for key,val in self.__matching_ids.items():
+                        if sun_up: s_Eabs[band][key] = PARa_output_shape[band][key]
+                        if sun_up: s_Ei[band][key] = PARi_output_shape[band][key]
+                dico_shape = {
+                    "Day" : s_day,
+                    "Hour" : s_hour,
+                    "ShapeId" : s_shapes,
+                    "VegetationType" : s_ent,
+                    "Area" : s_area
+                }
+                for band, coef in self.__in_environment["caribu opt"].items() : 
+                    dico_shape[band+" Eabs"] = s_Eabs[band]
+                    dico_shape[band+" Ei"] = s_Ei[band]
+                self.__shape_outputs = pandas.DataFrame(dico_shape)
+
+                # enregistre les valeurs par triangles
+                s_shapes = [0]*len(self.__my_scene)
+                s_tr = [0]*len(self.__my_scene)
+                s_area=[0]*len(self.__my_scene)
+                s_Eabs = {}
+                s_Ei = {}
+                s_day=[0]*len(self.__my_scene)
+                s_hour=[0]*len(self.__my_scene)
+                s_ent=[0]*len(self.__my_scene)
+
+                for id,tr in enumerate(self.__my_scene):
+                    s_shapes[id] = self.__matching_ids[tr.id][0]
+                    s_tr[id] = id
+                    s_day[id] = day
+                    s_hour[id] = hour
+                    s_ent[id] = self.__matching_ids[tr.id][1]
+                    s_area[id] = tr.area    
+                for band, coef in self.__in_environment["caribu opt"].items() : 
+                    s_Eabs[band] = [0]*len(self.__my_scene)
+                    s_Ei[band] = [0]*len(self.__my_scene)
+                    for id,tr in enumerate(self.__my_scene):
+                        if sun_up: s_Eabs[band][id] = PARa_output_tr[band][id]
+                        if sun_up: s_Ei[band][id] = PARi_output_tr[band][id]            
+
+                dico_tr = {
+                    "Day" : s_day,
+                    "Hour" : s_hour,
+                    "primitive_index" : s_tr,
+                    "ShapeId" : s_shapes,
+                    "VegetationType" : s_ent,
+                    "Area" : s_area
+                }
+
+                for band, coef in self.__in_environment["caribu opt"].items() : 
+                    dico_tr[band+" Eabs"] = s_Eabs[band]
+                    dico_tr[band+" Ei"] = s_Ei[band]
+                self.__outputs = pandas.DataFrame(dico_tr)
+            
+            # si entrée géo vide
             else:
-                # si l'heure est locale, calcul de l'heure solaire (algorithme pris dans RATP, sundirection: shortwave_balance.f90)
-                if not truesolartime:
-                    om =0.017202*(day-3.244)
-                    teta=om+0.03344*math.sin(om)*(1+0.021*math.cos(om))-1.3526
-                    tphi=0.91747*math.sin(teta)/math.cos(teta)
-                    dphi=math.atan(tphi)-om+1.3526
-                    if dphi+1. <= 0: dphi=(dphi+1+1000.*math.pi % math.pi)-1.
-                    eqntime=dphi*229.2
-                    hour =hour+self.__in_environment["coordinates"][2]+self.__in_environment["coordinates"][1]/15.-eqntime/60. % 24.
-
-                # Conversion de la latitude en radian!
-                sun = Gensun.Gensun()(1., day, hour, self.__in_environment["coordinates"][0]*math.pi/180)
-                sun = GetLightsSun.GetLightsSun(sun)
-                sun_str_split = sun.split(' ')
+                dico_shape = {
+                    "Day" : [],
+                    "Hour" : [],
+                    "ShapeId" : [],
+                    "VegetationType" : [],
+                    "Area" : []
+                }
+                for band, coef in self.__in_environment["caribu opt"].items() : 
+                    dico_shape[band+" Eabs"] = []
+                    dico_shape[band+" Ei"] = []
+                self.__shape_outputs = pandas.DataFrame(dico_shape)
                 
-                # format d'entrée de CaribuScene
-                self.__sun = [tuple((float(sun_str_split[0]), tuple((float(sun_str_split[1]), float(sun_str_split[2]), float(sun_str_split[3])))))]
-
-            # affichage des coordonnées du soleil
-            if printsun: 
-                from PyRATP.pyratp import pyratp    
-                self._print_sun(day, hour, pyratp, truesolartime)
-                
-            # active le calcul si le soleil est levé
-            # critère élévation min fixé à 2° comme dans RATP (shortwave_balance.F90 -> DirectBeam_Interception, l.68 ou l.148)
-            sun_up = math.asin(-self.__sun[0][1][2])*(180/math.pi) > 2.
-            if sun_up:
-                # conversion en µmol/m-2.s-1
-                if parunit == "W.m-2": PAR=PAR*4.6
-
-                #: Optical properties
-                opt = {'par': {}}
-                for id, val in self.__matching_ids.items():
-                    # id : id de la shape, val : [id shape en input, id de l'entité]
-                    # c'est une tige il n'y a pas de transmission
-                    if (val[0], val[1]) in self.__in_geometry["stems id"]:
-                        opt['par'][id] = (self.__in_environment["reflectance coefficients"][val[1]][0],)  #: (reflectance,) of the stems ou organe opaque
-                    else:
-                        opt['par'][id] = (self.__in_environment["reflectance coefficients"][val[1]][0], self.__in_environment["reflectance coefficients"][val[1]][1]) #: (reflectance, transmittance) of the adaxial side of the leaves, élément translucide symétrique
-
-                # construction d'une scène ciel et soleil
-                if self.__in_environment["infinite"] : # on ajoute un domaine pour la création du pattern
-                    c_scene_sky = CaribuScene(scene=self.__caribu_scene, light=self.__sky, opt=opt, scene_unit=self.__main_unit, pattern=self.__in_geometry["domain"])
-                    c_scene_sun = CaribuScene(scene=self.__caribu_scene, light=self.__sun, opt=opt, scene_unit=self.__main_unit, pattern=self.__in_geometry["domain"])
-                else:
-                    c_scene_sky = CaribuScene(scene=self.__caribu_scene, light=self.__sky, opt=opt, scene_unit=self.__main_unit)
-                    c_scene_sun = CaribuScene(scene=self.__caribu_scene, light=self.__sun, opt=opt, scene_unit=self.__main_unit)
-
-                if self.__in_environment["diffus"] :
-                    # Direct et diffus
-                    if self.__in_environment["direct"]: 
-                        sun_sky_option = "mix"
-                    else:
-                        sun_sky_option = "sky"
-                else:
-                    sun_sky_option = "sun"
-                
-                # choix du type de rayonnement
-                # direct=False : active la rediffusion
-                # infinite=False : désactive la répétition infinie de la scène (pas de pattern défini ici)
-                if sun_sky_option == "mix":
-                    start=time.time()
-                    raw_sun, aggregated_sun = c_scene_sun.run(direct=True, infinite=self.__in_environment["infinite"])
-                    Erel_sun = aggregated_sun['par']['Eabs']
-                    Ei_sun = aggregated_sun['par']['Ei']
-                    raw_sky, aggregated_sky = c_scene_sky.run(direct=True, infinite=self.__in_environment["infinite"])
-                    Erel_sky = aggregated_sky['par']['Eabs']
-                    Ei_sky = aggregated_sky['par']['Ei']
-                    self.__time_runmodel = time.time() - start
-
-                    #: Spitters's model estimating for the diffuse:direct ratio
-                    # % de sky dans la valeur d'énergie finale
-                    Rg = PARi / 2.02  #: Global Radiation (W.m-2)
-                    RdRs = spitters_horaire.RdRsH(Rg=Rg, DOY=day, heureTU=hour, latitude=self.__in_environment["coordinates"][0])  #: Diffuse fraction of the global irradiance
-                    Erel = {}
-                    Ei_output_shape = {}
-                    for element_id, Erel_value in Erel_sky.items():
-                        Erel[element_id] = RdRs * Erel_value + (1 - RdRs) * Erel_sun[element_id]
-                        Ei_output_shape[element_id] = RdRs * Ei_sky[element_id] + (1 - RdRs) * Ei_sun[element_id]
-
-                    Erel_output_shape = Erel
-                    PARa_output_shape = {k: v * PARi for k, v in Erel_output_shape.items()}
-                    PARi_output_shape = {k: v * PARi for k, v in Ei_output_shape.items()}
-                    
-                    # dataframe des triangles
-                    # même numération que caribu
-                    Erel_output_tr = {}
-                    Ei_output_tr = {}
-                    count=0
-                    for key, val in raw_sky['par']['Eabs'].items():
-                        for i,par in enumerate(val):
-                            Erel_output_tr[count] = RdRs*par+(1-RdRs)*raw_sun['par']['Eabs'][key][i]
-                            Ei_output_tr[count] = RdRs*raw_sky['par']['Ei'][key][i]+(1-RdRs)*raw_sun['par']['Ei'][key][i]
-                            count+=1
-                    PARa_output_tr = {k: v * PARi for k, v in Erel_output_tr.items()}
-                    PARi_output_tr = {k: v * PARi for k, v in Ei_output_tr.items()}
-                
-                elif sun_sky_option == "sun":
-                    start=time.time()
-                    raw_sun, aggregated_sun = c_scene_sun.run(direct=True, infinite=self.__in_environment["infinite"])
-                    self.__time_runmodel = time.time() - start
-                    Erel_output_shape = aggregated_sun['par']['Eabs']  #: Erel is the relative surfacic absorbed energy per organ
-                    Ei_output_shape = aggregated_sun['par']['Ei']
-                    PARa_output_shape = {k: v * PARi for k, v in Erel_output_shape.items()}
-                    PARi_output_shape = {k: v * PARi for k, v in Ei_output_shape.items()}
-                    
-                    # dataframe des triangles
-                    Erel_output_tr = {}
-                    Ei_output_tr = {}
-                    count=0
-                    for key, val in raw_sun['par']['Eabs'].items():
-                        for i,par in enumerate(val):
-                            Erel_output_tr[count] = raw_sun['par']['Eabs'][key][i]
-                            Ei_output_tr[count] = raw_sun['par']['Ei'][key][i]
-                            count+=1
-                    PARa_output_tr = {k: v * PARi for k, v in Erel_output_tr.items()}
-                    PARi_output_tr = {k: v * PARi for k, v in Ei_output_tr.items()}
-                
-                elif sun_sky_option == "sky":
-                    start=time.time()
-                    raw_sky, aggregated_sky = c_scene_sky.run(direct=True, infinite=self.__in_environment["infinite"])
-                    self.__time_runmodel = time.time() - start
-                    Erel_output_shape = aggregated_sky['par']['Eabs']  #: Erel is the relative surfacic absorbed energy per organ
-                    Ei_output_shape = aggregated_sky['par']['Ei']
-                    PARa_output_shape = {k: v * PARi for k, v in Erel_output_shape.items()}
-                    PARi_output_shape = {k: v * PARi for k, v in Ei_output_shape.items()}
-                    
-                    # dataframe des triangles
-                    Erel_output_tr = {}
-                    Ei_output_tr = {}
-                    count=0
-                    for key, val in raw_sky['par']['Eabs'].items():
-                        for i,par in enumerate(val):
-                            Erel_output_tr[count] = raw_sky['par']['Eabs'][key][i]
-                            Ei_output_tr[count] = raw_sky['par']['Ei'][key][i]
-                            count+=1
-                    PARa_output_tr = {k: v * PARi for k, v in Erel_output_tr.items()}
-                    PARi_output_tr = {k: v * PARi for k, v in Ei_output_tr.items()}
-                    
-                else:
-                    raise ValueError("Unknown sun_sky_option : can be either 'mix', 'sun' or 'sky'.")
-        
-            # enregistre les valeurs par shape et plantes
-            s_shapes = [0]*len(self.__matching_ids)
-            s_area = [0]*len(self.__matching_ids)
-            s_par = [0]*len(self.__matching_ids)
-            s_pari = [0]*len(self.__matching_ids)
-            s_xintav = [0]*len(self.__matching_ids)
-            s_day = [0]*len(self.__matching_ids)
-            s_hour = [0]*len(self.__matching_ids)
-            s_ent = [0]*len(self.__matching_ids)
-
-            for key,val in self.__matching_ids.items():
-                s_shapes[key] = val[0]
-                if sun_up: s_par[key] = PARa_output_shape[key]
-                if sun_up: s_pari[key] = PARi_output_shape[key]
-                if sun_up: s_xintav[key] = Erel_output_shape[key]
-                if sun_up: 
-                    tr_shape = [self.__my_scene[t] for t in val[2]]
-                    s_area[key] = sum([tr.area for tr in tr_shape])
-                s_day[key] = day
-                s_hour[key] = hour
-                s_ent[key] = self.__matching_ids[key][1]
-
-            self.__shape_outputs = pandas.DataFrame({
-                "Day" : s_day,
-                "Hour" : s_hour,
-                "ShapeId" : s_shapes,
-                "VegetationType" : s_ent,
-                "Area" : s_area,
-                "PARi" : s_pari,
-                "PARa" : s_par,
-                "xintav" : s_xintav
-            })
-
-            # enregistre les valeurs par triangles
-            s_shapes = [0]*len(self.__my_scene)
-            s_tr = [0]*len(self.__my_scene)
-            s_area=[0]*len(self.__my_scene)
-            s_par=[0]*len(self.__my_scene)
-            s_pari=[0]*len(self.__my_scene)
-            s_xintav=[0]*len(self.__my_scene)
-            s_day=[0]*len(self.__my_scene)
-            s_hour=[0]*len(self.__my_scene)
-            s_ent=[0]*len(self.__my_scene)
-
-            for id,tr in enumerate(self.__my_scene):
-                s_shapes[id] = self.__matching_ids[tr.id][0]
-                if sun_up:s_par[id] = PARa_output_tr[id]
-                if sun_up:s_pari[id] = PARi_output_tr[id]
-                if sun_up:s_xintav[id] = Erel_output_tr[id]
-                s_tr[id] = id
-                s_day[id] = day
-                s_hour[id] = hour
-                s_ent[id] = self.__matching_ids[tr.id][1]
-                s_area[id] = tr.area               
-
-            self.__outputs = pandas.DataFrame({
-                "Day" : s_day,
-                "Hour" : s_hour,
-                "primitive_index" : s_tr,
-                "ShapeId" : s_shapes,
-                "VegetationType" : s_ent,
-                "Area" : s_area,
-                "PARi" : s_pari,
-                "PARa" : s_par,
-                "xintav" : s_xintav
-            })
+                dico_tr = {
+                    "Day" : [],
+                    "Hour" : [],
+                    "primitive_index" : [],
+                    "ShapeId" : [],
+                    "VegetationType" : [],
+                    "Area" : []
+                }
+                for band, coef in self.__in_environment["caribu opt"].items() : 
+                    dico_tr[band+" Eabs"] = []
+                    dico_tr[band+" Ei"] = []
+                self.__outputs = pandas.DataFrame(dico_tr)
 
         else:
             raise ValueError("Unknown lightmodel : can be either 'ratp' or 'caribu' ")
@@ -1698,39 +1785,100 @@ class LightVegeManager:
             # update the MTG
             mtg.property(param).update(dico_par[param])
 
-    def to_l_egume(self, m_lais, energy) :
-        epsilon = 1e-14
+    def to_l_egume(self, m_lais = [], energy = 1, list_lstring = [], list_dicFeuilBilanR = [], list_invar = []) :
+        if self.__lightmodel == "ratp" :
+            epsilon = 1e-14
 
-        # transfert des sorties
-        res_abs_i = np.zeros((m_lais.shape[0], m_lais.shape[1], m_lais.shape[2], m_lais.shape[3]))
-        # si le voxel est vide, on considère le transmis comme ce qui sort d'une de ses surfaces
-        dS = self.__ratp_scene.dx * self.__ratp_scene.dy
-        res_trans = np.ones((m_lais.shape[1], m_lais.shape[2], m_lais.shape[3])) * (energy * dS)
-                
-        for ix in range(m_lais.shape[3]):
-            for iy in range(m_lais.shape[2]):
-                for iz in range(self.__ratp_scene.njz):
-                    legume_iz = iz + self.__legume_nb0
-
-                    vox_data = self.__voxels_outputs[(self.__voxels_outputs.Nx==m_lais.shape[2] - iy) & 
-                                                                    (self.__voxels_outputs.Ny==ix+1) & 
-                                                                    (self.__voxels_outputs.Nz==iz+1)]
+            # transfert des sorties
+            res_abs_i = np.zeros((m_lais.shape[0], m_lais.shape[1], m_lais.shape[2], m_lais.shape[3]))
+            # si le voxel est vide, on considère le transmis comme ce qui sort d'une de ses surfaces
+            dS = self.__ratp_scene.dx * self.__ratp_scene.dy
+            res_trans = np.ones((m_lais.shape[1], m_lais.shape[2], m_lais.shape[3])) * (energy * dS)
                     
-                    res_trans[legume_iz, iy, ix] = energy * min(sum(vox_data["transmitted"]), dS)
-                    # if sum(vox_data["transmitted"]) > dS : print("Warning : transmitted energy > dx.dy")
+            for ix in range(m_lais.shape[3]):
+                for iy in range(m_lais.shape[2]):
+                    for iz in range(self.__ratp_scene.njz):
+                        legume_iz = iz + self.__legume_nb0
 
-                    s_entity = 0
-                    for k in range(m_lais.shape[0]) : s_entity+=m_lais[k][legume_iz][iy][ix]
-                    if s_entity > 0. :
-                        for ie in range(m_lais.shape[0]) :
-                            if len(vox_data) > 0 :
-                                if vox_data[vox_data.VegetationType == ie+1]["intercepted"].values[0] > epsilon :
-                                    res_abs_i[ie, legume_iz, iy, ix] = energy * vox_data[vox_data.VegetationType == ie+1]["intercepted"].values[0]
-                                # si le voxel est non vide, on fixe quand même une valeur min
-                                else:
-                                    res_abs_i[ie, legume_iz, iy, ix] = epsilon
-                    
-        return res_trans, res_abs_i
+                        vox_data = self.__voxels_outputs[(self.__voxels_outputs.Nx==m_lais.shape[2] - iy) & 
+                                                                        (self.__voxels_outputs.Ny==ix+1) & 
+                                                                        (self.__voxels_outputs.Nz==iz+1)]
+                        
+                        res_trans[legume_iz, iy, ix] = energy * min(sum(vox_data["transmitted"]), dS)
+                        # if sum(vox_data["transmitted"]) > dS : print("Warning : transmitted energy > dx.dy")
+
+                        s_entity = 0
+                        for k in range(m_lais.shape[0]) : s_entity+=m_lais[k][legume_iz][iy][ix]
+                        if s_entity > 0. :
+                            for ie in range(m_lais.shape[0]) :
+                                if len(vox_data) > 0 :
+                                    if vox_data[vox_data.VegetationType == ie+1]["intercepted"].values[0] > epsilon :
+                                        res_abs_i[ie, legume_iz, iy, ix] = energy * vox_data[vox_data.VegetationType == ie+1]["intercepted"].values[0]
+                                    # si le voxel est non vide, on fixe quand même une valeur min
+                                    else:
+                                        res_abs_i[ie, legume_iz, iy, ix] = epsilon
+                        
+            return res_trans, res_abs_i
+
+        elif self.__lightmodel == "caribu" :
+            # réécriture de calc_paraF dans ShootMorpho.py pour correspondre aux triangles
+            # parip : somme des organes sur tous les statuts
+            # parap : idem sauf si plante senescente alors == 0
+            for k in range(len(list_invar)) :
+                # on initialise la somme sur chaque plante à 0
+                list_invar[k]['parap'] = scipy.array([0] * len(list_invar[k]['Hplante']))
+                list_invar[k]['parip'] = scipy.array([0] * len(list_invar[k]['Hplante']))
+
+                if self.__matching_ids :
+                    for i in range(len(self.__shape_outputs)) :
+                        organe_id = int(self.__shape_outputs.iloc[i]["ShapeId"])
+
+                        # PAR en W/m²
+                        par_intercept = self.__shape_outputs.iloc[i]['rc Ei']
+                        S_leaf = self.__shape_outputs.iloc[i]['Area']
+                        
+                        id_plante = list_lstring[k][organe_id][0]
+
+                        S_plante = list_dicFeuilBilanR[k]["surf"][id_plante]
+
+                        list_invar[k]['parip'][id_plante] +=  par_intercept * (S_leaf/S_plante)
+                            
+                        # on enlève les feuilles senescentes 
+                        if list_lstring[k][organe_id][9] != 'sen' :
+                            list_invar[k]['parap'][id_plante] +=  par_intercept * (S_leaf/S_plante)
+
+                    # conversion
+                    list_invar[k]['parap'] = list_invar[k]['parap'] * (3600*24)/1000000
+                    list_invar[k]['parip'] = list_invar[k]['parip'] * (3600*24)/1000000
+
+            # /!\ energy = energy * dx * dy
+            res_trans = np.ones((m_lais.shape[1], m_lais.shape[2], m_lais.shape[3])) * energy
+            return res_trans
+
+
+                # # si il y a de la géométrie en entrée
+                # if len(self.__outputs["Area"]) > 0 :
+                #     id_LightVegeManager = 0
+                #     for i, org in enumerate(list_dicOrgans[k]['organ']):
+                #         if org == "Lf" or org == "Stp" :
+                #             id_plante = list_dicOrgans[k]['nump'][i]
+                #             par_intercept = self.__shape_outputs.iloc[id_LightVegeManager]['PARi']
+                #             S_leaf = self.__shape_outputs.iloc[id_LightVegeManager]['Area']
+                #             S_plante = sum(list_invar[k]['SurfPlante'][id_plante])
+
+                #             list_invar[k]['parip'][id_plante] +=  par_intercept * (S_leaf/S_plante)
+                            
+                #             # on enlève les feuilles senescentes 
+                #             if list_dicOrgans[k]['statut'][i] != 'sen' :
+                #                 list_invar[k]['parap'][id_plante] +=  par_intercept * (S_leaf/list_invar[k]['SurfPlante'][id_plante])
+                            
+                #             id_LightVegeManager += 1
+
+                #     # multiplie les sommes par un coefficient   
+                #     list_invar[k]['parap'] = list_invar[k]['parap'] * ((3600 * 24) / 1000000)
+                #     list_invar[k]['parip'] = list_invar[k]['parip'] * ((3600 * 24) / 1000000)
+
+
 
     def VTKinit(self, path, plantnames=[], planttrianglevalues=[], printtriangles=True):
         '''construit des fichiers VTK de la triangulation et de la grille de voxels après leur construction
