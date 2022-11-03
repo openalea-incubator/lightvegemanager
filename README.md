@@ -68,7 +68,7 @@ Le package PyRATP est appelé en local et fait parti du package de lightvegemana
         ```
     - Windows
         ```bash
-        bash compile_pyratp_win64.bat
+        .\compile_pyratp_win64.bat
         ```
         /!\ attention : les chemins relatifs de la ligne 5 (appel de `gfortran.exe`) peuvent être erronés, il faudra les modifier manuellement.
 
