@@ -311,12 +311,41 @@ class LightVegeManager:
                             t = tuple((float(string_split[0]), tuple((float(string_split[1]), float(string_split[2]), float(string_split[3])))))
                             self.__sky.append(t)
             
+                elif self.__in_environment["sky"][0] == "file" : 
+                    listGene = []
+                    f = open(self.__in_environment["sky"][1])
+                    ndir=int(f.readline().strip().split('\t')[0])
+                    hmoy=np.zeros(ndir)
+                    azmoy=np.zeros(ndir)
+                    omega=np.zeros(ndir)
+                    pc=np.zeros(ndir)
+                    for n in range(ndir):
+                        listGene.append(f.readline().strip().split('\t'))
+                    tabGene=np.array(listGene)
+                    tabGene = np.cast['float64'](tabGene)
+                    hmoy=np.transpose(tabGene)[0]*math.pi / 180
+                    azmoy=np.transpose(tabGene)[1]*math.pi / 180
+                    omega=np.transpose(tabGene)[2]
+                    pc=np.transpose(tabGene)[3]
+                    f.close()
+                    
+                    self.__sky = []
+                    for i, p in enumerate(pc) :
+                        dir=[0,0,0]
+                        dir[0] = dir[1] = math.sin(hmoy[i])
+                        dir[0] *= math.cos(azmoy[i])
+                        dir[1] *= math.sin(azmoy[i])
+                        dir[2] = -math.cos(hmoy[i])
+                        t = tuple((float(p), tuple((dir[0], dir[1], dir[2]))))
+                        self.__sky.append(t)
+
+
             elif self.__in_environment["sky"] == "turtle46":
                 turtle_list = turtle.turtle()
                 self.__sky=[]
                 for i,e in enumerate(turtle_list[0]):
                     t = tuple((e, tuple((turtle_list[2][i][0], turtle_list[2][i][1], turtle_list[2][i][2]))))
-                    self.__sky.append(t)       
+                    self.__sky.append(t)   
             else:
                 raise ValueError("Unknown sky parameters : can be either 'turtle46' or ['file', 'filepath'] or [nb_azimut, nb_zenith, 'soc' or 'uoc'] ")
 
@@ -494,6 +523,9 @@ class LightVegeManager:
                 # recherche de la différence de la longueur max d'un triangle max(xmax-xmin, ymax-ymin, zmax-zmin)
                 m = max(trxmax-trxmin, trymax-trymin, trzmax-trzmin)
                 if m > self.__triangleLmax : self.__triangleLmax = m
+        
+        self.__pmax = Vector3(xmax, ymax, zmax)
+        self.__pmin = Vector3(xmin, ymin, zmin)
         
         # RATP
         if self.__lightmodel == "ratp":
@@ -1355,6 +1387,10 @@ class LightVegeManager:
                                 opt[band][id] = coef 
 
 
+                    # si on souhaite construire une grille de capteurs
+                    if self.__in_lightmodel_parameters["sensors"][0] == "grid" :
+                        sensors_caribu, sensors_plantgl, Pmax_capt = self._create_caribu_legume_sensors()
+
                     # construction d'une scène ciel et soleil
                     if self.__in_environment["infinite"] : # on ajoute un domaine pour la création du pattern
                         c_scene_sky = CaribuScene(scene=self.__caribu_scene, light=self.__sky, opt=opt, scene_unit=self.__main_unit, pattern=self.__in_geometry["domain"])
@@ -1380,10 +1416,16 @@ class LightVegeManager:
                     # direct=False : active la rediffusion
                     # infinite=False : désactive la répétition infinie de la scène (pas de pattern défini ici)
                     if sun_sky_option == "mix":
-                        start=time.time()
-                        raw_sun, aggregated_sun = c_scene_sun.run(direct=direct_active, infinite=self.__in_environment["infinite"])
-                        raw_sky, aggregated_sky = c_scene_sky.run(direct=direct_active, infinite=self.__in_environment["infinite"])
-                        self.__time_runmodel = time.time() - start
+                        if "sensors" in self.__in_lightmodel_parameters :
+                            start=time.time()
+                            raw_sun, aggregated_sun = c_scene_sun.run(direct=direct_active, infinite=self.__in_environment["infinite"], sensors=sensors_caribu)
+                            raw_sky, aggregated_sky = c_scene_sky.run(direct=direct_active, infinite=self.__in_environment["infinite"], sensors=sensors_caribu)
+                            self.__time_runmodel = time.time() - start
+                        else :
+                            start=time.time()
+                            raw_sun, aggregated_sun = c_scene_sun.run(direct=direct_active, infinite=self.__in_environment["infinite"])
+                            raw_sky, aggregated_sky = c_scene_sky.run(direct=direct_active, infinite=self.__in_environment["infinite"])
+                            self.__time_runmodel = time.time() - start
                                                
                         #: Spitters's model estimating for the diffuse:direct ratio
                         # % de sky dans la valeur d'énergie finale
@@ -1419,9 +1461,14 @@ class LightVegeManager:
                             PARi_output_tr[band] = {k: v * energy for k, v in Ei_output_tr.items()}
                     
                     elif sun_sky_option == "sun":
-                        start=time.time()
-                        raw_sun, aggregated_sun = c_scene_sun.run(direct=direct_active, infinite=self.__in_environment["infinite"])
-                        self.__time_runmodel = time.time() - start
+                        if "sensors" in self.__in_lightmodel_parameters :
+                            start=time.time()
+                            raw_sun, aggregated_sun = c_scene_sun.run(direct=direct_active, infinite=self.__in_environment["infinite"], sensors=sensors_caribu)
+                            self.__time_runmodel = time.time() - start
+                        else :
+                            start=time.time()
+                            raw_sun, aggregated_sun = c_scene_sun.run(direct=direct_active, infinite=self.__in_environment["infinite"])
+                            self.__time_runmodel = time.time() - start
                         
                         PARa_output_shape = {}
                         PARi_output_shape = {}
@@ -1443,11 +1490,22 @@ class LightVegeManager:
                                     count+=1
                             PARa_output_tr[band] = {k: v * energy for k, v in Erel_output_tr.items()}
                             PARi_output_tr[band] = {k: v * energy for k, v in Ei_output_tr.items()}
+
+                        # retient les résultats des capteurs
+                        if "sensors" in self.__in_lightmodel_parameters :
+                            self.__sensors_outputs = {}
+                            for band, coef in self.__in_environment["caribu opt"].items() :  
+                                self.__sensors_outputs[band] = aggregated_sun[band]['sensors']['Ei']
                     
                     elif sun_sky_option == "sky":
-                        start=time.time()
-                        raw_sky, aggregated_sky = c_scene_sky.run(direct=direct_active, infinite=self.__in_environment["infinite"])
-                        self.__time_runmodel = time.time() - start
+                        if "sensors" in self.__in_lightmodel_parameters :
+                            start=time.time()
+                            raw_sky, aggregated_sky = c_scene_sky.run(direct=direct_active, infinite=self.__in_environment["infinite"], sensors=sensors_caribu)
+                            self.__time_runmodel = time.time() - start
+                        else :
+                            start=time.time()
+                            raw_sky, aggregated_sky = c_scene_sky.run(direct=direct_active, infinite=self.__in_environment["infinite"])
+                            self.__time_runmodel = time.time() - start
                         
                         PARa_output_shape = {}
                         PARi_output_shape = {}
@@ -1469,10 +1527,30 @@ class LightVegeManager:
                                     count+=1
                             PARa_output_tr[band] = {k: v * energy for k, v in Erel_output_tr.items()}
                             PARi_output_tr[band] = {k: v * energy for k, v in Ei_output_tr.items()}
+
+                        # retient les résultats des capteurs
+                        if "sensors" in self.__in_lightmodel_parameters :
+                            self.__sensors_outputs = {}
+                            for band, coef in self.__in_environment["caribu opt"].items() :  
+                                self.__sensors_outputs[band] = aggregated_sky[band]['sensors']['Ei']
                         
                     else:
                         raise ValueError("Unknown sun_sky_option : can be either 'mix', 'sun' or 'sky'.")
-            
+
+                    # affichage VTK des capteurs
+                    if "sensors" in self.__in_lightmodel_parameters and self.__in_lightmodel_parameters["sensors"][-1] == "vtk":
+                        triangles_sensors = []
+                        for id, s in sensors_plantgl.todict().items() :
+                            tri_list = list(itertools.chain(*[pgl_to_triangles(pgl_object) for pgl_object in s]))
+                            for tr in tri_list:
+                                tr.set_id(id)
+                            triangles_sensors.extend(tri_list)
+                        
+                        var=[]
+                        for t in triangles_sensors:
+                            var.append(aggregated_sky["par"]['sensors']['Ei'][t.id])
+                        VTKtriangles(triangles_sensors, [var], ["par_t"], self.__in_lightmodel_parameters["sensors"][-2] + "sensors.vtk")
+
                 # enregistre les valeurs par shape et plantes
                 s_shapes = [0]*len(self.__matching_ids)
                 s_area = [0]*len(self.__matching_ids)
@@ -1577,6 +1655,128 @@ class LightVegeManager:
         else:
             raise ValueError("Unknown lightmodel : can be either 'ratp' or 'caribu' ")
 
+    def _create_caribu_legume_sensors(self):
+        # récupère les dimensions de la grille
+        dxyz = self.__in_lightmodel_parameters["sensors"][1]
+        nxyz = self.__in_lightmodel_parameters["sensors"][2] 
+        orig = self.__in_lightmodel_parameters["sensors"][3] 
+
+        # # on redimensionne si dxyz problèmatique
+        # if "transformations" in self.__in_geometry :
+        #     if "scenes unit" in self.__in_geometry["transformations"] :
+        #         scene_unit = self.__in_geometry["transformations"]["scenes unit"][0]
+        #         scale_unit = self.units[scene_unit]/self.units[self.__main_unit]
+        #         dxyz = [x*scale_unit for x in dxyz]
+
+        # on cherche la couche du ciel (< 126)
+        skylayer = (self.__pmax[2]) // dxyz[2]
+        skylayer = int(nxyz[2] - 1 - skylayer)
+
+        # scene plantGL qui acceuillera les capteurs
+        s_capt = pgl.Scene()
+        
+        points = [(0, 0, 0), (dxyz[0], 0, 0), (dxyz[0], dxyz[1], 0), (0, dxyz[1], 0)]  # capeur bas oriente vers le haut
+        normals = [(0, 0, 1) for i in range(4)]
+        indices = [(0, 1, 2, 3)]
+
+        # carré taille d'un voxel
+        carre = pgl.QuadSet(points, indices, normals, indices)
+        
+        ID_capt = 0
+        dico_translat = {}
+        for ix in range(nxyz[0]):
+            for iy in range(nxyz[1]):
+                for iz in range(nxyz[2] - skylayer):
+                    # vecteur de translation
+                    tx = orig[0] + ix * dxyz[0]
+                    ty = orig[1] + iy * dxyz[1]
+                    tz = orig[2] + (iz * dxyz[2]) + 1e-8
+
+                    # retient la translation
+                    dico_translat[ID_capt] = [tx, ty, tz]
+
+                    # ajoute un voxel à la scene des capteurs
+                    Vox = pgl.Translated(geometry=carre, translation=(tx, ty, tz))
+                    s_capt.add(pgl.Shape(geometry=Vox, id=ID_capt))
+                    ID_capt += 1
+
+        
+        Dico_Sensors = {}
+        liste_hmax_capt = []
+        liste_x_capt = []
+        liste_y_capt = []
+        # mise en forme de triangulation CARIBU
+        for x in s_capt:
+
+            # pgl_to_caribu(x)
+
+            # Preparation capteurs
+            pt_lst = x.geometry.geometry.pointList
+            idx_lst = x.geometry.geometry.indexList
+
+            for i in range(0, len(idx_lst)):
+                x11 = pt_lst[idx_lst[i][0]][0] + dico_translat[x.id][0]
+                y11 = pt_lst[idx_lst[i][0]][1] + dico_translat[x.id][1]
+                z11 = pt_lst[idx_lst[i][0]][2] + dico_translat[x.id][2]
+
+                liste_hmax_capt.append(z11)
+                liste_x_capt.append(x11)
+                liste_y_capt.append(y11)
+
+                x12 = pt_lst[idx_lst[i][1]][0] + dico_translat[x.id][0]
+                y12 = pt_lst[idx_lst[i][1]][1] + dico_translat[x.id][1]
+                z12 = pt_lst[idx_lst[i][1]][2] + dico_translat[x.id][2]
+
+                liste_hmax_capt.append(z12)
+                liste_x_capt.append(x12)
+                liste_y_capt.append(y12)
+
+                x13 = pt_lst[idx_lst[i][2]][0] + dico_translat[x.id][0]
+                y13 = pt_lst[idx_lst[i][2]][1] + dico_translat[x.id][1]
+                z13 = pt_lst[idx_lst[i][2]][2] + dico_translat[x.id][2]
+
+                liste_hmax_capt.append(z13)
+                liste_x_capt.append(x13)
+                liste_y_capt.append(y13)
+
+                tple1 = [(x11, y11, z11), (x12, y12, z12), (x13, y13, z13)]
+                triangle = []
+                triangle.append(tple1)
+
+                x21 = pt_lst[idx_lst[i][0]][0] + dico_translat[x.id][0]
+                y21 = pt_lst[idx_lst[i][0]][1] + dico_translat[x.id][1]
+                z21 = pt_lst[idx_lst[i][0]][2] + dico_translat[x.id][2]
+
+                liste_hmax_capt.append(z21)
+                liste_x_capt.append(x21)
+                liste_y_capt.append(y21)
+
+                x22 = pt_lst[idx_lst[i][2]][0] + dico_translat[x.id][0]
+                y22 = pt_lst[idx_lst[i][2]][1] + dico_translat[x.id][1]
+                z22 = pt_lst[idx_lst[i][2]][2] + dico_translat[x.id][2]
+
+                liste_hmax_capt.append(z22)
+                liste_x_capt.append(x22)
+                liste_y_capt.append(y22)
+
+                x23 = pt_lst[idx_lst[i][3]][0] + dico_translat[x.id][0]
+                y23 = pt_lst[idx_lst[i][3]][1] + dico_translat[x.id][1]
+                z23 = pt_lst[idx_lst[i][3]][2] + dico_translat[x.id][2]
+
+                liste_hmax_capt.append(z23)
+                liste_x_capt.append(x23)
+                liste_y_capt.append(y23)
+
+                tple2 = [(x21, y21, z21), (x22, y22, z22), (x23, y23, z23)]
+                triangle.append(tple2)
+
+                Dico_Sensors[x.id] = triangle
+        
+        return Dico_Sensors, s_capt, [(min(liste_x_capt) + max(liste_x_capt)) / 2,
+                                                            (min(liste_y_capt) + max(liste_y_capt)) / 2,
+                                                            max(liste_hmax_capt)]
+
+    
     def _print_sun(self, day, hour, pyratp, truesolartime):
         """Méthode qui imprime les coordonnées du soleil (pour le débuggage)
             séparée pour la lisibilité dans run(...)
@@ -1651,6 +1851,10 @@ class LightVegeManager:
     @property
     def voxels_outputs(self):
         return self.__voxels_outputs 
+
+    @property
+    def sensors_outputs(self):
+        return self.__sensors_outputs 
 
     @property
     def sun(self):
@@ -1834,7 +2038,7 @@ class LightVegeManager:
                         organe_id = int(self.__shape_outputs.iloc[i]["ShapeId"])
 
                         # PAR en W/m²
-                        par_intercept = self.__shape_outputs.iloc[i]['rc Ei']
+                        par_intercept = self.__shape_outputs.iloc[i]['par Ei']
                         S_leaf = self.__shape_outputs.iloc[i]['Area']
                         
                         id_plante = list_lstring[k][organe_id][0]
@@ -1852,8 +2056,8 @@ class LightVegeManager:
                     list_invar[k]['parip'] = list_invar[k]['parip'] * (3600*24)/1000000
 
             # /!\ energy = energy * dx * dy
-            res_trans = np.ones((m_lais.shape[1], m_lais.shape[2], m_lais.shape[3])) * energy
-            return res_trans
+            # res_trans = np.ones((m_lais.shape[1], m_lais.shape[2], m_lais.shape[3])) * energy
+            # return res_trans
 
 
                 # # si il y a de la géométrie en entrée
@@ -1896,7 +2100,7 @@ class LightVegeManager:
         planttrianglevalues=[]
         
         if self.__lightmodel == "ratp" :
-            nent = int(self._LightVegeManager__ratp_scene.nent)
+            nent = int(self.__ratp_scene.nent)
             # plot dans VTK
             temp1, temp2, temp3 = [], [], []
             # éviter les éléments en trop
@@ -1910,6 +2114,7 @@ class LightVegeManager:
 
             RATP2VTK.RATPVOXELS2VTK(self.__ratp_scene, lad, "LAD", path+"init_voxels.vtk")
         if self.__matching_ids and printtriangles:
+            nent = len(self.__in_geometry["scenes"])
             if not plantnames:
                 for i in range(nent):
                     plantnames.append("plant_"+str(i))
