@@ -29,9 +29,9 @@ def testsensors(pgl_scene, folder_vtk_outputs):
     environment["caribu opt"]["par"] = (0.10, ) # plaque opaque 
 
     # grille de capteurs
-    dxyz = [0.04, 0.04, 0.02] # m
-    nxyz = [10, 10, 1] # nombre de capteurs
-    orig=[0.,0.,0.]
+    dxyz = [0.04, 0.04, 0.02] # en m
+    nxyz = [10, 10, 1] # nombre de capteurs dans chaque axe
+    orig = [0.,0.,0.]
     caribu_parameters["sensors"] = ["grid", dxyz, nxyz, orig, folder_vtk_outputs, "vtk"]
 
     # autres paramètres de CARIBU

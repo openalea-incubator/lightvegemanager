@@ -68,7 +68,7 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
         # Paramètres pré-simulation
         environment["names"] = ["l-egume"]
         environment["coordinates"] = [46.43,0,0] # latitude, longitude, timezone
-        environment["sky"] = ["file", "runscripts/legume/sky_5.data"] # [4, 5, "soc"] 
+        environment["sky"] = "turtle46" # [4, 5, "soc"] 
         environment["diffus"] = True
         environment["direct"] = False
         environment["reflected"] = False
@@ -76,13 +76,12 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
 
         environment["caribu opt"] = {} 
         environment["caribu opt"]["par"] = (0.10, 0.07)
-        #environment["caribu opt"]["rs"] = (0.41, 0.43, 0.41, 0.43)
        
         caribu_parameters["sun algo"] = "caribu"
         nxyz = [m_lais.shape[3], m_lais.shape[2], m_lais.shape[1]]
         dxyz = [x * 0.01 for x in dxyz] # conversion de cm à m
         orig = [0.,0.,0.]
-        caribu_parameters["sensors"] = ["grid", dxyz, nxyz, orig, "outputs/caribu_sensors/", "vtk"]
+        caribu_parameters["sensors"] = ["grid", dxyz, nxyz, orig, "outputs/legume_caribu/", "vtk"]
 
         lghtcaribu = LightVegeManager(environment=environment,
                                     lightmodel="caribu",
@@ -185,7 +184,7 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
 
             start=time.time()
             lghtcaribu.init_scenes(geometry)
-            lghtcaribu.VTKinit("outputs/caribu_sensors/")
+            lghtcaribu.VTKinit(foldout)
             lghtcaribu.run(energy=1, day=doy, hour=hour, truesolartime=True, parunit="RG")
             
             # t_ratp_tot = (time.time() - start)
@@ -222,24 +221,23 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
                 list_dicFeuilBilanR.append(lsystem_simulations[n].tag_loop_inputs[14])
 
             # transfert des sorties
-            lghtcaribu.to_l_egume(m_lais=m_lais, 
-                                        energy = 0, 
-                                        list_lstring = lstring, 
-                                        list_dicFeuilBilanR=list_dicFeuilBilanR, 
-                                        list_invar=list_invar2)
+            res_trans_2 = lghtcaribu.to_l_egume(m_lais=m_lais, 
+                                                energy = energy, 
+                                                list_lstring = lstring, 
+                                                list_dicFeuilBilanR=list_dicFeuilBilanR, 
+                                                list_invar=list_invar2)
                   
-            # if active=="caribu":
-            #     list_invar = list_invar2
+            if active=="caribu":
+                list_invar = list_invar2
+                res_trans = res_trans_2
 
-            
             # calcul du epsi sur les résultats de RATP (non utilisé dans la simulation)
-            # if passive=="caribu":
-                # ls_epsi
-                # transmi_sol = np.sum(res_trans_2[-1][:][:]) / (energy * surfsolref)
-                # epsi = 1. - transmi_sol  # bon
-                # for k in range(len(names_simulations)) :
-                #     ls_epsi = epsi * list_invar2[k]['parip'] / (np.sum(list_invar2[k]['parip']) + np.sum(list_invar2[k]['parip']) + 10e-15)
-                #     print('CARIBU passive',names_simulations[k],'epsi', sum(ls_epsi))
+            if passive=="caribu":
+                transmi_sol = np.sum(res_trans_2[-1][:][:]) / (energy * surfsolref)
+                epsi = 1. - transmi_sol  # bon
+                for k in range(len(names_simulations)) :
+                    ls_epsi = epsi * list_invar2[k]['parip'] / (np.sum(list_invar2[k]['parip']) + np.sum(list_invar2[k]['parip']) + 10e-15)
+                    print('CARIBU passive',names_simulations[k],'epsi', sum(ls_epsi))
 
             #     # calcul paramètres par entité
             #     list_diff_para=[]
@@ -357,7 +355,7 @@ if __name__ == "__main__":
 
     # valeur par défaut
     foldin = "l-egume/legume/input/"
-    foldout = "outputs/legume_ratp/photomorpho_ramif_leg_sky100_1ent/"
+    foldout = "outputs/legume_caribu/"
     active = "legume" # legume ou ratp
     passive = "caribu" # legume ou ratp
     writegeo = True

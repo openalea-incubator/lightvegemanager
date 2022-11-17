@@ -2070,9 +2070,11 @@ class LightVegeManager:
                     print("ERROR : Doesn't work yet")
                 
                 else :
-                    # on cherche la couche du ciel (< 126)
+                    # réduction si le nombre de couches remplies < nombre de couches prévues
                     skylayer = (self.__pmax[2]) // dxyz[2]
-                    skylayer = int(nxyz[2] - 1 - skylayer)
+                    if skylayer < nxyz[2] : skylayer = int(nxyz[2] - 1 - skylayer)
+                    # autrement on garde le nombre de voxels prévus
+                    else : skylayer = 0 
                 
                     ID_capt = 0
                     for ix in range(nxyz[0]):
