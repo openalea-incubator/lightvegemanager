@@ -1386,18 +1386,19 @@ class LightVegeManager:
                                 #: (reflectance, transmittance) of the adaxial side of the leaves, élément translucide symétrique
                                 opt[band][id] = coef 
 
-
+                    debug = False
+                    if "debug" in self.__in_lightmodel_parameters and self.__in_lightmodel_parameters["debug"] : debug = True
                     # si on souhaite construire une grille de capteurs
-                    if self.__in_lightmodel_parameters["sensors"][0] == "grid" :
+                    if "sensors" in self.__in_lightmodel_parameters and self.__in_lightmodel_parameters["sensors"][0] == "grid" :
                         sensors_caribu, sensors_plantgl, Pmax_capt = self._create_caribu_legume_sensors()
 
                     # construction d'une scène ciel et soleil
                     if self.__in_environment["infinite"] : # on ajoute un domaine pour la création du pattern
-                        c_scene_sky = CaribuScene(scene=self.__caribu_scene, light=self.__sky, opt=opt, scene_unit=self.__main_unit, pattern=self.__in_geometry["domain"])
-                        c_scene_sun = CaribuScene(scene=self.__caribu_scene, light=self.__sun, opt=opt, scene_unit=self.__main_unit, pattern=self.__in_geometry["domain"])
+                        c_scene_sky = CaribuScene(scene=self.__caribu_scene, light=self.__sky, opt=opt, scene_unit=self.__main_unit, pattern=self.__in_geometry["domain"], debug = debug)
+                        c_scene_sun = CaribuScene(scene=self.__caribu_scene, light=self.__sun, opt=opt, scene_unit=self.__main_unit, pattern=self.__in_geometry["domain"], debug = debug)
                     else:
-                        c_scene_sky = CaribuScene(scene=self.__caribu_scene, light=self.__sky, opt=opt, scene_unit=self.__main_unit)
-                        c_scene_sun = CaribuScene(scene=self.__caribu_scene, light=self.__sun, opt=opt, scene_unit=self.__main_unit)
+                        c_scene_sky = CaribuScene(scene=self.__caribu_scene, light=self.__sky, opt=opt, scene_unit=self.__main_unit, debug = debug)
+                        c_scene_sun = CaribuScene(scene=self.__caribu_scene, light=self.__sun, opt=opt, scene_unit=self.__main_unit, debug = debug)
 
                     if self.__in_environment["diffus"] :
                         # Direct et diffus
@@ -1661,16 +1662,12 @@ class LightVegeManager:
         nxyz = self.__in_lightmodel_parameters["sensors"][2] 
         orig = self.__in_lightmodel_parameters["sensors"][3] 
 
-        # # on redimensionne si dxyz problèmatique
-        # if "transformations" in self.__in_geometry :
-        #     if "scenes unit" in self.__in_geometry["transformations"] :
-        #         scene_unit = self.__in_geometry["transformations"]["scenes unit"][0]
-        #         scale_unit = self.units[scene_unit]/self.units[self.__main_unit]
-        #         dxyz = [x*scale_unit for x in dxyz]
-
-        # on cherche la couche du ciel (< 126)
+        # réduction si le nombre de couches remplies < nombre de couches prévues
         skylayer = (self.__pmax[2]) // dxyz[2]
-        skylayer = int(nxyz[2] - 1 - skylayer)
+        if skylayer < nxyz[2] : skylayer = int(nxyz[2] - 1 - skylayer)
+        
+        # autrement on garde le nombre de voxels prévus
+        else : skylayer = 0 
 
         # scene plantGL qui acceuillera les capteurs
         s_capt = pgl.Scene()
@@ -1690,7 +1687,7 @@ class LightVegeManager:
                     # vecteur de translation
                     tx = orig[0] + ix * dxyz[0]
                     ty = orig[1] + iy * dxyz[1]
-                    tz = orig[2] + (iz * dxyz[2]) + 1e-8
+                    tz = orig[2] + iz * dxyz[2]
 
                     # retient la translation
                     dico_translat[ID_capt] = [tx, ty, tz]
@@ -2028,6 +2025,14 @@ class LightVegeManager:
             # réécriture de calc_paraF dans ShootMorpho.py pour correspondre aux triangles
             # parip : somme des organes sur tous les statuts
             # parap : idem sauf si plante senescente alors == 0
+
+            # récupère les données de la grille de capteurs
+            dxyz = self.__in_lightmodel_parameters["sensors"][1]
+            nxyz = self.__in_lightmodel_parameters["sensors"][2] 
+            # surface d'une face d'un voxel
+            dS = dxyz[0] * dxyz[1]
+
+            # Calcul du rayonnement absorbé par plante et par espèce
             for k in range(len(list_invar)) :
                 # on initialise la somme sur chaque plante à 0
                 list_invar[k]['parap'] = scipy.array([0] * len(list_invar[k]['Hplante']))
@@ -2054,33 +2059,31 @@ class LightVegeManager:
                     # conversion
                     list_invar[k]['parap'] = list_invar[k]['parap'] * (3600*24)/1000000
                     list_invar[k]['parip'] = list_invar[k]['parip'] * (3600*24)/1000000
+            
+            # calcul de res_trans : rayonnement transmis à travers la grille de voxel
+            res_trans = np.ones((m_lais.shape[1], m_lais.shape[2], m_lais.shape[3]))
 
-            # /!\ energy = energy * dx * dy
-            # res_trans = np.ones((m_lais.shape[1], m_lais.shape[2], m_lais.shape[3])) * energy
-            # return res_trans
+            # si scène non vide
+            if self.__matching_ids:
+                # traitements des sensors différents si scène infinie ou non
+                if self.__in_environment["infinite"] : 
+                    print("ERROR : Doesn't work yet")
+                
+                else :
+                    # on cherche la couche du ciel (< 126)
+                    skylayer = (self.__pmax[2]) // dxyz[2]
+                    skylayer = int(nxyz[2] - 1 - skylayer)
+                
+                    ID_capt = 0
+                    for ix in range(nxyz[0]):
+                        for iy in range(nxyz[1]):
+                            for iz in range(nxyz[2] - skylayer):
+                                res_trans[(nxyz[2]-1) - iz][iy][ix] -= self.__sensors_outputs['par'][ID_capt]
+                                ID_capt += 1
+            res_trans = res_trans * energy * dS
 
-
-                # # si il y a de la géométrie en entrée
-                # if len(self.__outputs["Area"]) > 0 :
-                #     id_LightVegeManager = 0
-                #     for i, org in enumerate(list_dicOrgans[k]['organ']):
-                #         if org == "Lf" or org == "Stp" :
-                #             id_plante = list_dicOrgans[k]['nump'][i]
-                #             par_intercept = self.__shape_outputs.iloc[id_LightVegeManager]['PARi']
-                #             S_leaf = self.__shape_outputs.iloc[id_LightVegeManager]['Area']
-                #             S_plante = sum(list_invar[k]['SurfPlante'][id_plante])
-
-                #             list_invar[k]['parip'][id_plante] +=  par_intercept * (S_leaf/S_plante)
-                            
-                #             # on enlève les feuilles senescentes 
-                #             if list_dicOrgans[k]['statut'][i] != 'sen' :
-                #                 list_invar[k]['parap'][id_plante] +=  par_intercept * (S_leaf/list_invar[k]['SurfPlante'][id_plante])
-                            
-                #             id_LightVegeManager += 1
-
-                #     # multiplie les sommes par un coefficient   
-                #     list_invar[k]['parap'] = list_invar[k]['parap'] * ((3600 * 24) / 1000000)
-                #     list_invar[k]['parip'] = list_invar[k]['parip'] * ((3600 * 24) / 1000000)
+            return res_trans
+            
 
 
 
@@ -2142,7 +2145,8 @@ class LightVegeManager:
             iteration : None ou int, numéro de l'itération temporelle
             voxels : boolean, si ratp écrit ou non le PAR sur les voxels
         '''    
-        par = []
+        values = []
+        valuesnames = []
 
         if self.__matching_ids and triangles:
             # si la lumière a été calculée sur plusieurs itération
@@ -2161,11 +2165,23 @@ class LightVegeManager:
             
             # ou alors sur une itération en particulier
             else:
-                for i,tr in enumerate(self.__my_scene):
-                    df = self.__outputs[(self.__outputs.primitive_index == i)]
-                    par.append(df['PARa'].values[0])                
-
-                VTKtriangles(self.__my_scene, [par], ['PARa'], path+"triangles_PAR_"+str(iteration)+".vtk")
+                if self.__lightmodel == "ratp" :
+                    par = []
+                    for i,tr in enumerate(self.__my_scene):
+                        df = self.__outputs[(self.__outputs.primitive_index == i)]
+                        par.append(df['PARa'].values[0])                
+                    values = [par]
+                    valuesnames=["PARa"]
+    
+                elif self.__lightmodel == "caribu" :
+                    for band, coef in self.__in_environment["caribu opt"].items() : 
+                        bandval = []
+                        valuesnames.append(band+"_Ei")
+                        for i,tr in enumerate(self.__my_scene):
+                            df = self.__outputs[(self.__outputs.primitive_index == i)]
+                            bandval.append(df[band+" Ei"].values[0])   
+                        values.append(bandval)
+                VTKtriangles(self.__my_scene, values, valuesnames, path+"triangles_PAR_"+str(iteration)+".vtk")
 
         # VTK des voxels
         if self.__lightmodel == "ratp" and voxels:

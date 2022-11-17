@@ -10,10 +10,8 @@ except ModuleNotFoundError:
     sys.path.insert(1, os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
     from src.LightVegeManager import *
 
-
-
 # Test des sensors dans caribu sur une grille vide
-def testsensors():
+def testsensors(pgl_scene, folder_vtk_outputs):
     print("=== START ===")
 
     ## INITIALISATION LIGHTVEGEMANAGER
@@ -21,46 +19,63 @@ def testsensors():
     caribu_parameters = {}
 
     # Paramètres pré-simulation
-    environment["sky"] = [4, 5, "soc"]
+    environment["sky"] = [4, 5, "soc"]  # ["file", "runscripts/legume/sky_5.data"] [4, 5, "soc"] "turtle46"
     environment["diffus"] = True
     environment["direct"] = False
     environment["reflected"] = False
-
-    # note : si True -> réception, si False -> atténuation
     environment["infinite"] = True
 
     environment["caribu opt"] = {} 
-    environment["caribu opt"]["par"] = (0.10, 0.07)
+    environment["caribu opt"]["par"] = (0.10, ) # plaque opaque 
 
-    caribu_parameters["sun algo"] = "caribu"
-    dxyz = [0.04, 0.04, 0.02]
-    nxyz = [10, 10, 1]
+    # grille de capteurs
+    dxyz = [0.04, 0.04, 0.02] # m
+    nxyz = [10, 10, 1] # nombre de capteurs
     orig=[0.,0.,0.]
-    caribu_parameters["sensors"] = ["grid", dxyz, nxyz, orig, "outputs/caribu_sensors/", "vtk"]
+    caribu_parameters["sensors"] = ["grid", dxyz, nxyz, orig, folder_vtk_outputs, "vtk"]
+
+    # autres paramètres de CARIBU
+    caribu_parameters["debug"] = True
+    caribu_parameters["sun algo"] = "caribu"
 
     lghtcaribu = LightVegeManager(environment=environment,
                                 lightmodel="caribu",
                                 lightmodel_parameters=caribu_parameters, 
                                 main_unit="m")
 
-    # crée un petit carré
-    points = [(0, 0, 0), (0.02, 0, 0), (0.02, 0, 0.01), (0, 0, 0.01)]
-    normals = [(0, 1, 0) for i in range(4)]
-    indices = [(0, 1, 2, 3)]
-
-    carre = pgl.QuadSet(points, indices, normals, indices)
-    carre = pgl.Translated(geometry=carre, translation=(0.2, 0.2, 0.005))
-
     geometry = {}
-    geometry["scenes"] = [pgl.Scene([pgl.Shape(geometry=carre, id=1)])]
-    geometry["domain"] = ((0,0), (nxyz[0] * dxyz[0], nxyz[1] * dxyz[1]))
+    geometry["scenes"] = [pgl_scene]
+    reduction_domain = 0
+    geometry["domain"] = ((orig[0] + reduction_domain, orig[1] + reduction_domain), 
+                            (nxyz[0] * dxyz[0] - reduction_domain, nxyz[1] * dxyz[1] - reduction_domain))
 
     # Calcul du rayonnement sur un jour arbitraire
     lghtcaribu.init_scenes(geometry)
-    lghtcaribu.VTKinit("outputs/caribu_sensors/")
+    lghtcaribu.VTKinit(folder_vtk_outputs+"init_")
     lghtcaribu.run(energy=1, day=100, hour=12, truesolartime=True, parunit="RG")
+    lghtcaribu.VTKout(folder_vtk_outputs, iteration=0)
 
     print("=== END ===")
 
 if __name__ == "__main__":
-    testsensors()
+    # Plaque horizontale
+    points = [(0, 0, 0), (0.2, 0, 0), (0.2, 0.1, 0), (0, 0.1, 0)]
+    normals = [(0, 0, 1) for i in range(4)]
+    indices = [(0, 1, 2, 3)]
+    carre = pgl.QuadSet(points, indices, normals, indices)
+    carre = pgl.Translated(geometry=carre, translation=(0.1, 0.2, 0.019))
+    s = pgl.Scene([pgl.Shape(geometry=carre, id=1)])
+
+    folder_vtk_outputs = "outputs/caribu_sensors/horiz_"
+    testsensors(s, folder_vtk_outputs)
+
+    # plaque verticale
+    points = [(0, 0, 0), (0.2, 0, 0), (0.2, 0, 0.1), (0, 0, 0.1)]
+    normals = [(0, 1, 0) for i in range(4)]
+    indices = [(0, 1, 2, 3)]
+    carre = pgl.QuadSet(points, indices, normals, indices)
+    carre = pgl.Translated(geometry=carre, translation=(0.1, 0.1, 0.01))
+    s = pgl.Scene([pgl.Shape(geometry=carre, id=1)])
+
+    folder_vtk_outputs = "outputs/caribu_sensors/vert_"
+    testsensors(s, folder_vtk_outputs)
