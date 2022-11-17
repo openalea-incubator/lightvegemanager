@@ -33,94 +33,92 @@ Prise en compte des tiges
 
 """
 
-# scène géométrique
-# NE
-geom1 = pgl_all.FaceSet([(0.1,0.1,0.96),(0.1,0.6,0.96), (0.6,0.6,0.96),(0.6,0.1,0.96)],[range(4)])
+def run_print(lghtcaribu, lghtratp, PARi, day, hour):
+    # calcul
+    lghtcaribu.run(energy=PARi, day=day, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True, printsun=True)
+    lghtratp.run(energy=PARi, day=day, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
 
-geom2 = pgl_all.FaceSet([(0.1,0.5,0.806),(0.1,0.9,0.806), (0.6,0.9,0.806),(0.6,0.5,0.806)],[range(4)])
+    # résultats
+    print("=== CARIBU ===")
+    print(lghtcaribu.shapes_outputs)
+    print("=== RATP ===")
+    print(lghtratp.shapes_outputs)
+    print("\n")
 
-geom3 = pgl_all.FaceSet([(0.5,0.1,0.646),(0.5,0.7,0.646), (0.9,0.7,0.646),(0.9,0.1,0.646)],[range(4)])
+if __name__ == "__main__":
+    # scène géométrique
+    # NE
+    geom1 = pgl_all.FaceSet([(0.1,0.1,0.96),(0.1,0.6,0.96), (0.6,0.6,0.96),(0.6,0.1,0.96)],[range(4)])
 
-geom4 = pgl_all.FaceSet([(0.3,0.5,0.486),(0.3,0.9,0.486), (0.8,0.9,0.486),(0.8,0.5,0.486)],[range(4)])
+    geom2 = pgl_all.FaceSet([(0.1,0.5,0.806),(0.1,0.9,0.806), (0.6,0.9,0.806),(0.6,0.5,0.806)],[range(4)])
 
-geom5 = pgl_all.FaceSet([(0.3,0.1,0.32),(0.3,0.5,0.32), (0.8,0.5,0.32),(0.8,0.1,0.32)],[range(4)])
+    geom3 = pgl_all.FaceSet([(0.5,0.1,0.646),(0.5,0.7,0.646), (0.9,0.7,0.646),(0.9,0.1,0.646)],[range(4)])
 
-geom6 = pgl_all.FaceSet([(0.2,0.4,0.16),(0.2,0.9,0.16), (0.6,0.9,0.16),(0.6,0.4,0.16)],[range(4)])
+    geom4 = pgl_all.FaceSet([(0.3,0.5,0.486),(0.3,0.9,0.486), (0.8,0.9,0.486),(0.8,0.5,0.486)],[range(4)])
 
-s = pgl_all.Scene([pgl_all.Shape(geom1, pgl_all.Material((250,0,0),1), 888),
-                    pgl_all.Shape(geom2, pgl_all.Material((250,0,0),1), 888),
-                    pgl_all.Shape(geom3, pgl_all.Material((250,0,0),1), 888),
-                    pgl_all.Shape(geom4, pgl_all.Material((250,0,0),1), 888),
-                    pgl_all.Shape(geom5, pgl_all.Material((250,0,0),1), 888),
-                    pgl_all.Shape(geom6, pgl_all.Material((250,0,0),1), 888)])
+    geom5 = pgl_all.FaceSet([(0.3,0.1,0.32),(0.3,0.5,0.32), (0.8,0.5,0.32),(0.8,0.1,0.32)],[range(4)])
 
-geometry = {}
-environment = {}
-ratp_parameters = {}
-caribu_parameters = {}
+    geom6 = pgl_all.FaceSet([(0.2,0.4,0.16),(0.2,0.9,0.16), (0.6,0.9,0.16),(0.6,0.4,0.16)],[range(4)])
 
-# Paramètres pré-simulation
-geometry["scenes"] = [s]
-geometry["stems id"] = [(888, 0)]
+    s = pgl_all.Scene([pgl_all.Shape(geom1, pgl_all.Material((250,0,0),1), 888),
+                        pgl_all.Shape(geom2, pgl_all.Material((250,0,0),1), 888),
+                        pgl_all.Shape(geom3, pgl_all.Material((250,0,0),1), 888),
+                        pgl_all.Shape(geom4, pgl_all.Material((250,0,0),1), 888),
+                        pgl_all.Shape(geom5, pgl_all.Material((250,0,0),1), 888),
+                        pgl_all.Shape(geom6, pgl_all.Material((250,0,0),1), 888)])
 
-environment["coordinates"] = [0., 0., 0.] # latitude, longitude, timezone
-environment["sky"] = "turtle46" # turtle à 46 directions par défaut
-environment["diffus"] = False
-environment["direct"] = True
-environment["reflected"] = False
-environment["reflectance coefficients"] = [[0.1, 0.05]]
-environment["infinite"] = False
+    geometry = {}
+    environment = {}
+    ratp_parameters = {}
+    caribu_parameters = {}
 
-## Paramètres CARIBU ##
-caribu_parameters["sun algo"] = "caribu"
-lghtcaribu = LightVegeManager(environment=environment,
-                                lightmodel="caribu",
-                                lightmodel_parameters=caribu_parameters)
-lghtcaribu.init_scenes(geometry)
+    # Paramètres pré-simulation
+    geometry["scenes"] = [s]
+    geometry["stems id"] = [(888, 0)]
 
-## Paramètres RATP ##
-dv = 1. # m
-dx, dy, dz = dv, dv, dv # m
-ratp_parameters["voxel size"] = [dx, dy, dz]
-ratp_parameters["soil reflectance"] = [0., 0.]
-ratp_parameters["mu"] = [1.]
-ratp_parameters["tesselation level"] = 0
-ratp_parameters["angle distrib algo"] = "compute global"
-ratp_parameters["nb angle classes"] = 30
-lghtratp = LightVegeManager(environment=environment,
-                            lightmodel="ratp",
-                            lightmodel_parameters=ratp_parameters)
-lghtratp.init_scenes(geometry)
+    environment["coordinates"] = [0., 0., 0.] # latitude, longitude, timezone
+    environment["sky"] = "turtle46" # turtle à 46 directions par défaut
+    environment["diffus"] = False
+    environment["direct"] = True
+    environment["reflected"] = False
+    environment["reflectance coefficients"] = [[0.1, 0.05]]
+    environment["caribu opt"] = {} 
+    environment["caribu opt"]["par"] = (0.10, 0.05)
+    environment["infinite"] = False
 
-# imprime la scène
-lghtratp.VTKinit("outputs/stems/")
+    ## Paramètres CARIBU ##
+    caribu_parameters["sun algo"] = "caribu"
+    lghtcaribu = LightVegeManager(environment=environment,
+                                    lightmodel="caribu",
+                                    lightmodel_parameters=caribu_parameters)
+    lghtcaribu.init_scenes(geometry)
 
-## situation 1
-PARi=500
-DOY=100.
-hour=12
-# calcul
-lghtcaribu.run(PARi=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True, printsun=True)
-lghtratp.run(PARi=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
+    ## Paramètres RATP ##
+    dv = 1. # m
+    dx, dy, dz = dv, dv, dv # m
+    ratp_parameters["voxel size"] = [dx, dy, dz]
+    ratp_parameters["soil reflectance"] = [0., 0.]
+    ratp_parameters["mu"] = [1.]
+    ratp_parameters["tesselation level"] = 0
+    ratp_parameters["angle distrib algo"] = "compute global"
+    ratp_parameters["nb angle classes"] = 30
+    lghtratp = LightVegeManager(environment=environment,
+                                lightmodel="ratp",
+                                lightmodel_parameters=ratp_parameters)
+    lghtratp.init_scenes(geometry)
 
-# résultats
-print("=== CARIBU ===")
-print(lghtcaribu.shapes_outputs)
-print("=== RATP ===")
-print(lghtratp.shapes_outputs)
+    # imprime la grille de voxels de RATP
+    lghtratp.VTKinit("outputs/stems/")
 
-## situation 2
-PARi=500
-DOY=100.
-hour=17.5
-# calcul
-lghtcaribu.run(PARi=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True, printsun=True)
-lghtratp.run(PARi=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
+    ## situation 1
+    PARi=500
+    day=100.
+    hour=12
+    run_print(lghtcaribu, lghtratp, PARi, day, hour)
 
-# résultats
-print("=== CARIBU ===")
-print(lghtcaribu.shapes_outputs)
-print("=== RATP ===")
-print(lghtratp.shapes_outputs)
+    ## situation 2
+    hour=17.5
+    run_print(lghtcaribu, lghtratp, PARi, day, hour)
 
-lghtcaribu.VTKout("outputs/stems/", iteration=0)
+    # résultats au format VTK de CARIBU
+    lghtcaribu.VTKout("outputs/stems/", iteration=0)

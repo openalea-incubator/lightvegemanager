@@ -23,7 +23,7 @@ def testsensors(pgl_scene, folder_vtk_outputs):
     environment["diffus"] = True
     environment["direct"] = False
     environment["reflected"] = False
-    environment["infinite"] = True
+    environment["infinite"] = False
 
     environment["caribu opt"] = {} 
     environment["caribu opt"]["par"] = (0.10, ) # plaque opaque 

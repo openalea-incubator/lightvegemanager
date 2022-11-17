@@ -1386,11 +1386,25 @@ class LightVegeManager:
                                 #: (reflectance, transmittance) of the adaxial side of the leaves, élément translucide symétrique
                                 opt[band][id] = coef 
 
+                    # On active l'option verbose de CARIBU
                     debug = False
                     if "debug" in self.__in_lightmodel_parameters and self.__in_lightmodel_parameters["debug"] : debug = True
+                    
                     # si on souhaite construire une grille de capteurs
                     if "sensors" in self.__in_lightmodel_parameters and self.__in_lightmodel_parameters["sensors"][0] == "grid" :
                         sensors_caribu, sensors_plantgl, Pmax_capt = self._create_caribu_legume_sensors()
+
+                    # pattern scene infini par défaut
+                    if "domain" not in self.__in_geometry :
+                        if "sensors" in self.__in_lightmodel_parameters and self.__in_lightmodel_parameters["sensors"][0] == "grid" :
+                            reduction_domain = 0
+                            dxyz = self.__in_lightmodel_parameters["sensors"][1]
+                            nxyz = self.__in_lightmodel_parameters["sensors"][2]
+                            orig = self.__in_lightmodel_parameters["sensors"][3]
+                            self.__in_geometry["domain"] = ((orig[0] + reduction_domain, orig[1] + reduction_domain), 
+                                                                (nxyz[0] * dxyz[0] - reduction_domain, nxyz[1] * dxyz[1] - reduction_domain))
+                        else:
+                            self.__in_geometry["domain"] = ((self.__pmin[0], self.__pmin[1]), (self.__pmax[0], self.__pmax[1]))
 
                     # construction d'une scène ciel et soleil
                     if self.__in_environment["infinite"] : # on ajoute un domaine pour la création du pattern

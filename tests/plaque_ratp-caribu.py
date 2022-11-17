@@ -13,7 +13,7 @@ except ModuleNotFoundError:
 import openalea.plantgl.all as pgl_all
 
 
-def simulation(geom, hour, situation, direct, diffus, ratp_mu, dv):
+def simulation(geom, hour, situation, direct, diffus, ratp_mu, dv, folderout):
     print("--- "+situation)
 
     geometry = {}
@@ -32,6 +32,8 @@ def simulation(geom, hour, situation, direct, diffus, ratp_mu, dv):
     environment["direct"] = direct
     environment["reflected"] = False
     environment["reflectance coefficients"] = [[0.1, 0.05]]
+    environment["caribu opt"] = {} 
+    environment["caribu opt"]["par"] = (0.10, 0.05)
     environment["infinite"] = False
 
     ## Paramètres CARIBU ##
@@ -46,45 +48,46 @@ def simulation(geom, hour, situation, direct, diffus, ratp_mu, dv):
     ratp_parameters["angle distrib algo"] = "compute global"
     ratp_parameters["nb angle classes"] = 45
 
-
     PARi = 500 # forçage arbitraire en µmol.m-2.s-1
     day = 264 # jour arbitraire (21 septembre)
     print("--- day %i, hour %i"%(day, hour))
+    
     print("\n\t C A R I B U")
     #  CARIBU
     lghtcaribu = LightVegeManager(environment=environment,
                                     lightmodel="caribu", 
-                                    lightmodel_parameters=caribu_parameters, 
-                                    global_scene_tesselate_level=5)
-    lghtcaribu.init_scenes(geometry)                                    
-    lghtcaribu.run(PARi=PARi, day=day, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
+                                    lightmodel_parameters=caribu_parameters)
+    lghtcaribu.init_scenes(geometry, global_scene_tesselate_level=5)                                    
+    lghtcaribu.run(energy=PARi, day=day, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
     print(lghtcaribu.shapes_outputs)
 
     # VTK de la scène avec x+ = North
-    path_out = "outputs/debug_plaque_ratp-caribu/caribu_"+str(day)+"_"+str(hour)+"h"+"_"+situation
+    path_out = folderout+"caribu_"+str(day)+"_"+str(hour)+"h"+"_"+situation
     lghtcaribu.VTKout(path_out, 1)
 
     #  RATP
     print("\n\t R A T P")
-    lghtratp = LightVegeManager(geometry=geometry,
-                                environment=environment,
+    lghtratp = LightVegeManager(environment=environment,
                                 lightmodel="ratp", 
                                 lightmodel_parameters=ratp_parameters)
-    lghtratp.run(PARi=PARi, day=day, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
+    lghtratp.init_scenes(geometry)
+    lghtratp.run(energy=PARi, day=day, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
     print(lghtratp.shapes_outputs)
 
     # VTK de la scène avec x+ = North
-    path_out = "outputs/debug_plaque_ratp-caribu/ratp_"+str(day)+"_"+str(hour)+"h"+"_"+situation
+    path_out = folderout+"ratp_"+str(day)+"_"+str(hour)+"h"+"_"+situation
     lghtratp.VTKout(path_out, 1, voxels=True)
 
 
     # ligne du soleil (rotation de 180° autour de z pour se mettre dans l'espace x+ = North)
     VTKline(Vector3(float(-lghtcaribu.sun[0][1][0])*2, float(-lghtcaribu.sun[0][1][1])*2, float(lghtcaribu.sun[0][1][2])*2),
             Vector3(float(lghtcaribu.sun[0][1][0])*2, float(lghtcaribu.sun[0][1][1])*2, -float(lghtcaribu.sun[0][1][2])*2),
-            "outputs/debug_plaque_ratp-caribu/sun_day"+str(day)+"_"+str(hour)+"h.vtk")
+            folderout+"sun_day"+str(day)+"_"+str(hour)+"h.vtk")
     print("\n")
 
 if __name__ == "__main__":
+    folderout = "outputs/debug_plaque_ratp-caribu/"
+    
     # plaque horizontale
     geom = pgl_all.FaceSet([(0,0,0),(2,0,0), (2,2,0),(0,2,0)],[range(4)])
     # soleil au zenith + uniquement le direct
@@ -92,25 +95,25 @@ if __name__ == "__main__":
     situation = "plaque_horiz_zenith_direct"
     dv = 10. # m
     ratp_mu = [1.]
-    simulation(geom, hour, situation, True, False, ratp_mu, dv)
+    simulation(geom, hour, situation, True, False, ratp_mu, dv, folderout)
 
     # soleil au zenith + diffus + direct
     situation = "plaque_horiz_zenith_directdiffus"
     sun_sky_options = "mix"
     dv = 0.5 # m
-    simulation(geom, hour, situation, True, True, ratp_mu, dv)
+    simulation(geom, hour, situation, True, True, ratp_mu, dv, folderout)
 
     # plaque inclinée
     geom = pgl_all.FaceSet([(0,0,0),(2,0,0), (2,2,1),(0,2,1)],[range(4)])
     # soleil au zenith + direct
     situation = "plaque_incli_zenith_direct_noclump"
-    simulation(geom, hour, situation, True, False, ratp_mu, dv)
+    simulation(geom, hour, situation, True, False, ratp_mu, dv, folderout)
     # ajoute du clumping
     ratp_mu = [3.]
     situation = "plaque_incli_zenith_direct_withclump"
-    simulation(geom, hour, situation, True, False, ratp_mu, dv)
+    simulation(geom, hour, situation, True, False, ratp_mu, dv, folderout)
 
     # direct+diffus
     situation = "plaque_incli_zenith_directdiffus"
     ratp_mu = [1.]
-    simulation(geom, hour, situation, True, True, ratp_mu, dv)
+    simulation(geom, hour, situation, True, True, ratp_mu, dv, folderout)
