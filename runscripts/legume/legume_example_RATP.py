@@ -237,7 +237,7 @@ def simulation(foldin, foldout, active, passive, ratpgeo, skytype=2, writegeo=Fa
 
             start=time.time()
             lghtratp.init_scenes(geometry)
-            lghtratp.run(PARi=energy, day=doy, hour=hour, truesolartime=True, parunit="RG")
+            lghtratp.run(energy=energy, day=doy, hour=hour, truesolartime=True, parunit="RG")
             t_ratp_tot = (time.time() - start)
             time_ratp_tot += t_ratp_tot
             time_ratp_run += lghtratp.modelruntime
@@ -279,7 +279,7 @@ def simulation(foldin, foldout, active, passive, ratpgeo, skytype=2, writegeo=Fa
             geometry = {}
             geometry["scenes"] = [scene_legume]
 
-            lghtriri.run(PARi=energy, day=doy, hour=hour, truesolartime=True, parunit="RG")
+            lghtriri.run(energy=energy, day=doy, hour=hour, truesolartime=True, parunit="RG")
 
             res_trans, res_abs_i = lghtriri.legume_transmitted_light, lghtriri.legume_intercepted_light
 
@@ -463,10 +463,5 @@ if __name__ == "__main__":
     active = "ratp" # legume ou ratp
     passive = "legume" # legume ou ratp
     simulation(foldin, foldout, active, passive, ratpgeo, skytype)
-
-    # foldout = "outputs/legume_ratp/nophotomorpho_ramif_ratp_sky100/"
-    # skytype = 3 # type de ciel : 1=sky5, 2=sky46, 3=sky100
-    # simulation(foldin, foldout, active, passive, ratpgeo, skytype)
-
     
     print("=== END ===")

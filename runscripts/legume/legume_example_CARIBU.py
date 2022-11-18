@@ -285,11 +285,6 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
             #     surf_vox.append(surf_ent)
 
         
-        # SANS PHOTOMORPHO
-        # force le res_trans pour comparer avec caribu sans capteurs
-        # res_trans = np.zeros((m_lais.shape[1], m_lais.shape[2], m_lais.shape[3])) # * dxyz[0]*dxyz[1]*energy
-
-        
         iteration_legume_withoutlighting(i, lsystem_simulations, names_simulations, 
                                             m_lais, res_trans, res_abs_i, 
                                             meteo_j, surf_refVOX, surfsolref, 
