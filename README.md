@@ -29,7 +29,7 @@ Le package PyRATP est appelé en local et fait parti du package de lightvegemana
             python setup.py develop
             ```
 4) Installation de Wheat-fspm
-    1) dans une consol Git :
+    1) dans une console Git :
         ```bash
         git clone --recurse-submodules https://github.com/openalea-incubator/WheatFspm.git
         cd WheatFspm
@@ -41,7 +41,7 @@ Le package PyRATP est appelé en local et fait parti du package de lightvegemana
         ```
 
 5) Installation de l-egume
-    1) dans une consol Git :
+    1) dans une console Git :
         ```bash
         git clone -b Develop https://github.com/glouarn/l-egume.git
         ```
@@ -51,7 +51,7 @@ Le package PyRATP est appelé en local et fait parti du package de lightvegemana
         ```
 
 6) installation de LightVegeManager
-    1) dans une consol Git :
+    1) dans une console Git :
         ```bash
         git clone https://github.com/mwoussen/lightvegemanager
         ```

@@ -27,15 +27,6 @@ import scipy
 from src.Polygons import *
 from src.MyTesseletor import *
 
-# Pour utilisation de RiRi (à partir de l-egume)
-try:
-    import RIRI5 as riri
-except:
-    print("Error : l-egume not installed")
-    
-
-
-
 '''
 Fonctions de gestion
 '''
@@ -1564,7 +1555,7 @@ class LightVegeManager:
                         var=[]
                         for t in triangles_sensors:
                             var.append(aggregated_sky["par"]['sensors']['Ei'][t.id])
-                        VTKtriangles(triangles_sensors, [var], ["par_t"], self.__in_lightmodel_parameters["sensors"][-2] + "sensors.vtk")
+                        VTKtriangles(triangles_sensors, [var], ["par_t"], self.__in_lightmodel_parameters["sensors"][-2] + "sensors_d"+str(day)+"_h"+str(hour)+".vtk")
 
                 # enregistre les valeurs par shape et plantes
                 s_shapes = [0]*len(self.__matching_ids)
