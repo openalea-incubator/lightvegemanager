@@ -170,6 +170,7 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
     environment["reflected"] = False
     environment["infinite"] = True
     
+    environment["reflectance coefficients"] = [[0.1, 0.05]]
     environment["caribu opt"] = {}
     environment["caribu opt"]["par"] = (0.1, 0.05)
     
@@ -277,17 +278,17 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
             if active_lightmodel=="caribu" or passive_lightmodel=="caribu":             
                 c_time = time.time()
                 lghtcaribu.init_scenes(geometry)
-                lghtcaribu.run(PARi=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
+                lghtcaribu.run(energy=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
                 c_time = time.time()-c_time
                 
-                if active_lightmodel=="caribu" : lghtcaribu.PAR_update_MTG(g)
+                if active_lightmodel=="caribu" : lghtcaribu.PAR_update_MTG(PARi, g)
             
             if active_lightmodel=="ratp" or passive_lightmodel=="ratp":
                 r_time = time.time()
                 lghtratp.init_scenes(geometry)
-                lghtratp.run(PARi=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
+                lghtratp.run(energy=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
                 r_time = time.time()-r_time
-                if active_lightmodel == "ratp": lghtratp.PAR_update_MTG(g)
+                if active_lightmodel == "ratp": lghtratp.PAR_update_MTG(PARi, g)
             
             if active_lightmodel == "caribu" and passive_lightmodel=="ratp":
                 for key,items in g.property("PARa").items():
@@ -295,7 +296,7 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
                     para_r.append(lghtratp.shapes_outputs[lghtratp.shapes_outputs.ShapeId==key]["PARa"].values[0])
                     pari_r.append(lghtratp.shapes_outputs[lghtratp.shapes_outputs.ShapeId==key]["PARi"].values[0])
                     shapes.append(key)
-                    pari.append(lghtcaribu.shapes_outputs[lghtcaribu.shapes_outputs.ShapeId==key]["PARi"].values[0])
+                    pari.append(lghtcaribu.shapes_outputs[lghtcaribu.shapes_outputs.ShapeId==key]["par Ei"].values[0])
                     parsun.append(lghtratp.shapes_outputs[lghtratp.shapes_outputs.ShapeId==key]["SunlitPAR"].values[0])
                     parsha.append(lghtratp.shapes_outputs[lghtratp.shapes_outputs.ShapeId==key]["ShadedPAR"].values[0])
                 iter.extend([t_light]*len(g.property("PARa")))
@@ -327,7 +328,7 @@ def simulation(level_tesselation, SIMULATION_LENGTH, outfolderpath, active_light
                 for key,items in g.property("PARa").items():
                     para_c.append(items)
                     shapes.append(key)
-                    pari.append(lghtcaribu.shapes_outputs[lghtcaribu.shapes_outputs.ShapeId==key]["PARi"].values[0])
+                    pari.append(lghtcaribu.shapes_outputs[lghtcaribu.shapes_outputs.ShapeId==key]["par Ei"].values[0])
                 iter.extend([t_light]*len(g.property("PARa")))
                 parin.extend([PARi]*len(g.property("PARa")))
                 caribu_times.extend([c_time]*len(g.property("PARa")))
@@ -513,7 +514,7 @@ if __name__ == "__main__":
     # valeur par défaut
     level_tesselation=2
     nstep=4
-    outfolderpath = "outputs"
+    outfolderpath = "outputs/cnwheat/"
     sim = 1
     writing = "final"
     device = "local" # docker

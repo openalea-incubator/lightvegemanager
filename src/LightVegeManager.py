@@ -1127,21 +1127,31 @@ class LightVegeManager:
                             erel_list.append(xintav[i])
                         else:
                             erel_list.append(0.)
+
+                    # liste des indices
+                    numx=[]
+                    numy=[]
+                    numz=[]
+                    for v in VoxelId :
+                        numx.append(self.__ratp_scene.numx[int(v)-1])
+                        numy.append(self.__ratp_scene.numy[int(v)-1])
+                        numz.append(self.__ratp_scene.numz[int(v)-1])
+
                     dfvox =  pandas.DataFrame({'VegetationType':VegetationType,
                                         'Iteration':Iteration,
                                         'day':day,
                                         'hour':hour,
                                         'VoxelId':VoxelId,
-                                        'Nx':self.__ratp_scene.numx[:self.__ratp_scene.nveg],
-                                        'Ny':self.__ratp_scene.numy[:self.__ratp_scene.nveg],
-                                        'Nz':self.__ratp_scene.numz[:self.__ratp_scene.nveg],
+                                        'Nx':numx,
+                                        'Ny':numy,
+                                        'Nz':numz,
                                         'ShadedPAR':ShadedPAR,
                                         'SunlitPAR':SunlitPAR,
                                         'ShadedArea':ShadedArea,
                                         'SunlitArea': SunlitArea,
                                         'Area': ShadedArea + SunlitArea,
                                         'PARa': para_list,
-                                        'xintav': erel_list, 
+                                        'intercepted': erel_list
                                     })
                             
                 # ne prend pas le sol
@@ -1190,7 +1200,7 @@ class LightVegeManager:
                     s_area=[]
                     s_para=[]
                     s_pari=[]
-                    s_xintav=[]
+                    s_intercepted=[]
                     s_ite=[]
                     s_day=[]
                     s_hour=[]
@@ -1232,7 +1242,7 @@ class LightVegeManager:
                             s_parsha.append(sum(dffil['primitive_area']*dffil['ShadedPAR']) / s_area[-1])
                             s_areasun.append(sum(dffil['primitive_area']*dffil['SunlitArea']) / s_area[-1])
                             s_areasha.append(sum(dffil['primitive_area']*dffil['ShadedArea']) / s_area[-1])
-                            s_xintav.append(sum(dffil['primitive_area']*dffil['xintav']) / s_area[-1])
+                            s_intercepted.append(sum(dffil['primitive_area']*dffil['intercepted']) / s_area[-1])
                             s_ent.append(dffil["VegetationType"].values[0])
                             s_shapes.append(self.__matching_ids[id][0])
                     self.__shape_outputs = pandas.DataFrame({
@@ -1244,7 +1254,7 @@ class LightVegeManager:
                         "Area" : s_area,
                         "PARi" : s_pari,
                         "PARa" : s_para,
-                        "xintav" : s_xintav,
+                        "intercepted" : s_intercepted,
                         "SunlitPAR" : s_parsun,
                         "SunlitArea" : s_areasun,
                         "ShadedPAR" : s_parsha,
@@ -1971,14 +1981,14 @@ class LightVegeManager:
 
             return dict_global, dfvox
 
-    def PAR_update_MTG(self, mtg):
+    def PAR_update_MTG(self, energy, mtg):
         # crée un tableau comme dans caribu_facade de fspm-wheat
         dico_par = {}
         para_dic = {}
         erel_dic = {}
         for s in self.__shape_outputs["ShapeId"]:
-            para_dic[s] = self.__shape_outputs[self.__shape_outputs.ShapeId==s]["PARa"].values[0]
-            erel_dic[s] = self.__shape_outputs[self.__shape_outputs["ShapeId"].values==s]["xintav"].values[0]
+            para_dic[s] = self.__shape_outputs[self.__shape_outputs.ShapeId==s]["par Eabs"].values[0]
+            erel_dic[s] = self.__shape_outputs[self.__shape_outputs.ShapeId==s]["par Eabs"].values[0] / energy
         
         dico_par["PARa"] = para_dic
         dico_par["Erel"] = erel_dic
