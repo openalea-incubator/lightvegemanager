@@ -6,10 +6,7 @@ Le package PyRATP est appelé en local et fait parti du package de lightvegemana
 ## Installation de l'outil
 1) Création d'un environnement conda avec miniconda3
     ```bash
-    conda create -n myenvname python=3.7 \
-                    openalea.mtg=2.0.5 openalea.plantgl=3.14.1 openalea.lpy=3.9.2 alinea.caribu=8.0.7 alinea.astk=2.1.0 xlrd=2.0.1\
-                     coverage=6.3 nose=1.3.7 sphinx=4.4.0 statsmodels=0.13.1 numpy=1.20.3 scipy=1.7.3 pandas=1.3.4 progressbar2=3.37.1\
-                      -c conda-forge -c fredboudon
+    conda create -n myenvname python=3.7 openalea.mtg=2.0.5 openalea.plantgl=3.14.1 openalea.lpy=3.9.2 alinea.caribu=8.0.7 alinea.astk=2.1.0 xlrd=2.0.1 coverage=6.3 nose=1.3.7 sphinx=4.4.0 statsmodels=0.13.1 numpy=1.20.3 scipy=1.7.3 pandas=1.3.4 progressbar2=3.37.1 -c conda-forge -c fredboudon
     ```
 
 2) Se placer dans l'environnement créé : `conda activate myenvname`
