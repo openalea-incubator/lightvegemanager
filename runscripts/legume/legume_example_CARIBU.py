@@ -22,6 +22,8 @@ Comparaison de la lumière entre l-egume (RiRi) et RATP
 '''
 
 def simulation(foldin, foldout, active, passive, writegeo=False):
+    globalstart = time.time()
+
     # nom du test à lancer    
     fusms = "liste_usms_exemple.xls"
     ongletBatch = "exemple"
@@ -82,30 +84,31 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
         dxyz = [x * 0.01 for x in dxyz] # conversion de cm à m
         orig = [0.,0.,0.]
         caribu_parameters["sensors"] = ["grid", dxyz, nxyz, orig, "outputs/legume_caribu/", "vtk"]
+        caribu_parameters["debug"] = True
 
         lghtcaribu = LightVegeManager(environment=environment,
                                     lightmodel="caribu",
                                     lightmodel_parameters=caribu_parameters, 
                                     main_unit="m")
 
-        # # tableaux de sorties spécifiques 
-        # epsi_passive = []
-        # para_passive = []
-        # for k,n in enumerate(names_simulations) :
-        #     lstring_temp = lsystem_simulations[n].derive(lstring[k], 0, 1)
-        #     epsi_passive.append([[] for i in range(lsystem_simulations[n].nbplantes)])
-        #     para_passive.append([[] for i in range(lsystem_simulations[n].nbplantes)])
+        # tableaux de sorties spécifiques 
+        epsi_passive = []
+        para_passive = []
+        for k,n in enumerate(names_simulations) :
+            lstring_temp = lsystem_simulations[n].derive(lstring[k], 0, 1)
+            epsi_passive.append([[] for i in range(lsystem_simulations[n].nbplantes)])
+            para_passive.append([[] for i in range(lsystem_simulations[n].nbplantes)])
         # diff_voxel_para = []
         # diff_voxel_part = []
         # surf_vox = []
 
-        # # temps de calcul
-        # time_legume = 0
-        # time_ratp_tot = 0
-        # time_ratp_run = 0
-        # step_time_ratp = []
-        # step_time_ratp_run = []
-        # step_time_leg = []
+        # temps de calcul
+        time_legume = 0
+        time_ratp_tot = 0
+        time_ratp_run = 0
+        step_time_ratp = []
+        step_time_ratp_run = []
+        step_time_leg = []
 
         # # somme respectifs
         # S_para_legume = 0
@@ -133,14 +136,7 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
             deltaI_I0, nbI_I0, I_I0profilLfPlant, I_I0profilPetPlant,  \
             I_I0profilInPlant, NlClasses, NaClasses, NlinClasses,  \
             opt_stressW, opt_stressN, opt_stressGel, opt_residu, dxyz = tag_loop_inputs    
-        
-        
-        # if i > 0 :
-        #     pd_dicorgans = pandas.DataFrame(dicOrgans)
-        #     l1 = len(pd_dicorgans[pd_dicorgans["organ"] == "Lf"]["nump"])
-        #     l2 = len(pd_dicorgans[pd_dicorgans["organ"] == "Stp"]["nump"])
-        #     print(len(lsystem_simulations[names_simulations[0]].sceneInterpretation(lstring_lasttimestep[0])), l1+l2)
-        
+               
         if len(names_simulations) > 1 :
                     #gere difference de dsitib par especes
             list_ls_dif = []
@@ -177,25 +173,25 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
 
             geometry = {}
             geometry["scenes"] = scenes_plantgl
-            geometry["domain"] = ((0,0), (m_lais.shape[3] * dxyz[0], m_lais.shape[2] * dxyz[1]))
+            # domaine dans l'unité de la scène finale (ici en m)
+            geometry["domain"] = ((0,0), (m_lais.shape[3] * dxyz[0] * 0.01, m_lais.shape[2] * dxyz[1] * 0.01))
             geometry["transformations"] = {}
             geometry["transformations"]["scenes unit"] = ["cm"] # ne concerne que geometry["scenes"]
-            # geometry["transformations"]["xyz orientation"] = ["y+ = y-"]
 
             start=time.time()
             lghtcaribu.init_scenes(geometry)
             lghtcaribu.VTKinit(foldout)
             lghtcaribu.run(energy=1, day=doy, hour=hour, truesolartime=True, parunit="RG")
             
-            # t_ratp_tot = (time.time() - start)
-            # time_ratp_tot += t_ratp_tot
-            # time_ratp_run += lghtcaribu.modelruntime
+            t_ratp_tot = (time.time() - start)
+            time_ratp_tot += t_ratp_tot
+            time_ratp_run += lghtcaribu.modelruntime
 
-            # step_time_ratp.append(t_ratp_tot)
-            # step_time_ratp_run.append(lghtcaribu.modelruntime)
+            step_time_ratp.append(t_ratp_tot)
+            step_time_ratp_run.append(lghtcaribu.modelruntime)
 
-            # if writegeo:
-            #     lghtcaribu.VTKout(foldout+"triangle",iteration=i, triangles=False, voxels=True, outvariables=["intercepted", "transmitted"])
+            if writegeo:
+                lghtcaribu.VTKout(foldout+"triangle",iteration=i, triangles=True, voxels=False, outvariables=["par Eabs", "par Ei"])
 
         
         ############
@@ -209,9 +205,9 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
             # mise a jour de res_trans, res_abs_i, res_rfr, ls_epsi
             res_trans, res_abs_i = riri.calc_extinc_allray_multi_reduced(*tag_light_inputs, optsky=station['optsky'], opt=station['sky'])
 
-            # t_legume = (time.time() - start)
-            # time_legume += t_legume
-            # step_time_leg.append(t_legume)
+            t_legume = (time.time() - start)
+            time_legume += t_legume
+            step_time_leg.append(t_legume)
             
         if active=="caribu" or passive=="caribu":
             # rassemble les paramètres propres à chaque lsystem
@@ -234,10 +230,17 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
             # calcul du epsi sur les résultats de RATP (non utilisé dans la simulation)
             if passive=="caribu":
                 transmi_sol = np.sum(res_trans_2[-1][:][:]) / (energy * surfsolref)
-                epsi = 1. - transmi_sol  # bon
+                epsi = 1. - transmi_sol
+                ls_epsi = []
                 for k in range(len(names_simulations)) :
-                    ls_epsi = epsi * list_invar2[k]['parip'] / (np.sum(list_invar2[k]['parip']) + np.sum(list_invar2[k]['parip']) + 10e-15)
-                    print('CARIBU passive',names_simulations[k],'epsi', sum(ls_epsi))
+                    ls_epsi.append(epsi * list_invar2[k]['parip'] / (np.sum(list_invar2[k]['parip']) + np.sum(list_invar2[k]['parip']) + 10e-15))
+                    print('CARIBU passive',names_simulations[k],'epsi', sum(ls_epsi[-1]))
+
+            # Enregistre les outputs
+            for k in range(len(names_simulations)) : 
+                for p in range(lsystem_simulations[names_simulations[k]].nbplantes):
+                    epsi_passive[k][p].append(ls_epsi[k][p])
+                    para_passive[k][p].append(list_invar2[k]['parip'][p])
 
             #     # calcul paramètres par entité
             #     list_diff_para=[]
@@ -291,20 +294,20 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
                                             energy)
 
     for n in names_simulations : print((''.join((n, " - done"))))
-    print("simulation time : ", time.time() - start, " s")
+    print("simulation time : ", time.time() - globalstart, " s")
 
     # impression
-    # if passive=="ratp":
-    #     deb = lsystem_simulations[names_simulations[0]].DOYdeb
-    #     fin = lsystem_simulations[names_simulations[0]].DOYend-1
-    #     for k,n in enumerate(names_simulations):
-    #         dict_ratp_passive = {
-    #                                 'var' : ['epsi']*(len(epsi_passive[k][0])-2) + ['PARi']*(len(epsi_passive[k][0])-2),
-    #                                 'steps' : list(range(deb, fin)) + list(range(deb, fin))
-    #                             }
-    #         for p in range(lsystem_simulations[names_simulations[k]].nbplantes) :
-    #             dict_ratp_passive['plante'+str(p)] = epsi_passive[k][p][0:fin-deb] + para_passive[k][p][0:fin-deb]
-    #         pd.DataFrame(dict_ratp_passive).to_csv(foldout+"outputs_ratp_passive_"+str(n)+".csv", index=False)
+    if passive=="caribu":
+        deb = lsystem_simulations[names_simulations[0]].DOYdeb
+        fin = lsystem_simulations[names_simulations[0]].DOYend-1
+        for k,n in enumerate(names_simulations):
+            dict_ratp_passive = {
+                                    'var' : ['epsi']*(len(epsi_passive[k][0])-2) + ['PARi']*(len(epsi_passive[k][0])-2),
+                                    'steps' : list(range(deb, fin)) + list(range(deb, fin))
+                                }
+            for p in range(lsystem_simulations[names_simulations[k]].nbplantes) :
+                dict_ratp_passive['plante'+str(p)] = epsi_passive[k][p][0:fin-deb] + para_passive[k][p][0:fin-deb]
+            pd.DataFrame(dict_ratp_passive).to_csv(foldout+"outputs_ratp_passive_"+str(n)+".csv", index=False)
 
     #     for i in range(len(diff_voxel_para)):
     #         dic_part = {}
@@ -325,15 +328,11 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
     #         "ratp tot" : step_time_ratp                   
     #         }).to_csv(foldout+"cputime_steps.csv", index=False)
 
-    # pd.DataFrame({
-    #                 "legume" : [time_legume], 
-    #                 "ratp run" : [time_ratp_run], 
-    #                 "ratp tot" : [time_ratp_tot],
-    #                 "PARa l-egume" : [S_para_legume],
-    #                 "PARt l-egume" : [S_part_legume],
-    #                 "PARa RATP" : [S_para_ratp],
-    #                 "PARt RATP" : [S_part_ratp]
-    #                 }).to_csv(foldout+"global_outputs.csv", index=False)
+    pd.DataFrame({
+                    "legume" : [time_legume], 
+                    "caribu run" : [time_ratp_run], 
+                    "caribu tot" : [time_ratp_tot]
+                    }).to_csv(foldout+"global_outputs.csv", index=False)
 
 
     # désallocation des lsystem

@@ -20,6 +20,7 @@ def testsensors(pgl_scene, folder_vtk_outputs):
 
     # Paramètres pré-simulation
     environment["sky"] = [4, 5, "soc"]  # ["file", "runscripts/legume/sky_5.data"] [4, 5, "soc"] "turtle46"
+    environment["coordinates"] = [44, 12, 1]
     environment["diffus"] = True
     environment["direct"] = False
     environment["reflected"] = False
@@ -50,14 +51,29 @@ def testsensors(pgl_scene, folder_vtk_outputs):
                             (nxyz[0] * dxyz[0] - reduction_domain, nxyz[1] * dxyz[1] - reduction_domain))
 
     # Calcul du rayonnement sur un jour arbitraire
+    day = 100
+    hour = 16
+    truesolartime = True
     lghtcaribu.init_scenes(geometry)
     lghtcaribu.VTKinit(folder_vtk_outputs+"init_")
-    lghtcaribu.run(energy=1, day=100, hour=12, truesolartime=True, parunit="RG")
+    lghtcaribu.run(energy=500, day=day, hour=hour, truesolartime=truesolartime, parunit="RG")
     lghtcaribu.VTKout(folder_vtk_outputs, iteration=0)
+    lghtcaribu.VTKsun(folder_vtk_outputs, day, hour, truesolartime)
 
     print("=== END ===")
 
 if __name__ == "__main__":
+    # # Empty
+    # points = [(0, 0, -1), (1e-6, 0, -1), (1e-6, 1e-6, -1), (0, 1e-6, -1)]
+    # normals = [(0, 0, 1) for i in range(4)]
+    # indices = [(0, 1, 2, 3)]
+    # carre = pgl.QuadSet(points, indices, normals, indices)
+    # s = pgl.Scene([pgl.Shape(geometry=carre, id=1)])
+    
+
+    # folder_vtk_outputs = "outputs/caribu_sensors/empty_"
+    # testsensors(s, folder_vtk_outputs)
+
     # Plaque horizontale
     points = [(0, 0, 0), (0.2, 0, 0), (0.2, 0.1, 0), (0, 0.1, 0)]
     normals = [(0, 0, 1) for i in range(4)]
@@ -69,13 +85,13 @@ if __name__ == "__main__":
     folder_vtk_outputs = "outputs/caribu_sensors/horiz_"
     testsensors(s, folder_vtk_outputs)
 
-    # plaque verticale
-    points = [(0, 0, 0), (0.2, 0, 0), (0.2, 0, 0.1), (0, 0, 0.1)]
-    normals = [(0, 1, 0) for i in range(4)]
-    indices = [(0, 1, 2, 3)]
-    carre = pgl.QuadSet(points, indices, normals, indices)
-    carre = pgl.Translated(geometry=carre, translation=(0.1, 0.1, 0.01))
-    s = pgl.Scene([pgl.Shape(geometry=carre, id=1)])
+    # # plaque verticale
+    # points = [(0, 0, 0), (0.2, 0, 0), (0.2, 0, 0.1), (0, 0, 0.1)]
+    # normals = [(0, 1, 0) for i in range(4)]
+    # indices = [(0, 1, 2, 3)]
+    # carre = pgl.QuadSet(points, indices, normals, indices)
+    # carre = pgl.Translated(geometry=carre, translation=(0.1, 0.1, 0.01))
+    # s = pgl.Scene([pgl.Shape(geometry=carre, id=1)])
 
-    folder_vtk_outputs = "outputs/caribu_sensors/vert_"
-    testsensors(s, folder_vtk_outputs)
+    # folder_vtk_outputs = "outputs/caribu_sensors/vert_"
+    # testsensors(s, folder_vtk_outputs)

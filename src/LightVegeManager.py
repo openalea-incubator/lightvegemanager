@@ -939,6 +939,16 @@ class LightVegeManager:
             self.__pmax = Vector3(xmax, ymax, zmax)
             self.__pmin = Vector3(xmin, ymin, zmin)
 
+            # # on translate les feuilles sous le sol, au dessus du sol
+            # for tr in self.__my_scene:
+            #     if tr[0][2] < 0 :
+            #         tr.translate(Vector3(0,0,abs(tr[0][2]) + 1e-8))
+            #     elif tr[1][2] < 0 :
+            #         tr.translate(Vector3(0,0,abs(tr[1][2]) + 1e-8))
+            #     elif tr[2][2] < 0 :
+            #         tr.translate(Vector3(0,0,abs(tr[2][2]) + 1e-8))
+
+
             # création d'une triangulation caribu
             self.__caribu_scene = {}
             for id,val in self.__matching_ids.items():
@@ -1408,12 +1418,12 @@ class LightVegeManager:
                             self.__in_geometry["domain"] = ((self.__pmin[0], self.__pmin[1]), (self.__pmax[0], self.__pmax[1]))
 
                     # construction d'une scène ciel et soleil
-                    if self.__in_environment["infinite"] : # on ajoute un domaine pour la création du pattern
-                        c_scene_sky = CaribuScene(scene=self.__caribu_scene, light=self.__sky, opt=opt, scene_unit=self.__main_unit, pattern=self.__in_geometry["domain"], debug = debug)
-                        c_scene_sun = CaribuScene(scene=self.__caribu_scene, light=self.__sun, opt=opt, scene_unit=self.__main_unit, pattern=self.__in_geometry["domain"], debug = debug)
-                    else:
-                        c_scene_sky = CaribuScene(scene=self.__caribu_scene, light=self.__sky, opt=opt, scene_unit=self.__main_unit, debug = debug)
-                        c_scene_sun = CaribuScene(scene=self.__caribu_scene, light=self.__sun, opt=opt, scene_unit=self.__main_unit, debug = debug)
+                    # if self.__in_environment["infinite"] : # on ajoute un domaine pour la création du pattern
+                    c_scene_sky = CaribuScene(scene=self.__caribu_scene, light=self.__sky, opt=opt, scene_unit=self.__main_unit, pattern=self.__in_geometry["domain"], debug = debug)
+                    c_scene_sun = CaribuScene(scene=self.__caribu_scene, light=self.__sun, opt=opt, scene_unit=self.__main_unit, pattern=self.__in_geometry["domain"], debug = debug)
+                    # else:
+                    #     c_scene_sky = CaribuScene(scene=self.__caribu_scene, light=self.__sky, opt=opt, scene_unit=self.__main_unit, debug = debug)
+                    #     c_scene_sun = CaribuScene(scene=self.__caribu_scene, light=self.__sun, opt=opt, scene_unit=self.__main_unit, debug = debug)
 
                     if self.__in_environment["diffus"] :
                         # Direct et diffus
@@ -1564,8 +1574,8 @@ class LightVegeManager:
                         
                         var=[]
                         for t in triangles_sensors:
-                            var.append(aggregated_sky["par"]['sensors']['Ei'][t.id])
-                        VTKtriangles(triangles_sensors, [var], ["par_t"], self.__in_lightmodel_parameters["sensors"][-2] + "sensors_d"+str(day)+"_h"+str(hour)+".vtk")
+                            var.append(self.__sensors_outputs["par"][t.id])
+                        VTKtriangles(triangles_sensors, [var], ["par_t"], self.__in_lightmodel_parameters["sensors"][-2] + "sensors_h"+str(hour)+"_d"+str(day)+".vtk")
 
                 # enregistre les valeurs par shape et plantes
                 s_shapes = [0]*len(self.__matching_ids)
@@ -1679,7 +1689,7 @@ class LightVegeManager:
 
         # réduction si le nombre de couches remplies < nombre de couches prévues
         skylayer = (self.__pmax[2]) // dxyz[2]
-        if skylayer < nxyz[2] : skylayer = int(nxyz[2] - 1 - skylayer)
+        if skylayer < nxyz[2] and  self.__pmax[2] > 0 : skylayer = int(nxyz[2] - 1 - skylayer)
         
         # autrement on garde le nombre de voxels prévus
         else : skylayer = 0 
@@ -1687,7 +1697,11 @@ class LightVegeManager:
         # scene plantGL qui acceuillera les capteurs
         s_capt = pgl.Scene()
         
-        points = [(0, 0, 0), (dxyz[0], 0, 0), (dxyz[0], dxyz[1], 0), (0, dxyz[1], 0)]  # capeur bas oriente vers le haut
+
+        if self.__in_environment["infinite"] : 
+            points = [(0, 0, 0), (dxyz[0], 0, 0), (dxyz[0], dxyz[1], 0), (0, dxyz[1], 0)]  # capeur bas oriente vers le haut
+        else :
+            points = [(0, 0, 0),  (0, dxyz[1], 0), (dxyz[0], dxyz[1], 0), (dxyz[0], 0, 0)]  # capeur bas oriente vers le haut
         normals = [(0, 0, 1) for i in range(4)]
         indices = [(0, 1, 2, 3)]
 
@@ -2082,12 +2096,10 @@ class LightVegeManager:
             if self.__matching_ids:
                 # traitements des sensors différents si scène infinie ou non
                 if self.__in_environment["infinite"] : 
-                    print("ERROR : Doesn't work yet")
-                
-                else :
                     # réduction si le nombre de couches remplies < nombre de couches prévues
                     skylayer = (self.__pmax[2]) // dxyz[2]
-                    if skylayer < nxyz[2] : skylayer = int(nxyz[2] - 1 - skylayer)
+                    if skylayer < nxyz[2] and  self.__pmax[2] > 0 : skylayer = int(nxyz[2] - 1 - skylayer)
+                    
                     # autrement on garde le nombre de voxels prévus
                     else : skylayer = 0 
                 
@@ -2095,8 +2107,23 @@ class LightVegeManager:
                     for ix in range(nxyz[0]):
                         for iy in range(nxyz[1]):
                             for iz in range(nxyz[2] - skylayer):
-                                res_trans[(nxyz[2]-1) - iz][iy][ix] -= self.__sensors_outputs['par'][ID_capt]
+                                res_trans[(nxyz[2]-1) - iz][iy][ix] = self.__sensors_outputs['par'][ID_capt]
                                 ID_capt += 1
+                
+                else :
+                    print("CARIBU Sensor + no infinite -> Doesn't work yet")
+                    # réduction si le nombre de couches remplies < nombre de couches prévues
+                    # skylayer = (self.__pmax[2]) // dxyz[2]
+                    # if skylayer < nxyz[2] : skylayer = int(nxyz[2] - 1 - skylayer)
+                    # # autrement on garde le nombre de voxels prévus
+                    # else : skylayer = 0 
+                
+                    # ID_capt = 0
+                    # for ix in range(nxyz[0]):
+                    #     for iy in range(nxyz[1]):
+                    #         for iz in range(nxyz[2] - skylayer):
+                    #             res_trans[(nxyz[2]-1) - iz][iy][ix] -= self.__sensors_outputs['par'][ID_capt]
+                    #             ID_capt += 1
             res_trans = res_trans * energy * dS
 
             return res_trans
@@ -2229,6 +2256,93 @@ class LightVegeManager:
 
                     RATP2VTK.RATPVOXELS2VTK(self.__ratp_scene, para, out, path+out+"_voxels_"+str(iteration)+".vtk")
 
+    def VTKsun(self, path, day, hour, truesolartime):
+        if self.__lightmodel == "ratp" :
+            from PyRATP.pyratp import pyratp
+                
+            az, ele = 5.,9. # variables fantômes (non récupérées)
+            pyratp.shortwave_balance.sundirection(ele, az, 
+                                                        self.__in_environment["coordinates"][0], 
+                                                        self.__in_environment["coordinates"][1], 
+                                                        self.__in_environment["coordinates"][2], 
+                                                        day, hour, truesolartime)            
+            degtorad = math.pi/180
+
+            azrad = pyratp.shortwave_balance.azdeg
+            # peut avoir un nan à 12h 
+            if math.isnan(azrad) and hour==12. : 
+                # critère empirique basé sur l'algo de CARIBU (GenSun)
+                if self.__in_environment["coordinates"][0] >= 21.11:
+                    azrad = 0.
+                else:
+                    azrad = 180.
+            # passage de l'azimuth en South=0° clockwise (RATP) à North=0° clockwise (CARIBU.Gensun)
+            azrad = -azrad * degtorad
+
+            zenirad = pyratp.shortwave_balance.hdeg * degtorad
+
+            # le vecteur pointe du ciel vers le sol
+            sunx = suny = math.cos(zenirad)
+            sunx *= math.cos(azrad)
+            suny *= math.sin(azrad)
+            sunz = -math.sin(zenirad)
+            
+        elif self.__lightmodel == "caribu" :
+            if self.__in_lightmodel_parameters["sun algo"]=="ratp":
+                from PyRATP.pyratp import pyratp
+                
+                az, ele = 5.,9. # variables fantômes (non récupérées)
+                pyratp.shortwave_balance.sundirection(ele, az, 
+                                                            self.__in_environment["coordinates"][0], 
+                                                            self.__in_environment["coordinates"][1], 
+                                                            self.__in_environment["coordinates"][2], 
+                                                            day, hour, truesolartime)            
+                degtorad = math.pi/180
+
+                azrad = pyratp.shortwave_balance.azdeg
+                # peut avoir un nan à 12h 
+                if math.isnan(azrad) and hour==12. : 
+                    # critère empirique basé sur l'algo de CARIBU (GenSun)
+                    if self.__in_environment["coordinates"][0] >= 21.11:
+                        azrad = 0.
+                    else:
+                        azrad = 180.
+                # passage de l'azimuth en South=0° clockwise (RATP) à North=0° clockwise (CARIBU.Gensun)
+                azrad = -azrad * degtorad
+
+                zenirad = pyratp.shortwave_balance.hdeg * degtorad
+
+                # le vecteur pointe du ciel vers le sol
+                sunx = suny = math.cos(zenirad)
+                sunx *= math.cos(azrad)
+                suny *= math.sin(azrad)
+                sunz = -math.sin(zenirad)
+            
+            # algo de CARIBU
+            else:
+                # si l'heure est locale, calcul de l'heure solaire (algorithme pris dans RATP, sundirection: shortwave_balance.f90)
+                if not truesolartime:
+                    om =0.017202*(day-3.244)
+                    teta=om+0.03344*math.sin(om)*(1+0.021*math.cos(om))-1.3526
+                    tphi=0.91747*math.sin(teta)/math.cos(teta)
+                    dphi=math.atan(tphi)-om+1.3526
+                    if dphi+1. <= 0: dphi=(dphi+1+1000.*math.pi % math.pi)-1.
+                    eqntime=dphi*229.2
+                    hour =hour+self.__in_environment["coordinates"][2]+self.__in_environment["coordinates"][1]/15.-eqntime/60. % 24.
+
+                # Conversion de la latitude en radian!
+                sun = Gensun.Gensun()(1., day, hour, self.__in_environment["coordinates"][0]*math.pi/180)
+                sun = GetLightsSun.GetLightsSun(sun)
+                sun_str_split = sun.split(' ')
+                
+                sunx = float(sun_str_split[1])
+                suny = float(sun_str_split[2])
+                sunz = float(sun_str_split[3])
+        
+        # ligne du soleil (rotation de 180° autour de z pour se mettre dans l'espace x+ = North)
+        VTKline(Vector3(float(sunx)*2, float(suny)*2, float(sunz)*2),
+                Vector3(-float(sunx)*2, -float(suny)*2, -float(sunz)*2),
+                    path + "sun_day"+str(day)+"_"+str(hour)+"h.vtk")
 
     @staticmethod
     def PlantGL_to_VTK(scenes, ite, path, in_unit="m", out_unit="m"):

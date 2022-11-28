@@ -2,12 +2,9 @@
 ## Installation de l'outil
 1) Création d'un environnement conda avec miniconda3
     ```bash
-    conda create -n myenvname python=3.7 \
-                    openalea.mtg=2.0.5 openalea.plantgl=3.14.1 openalea.lpy=3.9.2 alinea.caribu=8.0.7 alinea.astk=2.1.0 xlrd=2.0.1\
-                     coverage=6.3 nose=1.3.7 sphinx=4.4.0 statsmodels=0.13.1 numpy=1.20.3 scipy=1.7.3 pandas=1.3.4 progressbar2=3.37.1\
-                      -c conda-forge -c fredboudon
+    conda create -n myenvname python=3.7 openalea.mtg=2.0.5 openalea.plantgl=3.14.1 openalea.lpy=3.9.2 alinea.caribu=8.0.7 alinea.astk=2.1.0 xlrd=2.0.1 coverage=6.3 nose=1.3.7 sphinx=4.4.0 statsmodels=0.13.1 numpy=1.20.3 scipy=1.7.3 pandas=1.3.4 progressbar2=3.37.1 -c conda-forge -c fredboudon
     ```
-
+    
 2) Se placer dans l'environnement créé : `conda activate myenvname`
 
 3) Installation de Adel-Wheat (requis par WheatFspm)
@@ -58,6 +55,7 @@
 
 7) Installation de PyRATP en local, compilation avec numpy
    Dans le dossier `lightvegemanager/PyRATP/f90`
+   
    - Linux
         ```bash
         bash compile_pyratp_lin64.sh
@@ -95,6 +93,7 @@ Seules les scènes géométriques, contenues dans le dictionnaire `geometry ` so
 - paramètres de réflectance :
   - si CARIBU : `"caribu opt"` : dict tel que `"band" = tuple`
     1-tuple : définie la réflectance, objet opaque
+    
     2-tuple : définie la réflectance et la transmittance d'un objet transparent symétrique
     4-tuple : définie la réflectance et la transmittance des faces d'un objet transparent asymétrique 
     
@@ -176,7 +175,7 @@ if "number voxels"not in lightmodel_parameters : nxyz selon les dimensions de la
     - `"x+ = W"` : x+ correspond à l'Ouest
     - `"x+ = E"` : x+ correspond à l'Est
     - `"y+ = y-"` : on inverse l'axe y
-  - `"scenes unit"` : liste de string, description de l'échelle de mesure pour chaque espèce et effectue un agrandissement si elle est différente de l'unité de la scène finale. Entrée possible : `"mm"`, `"cm"`, `"m"`, `"dam"`, `"hm"`, `"km"`
+  - `"scenes unit"` : liste de string, description de l'échelle de mesure pour chaque espèce et effectue un agrandissement si elle est différente de l'unité de la scène finale. Entrée possible : `"mm"`, `"cm"`, `"dm"`, `"m"`, `"dam"`, `"hm"`, `"km"`
 - `"stems id"` : liste de tuple, `(indice de la shape/organe, indice de l'espèce)`
 - `"domain"` : correspond au pattern dans le plan xy à reproduire dans CARIBU `((xmin, ymin), (xmax, ymax))`
 
