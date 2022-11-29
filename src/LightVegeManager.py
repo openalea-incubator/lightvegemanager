@@ -2064,30 +2064,33 @@ class LightVegeManager:
             # Calcul du rayonnement absorbé par plante et par espèce
             for k in range(len(list_invar)) :
                 # on initialise la somme sur chaque plante à 0
-                list_invar[k]['parap'] = scipy.array([0] * len(list_invar[k]['Hplante']))
-                list_invar[k]['parip'] = scipy.array([0] * len(list_invar[k]['Hplante']))
+                list_invar[k]['parap'] = scipy.array([0.] * len(list_invar[k]['Hplante']))
+                list_invar[k]['parip'] = scipy.array([0.] * len(list_invar[k]['Hplante']))
 
-                if self.__matching_ids :
-                    for i in range(len(self.__shape_outputs)) :
-                        organe_id = int(self.__shape_outputs.iloc[i]["ShapeId"])
+                ent_organs_outputs = self.__shape_outputs[self.__shape_outputs.VegetationType == k]
 
-                        # PAR en W/m²
-                        par_intercept = self.__shape_outputs.iloc[i]['par Ei']
-                        S_leaf = self.__shape_outputs.iloc[i]['Area']
+                # # scene non vide
+                # if self.__matching_ids and len(self.__in_geometry["scenes"][k]) > 0 :
+                for i in range(len(ent_organs_outputs)) :
+                    organe_id = int(ent_organs_outputs.iloc[i]["ShapeId"])
+
+                    # PAR en W/m²
+                    par_intercept = ent_organs_outputs.iloc[i]['par Ei']
+                    S_leaf = ent_organs_outputs.iloc[i]['Area']
+                    
+                    id_plante = list_lstring[k][organe_id][0]
+
+                    S_plante = list_dicFeuilBilanR[k]["surf"][id_plante]
+
+                    list_invar[k]['parip'][id_plante] =  float(list_invar[k]['parip'][id_plante]) + (par_intercept * (S_leaf/S_plante))
                         
-                        id_plante = list_lstring[k][organe_id][0]
+                    # on enlève les feuilles senescentes 
+                    if list_lstring[k][organe_id][9] != 'sen' :
+                        list_invar[k]['parap'][id_plante] = float(list_invar[k]['parap'][id_plante]) + (par_intercept * (S_leaf/S_plante))
 
-                        S_plante = list_dicFeuilBilanR[k]["surf"][id_plante]
-
-                        list_invar[k]['parip'][id_plante] +=  par_intercept * (S_leaf/S_plante)
-                            
-                        # on enlève les feuilles senescentes 
-                        if list_lstring[k][organe_id][9] != 'sen' :
-                            list_invar[k]['parap'][id_plante] +=  par_intercept * (S_leaf/S_plante)
-
-                    # conversion
-                    list_invar[k]['parap'] = list_invar[k]['parap'] * (3600*24)/1000000
-                    list_invar[k]['parip'] = list_invar[k]['parip'] * (3600*24)/1000000
+                # conversion
+                list_invar[k]['parap'] = list_invar[k]['parap'] * (3600*24)/1000000
+                list_invar[k]['parip'] = list_invar[k]['parip'] * (3600*24)/1000000
             
             # calcul de res_trans : rayonnement transmis à travers la grille de voxel
             res_trans = np.ones((m_lais.shape[1], m_lais.shape[2], m_lais.shape[3]))

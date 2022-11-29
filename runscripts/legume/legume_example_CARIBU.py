@@ -84,7 +84,7 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
         dxyz = [x * 0.01 for x in dxyz] # conversion de cm à m
         orig = [0.,0.,0.]
         caribu_parameters["sensors"] = ["grid", dxyz, nxyz, orig, "outputs/legume_caribu/", "vtk"]
-        caribu_parameters["debug"] = True
+        caribu_parameters["debug"] = False
 
         lghtcaribu = LightVegeManager(environment=environment,
                                     lightmodel="caribu",
@@ -122,7 +122,7 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
 
         for k, n in enumerate(names_simulations):
             lstring[k] = lsystem_simulations[n].derive(lstring[k], i, 1)
-
+        
         # récupère toutes les variables du lsystem (on retient seulement les variables communes)
         tag_loop_inputs = lsystem_simulations[names_simulations[0]].tag_loop_inputs
         invar, outvar, invar_sc, ParamP, \
@@ -176,7 +176,7 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
             # domaine dans l'unité de la scène finale (ici en m)
             geometry["domain"] = ((0,0), (m_lais.shape[3] * dxyz[0] * 0.01, m_lais.shape[2] * dxyz[1] * 0.01))
             geometry["transformations"] = {}
-            geometry["transformations"]["scenes unit"] = ["cm"] # ne concerne que geometry["scenes"]
+            geometry["transformations"]["scenes unit"] = ["cm"] * len(names_simulations) # ne concerne que geometry["scenes"]
 
             start=time.time()
             lghtcaribu.init_scenes(geometry)
