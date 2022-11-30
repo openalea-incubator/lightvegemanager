@@ -83,7 +83,7 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
         nxyz = [m_lais.shape[3], m_lais.shape[2], m_lais.shape[1]]
         dxyz = [x * 0.01 for x in dxyz] # conversion de cm à m
         orig = [0.,0.,0.]
-        caribu_parameters["sensors"] = ["grid", dxyz, nxyz, orig, "outputs/legume_caribu/", "vtk"]
+        caribu_parameters["sensors"] = ["grid", dxyz, nxyz, orig, foldout, "vtk"]
         caribu_parameters["debug"] = False
 
         lghtcaribu = LightVegeManager(environment=environment,
@@ -119,6 +119,9 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
     # début de la simulation
     for i in range(nb_iter+1):
         print('time step: ',i)
+
+        if i == 50:
+            print("debug")
 
         for k, n in enumerate(names_simulations):
             lstring[k] = lsystem_simulations[n].derive(lstring[k], i, 1)
@@ -226,9 +229,12 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
             if active=="caribu":
                 list_invar = list_invar2
                 res_trans = res_trans_2
+                res_abs_i = None
 
             # calcul du epsi sur les résultats de RATP (non utilisé dans la simulation)
             if passive=="caribu":
+                list_invar = None
+
                 transmi_sol = np.sum(res_trans_2[-1][:][:]) / (energy * surfsolref)
                 epsi = 1. - transmi_sol
                 ls_epsi = []
@@ -236,11 +242,11 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
                     ls_epsi.append(epsi * list_invar2[k]['parip'] / (np.sum(list_invar2[k]['parip']) + np.sum(list_invar2[k]['parip']) + 10e-15))
                     print('CARIBU passive',names_simulations[k],'epsi', sum(ls_epsi[-1]))
 
-            # Enregistre les outputs
-            for k in range(len(names_simulations)) : 
-                for p in range(lsystem_simulations[names_simulations[k]].nbplantes):
-                    epsi_passive[k][p].append(ls_epsi[k][p])
-                    para_passive[k][p].append(list_invar2[k]['parip'][p])
+                # Enregistre les outputs
+                for k in range(len(names_simulations)) : 
+                    for p in range(lsystem_simulations[names_simulations[k]].nbplantes):
+                        epsi_passive[k][p].append(ls_epsi[k][p])
+                        para_passive[k][p].append(list_invar2[k]['parip'][p])
 
             #     # calcul paramètres par entité
             #     list_diff_para=[]
@@ -287,11 +293,9 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
             #     diff_voxel_part.append(diffpart)
             #     surf_vox.append(surf_ent)
 
-        
         iteration_legume_withoutlighting(i, lsystem_simulations, names_simulations, 
-                                            m_lais, res_trans, res_abs_i, 
-                                            meteo_j, surf_refVOX, surfsolref, 
-                                            energy)
+                                            meteo_j, energy, surf_refVOX, surfsolref, 
+                                            m_lais, res_trans, res_abs_i, list_invar)
 
     for n in names_simulations : print((''.join((n, " - done"))))
     print("simulation time : ", time.time() - globalstart, " s")
@@ -349,10 +353,17 @@ if __name__ == "__main__":
 
     # valeur par défaut
     foldin = "l-egume/legume/input/"
-    foldout = "outputs/legume_caribu/"
-    active = "legume" # legume ou ratp
-    passive = "caribu" # legume ou ratp
+    foldout = "outputs/legume_caribu/photomorph_ramif_3shoots_cari_pass/"
+    active = "legume" # legume ou caribu
+    passive = "caribu" # legume ou caribu
     writegeo = True
+
+    simulation(foldin, foldout, active, passive, writegeo)
+
+    # valeur par défaut
+    foldout = "outputs/legume_caribu/photomorph_ramif_3shoots_cari_act/"
+    active = "caribu" # legume ou caribu
+    passive = "legume" # legume ou caribu
 
     simulation(foldin, foldout, active, passive, writegeo)
     

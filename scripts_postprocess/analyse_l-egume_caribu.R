@@ -7,12 +7,15 @@ library(Metrics)
 library(MLmetrics)
 library(gridExtra)
 
-## Récupère les fichiers résultats
-setwd('C:/Users/mwoussen/cdd/codes/vegecouplelight/outputs/legume_caribu')
-legume_active <- read.table('toto_17112_l-egume.csv', sep=';',stringsAsFactors = FALSE)
-caribu_passive <- read.table('outputs_ratp_passive_17112_l-egume.csv', sep=',', stringsAsFactors = FALSE)
-dataframes <- list(legume_active, caribu_passive)
-data_names <- list("default", "caribu")
+## R?cup?re les fichiers r?sultats
+setwd('C:/Users/mwoussen/cdd/codes/vegecouplelight/outputs/legume_caribu/nophotomorph_noramif_1shoots_cari_pass')
+legume_active_1 <- read.table('toto_17111_l-egume.csv', sep=';',stringsAsFactors = FALSE)
+legume_active_2 <- read.table('toto_17112_l-egume.csv', sep=';',stringsAsFactors = FALSE)
+caribu_passive_1 <- read.table('outputs_ratp_passive_17111_l-egume.csv', sep=',', stringsAsFactors = FALSE)
+caribu_passive_2 <- read.table('outputs_ratp_passive_17112_l-egume.csv', sep=',', stringsAsFactors = FALSE)
+dataframes_1 <- list(legume_active_1, caribu_passive_1)
+dataframes_2 <- list(legume_active_2, caribu_passive_2)
+data_names <- list("default", "caribu passive")
 
 
 #### epsi
@@ -21,8 +24,18 @@ ytitle <- "Epsi"
 globaltitle <- "Somme du epsilon sur tout le couvert"
 start <- 60
 end <- 180
-p_grid <- plot_dataframe_canopy(varname, dataframes, data_names)
-p_grid
+df_1 <- plot_dataframe_canopy(varname, dataframes_1, data_names)
+df_2 <- plot_dataframe_canopy(varname, dataframes_2, data_names)
+df <- df_1
+df$values <- df$values + df_2$values
+p <- ggplot(data=df, aes(x=x, y=values, group=light)) +
+  geom_line(aes(color=light)) +
+  ggtitle(globaltitle) +
+  xlab("Jour de l'ann?e") +
+  ylab(ytitle) +
+  labs(color="Mod?le")
+p <- p+theme(plot.title = element_text(size=11))
+p
 
 #### LAI
 varname <- "SurfPlante"
@@ -31,10 +44,14 @@ globaltitle <- "LAI sur tout le couvert"
 start <- 60
 end <- 180
 surfsol <- 0.16
-p_grid <- plot_variable_canopy(varname, start, end, c_listes_entite_1, c_listes_entite_2, liste_legend_name, ytitle, globaltitle, passive=FALSE, lai_surfsol = surfsol)
-p_grid
+df <- plot_dataframe_canopy(varname, dataframes, data_names)
+df$values <- sapply(df$values, function(x){x/surfsol})
+p <- ggplot(data=df, aes(x=x, y=values, group=light)) +
+  geom_line(aes(color=light)) +
+  ggtitle(globaltitle) +
+  xlab("Jour de l'ann?e") +
+  ylab(ytitle) +
+  labs(color="Mod?le")
+p <- p+theme(plot.title = element_text(size=11))
+p
 
-globaltitle <- "LAI sur tout le couvert, ZOOM"
-start <- 160
-p_grid <- plot_variable_canopy(varname, start, end, c_listes_entite_1, c_listes_entite_2, liste_legend_name, ytitle, globaltitle, passive=FALSE, lai_surfsol = surfsol)
-p_grid

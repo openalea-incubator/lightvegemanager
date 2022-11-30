@@ -2016,9 +2016,9 @@ class LightVegeManager:
             mtg.property(param).update(dico_par[param])
 
     def to_l_egume(self, m_lais = [], energy = 1, list_lstring = [], list_dicFeuilBilanR = [], list_invar = []) :
-        if self.__lightmodel == "ratp" :
-            epsilon = 1e-14
+        epsilon = 1e-14
 
+        if self.__lightmodel == "ratp" :
             # transfert des sorties
             res_abs_i = np.zeros((m_lais.shape[0], m_lais.shape[1], m_lais.shape[2], m_lais.shape[3]))
             # si le voxel est vide, on considère le transmis comme ce qui sort d'une de ses surfaces
@@ -2088,6 +2088,12 @@ class LightVegeManager:
                     if list_lstring[k][organe_id][9] != 'sen' :
                         list_invar[k]['parap'][id_plante] = float(list_invar[k]['parap'][id_plante]) + (par_intercept * (S_leaf/S_plante))
 
+                
+                # on pose une valeur > 0 pour les plantes avec des feuilles
+                for p in range(len(list_invar[k]['parip'])) :
+                    if list_invar[k]['parip'][p] == 0. and list_dicFeuilBilanR[k]["surf"][p] > 0. :
+                        list_invar[k]['parip'][p] = epsilon
+                    
                 # conversion
                 list_invar[k]['parap'] = list_invar[k]['parap'] * (3600*24)/1000000
                 list_invar[k]['parip'] = list_invar[k]['parip'] * (3600*24)/1000000
@@ -2110,7 +2116,7 @@ class LightVegeManager:
                     for ix in range(nxyz[0]):
                         for iy in range(nxyz[1]):
                             for iz in range(nxyz[2] - skylayer):
-                                res_trans[(nxyz[2]-1) - iz][iy][ix] = self.__sensors_outputs['par'][ID_capt]
+                                res_trans[(nxyz[2]-1) - iz][iy][ix] = min(self.__sensors_outputs['par'][ID_capt], 1)
                                 ID_capt += 1
                 
                 else :
