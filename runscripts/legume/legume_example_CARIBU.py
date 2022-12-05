@@ -326,11 +326,11 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
     #         for j in range(len(diff_voxel_para[i][k])) :
     #             dic_part["Layer"+str(j)] = diff_voxel_part[i][j]
     #         pd.DataFrame(dic_part).to_csv(foldout+"diff_part_"+str(i)+".csv", index=False)
-    #     pd.DataFrame({
-    #         "legume" : step_time_leg, 
-    #         "ratp run" : step_time_ratp_run, 
-    #         "ratp tot" : step_time_ratp                   
-    #         }).to_csv(foldout+"cputime_steps.csv", index=False)
+        pd.DataFrame({
+            "legume" : step_time_leg, 
+            "caribu run" : step_time_ratp_run, 
+            "caribu tot" : step_time_ratp                   
+            }).to_csv(foldout+"cputime_steps.csv", index=False)
 
     pd.DataFrame({
                     "legume" : [time_legume], 
@@ -346,7 +346,7 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
 if __name__ == "__main__":
     #definition d'arguments avec getopt
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "i: o: a: p: r: w: s:")
+        opts, args = getopt.getopt(sys.argv[1:], "i: o: a: p: w:")
     except getopt.GetoptError as err:
         print(str(err))
         sys.exit(2)
@@ -358,12 +358,24 @@ if __name__ == "__main__":
     passive = "caribu" # legume ou caribu
     writegeo = True
 
-    simulation(foldin, foldout, active, passive, writegeo)
+    # récupère les arguments en entrée
+    for opt, arg in opts:
+        if opt in ("-i"):
+            foldin = str(arg)
+        elif opt in ("-o"):
+            foldout = str(arg)
+        elif opt in ("-a"):
+            active = str(arg)
+        elif opt in ("-p"):
+            passive = str(arg)
+        elif opt in ("-w"):
+            writegeo = str(arg)
 
-    # valeur par défaut
-    foldout = "outputs/legume_caribu/photomorph_ramif_3shoots_cari_act/"
-    active = "caribu" # legume ou caribu
-    passive = "legume" # legume ou caribu
+    print("foldin : ",foldin)
+    print("foldout : ",foldout)
+    print("active : ",active)
+    print("passive : ",passive)
+    print("writegeo : ",writegeo)
 
     simulation(foldin, foldout, active, passive, writegeo)
     
