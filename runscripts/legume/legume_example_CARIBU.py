@@ -369,7 +369,9 @@ if __name__ == "__main__":
         elif opt in ("-p"):
             passive = str(arg)
         elif opt in ("-w"):
-            writegeo = str(arg)
+            writegeo_str = str(arg)
+            if writegeo_str == "y" : writegeo = True
+            elif writegeo_str == "n" : writegeo = False
 
     print("foldin : ",foldin)
     print("foldout : ",foldout)
