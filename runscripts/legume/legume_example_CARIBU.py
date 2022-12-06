@@ -120,7 +120,7 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
     for i in range(nb_iter+1):
         print('time step: ',i)
 
-        if i == 50:
+        if i == 20:
             print("debug")
 
         for k, n in enumerate(names_simulations):
@@ -183,8 +183,7 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
 
             start=time.time()
             lghtcaribu.init_scenes(geometry)
-            lghtcaribu.VTKinit(foldout)
-            lghtcaribu.run(energy=1, day=doy, hour=hour, truesolartime=True, parunit="RG")
+            lghtcaribu.run(energy=energy, day=doy, hour=hour, truesolartime=True, parunit="RG")
             
             t_ratp_tot = (time.time() - start)
             time_ratp_tot += t_ratp_tot
@@ -220,8 +219,7 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
                 list_dicFeuilBilanR.append(lsystem_simulations[n].tag_loop_inputs[14])
 
             # transfert des sorties
-            res_trans_2 = lghtcaribu.to_l_egume(m_lais=m_lais, 
-                                                energy = energy, 
+            res_trans_2 = lghtcaribu.to_l_egume(m_lais=m_lais,
                                                 list_lstring = lstring, 
                                                 list_dicFeuilBilanR=list_dicFeuilBilanR, 
                                                 list_invar=list_invar2)
@@ -306,7 +304,7 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
         fin = lsystem_simulations[names_simulations[0]].DOYend-1
         for k,n in enumerate(names_simulations):
             dict_ratp_passive = {
-                                    'var' : ['epsi']*(len(epsi_passive[k][0])-2) + ['PARi']*(len(epsi_passive[k][0])-2),
+                                    'var' : ['epsi']*(len(epsi_passive[k][0])-2) + ['PARiPlante']*(len(epsi_passive[k][0])-2),
                                     'steps' : list(range(deb, fin)) + list(range(deb, fin))
                                 }
             for p in range(lsystem_simulations[names_simulations[k]].nbplantes) :

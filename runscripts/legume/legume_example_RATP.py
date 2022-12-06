@@ -266,9 +266,9 @@ def simulation(foldin, foldout, active, passive, ratpgeo, skytype=2, writegeo=Fa
             start=time.time()
             # mise a jour de res_trans, res_abs_i, res_rfr, ls_epsi
             res_trans, res_abs_i = riri.calc_extinc_allray_multi_reduced(*tag_light_inputs, optsky=station['optsky'], opt=station['sky'])
-            t_legume = (time.time() - start)
-            time_legume += t_legume
-            step_time_leg.append(t_legume)
+            # t_legume = (time.time() - start)
+            # time_legume += t_legume
+            # step_time_leg.append(t_legume)
             
         elif active=="riri":
             scene_legume = {}
@@ -342,9 +342,8 @@ def simulation(foldin, foldout, active, passive, ratpgeo, skytype=2, writegeo=Fa
                 surf_vox.append(surf_ent)
 
         iteration_legume_withoutlighting(i, lsystem_simulations, names_simulations, 
-                                            m_lais, res_trans, res_abs_i, 
-                                            meteo_j, surf_refVOX, surfsolref, 
-                                            energy)
+                                            meteo_j, energy, surf_refVOX, surfsolref, 
+                                            m_lais, res_trans, res_abs_i)
 
     for n in names_simulations : print((''.join((n, " - done"))))
     print("simulation time : ", time.time() - start, " s")
@@ -453,14 +452,14 @@ if __name__ == "__main__":
     # else : simulation(foldin, foldout, active, passive, ratpgeo, skytype)
 
 
-    foldout = "outputs/legume_ratp/nophotomorpho_1tige_leg_sky5_1t/"
-    skytype = 1 # type de ciel : 1=sky5, 2=sky46, 3=sky100
-    active = "legume" # legume ou ratp
-    passive = "ratp" # legume ou ratp
-    simulation(foldin, foldout, active, passive, ratpgeo, skytype)
+    # foldout = "outputs/legume_ratp/nophotomorpho_1tige_leg_sky5_1t/"
+    # skytype = 1 # type de ciel : 1=sky5, 2=sky46, 3=sky100
+    # active = "legume" # legume ou ratp
+    # passive = "ratp" # legume ou ratp
+    # simulation(foldin, foldout, active, passive, ratpgeo, skytype)
 
-    foldout = "outputs/legume_ratp/nophotomorpho_1tige_ratp_sky5_1t/"
-    active = "ratp" # legume ou ratp
+    foldout = "outputs/legume_ratp/nophotomorpho_1tige_leg_sky5_1t/"
+    active = "legume" # legume ou ratp
     passive = "legume" # legume ou ratp
     simulation(foldin, foldout, active, passive, ratpgeo, skytype)
     
