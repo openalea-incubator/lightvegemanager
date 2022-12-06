@@ -460,7 +460,7 @@ if __name__ == "__main__":
 
     foldout = "outputs/legume_ratp/nophotomorpho_1tige_leg_sky5_1t/"
     active = "legume" # legume ou ratp
-    passive = "legume" # legume ou ratp
+    passive = "ratp" # legume ou ratp
     simulation(foldin, foldout, active, passive, ratpgeo, skytype)
     
     print("=== END ===")

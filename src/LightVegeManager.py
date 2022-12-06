@@ -1563,24 +1563,21 @@ class LightVegeManager:
                     else:
                         raise ValueError("Unknown sun_sky_option : can be either 'mix', 'sun' or 'sky'.")
 
-                    
-                    if "sensors" in self.__in_lightmodel_parameters :
-                        # ramène à l'énergie d'entrée
-                        for id,e in enumerate(self.__sensors_outputs['par']) : self.__sensors_outputs['par'][id] = min(e, 1) * energy
-
+                    # affichage VTK des capteurs    
                         # affichage VTK des capteurs    
-                        if self.__in_lightmodel_parameters["sensors"][-1] == "vtk":
-                            triangles_sensors = []
-                            for id, s in sensors_plantgl.todict().items() :
-                                tri_list = list(itertools.chain(*[pgl_to_triangles(pgl_object) for pgl_object in s]))
-                                for tr in tri_list:
-                                    tr.set_id(id)
-                                triangles_sensors.extend(tri_list)
-                            
-                            var=[]
-                            for t in triangles_sensors:
-                                var.append(self.__sensors_outputs["par"][t.id])
-                            VTKtriangles(triangles_sensors, [var], ["par_t"], self.__in_lightmodel_parameters["sensors"][-2] + "sensors_h"+str(hour)+"_d"+str(day)+".vtk")
+                    # affichage VTK des capteurs    
+                    if "sensors" in self.__in_lightmodel_parameters and self.__in_lightmodel_parameters["sensors"][-1] == "vtk":
+                        triangles_sensors = []
+                        for id, s in sensors_plantgl.todict().items() :
+                            tri_list = list(itertools.chain(*[pgl_to_triangles(pgl_object) for pgl_object in s]))
+                            for tr in tri_list:
+                                tr.set_id(id)
+                            triangles_sensors.extend(tri_list)
+                        
+                        var=[]
+                        for t in triangles_sensors:
+                            var.append(self.__sensors_outputs["par"][t.id])
+                        VTKtriangles(triangles_sensors, [var], ["par_t"], self.__in_lightmodel_parameters["sensors"][-2] + "sensors_h"+str(hour)+"_d"+str(day)+".vtk")
 
                 # enregistre les valeurs par shape et plantes
                 s_shapes = [0]*len(self.__matching_ids)
@@ -2020,7 +2017,7 @@ class LightVegeManager:
             # update the MTG
             mtg.property(param).update(dico_par[param])
 
-    def to_l_egume(self, m_lais = [], list_lstring = [], list_dicFeuilBilanR = [], list_invar = []) :
+    def to_l_egume(self, m_lais = [], energy=1, list_lstring = [], list_dicFeuilBilanR = [], list_invar = []) :
         epsilon = 1e-14
 
         if self.__lightmodel == "ratp" :
@@ -2087,11 +2084,11 @@ class LightVegeManager:
 
                     S_plante = list_dicFeuilBilanR[k]["surf"][id_plante]
 
-                    list_invar[k]['parip'][id_plante] =  float(list_invar[k]['parip'][id_plante]) + (par_intercept * (S_leaf/S_plante))
+                    list_invar[k]['parip'][id_plante] =  float(list_invar[k]['parip'][id_plante]) + (par_intercept * S_leaf) #* (S_leaf/S_plante))
                         
                     # on enlève les feuilles senescentes 
                     if list_lstring[k][organe_id][9] != 'sen' :
-                        list_invar[k]['parap'][id_plante] = float(list_invar[k]['parap'][id_plante]) + (par_intercept * (S_leaf/S_plante))
+                        list_invar[k]['parap'][id_plante] = float(list_invar[k]['parap'][id_plante]) + (par_intercept * S_leaf) #* (S_leaf/S_plante))
 
                 
                 # on pose une valeur > 0 pour les plantes avec des feuilles
@@ -2121,7 +2118,7 @@ class LightVegeManager:
                     for ix in range(nxyz[0]):
                         for iy in range(nxyz[1]):
                             for iz in range(nxyz[2] - skylayer):
-                                res_trans[(nxyz[2]-1) - iz][iy][ix] = self.__sensors_outputs['par'][ID_capt]
+                                res_trans[(nxyz[2]-1) - iz][iy][ix] = min(self.__sensors_outputs['par'][ID_capt], 1)
                                 ID_capt += 1
                 
                 else :
@@ -2138,7 +2135,7 @@ class LightVegeManager:
                     #         for iz in range(nxyz[2] - skylayer):
                     #             res_trans[(nxyz[2]-1) - iz][iy][ix] -= self.__sensors_outputs['par'][ID_capt]
                     #             ID_capt += 1
-            res_trans = res_trans * dS
+            res_trans = res_trans * energy * dS
 
             return res_trans
             

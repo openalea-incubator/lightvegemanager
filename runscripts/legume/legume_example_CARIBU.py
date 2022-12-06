@@ -220,6 +220,7 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
 
             # transfert des sorties
             res_trans_2 = lghtcaribu.to_l_egume(m_lais=m_lais,
+                                                energy=energy,
                                                 list_lstring = lstring, 
                                                 list_dicFeuilBilanR=list_dicFeuilBilanR, 
                                                 list_invar=list_invar2)
@@ -371,12 +372,25 @@ if __name__ == "__main__":
             if writegeo_str == "y" : writegeo = True
             elif writegeo_str == "n" : writegeo = False
 
-    print("foldin : ",foldin)
-    print("foldout : ",foldout)
-    print("active : ",active)
-    print("passive : ",passive)
-    print("writegeo : ",writegeo)
+    # print("foldin : ",foldin)
+    # print("foldout : ",foldout)
+    # print("active : ",active)
+    # print("passive : ",passive)
+    # print("writegeo : ",writegeo)
 
+    # simulation(foldin, foldout, active, passive, writegeo)
+
+
+    foldin = "l-egume/legume/input/"
+    foldout = "outputs/legume_caribu/nophotomorph_noramif_1shoots_cari_pass/"
+    active = "legume" # legume ou caribu
+    passive = "caribu" # legume ou caribu
+    simulation(foldin, foldout, active, passive, writegeo)
+
+    foldin = "l-egume/legume/input/"
+    foldout = "outputs/legume_caribu/nophotomorph_noramif_1shoots_cari_act/"
+    active = "caribu" # legume ou caribu
+    passive = "legume" # legume ou caribu
     simulation(foldin, foldout, active, passive, writegeo)
     
     print("=== END ===")
