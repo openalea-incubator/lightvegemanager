@@ -120,9 +120,6 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
     for i in range(nb_iter+1):
         print('time step: ',i)
 
-        if i == 20:
-            print("debug")
-
         for k, n in enumerate(names_simulations):
             lstring[k] = lsystem_simulations[n].derive(lstring[k], i, 1)
         
@@ -312,19 +309,6 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
                 dict_ratp_passive['plante'+str(p)] = epsi_passive[k][p][0:fin-deb] + para_passive[k][p][0:fin-deb]
             pd.DataFrame(dict_ratp_passive).to_csv(foldout+"outputs_ratp_passive_"+str(n)+".csv", index=False)
 
-    #     for i in range(len(diff_voxel_para)):
-    #         dic_part = {}
-    #         for k,n in enumerate(names_simulations):
-    #             dic_para = {}
-    #             dic_surf = {}
-    #             for j in range(len(diff_voxel_para[i][k])) :
-    #                 dic_para["Layer"+str(j)] = diff_voxel_para[i][k][j]
-    #                 dic_surf["Layer"+str(j)] = surf_vox[i][k][j]
-    #             pd.DataFrame(dic_para).to_csv(foldout+"diff_para_"+str(n)+"_"+str(i)+".csv", index=False)
-    #             pd.DataFrame(dic_surf).to_csv(foldout+"surf_vox_"+str(n)+"_"+str(i)+".csv", index=False)
-    #         for j in range(len(diff_voxel_para[i][k])) :
-    #             dic_part["Layer"+str(j)] = diff_voxel_part[i][j]
-    #         pd.DataFrame(dic_part).to_csv(foldout+"diff_part_"+str(i)+".csv", index=False)
         pd.DataFrame({
             "legume" : step_time_leg, 
             "caribu run" : step_time_ratp_run, 

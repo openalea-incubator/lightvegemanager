@@ -526,4 +526,91 @@ df_correlation_plante <- function(var_name, default_list, ratp_list, situation_l
   df
 }
 
+subplot_plant_vargrid <- function(i,varname,
+                                    list_dataframe_entity,
+                                    list_entity_id,
+                                    list_plant_id,
+                                    list_names,
+                                    ytitle,
+                                    start,
+                                    end,
+                                    surfsol=1)
+{
+  ldata <- list_dataframe_entity[list_entity_id[[i]]][[1]]
+  lplantid <- as.numeric(list_plant_id[[i]]) + 2
+  nameplante <- paste(paste("entite", as.character(list_entity_id[[i]]), " "), paste("plante",as.character(lplantid-2)," "), " ")
+  p <- subplot_variable_plant(varname, start, end, ldata, list_names, list(lplantid), nameplante, ytitle, surfsol)
+  p
+}
+
+plot_var_eachplant_16grid <- function(varname,
+                                        list_dataframe_entity,
+                                        list_entity_id,
+                                        list_plant_id,
+                                        list_names,
+                                        ytitle,
+                                        start=-1,
+                                        end=-1,
+                                        surfsol=1)
+{
+  ### création des 16 sousgraphes "en dur"
+  i = 1
+  p1 <- subplot_plant_vargrid(i,varname,list_dataframe_entity, list_entity_id,list_plant_id,list_names,ytitle,start,end,surfsol)
+  i = 2
+  p2 <- subplot_plant_vargrid(i,varname,list_dataframe_entity, list_entity_id,list_plant_id,list_names,ytitle,start,end,surfsol)
+  i = 3
+  p3 <- subplot_plant_vargrid(i,varname,list_dataframe_entity, list_entity_id,list_plant_id,list_names,ytitle,start,end,surfsol)
+  i = 4
+  p4 <- subplot_plant_vargrid(i,varname,list_dataframe_entity, list_entity_id,list_plant_id,list_names,ytitle,start,end,surfsol)
+  i = 5
+  p5 <- subplot_plant_vargrid(i,varname,list_dataframe_entity, list_entity_id,list_plant_id,list_names,ytitle,start,end,surfsol)
+  i = 6
+  p6 <- subplot_plant_vargrid(i,varname,list_dataframe_entity, list_entity_id,list_plant_id,list_names,ytitle,start,end,surfsol)
+  i = 7
+  p7 <- subplot_plant_vargrid(i,varname,list_dataframe_entity, list_entity_id,list_plant_id,list_names,ytitle,start,end,surfsol)
+  i = 8
+  p8 <- subplot_plant_vargrid(i,varname,list_dataframe_entity, list_entity_id,list_plant_id,list_names,ytitle,start,end,surfsol)
+  i = 9
+  p9 <- subplot_plant_vargrid(i,varname,list_dataframe_entity, list_entity_id,list_plant_id,list_names,ytitle,start,end,surfsol)
+  i = 10
+  p10 <- subplot_plant_vargrid(i,varname,list_dataframe_entity, list_entity_id,list_plant_id,list_names,ytitle,start,end,surfsol)
+  i = 11
+  p11 <- subplot_plant_vargrid(i,varname,list_dataframe_entity, list_entity_id,list_plant_id,list_names,ytitle,start,end,surfsol)
+  i = 12
+  p12 <- subplot_plant_vargrid(i,varname,list_dataframe_entity, list_entity_id,list_plant_id,list_names,ytitle,start,end,surfsol)
+  i = 13
+  p13 <- subplot_plant_vargrid(i,varname,list_dataframe_entity, list_entity_id,list_plant_id,list_names,ytitle,start,end,surfsol)
+  i = 14
+  p14 <- subplot_plant_vargrid(i,varname,list_dataframe_entity, list_entity_id,list_plant_id,list_names,ytitle,start,end,surfsol)
+  i = 15
+  p15 <- subplot_plant_vargrid(i,varname,list_dataframe_entity, list_entity_id,list_plant_id,list_names,ytitle,start,end,surfsol)
+  i = 16
+  p16 <- subplot_plant_vargrid(i,varname,list_dataframe_entity, list_entity_id,list_plant_id,list_names,ytitle,start,end,surfsol)
+
+
+  # préparation de la grille
+  p <- plot_grid(
+    p1 + theme(legend.position = "none"),
+    p2 + theme(legend.position = "none"),
+    p3 + theme(legend.position = "none"),
+    p4 + theme(legend.position = "none"),
+    p5 + theme(legend.position = "none"),
+    p6 + theme(legend.position = "none"),
+    p7 + theme(legend.position = "none"),
+    p8 + theme(legend.position = "none"),
+    p9 + theme(legend.position = "none"),
+    p10 + theme(legend.position = "none"),
+    p11 + theme(legend.position = "none"),
+    p12 + theme(legend.position = "none"),
+    p13 + theme(legend.position = "none"),
+    p14 + theme(legend.position = "none"),
+    p15 + theme(legend.position = "none"),
+    p16 + theme(legend.position = "none"),
+    nrow=4,ncol=4)
+  legend <- get_legend(
+    p2 + theme(legend.box.margin = margin(0,0,0,12))
+  )
+  plot_grid(p, legend, ncol=1, rel_heights = c(1, 0.2))
+}
+
 

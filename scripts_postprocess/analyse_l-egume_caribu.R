@@ -98,6 +98,40 @@ p <- ggplot(data=df, aes(x=x, y=values, group=light)) +
 p <- p+theme(plot.title = element_text(size=11))
 p
 
+
+#### MS AERIEN
+# légende des modèles
+data_names <- list("default", "caribu actif")
+
+# situation no photomorpho ,no ramification, 1 shoot
+dataframes_1 <- list(nophoto_legume_active_1, nophoto_caribu_active_1)
+dataframes_2 <- list(nophoto_legume_active_2, nophoto_caribu_active_2)
+
+# situation photomorpho ,ramification, 3 shoots
+dataframes_1 <- list(photo_legume_active_1, photo_caribu_active_1)
+dataframes_2 <- list(photo_legume_active_2, photo_caribu_active_2)
+
+# graphe
+varname <- "MSaerien"
+ytitle <- "MS Aérien"
+globaltitle <- "MS Aérien sur tout le couvert, avec photomorphogénèse"
+start <- 60
+end <- 180
+
+df_1 <- plot_dataframe_canopy(varname, dataframes_1, data_names)
+df_2 <- plot_dataframe_canopy(varname, dataframes_2, data_names)
+df <- df_1
+df$values <- df$values + df_2$values
+
+p <- ggplot(data=df, aes(x=x, y=values, group=light)) +
+  geom_line(aes(color=light)) +
+  ggtitle(globaltitle) +
+  xlab("Jour de l'année") +
+  ylab(ytitle) +
+  labs(color="Modèle")
+p <- p+theme(plot.title = element_text(size=11))
+p
+
 #### CARIBU%L-EGUME sur le epsi
 # situation no photomorpho ,no ramification, 1 shoot
 dataframes_1 <- list(nophoto_legume_active_1, nophoto_caribu_passive_1)
@@ -270,7 +304,14 @@ df_sd <- rbind(df_sd, df_sd_leg)
 df <- df_moy
 df$sd <- df_sd$sd
 df$ymin <- df$values - df$sd
-df[df$ymin < 0,] <- 0
+
+for (i in 1:length(df$values))
+{
+  if (df$values[i] - df$sd[i] < 0)
+  {
+    df$sd[i] <- df$values[i]
+  }
+}
 
 # ymin <- list()
 # ymax <- list()
@@ -331,5 +372,46 @@ p <- ggplot(data=df, aes(x=x, y=values, group=light)) +
   ylab(ytitle) +
   labs(color="Modèle")
 p <- p+theme(plot.title = element_text(size=11))
+p
+
+
+#### PARi%STEPS pour chaque plante
+varname <- "PARiPlante"
+list_dataframe_entity <- list(list(nophoto_legume_active_1, nophoto_caribu_active_1),
+                                     list(nophoto_legume_active_2, nophoto_caribu_active_2))
+# list_entity_id <- rep(1, 16)
+list_entity_id <- rep(2, 16)
+# list_plant_id <- list(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16)
+list_plant_id <- list(17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32)
+list_names <- list("l-egume", "CARIBU")
+ytitle <- "PARi"
+
+p <- plot_var_eachplant_16grid(varname,
+                                list_dataframe_entity,
+                                list_entity_id,
+                                list_plant_id,
+                                list_names,
+                                ytitle)
+p
+
+#### LAI%STEPS pour chaque plante
+varname <- "SurfPlante"
+list_dataframe_entity <- list(list(nophoto_legume_active_1, nophoto_caribu_active_1),
+                              list(nophoto_legume_active_2, nophoto_caribu_active_2))
+surfsol <- 0.16
+# list_entity_id <- rep(1, 16)
+list_entity_id <- rep(2, 16)
+# list_plant_id <- list(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16)
+list_plant_id <- list(17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32)
+list_names <- list("l-egume", "CARIBU")
+ytitle <- "LAI"
+
+p <- plot_var_eachplant_16grid(varname,
+                               list_dataframe_entity,
+                               list_entity_id,
+                               list_plant_id,
+                               list_names,
+                               ytitle,
+                               surfsol=surfsol)
 p
 
