@@ -10,7 +10,7 @@
 
 
 # courbes somme sur le couvert
-# inputs : 
+# inputs :
 #   - liste de dataframe
 #   - nom variable Ã  comparer
 #   - prÃ©ciser si temps rÃ©duit
@@ -35,8 +35,8 @@ plot_dataframe_canopy <- function(variable, dataframe_list, name_list,t_start=-1
     steps <- append(steps, sapply(dataframe_list[[i]][dataframe_list[[i]]$V1 == variable ,][,2], function(x) as.numeric(as.character(x))))
     names <- append(names, rep(name_list[[i]], length(dataframe_list[[i]][dataframe_list[[i]]$V1 == variable ,][,2])))
   }
-  
-  
+
+
   df <- data.frame(x=sapply(steps,c), values=sapply(values,c), light=sapply(names,c))
   if (t_start > -1)
   {
@@ -44,9 +44,9 @@ plot_dataframe_canopy <- function(variable, dataframe_list, name_list,t_start=-1
     {
       df <- df[df$x >= t_start & df$x <= t_end,]
     }
-    df <- df[df$x >= t_start,]  
+    df <- df[df$x >= t_start,]
   }
-  
+
   df
 }
 
@@ -63,7 +63,7 @@ plot_dataframe_plant <- function(variable, dataframe_list, name_list, plant_list
     {
       values <- append(values, sapply(dataframe_list[[i]][dataframe_list[[i]]$V1 == variable ,][,plant_list[[j]]], function(x) as.numeric(as.character(x))))
       steps <- append(steps, sapply(dataframe_list[[i]][dataframe_list[[i]]$V1 == variable ,][,2], function(x) as.numeric(as.character(x))))
-      names <- append(names, rep(name_list[[i]], #paste(name_list[[i]], as.character(plant_list[[j]] -3), sep=" plante "), 
+      names <- append(names, rep(name_list[[i]], #paste(name_list[[i]], as.character(plant_list[[j]] -3), sep=" plante "),
                                  length(dataframe_list[[i]][dataframe_list[[i]]$V1 == variable ,][,2])))
     }
   }
@@ -74,9 +74,9 @@ plot_dataframe_plant <- function(variable, dataframe_list, name_list, plant_list
     {
       df <- df[df$x >= t_start & df$x <= t_end,]
     }
-    df <- df[df$x >= t_start,]  
+    df <- df[df$x >= t_start,]
   }
-  
+
   df
 }
 
@@ -124,10 +124,10 @@ plot_dataframe_diffvoxel_perstep <- function(keyword, nsteps, functions, func_na
       values <- append(values, functions[[k]](modify_input))
       steps <- append(steps, as.numeric(i))
       names <- append(names, func_names[[k]])
-      
+
     }
   }
-  
+
   df_final <- data.frame(x=sapply(steps,c), values=sapply(values,c), names=sapply(names, c))
   df_final
 }
@@ -137,18 +137,18 @@ plot_df_diffvoxel_perlayer <- function(keyword, nsteps){
   values <- list()
   layer <- list()
   layermax <- 0
-  
+
   # trouver layermax
   for (n in 0:nsteps)
   {
     df <- read.table(paste(paste(keyword, as.character(n), sep='_'), 'csv', sep='.'), sep=',', stringsAsFactors = FALSE)
     if (ncol(df) > layermax) {layermax <- ncol(df)}
   }
-  
+
   for (n in 0:nsteps)
   {
     df <- read.table(paste(paste(keyword, as.character(n), sep='_'), 'csv', sep='.'), sep=',', stringsAsFactors = FALSE)
-    
+
     for (i in 1:ncol(df))
     {
       values <- append(values, as.numeric(df[[i]][2:length(df[[i]])]))
@@ -157,7 +157,7 @@ plot_df_diffvoxel_perlayer <- function(keyword, nsteps){
   }
 
   df <- data.frame(x=sapply(layer, c), y=sapply(values,c))
-  
+
   # reprend juste min-max et quelques valeurs entre
   values <- list()
   min <- list()
@@ -172,22 +172,22 @@ plot_df_diffvoxel_perlayer <- function(keyword, nsteps){
     values <- append(values, median(df[df$x==as.character(i), 2]))
     values <- append(values, mean(df[df$x==as.character(i), 2]) + var(df[df$x==as.character(i), 2]))
     values <- append(values, mean(df[df$x==as.character(i), 2]) - var(df[df$x==as.character(i), 2]))
-    
+
     min <- append(min, rep(min(df[df$x==as.character(i), 2]), 6))
     max <- append(max, rep(max(df[df$x==as.character(i), 2]), 6))
     median <- append(median, rep(median(df[df$x==as.character(i), 2]), 6))
-    
-    
+
+
     layer <- append(layer, rep(i, 6))
   }
-  
+
   df_final <- data.frame(x=sapply(layer, c), y=sapply(values,c), min=sapply(min, c), max=sapply(max, c), median=sapply(median, c))
   df_final
 }
 
 # on est déjà dans le dossier
 plot_df_diffvoxel_persteps_layer <- function(keyword, nsteps, layer){
-  
+
   # trouver layermax
   layermax <- 0
   for (n in 0:nsteps)
@@ -195,27 +195,27 @@ plot_df_diffvoxel_persteps_layer <- function(keyword, nsteps, layer){
     df <- read.table(paste(paste(keyword, as.character(n), sep='_'), 'csv', sep='.'), sep=',', stringsAsFactors = FALSE)
     if (ncol(df) > layermax) {layermax <- ncol(df)}
   }
-  
+
   values <- list()
   steps <- list()
   nstart <- nsteps+1
   for (n in 0:nsteps)
   {
     df <- read.table(paste(paste(keyword, as.character(n), sep='_'), 'csv', sep='.'), sep=',', stringsAsFactors = FALSE)
-    
+
     layer_rel <- layer + ncol(df) - layermax
-    
+
     if (layer_rel > 0)
     {
       values <- append(values, as.numeric(df[[layer_rel]][2:length(df[[layer_rel]])]))
-      steps <- append(steps, rep(as.character(n), 100)) 
+      steps <- append(steps, rep(as.character(n), 100))
       nstart <- pmin(n, nstart)
     }
   }
-  
+
   df <- data.frame(x=sapply(steps, c), y=sapply(values,c))
   df
-  
+
   # reprend juste min-max et quelques valeurs entre
   values <- list()
   min <- list()
@@ -246,16 +246,16 @@ subplot_variable_canopy <- function(var_name, start, end, liste_df_ent_1, liste_
 {
   df_1 <- plot_dataframe_canopy(var_name, liste_df_ent_1, liste_legend_name, start, end)
   df_2 <- plot_dataframe_canopy(var_name, liste_df_ent_2, liste_legend_name, start, end)
-  
+
   df <- df_1
   df$values <- df$values + df_2$values
-  
+
   if (lai_surfsol != 1)
   {
     df$values <- sapply(df$values, function(x){x/lai_surfsol})
   }
 
-  p <- ggplot(data=df, aes(x=x, y=values, group=light)) + 
+  p <- ggplot(data=df, aes(x=x, y=values, group=light)) +
     geom_line(aes(color=light)) +
     ggtitle(plottitle) +
     xlab("Jour de l'année") +
@@ -273,47 +273,47 @@ plot_variable_canopy <- function(var_name, start, end, listes_situation_1, liste
     p1 <- subplot_variable_canopy(var_name, start, end, listes_situation_1[[1]], listes_situation_2[[1]], liste_legend_name, plottitle, ytitle, lai_surfsol)
   }
 
-  
+
   plottitle <- 'Photomorpho activée, Ramifications désactivées, RATP actif'
   p2 <- subplot_variable_canopy(var_name, start, end, listes_situation_1[[2]], listes_situation_2[[2]], liste_legend_name, plottitle, ytitle, lai_surfsol)
-  
+
   plottitle <- 'Photomorpho activée, Ramifications activées, RATP actif'
   p3 <- subplot_variable_canopy(var_name, start, end, listes_situation_1[[3]], listes_situation_2[[3]], liste_legend_name, plottitle, ytitle, lai_surfsol)
-  
+
   plottitle <- 'Photomorpho désactivée, RATP actif'
   p4 <- subplot_variable_canopy(var_name, start, end, listes_situation_1[[4]], listes_situation_2[[4]], liste_legend_name, plottitle, ytitle, lai_surfsol)
-  
+
   ## agencement des graphes
   if (passive)
   {
     p_init <- plot_grid(
-      p1 + theme(legend.position = "none"), 
-      p2 + theme(legend.position = "none"), 
-      p3 + theme(legend.position = "none"), 
-      p4 + theme(legend.position = "none"), 
+      p1 + theme(legend.position = "none"),
+      p2 + theme(legend.position = "none"),
+      p3 + theme(legend.position = "none"),
+      p4 + theme(legend.position = "none"),
       ncol=2, nrow=2, labels=c("A","B","C","D")
     )
   }
   else
   {
     p_init <- plot_grid(
-      p2 + theme(legend.position = "none"), 
-      p3 + theme(legend.position = "none"), 
-      p4 + theme(legend.position = "none"), 
+      p2 + theme(legend.position = "none"),
+      p3 + theme(legend.position = "none"),
+      p4 + theme(legend.position = "none"),
       ncol=2, nrow=2, labels=c("A","B","C")
     )
   }
 
-  
+
   legend <- get_legend(
     p2 + theme(legend.box.margin = margin(0,0,0,12))
   )
-  
+
   p_legend <- plot_grid(p_init, legend, nrow=1, rel_widths = c(5, 1))
-  
-  
+
+
   title <- ggdraw() + draw_label(globaltitle, fontface='bold')
-  
+
   p_final <- plot_grid(title, p_legend,ncol=1, rel_heights = c(0.1, 1))
   p_final
 }
@@ -321,13 +321,13 @@ plot_variable_canopy <- function(var_name, start, end, listes_situation_1, liste
 subplot_variable_entity <- function(var_name, start, end, liste_df_ent, liste_legend_name, plottitle, ytitle, lai_surfsol=1)
 {
   df <- plot_dataframe_canopy(var_name, liste_df_ent, liste_legend_name, start, end)
-  
+
   if (lai_surfsol != 1)
   {
     df$values <- sapply(df$values, function(x){x/lai_surfsol})
   }
-  
-  p <- ggplot(data=df, aes(x=x, y=values, group=light)) + 
+
+  p <- ggplot(data=df, aes(x=x, y=values, group=light)) +
     geom_line(aes(color=light)) +
     ggtitle(plottitle) +
     xlab("Jour de l'année") +
@@ -344,48 +344,48 @@ plot_variable_entity <- function(var_name, start, end, listes_situation, liste_l
     plottitle <- 'Photomorpho activée, Ramifications activées, RATP passif'
     p1 <- subplot_variable_entity(var_name, start, end, listes_situation[[1]], liste_legend_name, plottitle, ytitle, lai_surfsol)
   }
-  
-  
+
+
   plottitle <- 'Photomorpho activée, Ramifications désactivées, RATP actif'
   p2 <- subplot_variable_entity(var_name, start, end, listes_situation[[2]], liste_legend_name, plottitle, ytitle, lai_surfsol)
-  
+
   plottitle <- 'Photomorpho activée, Ramifications activées, RATP actif'
   p3 <- subplot_variable_entity(var_name, start, end, listes_situation[[3]], liste_legend_name, plottitle, ytitle, lai_surfsol)
-  
+
   plottitle <- 'Photomorpho désactivée, RATP actif'
   p4 <- subplot_variable_entity(var_name, start, end, listes_situation[[4]], liste_legend_name, plottitle, ytitle, lai_surfsol)
-  
+
   ## agencement des graphes
   if (passive)
   {
     p_init <- plot_grid(
-      p1 + theme(legend.position = "none"), 
-      p2 + theme(legend.position = "none"), 
-      p3 + theme(legend.position = "none"), 
-      p4 + theme(legend.position = "none"), 
+      p1 + theme(legend.position = "none"),
+      p2 + theme(legend.position = "none"),
+      p3 + theme(legend.position = "none"),
+      p4 + theme(legend.position = "none"),
       ncol=2, nrow=2, labels=c("A","B","C","D")
     )
   }
   else
   {
     p_init <- plot_grid(
-      p2 + theme(legend.position = "none"), 
-      p3 + theme(legend.position = "none"), 
-      p4 + theme(legend.position = "none"), 
+      p2 + theme(legend.position = "none"),
+      p3 + theme(legend.position = "none"),
+      p4 + theme(legend.position = "none"),
       ncol=2, nrow=2, labels=c("A","B","C")
     )
   }
-  
-  
+
+
   legend <- get_legend(
     p2 + theme(legend.box.margin = margin(0,0,0,12))
   )
-  
+
   p_legend <- plot_grid(p_init, legend, nrow=1, rel_widths = c(5, 1))
-  
-  
+
+
   title <- ggdraw() + draw_label(globaltitle, fontface='bold')
-  
+
   p_final <- plot_grid(title, p_legend,ncol=1, rel_heights = c(0.1, 1))
   p_final
 }
@@ -408,28 +408,28 @@ diff_dataframe_toto_legume <- function(df1, df2, passive=FALSE)
       df_final[2:nrow(df_final),i] <- as.numeric(as.character(df_final[2:nrow(df_final),i])) - as.numeric(as.character(df2[2:nrow(df_final),i]))
     }
   }
-  
+
   df_final
 }
 
 subplot_variable_plant <- function(var_name, start, end, liste_df_ent, liste_legend_name, plantlist, plottitle, ytitle, lai_surfsol=1)
 {
   df <- plot_dataframe_plant(var_name, liste_df_ent, liste_legend_name, plantlist, t_start=start, t_end=end)
-  
+
   if (lai_surfsol != 1)
   {
     df$values <- sapply(df$values, function(x){x/lai_surfsol})
   }
-  
+
   # for (j in 1:length(plantlist))
   # {
-  #   
+  #
   #     n <- paste(liste_legend_name[[1]], as.character(plantlist[[j]] -3), sep=" plante ")
   #     print(n)
   #     print(max(as.numeric(df[df$light==n,2])))
   # }
-  
-  p <- ggplot(data=df, aes(x=x, y=values, group=light)) + 
+
+  p <- ggplot(data=df, aes(x=x, y=values, group=light)) +
     geom_line(aes(color=light)) +
     ggtitle(plottitle) +
     xlab("Jour de l'année") +
@@ -446,48 +446,48 @@ plot_variable_plant <- function(var_name, start, end, listes_situation, liste_le
     plottitle <- 'Photomorpho activée, Ramifications activées, RATP passif'
     p1 <- subplot_variable_plant(var_name, start, end, listes_situation[[1]], liste_legend_name, plantlist, plottitle, ytitle, lai_surfsol)
   }
-  
-  
+
+
   plottitle <- 'Photomorpho activée, Ramifications désactivées, RATP actif'
   p2 <- subplot_variable_plant(var_name, start, end, listes_situation[[2]], liste_legend_name, plantlist, plottitle, ytitle, lai_surfsol)
-  
+
   plottitle <- 'Photomorpho activée, Ramifications activées, RATP actif'
   p3 <- subplot_variable_plant(var_name, start, end, listes_situation[[3]], liste_legend_name, plantlist, plottitle, ytitle, lai_surfsol)
-  
+
   plottitle <- 'Photomorpho désactivée, RATP actif'
   p4 <- subplot_variable_plant(var_name, start, end, listes_situation[[4]], liste_legend_name, plantlist, plottitle, ytitle, lai_surfsol)
-  
+
   ## agencement des graphes
   if (passive)
   {
     p_init <- plot_grid(
-      p1 + theme(legend.position = "none"), 
-      p2 + theme(legend.position = "none"), 
-      p3 + theme(legend.position = "none"), 
-      p4 + theme(legend.position = "none"), 
+      p1 + theme(legend.position = "none"),
+      p2 + theme(legend.position = "none"),
+      p3 + theme(legend.position = "none"),
+      p4 + theme(legend.position = "none"),
       ncol=2, nrow=2, labels=c("A","B","C","D")
     )
   }
   else
   {
     p_init <- plot_grid(
-      p2 + theme(legend.position = "none"), 
-      p3 + theme(legend.position = "none"), 
-      p4 + theme(legend.position = "none"), 
+      p2 + theme(legend.position = "none"),
+      p3 + theme(legend.position = "none"),
+      p4 + theme(legend.position = "none"),
       ncol=2, nrow=2, labels=c("A","B","C")
     )
   }
-  
-  
+
+
   legend <- get_legend(
     p2 + theme(legend.box.margin = margin(0,0,0,12))
   )
-  
+
   p_legend <- plot_grid(p_init, legend, nrow=1, rel_widths = c(5, 1))
-  
-  
+
+
   title <- ggdraw() + draw_label(globaltitle, fontface='bold')
-  
+
   p_final <- plot_grid(title, p_legend,ncol=1, rel_heights = c(0.1, 1))
   p_final
 }
@@ -501,15 +501,15 @@ max_per_plant <- function(var_name, df)
     maxvar <- append(maxvar, max(as.numeric(df[df$V1 == varname ,i])))
     plante <- append(plante, i)
   }
-    
-  
+
+
   df_final <- data.frame(plante=sapply(plante,c), max=sapply(maxvar,c))
   df_final
 }
 
 df_correlation_plante <- function(var_name, default_list, ratp_list, situation_list)
 {
-  ratp <- list()
+  lightmodel <- list()
   default <- list()
   situation <- list()
   for (i in 1 : length(default_list))
@@ -517,11 +517,12 @@ df_correlation_plante <- function(var_name, default_list, ratp_list, situation_l
     for (j in 3 : ncol(default_list[[i]]))
     {
       default <- append(default, as.numeric(default_list[[i]][default_list[[i]]$V1 == var_name,][,j]))
-      ratp <- append(ratp, as.numeric(ratp_list[[i]][ratp_list[[i]]$V1 == var_name,][,j]))
+      lightmodel <- append(lightmodel, as.numeric(ratp_list[[i]][ratp_list[[i]]$V1 == var_name,][,j]))
       situation <- append(situation, rep(situation_list[[i]], length(ratp_list[[i]][ratp_list[[i]]$V1 == var_name,][,j])))
     }
   }
-  df <- data.frame(default = sapply(default, c), ratp=sapply(ratp, c), situation=sapply(situation, c))
+
+  df <- data.frame(default = sapply(default, c), lightmodel=sapply(lightmodel, c), situation=sapply(situation, c))
   df
 }
 

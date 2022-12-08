@@ -2082,13 +2082,11 @@ class LightVegeManager:
                     
                     id_plante = list_lstring[k][organe_id][0]
 
-                    S_plante = list_dicFeuilBilanR[k]["surf"][id_plante]
-
-                    list_invar[k]['parip'][id_plante] =  float(list_invar[k]['parip'][id_plante]) + (par_intercept * S_leaf) #* (S_leaf/S_plante))
+                    list_invar[k]['parip'][id_plante] =  float(list_invar[k]['parip'][id_plante]) + (par_intercept * S_leaf)
                         
                     # on enlève les feuilles senescentes 
                     if list_lstring[k][organe_id][9] != 'sen' :
-                        list_invar[k]['parap'][id_plante] = float(list_invar[k]['parap'][id_plante]) + (par_intercept * S_leaf) #* (S_leaf/S_plante))
+                        list_invar[k]['parap'][id_plante] = float(list_invar[k]['parap'][id_plante]) + (par_intercept * S_leaf)
 
                 
                 # on pose une valeur > 0 pour les plantes avec des feuilles
