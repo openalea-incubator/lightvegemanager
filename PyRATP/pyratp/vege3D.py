@@ -97,7 +97,7 @@ class Vege3D(object):
         #- pour chaque mot cle, on verifie qu'il existe dans le dictionaire et on note son numero de colonne
         listEntete = list(listEntete)
         for mot in listEntete:
-            if dicoMotCle.has_key(str(mot)):
+            if str(mot) in dicoMotCle:
                 dicoMotCle[str(mot)] = listEntete.index(str(mot))+1
         nbObj=1
 
