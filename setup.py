@@ -8,7 +8,7 @@ if sys.version_info < (3, 0):
     sys.exit(1)
 
 setup(
-    name="LightVegeManager-Singularity",
+    name="LightVegeManager",
     version="0.0.0",
     description="Works only with cn-wheat",
     url="https://github.com/mwoussen/lightvegemanager/tree/singularity",
