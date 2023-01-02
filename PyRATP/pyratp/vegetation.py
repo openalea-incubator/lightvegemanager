@@ -261,7 +261,7 @@ def _read(f, *args):
     l = f.readline()
     l= l.split('!')[0] # remove comments
     l = l.split('\t')
-    l = filter(None,l)
+    l = list(filter(None,l))
     assert len(args) <= len(l)
     args = list(args)
 
