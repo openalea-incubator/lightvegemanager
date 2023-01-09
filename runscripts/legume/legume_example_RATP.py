@@ -296,6 +296,14 @@ def simulation(foldin, foldout, active, passive, ratpgeo, skytype=2, writegeo=Fa
                 transmi_sol = np.sum(res_trans_2[-1][:][:]) / (energy * surfsolref)
                 epsi = 1. - transmi_sol  # bon
 
+                pari_canopy = 0
+                for k in range(len(names_simulations)) :  
+                    dicFeuilBilanR = lsystem_simulations[names_simulations[k]].tag_loop_inputs[14]    
+                    invar_temp =   lsystem_simulations[names_simulations[k]].tag_loop_inputs[0]   
+                    dicFeuilBilanR = sh.calc_paraF(dicFeuilBilanR, m_lais, res_abs_i_2, force_id_grid = k)
+                    sh.calc_para_Plt(invar_temp, dicFeuilBilanR)
+                    pari_canopy += np.sum(invar_temp['parip'])
+
                 # calcul paramètres par entité
                 list_diff_para=[]
                 surf_ent=[]
@@ -304,7 +312,7 @@ def simulation(foldin, foldout, active, passive, ratpgeo, skytype=2, writegeo=Fa
                     invar_temp =   lsystem_simulations[names_simulations[k]].tag_loop_inputs[0]   
                     dicFeuilBilanR = sh.calc_paraF(dicFeuilBilanR, m_lais, res_abs_i_2, force_id_grid = k)
                     sh.calc_para_Plt(invar_temp, dicFeuilBilanR)
-                    ls_epsi = epsi * invar_temp['parip'] / (np.sum(invar_temp['parip']) + np.sum(invar_temp['parip']) + 10e-15)
+                    ls_epsi = epsi * invar_temp['parip'] / (pari_canopy + 10e-15)
                     print('RATP passive',names_simulations[k],'epsi', sum(ls_epsi))
                     
                     for p in range(lsystem_simulations[names_simulations[k]].nbplantes):

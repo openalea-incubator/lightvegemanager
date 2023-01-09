@@ -41,7 +41,7 @@ def initialisation_legume(foldin, foldout, fusms, ongletBatch):
 def iteration_legume_withoutlighting(iter, lsystem_simulations, names_simulations, 
                                         meteo_j, energy, surf_refVOX, surfsolref,
                                         m_lais_simu, res_trans,  
-                                        res_abs_i=None, list_invar_in=None):
+                                        res_abs_i=None, list_invar_in=None, pari_canopy_in=-1):
 
     # rassemble les paramètres propres à chaque lsystem
     list_invar, list_outvar, list_invar_sc, list_ParamP, \
@@ -116,20 +116,28 @@ def iteration_legume_withoutlighting(iter, lsystem_simulations, names_simulation
     # tag_light_inputs2 = [res_trans]  # input tag
     res_rfr = riri.rfr_calc_relatif(*tag_light_inputs2)
 
-    # ls_epsi
+    # interception au sol
     transmi_sol = np.sum(res_trans[-1][:][:]) / (energy * surfsolref)
-    epsi = 1. - transmi_sol  # bon
+    pari_soil = 1. - transmi_sol
 
     # si la cumul du PAR par plante a déjà calculé en entrée
     if list_invar_in is not None : list_invar = list_invar_in
 
     # calul des interception feuille et ls_epsi plante
+    if pari_canopy_in < 0 :
+        pari_canopy = 0
+        for k in range(len(names_simulations)) :
+            if list_invar_in is None : 
+                list_dicFeuilBilanR[k] = sh.calc_paraF(list_dicFeuilBilanR[k], m_lais, res_abs_i, force_id_grid = k)
+                sh.calc_para_Plt(list_invar[k], list_dicFeuilBilanR[k])
+            pari_canopy += sum(np.sum(list_invar[k]['parip']))
+    else :
+        pari_canopy = pari_canopy_in
+    
     list_ls_epsi = []
     for k in range(len(names_simulations)) :
-        if list_invar_in is None : 
-            list_dicFeuilBilanR[k] = sh.calc_paraF(list_dicFeuilBilanR[k], m_lais, res_abs_i, force_id_grid = k)
-            sh.calc_para_Plt(list_invar[k], list_dicFeuilBilanR[k])
-        list_ls_epsi.append(epsi * list_invar[k]['parip'] / (np.sum(list_invar[k]['parip']) + np.sum(list_invar[k]['parip']) + 10e-15))
+        pari_plante = list_invar[k]['parip'] / (pari_canopy + 10e-15)
+        list_ls_epsi.append(pari_soil * pari_plante)
         print('main', names_simulations[k], 'epsi', sum(list_ls_epsi[-1]))
 
     ##########

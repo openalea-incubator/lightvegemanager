@@ -163,7 +163,7 @@ def main_init_legume(foldin, foldout):
         opt_stressW, opt_stressN, opt_stressGel, opt_residu, dxyz = tag_loop_inputs
     dxyz = lsys_temp.dxyz # récupère nouvelle taille de voxel
     
-    return lsystem_simulations, sim_id, lstring, dxyz, lsys_temp.cote
+    return lsystem_simulations, sim_id, lstring, dxyz, m_lais
 
 def run_light_legume(current_day, next_day_from_next_hour, meteo):
     '''Active le calcul de lumière pour l-egume
@@ -187,17 +187,18 @@ def run_light_legume(current_day, next_day_from_next_hour, meteo):
 
         # W.m-2 = J.s-1.m-2
         # conversion en J.s-1.cm-2
-        # mean_pari = mean_pari/10000
+        mean_pari = mean_pari/10000
 
         # conversion en W.s-1.m-2 (8.64 tiré d'un fichier météo de l-egume)
-        # RG = mean_pari / 8.64
+        RG = mean_pari / 8.64
 
-        RG = mean_pari
+        # le temps
+        RG = mean_pari * 24
 
         return RG, True
     
 
-def simulation(level_tesselation, SIMULATION_LENGTH, legumeinputs="", cnwheatinputs="", outfolderpath="", distrialgo="global", writegeo=False):
+def simulation(SIMULATION_LENGTH, legumeinputs="", cnwheatinputs="", outfolderpath="", writegeo=False):
     # On va suivre la météo de cn-wheat
     # define the time step in hours for each simulator
     LIGHT_TIMESTEP = 4
@@ -227,7 +228,7 @@ def simulation(level_tesselation, SIMULATION_LENGTH, legumeinputs="", cnwheatinp
                                                         CNWHEAT_TIMESTEP, outfolderpath, cnwheatinputs)
     
     # initialisation l-egume
-    lsystem_simulations, sim_id, lstring,  dxyz, cote = main_init_legume(legumeinputs, outfolderpath)
+    lsystem_simulations, sim_id, lstring,  dxyz, m_lais = main_init_legume(legumeinputs, outfolderpath)
     
     # -- SIMULATION PARAMETERS --
     START_TIME = 0    
@@ -237,38 +238,30 @@ def simulation(level_tesselation, SIMULATION_LENGTH, legumeinputs="", cnwheatinp
     environment["coordinates"] = [48.85,0,0] # latitude, longitude, timezone
     environment["sky"] = "turtle46" # turtle à 46 directions par défaut
     environment["diffus"] = True
-    environment["reflected"] = False
-    environment["infinite"] = False
-    environment["reflectance coefficients"] = [[0.1, 0.05], [0., 0.]]
-
-    ratp_parameters = {}
-    
-    ratp_parameters["soil reflectance"] = [0., 0.]
-    ratp_parameters["mu"] = [1.]
-    ratp_parameters["tesselation level"] = level_tesselation
-    if distrialgo=="voxel" : ratp_parameters["angle distrib algo"] = "compute voxel"
-    elif distrialgo=="global" : ratp_parameters["angle distrib algo"] = "compute global"
-    ratp_parameters["nb angle classes"] = 30
-
-    ## Paramètres RATP ##
-    # CN-Wheat : direct et diffus, taille de voxel dynamique
-    environment["direct"] = True 
-    ratp_parameters["voxel size"] = "dynamic"
-    lghtratpcnwheat = LightVegeManager(environment=environment,
-                                        lightmodel="ratp",
-                                        lightmodel_parameters=ratp_parameters,
-                                        main_unit="m")
-
-    # l-egume : diffus, taille de voxel de la grille RIRI de l-egume
     environment["direct"] = False
-    ratp_parameters["voxel size"] = [d*0.01 for d in dxyz] # on convertit en m
-    ratp_parameters["xy max"] = cote
-    ratp_parameters["origin"] = [0,0,0]
-    lghtratplegume = LightVegeManager(environment=environment,
-                                        lightmodel="ratp",
-                                        lightmodel_parameters=ratp_parameters,
+    environment["reflected"] = False
+    environment["infinite"] = True
+    
+    environment["caribu opt"] = {} 
+    environment["caribu opt"]["par"] = (0.10, 0.07)
+
+    caribu_parameters = {}
+    
+    caribu_parameters["sun algo"] = "caribu"
+    nxyz = [m_lais.shape[3], m_lais.shape[2], m_lais.shape[1]]
+    dxyz = [x * 0.01 for x in dxyz] # conversion de cm à m
+    orig = [0.,0.,0.]
+    path = os.path.join(outfolderpath, "sensors")
+    caribu_parameters["sensors"] = ["grid", dxyz, nxyz, orig, path, "vtk"]
+    caribu_parameters["debug"] = False
+
+    light_caribu = LightVegeManager(environment=environment,
+                                        lightmodel="caribu",
+                                        lightmodel_parameters=caribu_parameters,
                                         main_unit="m")
 
+    translate_x =  - dxyz[0] * nxyz[0] / 2 - 0.1
+    translate_y =  dxyz[1] * nxyz[1] / 2 
 
     # ---------------------------------------------
     # -----      RUN OF THE SIMULATION      -------
@@ -304,75 +297,101 @@ def simulation(level_tesselation, SIMULATION_LENGTH, legumeinputs="", cnwheatinp
             geometry = {}
 
             # scene cn-wheat : PlantGL
-            cnwheat_scene = adel_wheat.scene(g)
-
+            # création d'un couvert hétérogène
+            scene_etendu_cnwheat, domain = create_heterogeneous_canopy_copy(adel_wheat, g, nplants=50, var_plant_position=0.03, var_leaf_inclination=0.157, var_leaf_azimut=1.57, var_stem_azimut=0.157,
+                                        plant_density=PLANT_DENSITY[1], inter_row=0.15)
+            
             # scene l-egume : PlantGL
             legume_scene = lsystem_simulations[sim_id].sceneInterpretation(lstring)
 
-            # copie de la scène
-            geometry["scenes"] = [cnwheat_scene, legume_scene]
+            # information géo pour lightvegemanager
+            geometry["scenes"] = [scene_etendu_cnwheat, legume_scene]
+            geometry["domain"] = "auto"
             geometry["transformations"] = {}
             geometry["transformations"]["scenes unit"] = ["m", "cm"]
+            geometry["transformations"]["translate"] = [Vector3(translate_x, translate_y, 0), Vector3(0,0,0)]
+            indice_cnwheat = (0,)
+            indice_legume = (1,)
+
+            # recherche des tiges dans une table MTG
+            geometry["stems id"] = whichstems_MTG(g, indice_cnwheat)
             
-            lghtratpcnwheat.init_scenes(geometry)
-            lghtratpcnwheat.run(PARi=PARi, day=DOY, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
-            lghtratpcnwheat.PAR_update_MTG(g)
+            light_caribu.init_scenes(geometry)
+            light_caribu.run(energy=1, day=DOY, hour=hour, parunit="RG", truesolartime=True, id_sensors=indice_legume)
+            light_caribu.PAR_update_MTG(g, PARi, indice_cnwheat)
         
         # sinon on copie Erel de l'itération précédente
         else:
-            Erel = g.property('Erel')
-            PARa_output = {k: v * PARi for k, v in Erel.items()}
-            outputs = {}
-            outputs.update({'PARa': PARa_output})
-            for param in outputs.keys():
-                if param not in g.properties():
-                    g.add_property(param)
-                # update the MTG
-                g.property(param).update(outputs[param])
-        
-        RG, light_legume = run_light_legume(DOY, next_day_next_hour, meteo)
-
-        if light_legume :
-            lstring = lsystem_simulations[sim_id].derive(lstring, i_legume, 1)
-        
-            # récupère toutes les variables du lsystem
-            tag_loop_inputs = lsystem_simulations[sim_id].tag_loop_inputs
-            invar, outvar, invar_sc, ParamP, \
-                station, carto, meteo_j, mng_j,  \
-                DOY, cutNB, start_time, nbplantes,  \
-                surfsolref, m_lais, dicFeuilBilanR,  \
-                surf_refVOX, triplets, ls_dif, S, par_SN,  \
-                lims_sol, ls_roots, stateEV, Uval, b_,  \
-                ls_mat_res, vCC, ls_ftswStress, ls_NNIStress,  \
-                ls_TStress, lsApex, lsApexAll, dicOrgans,  \
-                deltaI_I0, nbI_I0, I_I0profilLfPlant, I_I0profilPetPlant,  \
-                I_I0profilInPlant, NlClasses, NaClasses, NlinClasses,  \
-                opt_stressW, opt_stressN, opt_stressGel, opt_residu, dxyz = tag_loop_inputs
-
-            geometry = {}
-
-            # scene cn-wheat : PlantGL
-            cnwheat_scene = adel_wheat.scene(g)
-
-            # scene l-egume : PlantGL
-            # legume_scene = lsystem_simulations[sim_id].sceneInterpretation(lstring)
-
-            # scene l-egume : grille RiRi
-            legume_scene = {}
-            legume_scene["LA"] = m_lais
-            legume_scene["distrib"] = ls_dif
-
-            # copie de la scène
-            geometry["scenes"] = [cnwheat_scene, legume_scene]
-            geometry["transformations"] = {}
-            geometry["transformations"]["scenes unit"] = ["m", "m"]
+            RG, light_legume = run_light_legume(DOY, next_day_next_hour, meteo)
             
-            lghtratplegume.init_scenes(geometry)
-            lghtratplegume.run(PARi=RG, day=DOY, hour=hour, truesolartime=True, parunit="RG") 
-            res_trans, res_abs_i = lghtratplegume.to_l_egume(m_lais, RG)
+            if light_legume :
+                lstring = lsystem_simulations[sim_id].derive(lstring, i_legume, 1)
+        
+                # récupère toutes les variables du lsystem
+                tag_loop_inputs = lsystem_simulations[sim_id].tag_loop_inputs
+                invar, outvar, invar_sc, ParamP, \
+                    station, carto, meteo_j, mng_j,  \
+                    DOY, cutNB, start_time, nbplantes,  \
+                    surfsolref, m_lais, dicFeuilBilanR,  \
+                    surf_refVOX, triplets, ls_dif, S, par_SN,  \
+                    lims_sol, ls_roots, stateEV, Uval, b_,  \
+                    ls_mat_res, vCC, ls_ftswStress, ls_NNIStress,  \
+                    ls_TStress, lsApex, lsApexAll, dicOrgans,  \
+                    deltaI_I0, nbI_I0, I_I0profilLfPlant, I_I0profilPetPlant,  \
+                    I_I0profilInPlant, NlClasses, NaClasses, NlinClasses,  \
+                    opt_stressW, opt_stressN, opt_stressGel, opt_residu, dxyz = tag_loop_inputs
 
-            iteration_legume_withoutlighting(lsystem_simulations[sim_id], res_trans, res_abs_i, tag_loop_inputs)
-            i_legume += 1
+                geometry = {}
+
+                # scene l-egume : PlantGL
+                legume_scene = lsystem_simulations[sim_id].sceneInterpretation(lstring)
+
+                # information géo pour lightvegemanager
+                geometry["scenes"] = [scene_etendu_cnwheat, legume_scene]
+                geometry["domain"] = "auto"
+                geometry["transformations"] = {}
+                geometry["transformations"]["scenes unit"] = ["m", "cm"]
+                geometry["transformations"]["translate"] = [Vector3(translate_x, translate_y, 0), Vector3(0,0,0)]
+                indice_cnwheat = (0,)
+                indice_legume = (1,)
+
+                # recherche des tiges dans une table MTG
+                geometry["stems id"] = whichstems_MTG(g, indice_cnwheat)
+                
+                light_caribu.init_scenes(geometry)
+                light_caribu.run(energy=1, day=DOY, hour=hour, parunit="RG", truesolartime=True, id_sensors=indice_legume)
+
+                # transfert vers l-egume
+                res_trans = light_caribu.to_l_egume(m_lais=m_lais, 
+                                                    energy=RG, 
+                                                    list_lstring = [lstring], 
+                                                    list_dicFeuilBilanR=[dicFeuilBilanR],
+                                                    list_invar=[invar],
+                                                    id=indice_legume)
+
+                # transfert vers cn-wheat
+                light_caribu.PAR_update_MTG(g, PARi, indice_cnwheat)
+
+                # calcul du par intercepté sur tout le couvert (avec le blé)
+                pari_canopy = np.sum(invar['parip'])
+                pari_canopy += np.sum(light_caribu.shape_outputs[light_caribu.shape_outputs.VegetationType==indice_cnwheat[0]]["par Ei"]) * RG  
+
+                iteration_legume_withoutlighting(i_legume, lsystem_simulations, [sim_id], 
+                                                    meteo_j, RG, surf_refVOX, surfsolref, 
+                                                    m_lais, res_trans, None, [invar], pari_canopy_in=pari_canopy)
+                i_legume += 1
+            
+            else :
+                Erel = g.property('Erel')
+                PARa_output = {k: v * PARi for k, v in Erel.items()}
+                outputs = {}
+                outputs.update({'PARa': PARa_output})
+                for param in outputs.keys():
+                    if param not in g.properties():
+                        g.add_property(param)
+                    # update the MTG
+                    g.property(param).update(outputs[param])
+        
         
         tot_light += (time.time() - light_start)
 
@@ -403,7 +422,7 @@ def simulation(level_tesselation, SIMULATION_LENGTH, legumeinputs="", cnwheatinp
                                             tillers_replications=tillers_replications)
 
         if writegeo :
-            lghtratpcnwheat.VTKout(os.path.join(outfolderpath, "vtk/smallcouplage")+"_", iteration=t_light, voxels=True)
+            light_caribu.VTKout(os.path.join(outfolderpath, "vtk/smallcouplage")+"_", iteration=t_light)
     
     write_outputs_fspmwheat(OUTPUTS_DIRPATH,
                                 POSTPROCESSING_DIRPATH,
@@ -430,9 +449,7 @@ if __name__ == "__main__":
     cnwheatinputs = os.path.normpath("C:/Users/mwoussen/cdd/codes/vegecouplelight/WheatFspm/fspm-wheat/example/Vegetative_stages/inputs")
     outfolderpath = os.path.normpath("C:/Users/mwoussen/cdd/codes/vegecouplelight/outputs/couplage_smalltests/")
     writegeo = True
-    SIMULATION_LENGTH = 60
-    level_tesselation = 1
-    distrialgo="global"
+    SIMULATION_LENGTH = 200
 
     # dossiers de sortie
     Create_Folders(outfolderpath, "cnwheat")
@@ -440,9 +457,5 @@ if __name__ == "__main__":
     Create_Folders(outfolderpath, "vtk")
 
     print('--- BEGIN ---')
-    simulation(level_tesselation, SIMULATION_LENGTH, legumeinputs, cnwheatinputs, outfolderpath, distrialgo, writegeo)
+    simulation(SIMULATION_LENGTH, legumeinputs, cnwheatinputs, outfolderpath, writegeo)
     print('--- END ---')
-
-        
-
-    

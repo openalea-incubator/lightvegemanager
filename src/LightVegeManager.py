@@ -964,7 +964,7 @@ class LightVegeManager:
         else:
             raise ValueError("Unknown lightmodel : can be either 'ratp' or 'caribu' ")
 
-    def run(self, meteo_path="", energy=0, day=0, hour=0, parunit="micromol.m-2.s-1", truesolartime=False, printsun=False):
+    def run(self, meteo_path="", energy=0, day=0, hour=0, parunit="micromol.m-2.s-1", truesolartime=False, printsun=False, id_sensors=None):
         '''calcul du bilan radiatif
         Args :
             meteo_path : string, chemin du fichier meteo
@@ -979,7 +979,8 @@ class LightVegeManager:
             enregistre les sorties dans self.__outputs sous forme de dataframes pandas
             sorties en µmol.m-2.s-1
         '''
-    
+        self.__in_energy = energy
+
         # RATP
         if self.__lightmodel == "ratp":
             # création d'un dict entity
@@ -1403,10 +1404,11 @@ class LightVegeManager:
                     
                     # si on souhaite construire une grille de capteurs
                     if "sensors" in self.__in_lightmodel_parameters and self.__in_lightmodel_parameters["sensors"][0] == "grid" :
-                        sensors_caribu, sensors_plantgl, Pmax_capt = self._create_caribu_legume_sensors()
+                        sensors_caribu, sensors_plantgl, Pmax_capt = self._create_caribu_legume_sensors(id_sensors)
 
                     # pattern scene infini par défaut
                     if "domain" not in self.__in_geometry :
+                        # cas où il y a uniquement l-egume dans les scènes d'entrée
                         if "sensors" in self.__in_lightmodel_parameters and self.__in_lightmodel_parameters["sensors"][0] == "grid" :
                             reduction_domain = 0
                             dxyz = self.__in_lightmodel_parameters["sensors"][1]
@@ -1417,6 +1419,9 @@ class LightVegeManager:
                         else:
                             self.__in_geometry["domain"] = ((self.__pmin[0], self.__pmin[1]), (self.__pmax[0], self.__pmax[1]))
 
+                    if self.__in_geometry["domain"] == "auto" : 
+                        self.__in_geometry["domain"] = ((self.__pmin[0], self.__pmin[1]), (self.__pmax[0], self.__pmax[1]))
+                    
                     # construction d'une scène ciel et soleil
                     # if self.__in_environment["infinite"] : # on ajoute un domaine pour la création du pattern
                     c_scene_sky = CaribuScene(scene=self.__caribu_scene, light=self.__sky, opt=opt, scene_unit=self.__main_unit, pattern=self.__in_geometry["domain"], debug = debug)
@@ -1577,7 +1582,7 @@ class LightVegeManager:
                         var=[]
                         for t in triangles_sensors:
                             var.append(self.__sensors_outputs["par"][t.id])
-                        VTKtriangles(triangles_sensors, [var], ["par_t"], self.__in_lightmodel_parameters["sensors"][-2] + "sensors_h"+str(hour)+"_d"+str(day)+".vtk")
+                        VTKtriangles(triangles_sensors, [var], ["par_t"], os.path.join(self.__in_lightmodel_parameters["sensors"][-2],"sensors_h"+str(int(hour))+"_d"+str(int(day)))+".vtk")
 
                 # enregistre les valeurs par shape et plantes
                 s_shapes = [0]*len(self.__matching_ids)
@@ -1683,23 +1688,48 @@ class LightVegeManager:
         else:
             raise ValueError("Unknown lightmodel : can be either 'ratp' or 'caribu' ")
 
-    def _create_caribu_legume_sensors(self):
+    def _create_caribu_legume_sensors(self, id_sensors=None):
         # récupère les dimensions de la grille
         dxyz = self.__in_lightmodel_parameters["sensors"][1]
         nxyz = self.__in_lightmodel_parameters["sensors"][2] 
         orig = self.__in_lightmodel_parameters["sensors"][3] 
 
         # réduction si le nombre de couches remplies < nombre de couches prévues
-        skylayer = (self.__pmax[2]) // dxyz[2]
-        if skylayer < nxyz[2] and  self.__pmax[2] > 0 : skylayer = int(nxyz[2] - 1 - skylayer)
+        if id_sensors is None :
+            skylayer = (self.__pmax[2]) // dxyz[2]
+            if skylayer < nxyz[2] and  self.__pmax[2] > 0 : skylayer = int(nxyz[2] - 1 - skylayer)
         
-        # autrement on garde le nombre de voxels prévus
-        else : skylayer = 0 
+            # autrement on garde le nombre de voxels prévus
+            else : skylayer = 0 
+        
+        # on calcule le z max de la scène en omettant certaines espèces
+        else:
+            # on regarde d'abord si l'indice des capteurs est dans la scène d'entrée (cas si scene plantgl vide)
+            i=0
+            specie_empty = self.__matching_ids[i][1] not in id_sensors
+            while ((self.__matching_ids[i][1] not in id_sensors) and (i+1 < len(self.__matching_ids))) :
+                i+=1
+                if self.__matching_ids[i][1] in id_sensors : specie_empty = False
+            
+            if specie_empty : skylayer = nxyz[2] - 1
+            else :
+                # zmax de la scène
+                zmax = -999999  
+                if self.__my_scene :
+                    for tr in self.__my_scene:
+                        if self.__matching_ids[tr.id][1] in id_sensors :
+                            for i in range(3) :
+                                p = tr[i]
+                                if p[2] > zmax :
+                                    zmax = p[2]
 
+                skylayer = zmax // dxyz[2]
+                if skylayer < nxyz[2] and  zmax > 0 : skylayer = int(nxyz[2] - 1 - skylayer)
+
+                
         # scene plantGL qui acceuillera les capteurs
         s_capt = pgl.Scene()
         
-
         if self.__in_environment["infinite"] : 
             points = [(0, 0, 0), (dxyz[0], 0, 0), (dxyz[0], dxyz[1], 0), (0, dxyz[1], 0)]  # capeur bas oriente vers le haut
         else :
@@ -1997,19 +2027,25 @@ class LightVegeManager:
 
             return dict_global, dfvox
 
-    def PAR_update_MTG(self, energy, mtg):
+    def PAR_update_MTG(self, mtg, energy=1, id=None):
         # crée un tableau comme dans caribu_facade de fspm-wheat
         dico_par = {}
         para_dic = {}
         erel_dic = {}
         for s in self.__shape_outputs["ShapeId"]:
-            para_dic[s] = self.__shape_outputs[self.__shape_outputs.ShapeId==s]["par Eabs"].values[0]
-            erel_dic[s] = self.__shape_outputs[self.__shape_outputs.ShapeId==s]["par Eabs"].values[0] / energy
+            if id is None :
+                para_dic[s] = self.__shape_outputs[self.__shape_outputs.ShapeId==s]["par Eabs"].values[0] * energy
+                erel_dic[s] = self.__shape_outputs[self.__shape_outputs.ShapeId==s]["par Eabs"].values[0] / self.__in_energy
+            elif type(id) == list or type(id) == tuple :
+                for esp in id:
+                    df_outputs_esp = self.__shape_outputs[self.__shape_outputs.VegetationType==esp]
+                    para_dic[s] = df_outputs_esp[df_outputs_esp.ShapeId==s]["par Eabs"].values[0] * energy
+                    erel_dic[s] = df_outputs_esp[df_outputs_esp.ShapeId==s]["par Eabs"].values[0] / self.__in_energy
+
         
         dico_par["PARa"] = para_dic
         dico_par["Erel"] = erel_dic
 
-        # add the missing property
         for param in dico_par:
             if param not in mtg.properties():
                 mtg.add_property(param)
@@ -2017,7 +2053,9 @@ class LightVegeManager:
             # update the MTG
             mtg.property(param).update(dico_par[param])
 
-    def to_l_egume(self, m_lais = [], energy=1, list_lstring = [], list_dicFeuilBilanR = [], list_invar = []) :
+    def to_l_egume(self, m_lais = [], energy=1, list_lstring = [], list_dicFeuilBilanR = [], list_invar = [], id=None) :
+        # la liste des espèces de l-egume
+
         epsilon = 1e-14
 
         if self.__lightmodel == "ratp" :
@@ -2069,7 +2107,10 @@ class LightVegeManager:
                 list_invar[k]['parap'] = scipy.array([0.] * len(list_invar[k]['Hplante']))
                 list_invar[k]['parip'] = scipy.array([0.] * len(list_invar[k]['Hplante']))
 
-                ent_organs_outputs = self.__shape_outputs[self.__shape_outputs.VegetationType == k]
+                if id == None:
+                    ent_organs_outputs = self.__shape_outputs[self.__shape_outputs.VegetationType == k]
+                elif type(id) == list or type(id) == tuple :
+                    ent_organs_outputs = self.__shape_outputs[self.__shape_outputs.VegetationType == id[k]]
 
                 # # scene non vide
                 # if self.__matching_ids and len(self.__in_geometry["scenes"][k]) > 0 :
@@ -2077,7 +2118,7 @@ class LightVegeManager:
                     organe_id = int(ent_organs_outputs.iloc[i]["ShapeId"])
 
                     # PAR en W/m²
-                    par_intercept = ent_organs_outputs.iloc[i]['par Ei']
+                    par_intercept = ent_organs_outputs.iloc[i]['par Ei'] * energy
                     S_leaf = ent_organs_outputs.iloc[i]['Area']
                     
                     id_plante = list_lstring[k][organe_id][0]
@@ -2106,11 +2147,36 @@ class LightVegeManager:
                 # traitements des sensors différents si scène infinie ou non
                 if self.__in_environment["infinite"] : 
                     # réduction si le nombre de couches remplies < nombre de couches prévues
-                    skylayer = (self.__pmax[2]) // dxyz[2]
-                    if skylayer < nxyz[2] and  self.__pmax[2] > 0 : skylayer = int(nxyz[2] - 1 - skylayer)
+                    if id is None :
+                        skylayer = (self.__pmax[2]) // dxyz[2]
+                        if skylayer < nxyz[2] and  self.__pmax[2] > 0 : skylayer = int(nxyz[2] - 1 - skylayer)
                     
-                    # autrement on garde le nombre de voxels prévus
-                    else : skylayer = 0 
+                        # autrement on garde le nombre de voxels prévus
+                        else : skylayer = 0 
+                    
+                    # on calcule le z max de la scène en omettant certaines espèces
+                    else:
+                        # on regarde d'abord si l'indice des capteurs est dans la scène d'entrée (cas si scene plantgl vide)
+                        i=0
+                        specie_empty = self.__matching_ids[i][1] not in id
+                        while ((self.__matching_ids[i][1] not in id) and (i+1 < len(self.__matching_ids))) :
+                            i+=1
+                            if self.__matching_ids[i][1] in id : specie_empty = False
+                        
+                        if specie_empty : skylayer = nxyz[2] - 1
+                        else :
+                            # zmax de la scène
+                            zmax = -999999  
+                            if self.__my_scene :
+                                for tr in self.__my_scene:
+                                    if self.__matching_ids[tr.id][1] in id :
+                                        for i in range(3) :
+                                            p = tr[i]
+                                            if p[2] > zmax :
+                                                zmax = p[2]
+
+                            skylayer = zmax // dxyz[2]
+                            if skylayer < nxyz[2] and  zmax > 0 : skylayer = int(nxyz[2] - 1 - skylayer)
                 
                     ID_capt = 0
                     for ix in range(nxyz[0]):
