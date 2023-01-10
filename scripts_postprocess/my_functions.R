@@ -526,4 +526,70 @@ df_correlation_plante <- function(var_name, default_list, ratp_list, situation_l
   df
 }
 
+df_correlation_plante_onestep <- function(var_name1, var_name2, default_list, model_list, step)
+{
+  lightmodel <- list()
+  default <- list()
+  varcolor <- list()
+  espece <- list()
+  for (i in 1 : length(default_list))
+  {
+    for (j in 3 : ncol(default_list[[i]]))
+    {
+      default <- append(default, as.numeric(default_list[[i]][default_list[[i]]$V1 == var_name1 & default_list[[i]]$V2 == step,][,j]))
+      lightmodel <- append(lightmodel, as.numeric(model_list[[i]][model_list[[i]]$V1 == var_name1 & model_list[[i]]$V2 == step,][,j]))
+      varcolor <- append(varcolor, as.numeric(default_list[[i]][default_list[[i]]$V1 == var_name2 & default_list[[i]]$V2 == step,][,j]))
+      espece <- append(espece, rep(as.character(i), length(default_list[[i]][default_list[[i]]$V1 == var_name1 & default_list[[i]]$V2 == step,][,j])))
+    }
+  }
+
+  df <- data.frame(default = sapply(default, c), lightmodel=sapply(lightmodel, c), var2=sapply(varcolor, c), espece=sapply(espece, c))
+  df
+}
+
+plante_onestep_correlation <- function(varname1,
+                                       varname2,
+                                       step,
+                                       default_list_case1, model_list_case1,
+                                       default_list_case2, model_list_case2,
+                                       xymax,
+                                       legendname,
+                                       case1name,
+                                       case2name,
+                                       surfsol=1)
+{
+  df_xy <- data.frame(x=c(0,xymax),y=c(0,xymax))
+
+  df <- df_correlation_plante_onestep(varname1, varname2, default_list_case1, model_list_case1, step)
+  df$var2 <- sapply(df$var2, function(x){x/surfsol})
+
+  p1 <- ggplot() +
+    geom_point(data=df, aes(x=default, y=lightmodel, color=var2, shape=espece), size = 3) +
+    geom_line(data=df_xy,aes(x=x,y=y)) +
+    scale_colour_gradientn(colours=rainbow(2)) +
+    labs(x="Défaut l-egume",y="CARIBU Actif",title=case1name, color=legendname)
+  p1
+
+  df <- df_correlation_plante_onestep(varname1, varname2, default_list_case2, model_list_case2, step)
+  df$var2 <- sapply(df$var2, function(x){x/surfsol})
+
+  p2 <- ggplot() +
+    geom_point(data=df, aes(x=default, y=lightmodel, color=var2, shape=espece), size = 3) +
+    geom_line(data=df_xy,aes(x=x,y=y)) +
+    scale_colour_gradientn(colours=rainbow(2)) +
+    labs(x="Défaut l-egume",y="CARIBU Actif",title=case2name, color=legendname)
+  p2
+
+  p_init <- plot_grid(
+    p1,
+    p2,
+    ncol=2, nrow=1, labels=c("A","B")
+  )
+
+  globaltitle <- paste("Pas de temps :", as.character(step), sep=" ")
+  title <- ggdraw() + draw_label(globaltitle, fontface='bold')
+
+  p_final <- plot_grid(title, p_init,ncol=1, rel_heights = c(0.1, 1))
+  p_final
+}
 

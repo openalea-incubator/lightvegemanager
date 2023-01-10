@@ -416,3 +416,174 @@ p <- plot_var_eachplant_16grid(varname,
                                surfsol=surfsol)
 p
 
+
+
+##### CARIBU%l-egume sur une date en particulier
+# 2 graphes, côte à côte, même échelle en y,
+# la df : legume, caribu, lai, sur même situation
+surfsol <- 0.16
+
+# CARIBU PASSIF
+step <- 90
+xymax <- 0.0033
+p <- plante_onestep_correlation("PARiPlante",
+                                "SurfPlante",
+                                step,
+                                list(nophoto_legume_active_1,
+                                     nophoto_legume_active_2),
+                                list(nophoto_caribu_passive_1,
+                                     nophoto_caribu_passive_2),
+                                list(photo_legume_active_1,
+                                     photo_legume_active_2),
+                                list(photo_caribu_passive_1,
+                                     photo_caribu_passive_2),
+                                xymax,
+                                "LAI",
+                                "Sans photomorphogénèse",
+                                "Avec photomorphogénèse",
+                                 surfsol)
+p
+
+
+step <- 130
+xymax <- 0.08
+p <- plante_onestep_correlation("PARiPlante",
+                                "SurfPlante",
+                                step,
+                                list(nophoto_legume_active_1,
+                                     nophoto_legume_active_2),
+                                list(nophoto_caribu_passive_1,
+                                     nophoto_caribu_passive_2),
+                                list(photo_legume_active_1,
+                                     photo_legume_active_2),
+                                list(photo_caribu_passive_1,
+                                     photo_caribu_passive_2),
+                                xymax,
+                                "LAI",
+                                "Sans photomorphogénèse",
+                                "Avec photomorphogénèse",
+                                surfsol)
+p
+
+step <- 150
+xymax <- 0.16
+p <- plante_onestep_correlation("PARiPlante",
+                                "SurfPlante",
+                                step,
+                                list(nophoto_legume_active_1,
+                                     nophoto_legume_active_2),
+                                list(nophoto_caribu_passive_1,
+                                     nophoto_caribu_passive_2),
+                                list(photo_legume_active_1,
+                                     photo_legume_active_2),
+                                list(photo_caribu_passive_1,
+                                     photo_caribu_passive_2),
+                                xymax,
+                                "LAI",
+                                "Sans photomorphogénèse",
+                                "Avec photomorphogénèse",
+                                surfsol)
+p
+
+step <- 175
+xymax <- 0.16
+p <- plante_onestep_correlation("PARiPlante",
+                                "SurfPlante",
+                                step,
+                                list(nophoto_legume_active_1,
+                                     nophoto_legume_active_2),
+                                list(nophoto_caribu_passive_1,
+                                     nophoto_caribu_passive_2),
+                                list(photo_legume_active_1,
+                                     photo_legume_active_2),
+                                list(photo_caribu_passive_1,
+                                     photo_caribu_passive_2),
+                                xymax,
+                                "LAI",
+                                "Sans photomorphogénèse",
+                                "Avec photomorphogénèse",
+                                surfsol)
+p
+
+# CARIBU ACTIF
+step <- 78
+xymax <- 0.0002
+p <- plante_onestep_correlation("PARiPlante",
+                                "SurfPlante",
+                                step,
+                                list(nophoto_legume_active_1,
+                                     nophoto_legume_active_2),
+                                list(nophoto_caribu_active_1,
+                                     nophoto_caribu_active_2),
+                                list(photo_legume_active_1,
+                                     photo_legume_active_2),
+                                list(photo_caribu_active_1,
+                                     photo_caribu_active_2),
+                                xymax,
+                                "LAI",
+                                "Sans photomorphogénèse",
+                                "Avec photomorphogénèse",
+                                surfsol)
+p
+
+
+step <- 120
+xymax <- 0.055
+p <- plante_onestep_correlation("PARiPlante",
+                                "SurfPlante",
+                                step,
+                                list(nophoto_legume_active_1,
+                                     nophoto_legume_active_2),
+                                list(nophoto_caribu_active_1,
+                                     nophoto_caribu_active_2),
+                                list(photo_legume_active_1,
+                                     photo_legume_active_2),
+                                list(photo_caribu_active_1,
+                                     photo_caribu_active_2),
+                                xymax,
+                                "LAI",
+                                "Sans photomorphogénèse",
+                                "Avec photomorphogénèse",
+                                surfsol)
+p
+
+step <- 150
+xymax <- 0.125
+p <- plante_onestep_correlation("PARiPlante",
+                                "SurfPlante",
+                                step,
+                                list(nophoto_legume_active_1,
+                                     nophoto_legume_active_2),
+                                list(nophoto_caribu_active_1,
+                                     nophoto_caribu_active_2),
+                                list(photo_legume_active_1,
+                                     photo_legume_active_2),
+                                list(photo_caribu_active_1,
+                                     photo_caribu_active_2),
+                                xymax,
+                                "LAI",
+                                "Sans photomorphogénèse",
+                                "Avec photomorphogénèse",
+                                surfsol)
+p
+
+step <- 175
+xymax <- 0.16
+p <- plante_onestep_correlation("PARiPlante",
+                                "SurfPlante",
+                                step,
+                                list(nophoto_legume_active_1,
+                                     nophoto_legume_active_2),
+                                list(nophoto_caribu_active_1,
+                                     nophoto_caribu_active_2),
+                                list(photo_legume_active_1,
+                                     photo_legume_active_2),
+                                list(photo_caribu_active_1,
+                                     photo_caribu_active_2),
+                                xymax,
+                                "LAI",
+                                "Sans photomorphogénèse",
+                                "Avec photomorphogénèse",
+                                surfsol)
+p
+
