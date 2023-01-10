@@ -120,6 +120,9 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
     for i in range(nb_iter+1):
         print('time step: ',i)
 
+        if i == 20:
+            print("debug")
+
         for k, n in enumerate(names_simulations):
             lstring[k] = lsystem_simulations[n].derive(lstring[k], i, 1)
         
@@ -233,9 +236,14 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
 
                 transmi_sol = np.sum(res_trans_2[-1][:][:]) / (energy * surfsolref)
                 epsi = 1. - transmi_sol
+                # calul des interception feuille et ls_epsi plante
+                pari_canopy = 0
+                for k in range(len(names_simulations)) :
+                    pari_canopy += sum(np.sum(list_invar2[k]['parip']))
+                
                 ls_epsi = []
                 for k in range(len(names_simulations)) :
-                    ls_epsi.append(epsi * list_invar2[k]['parip'] / (np.sum(list_invar2[k]['parip']) + np.sum(list_invar2[k]['parip']) + 10e-15))
+                    ls_epsi.append(epsi * list_invar2[k]['parip'] / (pari_canopy + 10e-15))
                     print('CARIBU passive',names_simulations[k],'epsi', sum(ls_epsi[-1]))
 
                 # Enregistre les outputs
@@ -243,51 +251,6 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
                     for p in range(lsystem_simulations[names_simulations[k]].nbplantes):
                         epsi_passive[k][p].append(ls_epsi[k][p])
                         para_passive[k][p].append(list_invar2[k]['parip'][p])
-
-            #     # calcul paramètres par entité
-            #     list_diff_para=[]
-            #     surf_ent=[]
-            #     for k in range(len(names_simulations)) :  
-            #         dicFeuilBilanR = lsystem_simulations[names_simulations[k]].tag_loop_inputs[14]    
-            #         invar_temp =   lsystem_simulations[names_simulations[k]].tag_loop_inputs[0]   
-            #         dicFeuilBilanR = sh.calc_paraF(dicFeuilBilanR, m_lais, res_abs_i_2, force_id_grid = k)
-            #         sh.calc_para_Plt(invar_temp, dicFeuilBilanR)
-            #         ls_epsi = epsi * invar_temp['parip'] / (np.sum(invar_temp['parip']) + np.sum(invar_temp['parip']) + 10e-15)
-            #         print('RATP passive',names_simulations[k],'epsi', sum(ls_epsi))
-                    
-            #         for p in range(lsystem_simulations[names_simulations[k]].nbplantes):
-            #             epsi_passive[k][p].append(ls_epsi[p])
-            #             para_passive[k][p].append(invar_temp['parip'][p])       
-
-            #         diffpara_ent = []
-            #         list_surf_vox = []
-            #         for iz in range(lghtratp.legume_empty_layers, m_lais.shape[1]):
-            #             layer_diffpara_ent = []
-            #             layer_surf_vox = []
-            #             for ix in range(m_lais.shape[3]):
-            #                 for iy in range(m_lais.shape[2]):
-            #                     layer_diffpara_ent.append((res_abs_i[k][iz][iy][ix]-res_abs_i_2[k][iz][iy][ix]))
-            #                     layer_surf_vox.append(m_lais[k][iz][iy][ix])
-
-            #                     S_para_legume += res_abs_i[k][iz][iy][ix]
-            #                     S_para_ratp += res_abs_i_2[k][iz][iy][ix]
-            #             diffpara_ent.append(layer_diffpara_ent)
-            #             list_surf_vox.append(layer_surf_vox)
-            #         list_diff_para.append(diffpara_ent)
-            #         surf_ent.append(list_surf_vox)
-            #     diffpart=[]
-            #     for iz in range(lghtratp.legume_empty_layers, m_lais.shape[1]):
-            #         layer_diffpart = []
-            #         for ix in range(m_lais.shape[3]):
-            #             for iy in range(m_lais.shape[2]):
-            #                 layer_diffpart.append((res_trans[iz][iy][ix]-res_trans_2[iz][iy][ix]))
-            #                 S_part_legume += res_trans[iz][iy][ix]
-            #                 S_part_ratp += res_trans_2[iz][iy][ix]
-            #         diffpart.append(layer_diffpart)
-
-            #     diff_voxel_para.append(list_diff_para)
-            #     diff_voxel_part.append(diffpart)
-            #     surf_vox.append(surf_ent)
 
         iteration_legume_withoutlighting(i, lsystem_simulations, names_simulations, 
                                             meteo_j, energy, surf_refVOX, surfsolref, 
@@ -309,6 +272,19 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
                 dict_ratp_passive['plante'+str(p)] = epsi_passive[k][p][0:fin-deb] + para_passive[k][p][0:fin-deb]
             pd.DataFrame(dict_ratp_passive).to_csv(foldout+"outputs_ratp_passive_"+str(n)+".csv", index=False)
 
+    #     for i in range(len(diff_voxel_para)):
+    #         dic_part = {}
+    #         for k,n in enumerate(names_simulations):
+    #             dic_para = {}
+    #             dic_surf = {}
+    #             for j in range(len(diff_voxel_para[i][k])) :
+    #                 dic_para["Layer"+str(j)] = diff_voxel_para[i][k][j]
+    #                 dic_surf["Layer"+str(j)] = surf_vox[i][k][j]
+    #             pd.DataFrame(dic_para).to_csv(foldout+"diff_para_"+str(n)+"_"+str(i)+".csv", index=False)
+    #             pd.DataFrame(dic_surf).to_csv(foldout+"surf_vox_"+str(n)+"_"+str(i)+".csv", index=False)
+    #         for j in range(len(diff_voxel_para[i][k])) :
+    #             dic_part["Layer"+str(j)] = diff_voxel_part[i][j]
+    #         pd.DataFrame(dic_part).to_csv(foldout+"diff_part_"+str(i)+".csv", index=False)
         pd.DataFrame({
             "legume" : step_time_leg, 
             "caribu run" : step_time_ratp_run, 
