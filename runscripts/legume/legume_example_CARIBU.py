@@ -17,7 +17,7 @@ except ModuleNotFoundError:
     from src.l_egume_template import *
 
 '''
-Comparaison de la lumière entre l-egume (RiRi) et RATP
+Comparaison de la lumière entre l-egume (RiRi) et CARIBU
 
 '''
 
@@ -38,12 +38,6 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
         lstring.append(lsystem_simulations[n].axiom)
         #lire dans derivation_length #335 #30
         lsystem_simulations[n].opt_external_coupling = 1 # met a un l'option external coupling
-
-    # lstring_lasttimestep = []
-    # for n in names_simulations :
-    #     lstring_lasttimestep.append(lsystem_simulations[n].axiom)
-    #     #lire dans derivation_length #335 #30
-    #     lsystem_simulations[n].opt_external_coupling = 1 # met a un l'option external coupling
 
     if active=="caribu" or passive=="caribu" :
         # copie du lsystem pour récupérer la taille des voxels
@@ -98,9 +92,6 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
             lstring_temp = lsystem_simulations[n].derive(lstring[k], 0, 1)
             epsi_passive.append([[] for i in range(lsystem_simulations[n].nbplantes)])
             para_passive.append([[] for i in range(lsystem_simulations[n].nbplantes)])
-        # diff_voxel_para = []
-        # diff_voxel_part = []
-        # surf_vox = []
 
         # temps de calcul
         time_legume = 0
@@ -110,18 +101,10 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
         step_time_ratp_run = []
         step_time_leg = []
 
-        # # somme respectifs
-        # S_para_legume = 0
-        # S_part_legume = 0
-        # S_para_ratp = 0
-        # S_part_ratp = 0
 
     # début de la simulation
     for i in range(nb_iter+1):
         print('time step: ',i)
-
-        if i == 20:
-            print("debug")
 
         for k, n in enumerate(names_simulations):
             lstring[k] = lsystem_simulations[n].derive(lstring[k], i, 1)
@@ -272,19 +255,6 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
                 dict_ratp_passive['plante'+str(p)] = epsi_passive[k][p][0:fin-deb] + para_passive[k][p][0:fin-deb]
             pd.DataFrame(dict_ratp_passive).to_csv(foldout+"outputs_ratp_passive_"+str(n)+".csv", index=False)
 
-    #     for i in range(len(diff_voxel_para)):
-    #         dic_part = {}
-    #         for k,n in enumerate(names_simulations):
-    #             dic_para = {}
-    #             dic_surf = {}
-    #             for j in range(len(diff_voxel_para[i][k])) :
-    #                 dic_para["Layer"+str(j)] = diff_voxel_para[i][k][j]
-    #                 dic_surf["Layer"+str(j)] = surf_vox[i][k][j]
-    #             pd.DataFrame(dic_para).to_csv(foldout+"diff_para_"+str(n)+"_"+str(i)+".csv", index=False)
-    #             pd.DataFrame(dic_surf).to_csv(foldout+"surf_vox_"+str(n)+"_"+str(i)+".csv", index=False)
-    #         for j in range(len(diff_voxel_para[i][k])) :
-    #             dic_part["Layer"+str(j)] = diff_voxel_part[i][j]
-    #         pd.DataFrame(dic_part).to_csv(foldout+"diff_part_"+str(i)+".csv", index=False)
         pd.DataFrame({
             "legume" : step_time_leg, 
             "caribu run" : step_time_ratp_run, 
