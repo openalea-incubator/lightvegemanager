@@ -285,6 +285,7 @@ class LightVegeManager:
         elif self.__lightmodel == "caribu":
             # paramètres par défaut
             if "sun algo" not in self.__in_lightmodel_parameters : self.__in_lightmodel_parameters["sun algo"] = "caribu"
+            if "soil mesh" not in self.__in_lightmodel_parameters : self.__in_lightmodel_parameters["soil mesh"] = -1
             
             # création du ciel
             # par défaut turtle 46 directions, soc
@@ -1424,8 +1425,8 @@ class LightVegeManager:
                     
                     # construction d'une scène ciel et soleil
                     # if self.__in_environment["infinite"] : # on ajoute un domaine pour la création du pattern
-                    c_scene_sky = CaribuScene(scene=self.__caribu_scene, light=self.__sky, opt=opt, scene_unit=self.__main_unit, pattern=self.__in_geometry["domain"], debug = debug)
-                    c_scene_sun = CaribuScene(scene=self.__caribu_scene, light=self.__sun, opt=opt, scene_unit=self.__main_unit, pattern=self.__in_geometry["domain"], debug = debug)
+                    c_scene_sky = CaribuScene(scene=self.__caribu_scene, light=self.__sky, opt=opt, scene_unit=self.__main_unit, pattern=self.__in_geometry["domain"], soil_mesh = self.__in_lightmodel_parameters["soil mesh"], debug = debug)
+                    c_scene_sun = CaribuScene(scene=self.__caribu_scene, light=self.__sun, opt=opt, scene_unit=self.__main_unit, pattern=self.__in_geometry["domain"], soil_mesh = self.__in_lightmodel_parameters["soil mesh"], debug = debug)
                     # else:
                     #     c_scene_sky = CaribuScene(scene=self.__caribu_scene, light=self.__sky, opt=opt, scene_unit=self.__main_unit, debug = debug)
                     #     c_scene_sun = CaribuScene(scene=self.__caribu_scene, light=self.__sun, opt=opt, scene_unit=self.__main_unit, debug = debug)
@@ -1568,6 +1569,25 @@ class LightVegeManager:
                     else:
                         raise ValueError("Unknown sun_sky_option : can be either 'mix', 'sun' or 'sky'.")
 
+                    # transmis au sol
+                    if self.__in_lightmodel_parameters["soil mesh"] != -1 :
+                        self.__soilenergy = {}
+                        if sun_sky_option == "mix" : 
+                            q1, e1 = c_scene_sky.getSoilEnergy()
+                            q2, e2 = c_scene_sun.getSoilEnergy()
+
+                            q = RdRs * q1 + (1 - RdRs) * q2
+                            e = RdRs * e1 + (1 - RdRs) * e2
+
+                        elif sun_sky_option == "sun" : 
+                            q, e = c_scene_sun.getSoilEnergy()
+
+                        elif sun_sky_option == "sky" : 
+                            q, e = c_scene_sky.getSoilEnergy()
+
+                        self.__soilenergy["Qi"] = q
+                        self.__soilenergy["Einc"] = e
+                    
                     # affichage VTK des capteurs    
                         # affichage VTK des capteurs    
                     # affichage VTK des capteurs    
@@ -1918,6 +1938,10 @@ class LightVegeManager:
     def sun(self):
         return self.__sun
 
+    @property
+    def soilenergy(self):
+        return self.__soilenergy
+
     # aire du plus grand triangle à partir des scènes en entrée
     # -> avant la tesselation
     @property
@@ -2032,16 +2056,18 @@ class LightVegeManager:
         dico_par = {}
         para_dic = {}
         erel_dic = {}
-        for s in self.__shape_outputs["ShapeId"]:
-            if id is None :
+        
+        if id is None :
+            for s in self.__shape_outputs["ShapeId"]:
                 para_dic[s] = self.__shape_outputs[self.__shape_outputs.ShapeId==s]["par Eabs"].values[0] * energy
                 erel_dic[s] = self.__shape_outputs[self.__shape_outputs.ShapeId==s]["par Eabs"].values[0] / self.__in_energy
-            elif type(id) == list or type(id) == tuple :
-                for esp in id:
-                    df_outputs_esp = self.__shape_outputs[self.__shape_outputs.VegetationType==esp]
+        
+        elif type(id) == list or type(id) == tuple :
+            for esp in id:
+                df_outputs_esp = self.__shape_outputs[self.__shape_outputs.VegetationType==esp]
+                for s in df_outputs_esp["ShapeId"]:
                     para_dic[s] = df_outputs_esp[df_outputs_esp.ShapeId==s]["par Eabs"].values[0] * energy
                     erel_dic[s] = df_outputs_esp[df_outputs_esp.ShapeId==s]["par Eabs"].values[0] / self.__in_energy
-
         
         dico_par["PARa"] = para_dic
         dico_par["Erel"] = erel_dic
@@ -2590,8 +2616,4 @@ class LightVegeManager:
                 I=0
                 if(sky_type=='soc'):
                     I = soc(elv, dz, da)
-                elif(sky_type=='uoc'):
-                    I = uoc(elv, dz, da)
-
-                pc.append(I) 
-        return ele, azi, omega, pc
+  

@@ -41,7 +41,8 @@ def initialisation_legume(foldin, foldout, fusms, ongletBatch):
 def iteration_legume_withoutlighting(iter, lsystem_simulations, names_simulations, 
                                         meteo_j, energy, surf_refVOX, surfsolref,
                                         m_lais_simu, res_trans,  
-                                        res_abs_i=None, list_invar_in=None, pari_canopy_in=-1):
+                                        res_abs_i=None, list_invar_in=None, 
+                                        pari_canopy_in=-1, pari_soil_in=-1):
 
     # rassemble les paramètres propres à chaque lsystem
     list_invar, list_outvar, list_invar_sc, list_ParamP, \
@@ -117,8 +118,11 @@ def iteration_legume_withoutlighting(iter, lsystem_simulations, names_simulation
     res_rfr = riri.rfr_calc_relatif(*tag_light_inputs2)
 
     # interception au sol
-    transmi_sol = np.sum(res_trans[-1][:][:]) / (energy * surfsolref)
-    pari_soil = 1. - transmi_sol
+    if pari_soil_in < 0 :
+        transmi_sol = np.sum(res_trans[-1][:][:]) / (energy * surfsolref)
+        pari_soil = 1. - transmi_sol
+    else :
+        pari_soil = 1 - pari_soil_in
 
     # si la cumul du PAR par plante a déjà calculé en entrée
     if list_invar_in is not None : list_invar = list_invar_in
@@ -136,8 +140,8 @@ def iteration_legume_withoutlighting(iter, lsystem_simulations, names_simulation
     
     list_ls_epsi = []
     for k in range(len(names_simulations)) :
-        pari_plante = list_invar[k]['parip'] / (pari_canopy + 10e-15)
-        list_ls_epsi.append(pari_soil * pari_plante)
+        ratio_pari_plante = list_invar[k]['parip'] / (pari_canopy + 10e-15)
+        list_ls_epsi.append(pari_soil * ratio_pari_plante)
         print('main', names_simulations[k], 'epsi', sum(list_ls_epsi[-1]))
 
     ##########
