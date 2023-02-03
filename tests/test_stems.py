@@ -29,20 +29,21 @@ Prise en compte des tiges
         la portion réfléchi. On soustrait uniquement la partie transmise aux éléments non tiges
     
     * RATP
+        l'aire des triangles appartenant à la tige est divisée par 2
         
 
 """
 
 def run_print(lghtcaribu, lghtratp, PARi, day, hour):
     # calcul
-    lghtcaribu.run(energy=PARi, day=day, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True, printsun=True)
+    lghtcaribu.run(energy=PARi, day=day, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
     lghtratp.run(energy=PARi, day=day, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
 
     # résultats
     print("=== CARIBU ===")
-    print(lghtcaribu.shapes_outputs)
+    print(lghtcaribu.elements_outputs)
     print("=== RATP ===")
-    print(lghtratp.shapes_outputs)
+    print(lghtratp.elements_outputs)
     print("\n")
 
 if __name__ == "__main__":
@@ -81,17 +82,16 @@ if __name__ == "__main__":
     environment["diffus"] = False
     environment["direct"] = True
     environment["reflected"] = False
-    environment["reflectance coefficients"] = [[0.1, 0.05]]
-    environment["caribu opt"] = {} 
-    environment["caribu opt"]["par"] = (0.10, 0.05)
     environment["infinite"] = False
 
     ## Paramètres CARIBU ##
     caribu_parameters["sun algo"] = "caribu"
+    caribu_parameters["caribu opt"] = {}
+    caribu_parameters["caribu opt"]["par"] = (0.10, 0.05)
     lghtcaribu = LightVegeManager(environment=environment,
                                     lightmodel="caribu",
                                     lightmodel_parameters=caribu_parameters)
-    lghtcaribu.init_scenes(geometry)
+    lghtcaribu.build(geometry)
 
     ## Paramètres RATP ##
     dv = 1. # m
@@ -102,13 +102,14 @@ if __name__ == "__main__":
     ratp_parameters["tesselation level"] = 0
     ratp_parameters["angle distrib algo"] = "compute global"
     ratp_parameters["nb angle classes"] = 30
+    ratp_parameters["reflectance coefficients"] = [[0.1, 0.05]]
     lghtratp = LightVegeManager(environment=environment,
                                 lightmodel="ratp",
                                 lightmodel_parameters=ratp_parameters)
-    lghtratp.init_scenes(geometry)
+    lghtratp.build(geometry)
 
     # imprime la grille de voxels de RATP
-    lghtratp.VTKinit("outputs/stems/")
+    lghtratp.VTK_light("outputs/stems/teststemsratp")
 
     ## situation 1
     PARi=500
@@ -121,4 +122,5 @@ if __name__ == "__main__":
     run_print(lghtcaribu, lghtratp, PARi, day, hour)
 
     # résultats au format VTK de CARIBU
-    lghtcaribu.VTKout("outputs/stems/", iteration=0)
+    lghtratp.VTK_light("outputs/stems/teststemsratp", i=2)
+    lghtcaribu.VTK_light("outputs/stems/teststemscaribu", i=1)

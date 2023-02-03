@@ -1,12 +1,19 @@
-from src.Polygons import *
-
+'''
+gère la tesselation d'une triangulation, redécoupage des triangles
+avec ou sans correspondance à une grille
+'''
 from PyRATP.pyratp import grid
 
+from src.LightVegeManager_basicgeometry import *
+
+
 '''
-Set de fonctions pour subdiviser un triangle de manière à ce qu'il match une grille de voxels
+Set de fonctions pour subdiviser un triangle de manière à ce qu'il match une
+grille de voxels
 '''
 
-## /!\ fonction fausse /!\ pas prise ne compte de l'origine de la grille (et autres bug)
+## /!\ fonction fausse /!\ pas prise ne compte de l'origine de la grille 
+# (et autres bug)
 def whichvoxel(p, mygrid):
     '''Renvoit le voxel (indices 3D) auquel appartient p
 
@@ -36,7 +43,8 @@ def whichvoxel(p, mygrid):
 def samevoxel(voxels):
     '''Vérifie si la liste voxels contient le même voxel
 
-    voxels : [[kx1, ky1, kz1], ..., [kxn, kyn, kzn]] listes de voxels en indices 3D
+    voxels : [[kx1, ky1, kz1], ..., [kxn, kyn, kzn]] listes de voxels en 
+             indices 3D
     
     return : boolean 
     '''
@@ -50,7 +58,8 @@ def samevoxel(voxels):
     return test == 0
 
 def tesselate(mygrid, triangle):
-    '''Subdivise triangle en 4 sous-triangles SI il appartient à plusieurs voxels
+    '''Subdivise triangle en 4 sous-triangles SI il appartient à plusieurs 
+        voxels
         SINON renvoit [triangle]
 
     mygrid : grille de voxels façon RATP
@@ -63,7 +72,11 @@ def tesselate(mygrid, triangle):
     wh = []
     for i in range(3):
         #wh.append(whichvoxel(triangle[i], mygrid))
-        Jx, Jy, Jz = grid.grid_index([triangle[i][0]], [triangle[i][1]], [triangle[i][2]], mygrid, toric=False)
+        Jx, Jy, Jz = grid.grid_index([triangle[i][0]], 
+                                        [triangle[i][1]], 
+                                        [triangle[i][2]], 
+                                        mygrid, 
+                                        toric=False)
         wh.append([Jx[0], Jy[0], Jz[0]])
     
     if samevoxel(wh):
@@ -76,38 +89,36 @@ def tesselate(mygrid, triangle):
         # récupère les milieux
         middles = []
         for i in range(3):
-            middles.append(Vector3.middle(triangle[i], triangle[(i+1)%3]))
+            middles.append(middle(triangle[i], triangle[(i+1)%3]))
 
         # triangle 1
-        smalltriangles.append(Triangle3(
+        smalltriangles.append([
             triangle[0],
             middles[0],
             middles[2]
-        ))
+        ])
         
         # triangle 2
-        smalltriangles.append(Triangle3(
+        smalltriangles.append([
             middles[0],
             triangle[1],
             middles[1]
-        ))
+        ])
 
         # triangle 3
-        smalltriangles.append(Triangle3(
+        smalltriangles.append([
             middles[1],
             triangle[2],
             middles[2]
-        ))
+        ])
 
         # triangle 4
-        smalltriangles.append(Triangle3(
+        smalltriangles.append([
             middles[0],
             middles[1],
             middles[2]
-        ))
+        ])
         
-        for t in smalltriangles : t.set_id(triangle.id)
-
         return smalltriangles
 
 def tesselate2(triangle):
@@ -121,49 +132,49 @@ def tesselate2(triangle):
     # récupère les milieux
     middles = []
     for i in range(3):
-        middles.append(Vector3.middle(triangle[i], triangle[(i+1)%3]))
+        middles.append(middle(triangle[i], triangle[(i+1)%3]))
 
     # triangle 1
-    smalltriangles.append(Triangle3(
+    smalltriangles.append([
         triangle[0],
         middles[0],
         middles[2]
-    ))
+    ])
     
     # triangle 2
-    smalltriangles.append(Triangle3(
+    smalltriangles.append([
         middles[0],
         triangle[1],
         middles[1]
-    ))
+    ])
 
     # triangle 3
-    smalltriangles.append(Triangle3(
+    smalltriangles.append([
         middles[1],
         triangle[2],
         middles[2]
-    ))
+    ])
 
     # triangle 4
-    smalltriangles.append(Triangle3(
+    smalltriangles.append([
         middles[0],
         middles[1],
         middles[2]
-    ))
+    ])
     
-    for t in smalltriangles : t.set_id(triangle.id)
-
     return smalltriangles
 
 
 def iterate_trianglesingrid(triangle, mygrid, level, levelmax, triangles_shape):
-    '''Récursion sur triangle, tant que sa subdivision ne match pas la grille ou atteint un critère d'arrêt
+    '''Récursion sur triangle, tant que sa subdivision ne match pas la grille 
+    ou atteint un critère d'arrêt
 
     triangle : Triangle3, triangle à tester 
     mygrid : grille de voxels façon RATP
     level : nombre de subdivision actuel
     levelmax : limite de subdivision
-    triangles_shape : liste de Triangle3, stocke les triangles subdivisés ou non
+    triangles_shape : liste de Triangle3, stocke les triangles subdivisés ou 
+                        non
     
     return : 1 si fonction a bien terminée et 
             met à jour la liste triangles_shape
@@ -178,9 +189,8 @@ def iterate_trianglesingrid(triangle, mygrid, level, levelmax, triangles_shape):
         
         else:
             for subt in ltriangle:
-                iterate_trianglesingrid(subt, mygrid, level, levelmax, triangles_shape)
-    
-    return 1
+                iterate_trianglesingrid(subt, mygrid, level, levelmax, 
+                                            triangles_shape)
 
 def iterate_triangles(triangle, level, levelmax, triangles_shape):
     '''Récursion sur triangle, tant que levelmax n'est pas atteint
@@ -201,15 +211,4 @@ def iterate_triangles(triangle, level, levelmax, triangles_shape):
     else:
         for subt in ltriangle:
             iterate_triangles(subt, level, levelmax, triangles_shape)
-    
-    return 1
 
-class MyTessetelorGrid:
-    def __init__(self, mygrid, level, levelmax, triangles_shape):
-        self.__mygrid = mygrid
-        self.__level = level
-        self.__levelmax = levelmax
-        self.__triangles_shape = triangles_shape
-    
-    def _iterate_trianglesingrid(self, triangle):
-        iterate_trianglesingrid(triangle, self.__mygrid, self.__level, self.__levelmax, self.__triangles_shape)

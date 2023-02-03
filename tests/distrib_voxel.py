@@ -29,13 +29,13 @@ def simulation(dv):
     environment["diffus"] = False
     environment["direct"] = True
     environment["reflected"] = False
-    environment["reflectance coefficients"] = [[0.1, 0.05]]
     environment["infinite"] = False
 
     ## Paramètres RATP ##
     dx, dy, dz = dv, dv, dv # m
     ratp_parameters["voxel size"] = [dx, dy, dz]
     ratp_parameters["soil reflectance"] = [0., 0.]
+    ratp_parameters["reflectance coefficients"] = [[0.1, 0.05]]
     ratp_parameters["mu"] = [1.]
     ratp_parameters["tesselation level"] = 7
     ratp_parameters["angle distrib algo"] = "compute voxel"
@@ -50,13 +50,13 @@ def simulation(dv):
     lghtratp = LightVegeManager(environment=environment,
                                     lightmodel="ratp",
                                     lightmodel_parameters=ratp_parameters)
-    lghtratp.init_scenes(geometry)
+    lghtratp.build(geometry)
     lghtratp.run(energy=PARi, day=day, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
-    print(lghtratp.shapes_outputs)
+    print(lghtratp.elements_outputs)
 
-    # # VTK de la scène avec x+ = North
-    # path_out = "outputs/debug_distrib_voxel/ratp_"+str(day)+"_"+str(hour)+"h"
-    # lghtratp.VTKout(path_out, 1, voxels=True)
+    # VTK de la scène avec x+ = North
+    path_out = "outputs/debug_distrib_voxel/ratp_"+str(day)+"_"+str(hour)+"h"
+    lghtratp.VTK_light(path_out)
 
 
 if __name__ == "__main__":
