@@ -41,3 +41,11 @@ From: miniconda3_py37_4.11.0.sif
     cd l-egume
 	python setup.py develop
     cd ..
+
+	# install PyRATP_Mobidiv
+	git clone git@github.com:mwoussen/PyRATP_MobiDiv.git
+	cd PyRATP_MobiDiv
+	make
+	make clean
+	cd ..
+
