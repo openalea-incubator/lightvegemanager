@@ -1,6 +1,6 @@
 from src.Polygons import *
 
-from PyRATP.pyratp import grid
+from pyratpmobidiv import grid
 
 '''
 Set de fonctions pour subdiviser un triangle de manière à ce qu'il match une grille de voxels

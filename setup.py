@@ -10,8 +10,8 @@ if sys.version_info < (3, 0):
 setup(
     name="LightVegeManager",
     version="0.0.0",
-    description="Works only with cn-wheat",
-    url="https://github.com/mwoussen/lightvegemanager/tree/singularity",
+    description="Manage light with several plant models",
+    url="https://github.com/mwoussen/lightvegemanager/",
     packages=find_packages(include=["PyRATP","src","runscript"]),
     package_data = {'' : ['*.pyd', '*.so'],}
 )

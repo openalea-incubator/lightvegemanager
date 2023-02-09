@@ -1,11 +1,11 @@
 import openalea.plantgl.all as pgl
 
-from PyRATP.pyratp import grid
-from PyRATP.pyratp import RATP2VTK
-from PyRATP.pyratp.vegetation import Vegetation
-from PyRATP.pyratp.skyvault import Skyvault
-from PyRATP.pyratp.micrometeo import MicroMeteo
-from PyRATP.pyratp.runratp import runRATP
+from pyratpmobidiv import grid
+from pyratpmobidiv import RATP2VTK
+from pyratpmobidiv.vegetation import Vegetation
+from pyratpmobidiv.skyvault import Skyvault
+from pyratpmobidiv.micrometeo import MicroMeteo
+from pyratpmobidiv.runratp import runRATP
 
 from alinea.caribu.CaribuScene import CaribuScene
 from alinea.caribu.sky_tools import GenSky
@@ -692,7 +692,7 @@ class LightVegeManager:
                         self.__tess_time = time.time() - start
                     
                     # préparation du fill
-                    # pour chaque triangle, indice entité, x, y, z, aire, nitro
+                    # pour chaque triangle, indice entité, x, y, z, aire, azote
                     entity, barx, bary, barz, a, n = [],[], [], [], [], []
                     for tr in self.__my_scene:
                         bar = tr.barycenter
@@ -1044,7 +1044,7 @@ class LightVegeManager:
 
             # impression de la position du soleil
             if printsun: 
-                from PyRATP.pyratp import pyratp    
+                from pyratpmobidiv import pyratp    
                 self._print_sun(day, hour, pyratp, truesolartime)
 
             # grille RATP non vide
@@ -1292,7 +1292,7 @@ class LightVegeManager:
                 ## Création du ciel et du soleil
                 #: Direct light sources (sun positions)
                 if self.__in_lightmodel_parameters["sun algo"]=="ratp":
-                    from PyRATP.pyratp import pyratp
+                    from pyratpmobidiv import pyratp
                     
                     az, ele = 5.,9. # variables fantômes (non récupérées)
                     pyratp.shortwave_balance.sundirection(ele, az, 
@@ -1346,7 +1346,7 @@ class LightVegeManager:
 
                 # affichage des coordonnées du soleil
                 if printsun: 
-                    from PyRATP.pyratp import pyratp    
+                    from pyratpmobidiv import pyratp    
                     self._print_sun(day, hour, pyratp, truesolartime)
                     
                 # active le calcul si le soleil est levé
@@ -2359,7 +2359,7 @@ class LightVegeManager:
 
     def VTKsun(self, path, day, hour, truesolartime):
         if self.__lightmodel == "ratp" :
-            from PyRATP.pyratp import pyratp
+            from pyratpmobidiv import pyratp
                 
             az, ele = 5.,9. # variables fantômes (non récupérées)
             pyratp.shortwave_balance.sundirection(ele, az, 
@@ -2390,7 +2390,7 @@ class LightVegeManager:
             
         elif self.__lightmodel == "caribu" :
             if self.__in_lightmodel_parameters["sun algo"]=="ratp":
-                from PyRATP.pyratp import pyratp
+                from pyratpmobidiv import pyratp
                 
                 az, ele = 5.,9. # variables fantômes (non récupérées)
                 pyratp.shortwave_balance.sundirection(ele, az, 

@@ -2,7 +2,6 @@ import os
 import shutil
 import sys
 import time
-import progressbar
 import random
 
 try :
@@ -289,6 +288,91 @@ def simulation(SIMULATION_LENGTH, legumeinputs="", cnwheatinputs="", outfolderpa
     soils_all_data_list = []
     all_simulation_steps = []  # to store the steps of the simulation
 
+
+    # début de la simulation : J60 jusqu'au 347
+    for i in range(nb_iter+1):
+        print('time step: ',i)
+
+
+        lstring = lsystem_simulations[sim_id].derive(lstring, i, 1)
+        
+        # récupère toutes les variables du lsystem (on retient seulement les variables communes)
+        tag_loop_inputs = lsystem_simulations[sim_id].tag_loop_inputs
+        invar, outvar, invar_sc, ParamP, \
+            station, carto, meteo_j, mng_j,  \
+            DOY, cutNB, start_time, nbplantes,  \
+            surfsolref, m_lais, dicFeuilBilanR,  \
+            surf_refVOX, triplets, ls_dif, S, par_SN,  \
+            lims_sol, ls_roots, stateEV, Uval, b_,  \
+            ls_mat_res, vCC, ls_ftswStress, ls_NNIStress,  \
+            ls_TStress, lsApex, lsApexAll, dicOrgans,  \
+            deltaI_I0, nbI_I0, I_I0profilLfPlant, I_I0profilPetPlant,  \
+            I_I0profilInPlant, NlClasses, NaClasses, NlinClasses,  \
+            opt_stressW, opt_stressN, opt_stressGel, opt_residu, dxyz = tag_loop_inputs    
+               
+        #gere difference de dsitib par especes
+        list_ls_dif = []
+        list_m_lais = []
+
+        list_ls_dif.append(lsystem_simulations[sim_id].tag_loop_inputs[17])
+        list_m_lais.append(lsystem_simulations[sim_id].tag_loop_inputs[13])
+        
+        same_entity = False
+        
+        for dis in list_ls_dif[1:]:
+            same_entity = (list_ls_dif[0][0] == dis[0]).all()
+        if same_entity : 
+            ls_dif = list_ls_dif[0][0]
+            m_lais = list_m_lais[0]
+            for m in list_m_lais[1:]: m_lais = m_lais + m
+        else:
+            ls_dif = list_ls_dif[0]
+            for d in list_ls_dif[1:]: ls_dif = ls_dif + d
+            m_lais = np.array([m[0] for m in list_m_lais])
+
+        ## Paramètres météo ## 
+        doy = DOY
+        hour = 12
+        energy = 0.48*meteo_j['RG']*10000/(3600*24)#flux PAR journalier moyen en W.m-2 / RG en j.cm-2
+
+        ## Paramètres scene ##     
+        scenes_plantgl = []
+        if i > 0 :      
+            # récupère la scène PlantGL
+
+            scenes_plantgl.append(lsystem_simulations[sim_id].sceneInterpretation(lstring))
+
+        geometry = {}
+        geometry["scenes"] = scenes_plantgl
+        # domaine dans l'unité de la scène finale (ici en m)
+        geometry["domain"] = ((0,0), (m_lais.shape[3] * dxyz[0] * 0.01, m_lais.shape[2] * dxyz[1] * 0.01))
+        geometry["transformations"] = {}
+        geometry["transformations"]["scenes unit"] = ["cm"] * len(names_simulations) # ne concerne que geometry["scenes"]
+
+        start=time.time()
+        light_caribu.init_scenes(geometry)
+        light_caribu.run(energy=energy, day=doy, hour=hour, truesolartime=True, parunit="RG")
+        
+        if writegeo:
+            light_caribu.VTKout(foldout+"triangle",iteration=i, triangles=True, voxels=False, outvariables=["par Eabs", "par Ei"])
+
+        # rassemble les paramètres propres à chaque lsystem
+        list_invar2, list_dicFeuilBilanR = [], []
+        list_invar2.append(lsystem_simulations[sim_id].tag_loop_inputs[0])
+        list_dicFeuilBilanR.append(lsystem_simulations[sim_id].tag_loop_inputs[14])
+
+        # transfert des sorties
+        res_trans_ = light_caribu.to_l_egume(m_lais=m_lais,
+                                            energy=energy,
+                                            list_lstring = lstring, 
+                                            list_dicFeuilBilanR=list_dicFeuilBilanR, 
+                                            list_invar=list_invar)
+                  
+        iteration_legume_withoutlighting(i, lsystem_simulations, names_simulations, 
+                                            meteo_j, energy, surf_refVOX, surfsolref, 
+                                            m_lais, res_trans, None, list_invar)
+
+
     #for t_light in progressbar.progressbar(range(START_TIME, SIMULATION_LENGTH, LIGHT_TIMESTEP)):
     for t_light in progressbar.progressbar(range(START_TIME, SIMULATION_LENGTH, SENESCWHEAT_TIMESTEP)):
         print("--- ",t_light)
@@ -350,7 +434,8 @@ def simulation(SIMULATION_LENGTH, legumeinputs="", cnwheatinputs="", outfolderpa
         else:
             RG, light_legume = run_light_legume(DOY, next_day_next_hour, meteo)
 
-            if light_legume and DOY > 59 and DOY < 300 :
+            # if light_legume and DOY > 59 and DOY < 300 :
+            if light_legume :
                 lstring = lsystem_simulations[sim_id].derive(lstring, i_legume, 1)
         
                 # récupère toutes les variables du lsystem
