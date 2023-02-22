@@ -33,10 +33,6 @@ def initialisation_legume(foldin, foldout, fusms, ongletBatch):
             name = list(mylsys)[0]
             names_simulations.append(name)
             lsystem_simulations[name] = mylsys[name]
-            
-            # option Nuptake
-            opt_Nuptake = 0
-            lsystem_simulations[name].opt_Nuptake = opt_Nuptake
 
     return lsystem_simulations, names_simulations
 
