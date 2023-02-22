@@ -33,6 +33,10 @@ def initialisation_legume(foldin, foldout, fusms, ongletBatch):
             name = list(mylsys)[0]
             names_simulations.append(name)
             lsystem_simulations[name] = mylsys[name]
+            
+            # option Nuptake
+            opt_Nuptake = 0
+            lsystem_simulations[name].opt_Nuptake = opt_Nuptake
 
     return lsystem_simulations, names_simulations
 
@@ -44,6 +48,8 @@ def iteration_legume_withoutlighting(iter, lsystem_simulations, names_simulation
                                         res_abs_i=None, list_invar_in=None, 
                                         pari_canopy_in=-1, pari_soil_in=-1):
 
+    opt_Nuptake = 0
+    
     # rassemble les paramètres propres à chaque lsystem
     list_invar, list_outvar, list_invar_sc, list_ParamP, \
     list_cutNB, list_nbplantes, list_start_time, \
@@ -134,7 +140,7 @@ def iteration_legume_withoutlighting(iter, lsystem_simulations, names_simulation
             if list_invar_in is None : 
                 list_dicFeuilBilanR[k] = sh.calc_paraF(list_dicFeuilBilanR[k], m_lais, res_abs_i, force_id_grid = k)
                 sh.calc_para_Plt(list_invar[k], list_dicFeuilBilanR[k])
-            pari_canopy += sum(np.sum(list_invar[k]['parip']))
+            pari_canopy += np.sum(list_invar[k]['parip'])
     else :
         pari_canopy = pari_canopy_in
     
@@ -161,23 +167,31 @@ def iteration_legume_withoutlighting(iter, lsystem_simulations, names_simulation
     ##########
     # step soil
     ##########
+    list_ls_N = []
+    for k in range(len(names_simulations)) : 
+        if opt_Nuptake == 0 or opt_Nuptake == 2:  # 'STICS' or 'old':
+            list_ls_N.append(list_ls_demandeN_bis[k])
+
+        elif opt_Nuptake == 1:  # 'LocalTransporter':
+            list_ls_N.append(np.array(list_invar[k]['NNI']))  # ls_NNIStress['NTreshExpSurf']
+
 
     # gere l'aggregation des entrees par plante
     list_nb = [len(list_ls_epsi[0].tolist())]
     ls_epsi = list_ls_epsi[0].tolist()
-    ls_demandeN_bis = list_ls_demandeN_bis[0].tolist()
+    ls_N = list_ls_N[0].tolist()
     ls_roots = list_ls_roots[0]
     ParamP = list_ParamP[0]
     for k in range(1,len(names_simulations)) : 
             list_nb.append(len(list_ls_epsi[k].tolist()))
             ls_epsi = ls_epsi + list_ls_epsi[k].tolist()
-            ls_demandeN_bis = ls_demandeN_bis + list_ls_demandeN_bis[k].tolist()
+            ls_N = ls_N + list_ls_N[k].tolist()
             ls_roots = ls_roots + list_ls_roots[k]
             ParamP = ParamP + list_ParamP[k]
 
     
     # step soil en commun
-    tag_inputs_soil_step = [S, par_SN, surfsolref, stateEV, Uval, b_, meteo_j, mng_j, ParamP, ls_epsi, ls_roots, ls_demandeN_bis, opt_residu]  # input tag
+    tag_inputs_soil_step = [S, par_SN, surfsolref, stateEV, Uval, b_, meteo_j, mng_j, ParamP, ls_epsi, ls_roots, ls_N, opt_residu, opt_Nuptake]  # input tag
     res_soil_step = loop.step_bilanWN_sol(*tag_inputs_soil_step)
     S, stateEV, ls_ftsw, ls_transp, ls_Act_Nuptake_plt, temps_sol = res_soil_step
 
