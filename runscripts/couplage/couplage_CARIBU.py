@@ -293,8 +293,7 @@ def simulation(SIMULATION_LENGTH, legumeinputs="", cnwheatinputs="", outfolderpa
     soils_all_data_list = []
     all_simulation_steps = []  # to store the steps of the simulation
 
-    # nb_iter = int(meteo.loc[0, ['DOY']].iloc[0] - lsystem_simulations[sim_id].DOYdeb)
-    nb_iter = 20
+    nb_iter = int(meteo.loc[0, ['DOY']].iloc[0] - lsystem_simulations[sim_id].DOYdeb)
     # début de la simulation : J60 jusqu'au 347
     for i in range(nb_iter+1):
         print('time step: ',i)
