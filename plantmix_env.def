@@ -30,7 +30,7 @@ From: miniconda3_py37_4.11.0.sif
     # installe adel (requis par WheatFspm)
     wget https://github.com/rbarillot/adel/archive/python3.zip
     unzip python3.zip && cd adel-python3
-    python setup.py install
+    python setup.py develop
     cd ..
     rm python3.zip
 
@@ -38,13 +38,13 @@ From: miniconda3_py37_4.11.0.sif
     git clone --recurse-submodules https://github.com/openalea-incubator/WheatFspm.git
     cd WheatFspm
     git submodule update --remote
-    python setup.py install
+    python setup.py develop
     cd ..
 
 	# installe l-egume
 	git clone -b Develop https://github.com/glouarn/l-egume.git
     cd l-egume
-	python setup.py install
+	python setup.py develop
     cd ..
 
 	# installe PyRATP_Mobidiv
