@@ -3,7 +3,6 @@ fonction math pour comparer des vecteurs etc... selon les besoins
 
 '''
 
-from audioop import cross
 import numpy
 import math
 
