@@ -2154,12 +2154,12 @@ class LightVegeManager:
                     # on enlève les feuilles senescentes 
                     if list_lstring[k][organe_id][9] != 'sen' :
                         list_invar[k]['parap'][id_plante] = float(list_invar[k]['parap'][id_plante]) + (par_intercept * S_leaf)
-
                 
                 # on pose une valeur > 0 pour les plantes avec des feuilles
-                for p in range(len(list_invar[k]['parip'])) :
-                    if list_invar[k]['parip'][p] == 0. and list_dicFeuilBilanR[k]["surf"][p] > 0. :
-                        list_invar[k]['parip'][p] = epsilon
+                if len(list_invar[k]['parip']) == len(list_dicFeuilBilanR[k]["surf"]) : 
+                    for p in range(len(list_invar[k]['parip'])) :
+                        if list_invar[k]['parip'][p] == 0. and list_dicFeuilBilanR[k]["surf"][p] > 0. :
+                            list_invar[k]['parip'][p] = epsilon
                     
                 # conversion
                 list_invar[k]['parap'] = list_invar[k]['parap'] * (3600*24)/1000000
