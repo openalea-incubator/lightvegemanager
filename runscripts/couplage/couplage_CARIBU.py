@@ -354,7 +354,7 @@ def simulation(SIMULATION_LENGTH, legumeinputs="", cnwheatinputs="", outfolderpa
         geometry["transformations"]["scenes unit"] = ["cm"] * 1 # ne concerne que geometry["scenes"]
 
         light_caribu.init_scenes(geometry)
-        light_caribu.run(energy=energy, day=doy, hour=hour, truesolartime=True, parunit="RG")
+        light_caribu.run(energy=1, day=doy, hour=hour, truesolartime=True, parunit="RG")
         
         if writegeo:
             light_caribu.VTKout(outfolderpath+"triangle",iteration=i, triangles=True, voxels=False, outvariables=["par Eabs", "par Ei"])
