@@ -15,7 +15,7 @@ import openalea.plantgl.all as pgl_all
 def run_simu(lightvegemanager, day, hour, latitude, longitude, timezone, truesolartime):
     PARi = 500
     environment["coordinates"] = [latitude, longitude, timezone]                               
-    lightvegemanager.run(energy=PARi, day=day, hour=hour, parunit="micromol.m-2.s-1", truesolartime=truesolartime, printsun=True)
+    lightvegemanager.run(energy=PARi, day=day, hour=hour, parunit="micromol.m-2.s-1", truesolartime=truesolartime)
 
 if __name__ == "__main__":
     # Paramètres scène en entrée

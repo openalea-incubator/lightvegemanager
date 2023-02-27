@@ -222,7 +222,7 @@ def simulation(foldin, foldout, active, passive, writegeo=False):
                 # calul des interception feuille et ls_epsi plante
                 pari_canopy = 0
                 for k in range(len(names_simulations)) :
-                    pari_canopy += sum(np.sum(list_invar2[k]['parip']))
+                    pari_canopy += np.sum(list_invar2[k]['parip'])
                 
                 ls_epsi = []
                 for k in range(len(names_simulations)) :

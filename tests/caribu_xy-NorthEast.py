@@ -11,6 +11,7 @@ except ModuleNotFoundError:
     from src.LightVegeManager import *
     
 import openalea.plantgl.all as pgl_all
+from src.LightVegeManager_VTK import *
 
 
 def run_and_vtk(lightvegemanager, folderout, PARi, day, hour) :
@@ -25,16 +26,14 @@ def run_and_vtk(lightvegemanager, folderout, PARi, day, hour) :
     print("--- day %i, hour %i"%(day, hour))
 
     # Calcul du rayonnement
-    lightvegemanager.run(energy=PARi, day=day, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True, printsun=True)
+    lightvegemanager.run(energy=PARi, day=day, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
 
     # VTK de la scène avec x+ = North
     path_out = folderout + "scene_day"+str(day)+"_"+str(hour)+"h"
-    lightvegemanager.VTKout(path_out, 1)
+    lightvegemanager.VTK_light(path_out)
     
     # ligne du soleil (rotation de 180° autour de z pour se mettre dans l'espace x+ = North)
-    VTKline(Vector3(float(lightvegemanager.sun[0][1][0])*2, float(lightvegemanager.sun[0][1][1])*2, float(lightvegemanager.sun[0][1][2])*2),
-            Vector3(-float(lightvegemanager.sun[0][1][0])*2, -float(lightvegemanager.sun[0][1][1])*2, -float(lightvegemanager.sun[0][1][2])*2),
-           folderout + "sun_day"+str(day)+"_"+str(hour)+"h.vtk")
+    lightvegemanager.VTK_sun(folderout + str(day)+"_"+str(hour)+"h")
 
 
 if __name__ == "__main__":
@@ -68,13 +67,15 @@ if __name__ == "__main__":
 
     ## Paramètres CARIBU ##
     caribu_parameters["sun algo"] = "caribu"
+    caribu_parameters["caribu opt"] = {} 
+    caribu_parameters["caribu opt"]["par"] = (0.10, ) # plaques opaques
 
     # Déclaration de l'objet
     lghtcaribu = LightVegeManager(environment=environment,
                                     lightmodel="caribu",
                                     lightmodel_parameters=caribu_parameters)
     # création de la scène dans l'objet
-    lghtcaribu.init_scenes(geometry, global_scene_tesselate_level=5)
+    lghtcaribu.build(geometry, global_scene_tesselate_level=5)
 
     # dossier de sortie
     folderout = "outputs/debug_caribu_xy-NorthEast/"
