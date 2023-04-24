@@ -1,18 +1,35 @@
 '''
-construction du soleil
-transfert à CARIBU
-soit algo de calcul de CARIBU
-soit algo de calcul 
+    LightVegeManager_sun
+    ********************
+
+    Build a sun respecting each light model format
+    
+    For computing the sun position you can either use CARIBU or RATP algorithm, which slightly change
+    in the process
 '''
 import math
 
-from PyRATP.pyratp import pyratp
+from alinea.pyratp import pyratp
 from alinea.caribu.sky_tools import Gensun
 from alinea.caribu.sky_tools import GetLightsSun
 from alinea.caribu.sky_tools import Sun
 
-def ratp_sun(day, hour, coordinates, truesolartime) :                   
-    az, ele = 5.,9. # variables fantômes (non récupérées)
+def ratp_sun(day, hour, coordinates, truesolartime) :  
+    """Converts output RATP sundirection routine to CARIBU light format
+
+    :param day: input day
+    :type day: int
+    :param hour: input hour
+    :type hour: int
+    :param coordinates: [latitude, longitude, timezone]
+    :type coordinates: list
+    :param truesolartime: activates true solar time or local time to compute sun position
+    :type truesolartime: bool
+    :return: sun direction in a tuple with cartesian coordinates (x,y,z), vector is oriented from sky to ground
+    :rtype: tuple
+    """            
+     # ghost variables (not used)
+    az, ele = 5.,9.
     pyratp.shortwave_balance.sundirection(ele, az, 
                                             coordinates[0], 
                                             coordinates[1], 
@@ -21,20 +38,22 @@ def ratp_sun(day, hour, coordinates, truesolartime) :
     degtorad = math.pi/180
 
     azrad = pyratp.shortwave_balance.azdeg
-    # peut avoir un nan à 12h 
+
+    # Manage a special error situation
+    # Nan at 12h
     if math.isnan(azrad) and hour==12. : 
-        # critère empirique basé sur l'algo de CARIBU (GenSun)
+        # we found this criteria by testing with CARIBU algo (GenSun)
         if coordinates[0] >= 21.11:
             azrad = 0.
         else:
             azrad = 180.
-    # passage de l'azimuth en South=0° clockwise (RATP) à North=0° 
-    # clockwise (CARIBU.Gensun)
+
+    # Converts azimut from South=0° clockwise (RATP) to North=0 clockwise (CARIBU.Gensun)
     azrad = -azrad * degtorad
 
     zenirad = pyratp.shortwave_balance.hdeg * degtorad
 
-    # le vecteur pointe du ciel vers le sol
+    # vector is oriented from sky to ground
     sunx = suny = math.cos(zenirad)
     sunx *= math.cos(azrad)
     suny *= math.sin(azrad)
@@ -43,8 +62,21 @@ def ratp_sun(day, hour, coordinates, truesolartime) :
     return (sunx, suny, sunz)
 
 def caribu_sun(day, hour, coordinates, truesolartime) :
-    # si l'heure est locale, calcul de l'heure solaire 
-    # (algorithme pris dans RATP, sundirection: shortwave_balance.f90)
+    """Compute sun direction from CARIBU algorithm
+
+    :param day: input day
+    :type day: int
+    :param hour: input hour
+    :type hour: int
+    :param coordinates: [latitude, longitude, timezone]
+    :type coordinates: list
+    :param truesolartime: activates true solar time or local time to compute sun position
+    :type truesolartime: bool
+    :return: sun direction in a tuple with cartesian coordinates (x,y,z), vector is oriented from sky to ground
+    :rtype: tuple
+    """    
+    # if hour is local, we compute the solar hour
+    # algorithm from RATP, sundirection: shortwave_balance.f90
     if not truesolartime:
         om =0.017202*(day-3.244)
         teta=om+0.03344*math.sin(om)*(1+0.021*math.cos(om))-1.3526
@@ -54,7 +86,7 @@ def caribu_sun(day, hour, coordinates, truesolartime) :
         eqntime=dphi*229.2
         hour =hour+coordinates[2]+coordinates[1]/15.-eqntime/60. % 24.
 
-    # Conversion de la latitude en radian!
+    # Converts latitude in radian
     sun = Gensun.Gensun()(1., day, hour, coordinates[0]*math.pi/180)
     sun = GetLightsSun.GetLightsSun(sun)
     sun_str_split = sun.split(' ')
@@ -64,9 +96,17 @@ def caribu_sun(day, hour, coordinates, truesolartime) :
             float(sun_str_split[3]))
 
 def print_sun(day, hour, coordinates, truesolartime) :
-    """Méthode qui imprime les coordonnées du soleil (pour le débuggage)
-        séparée pour la lisibilité dans run(...)
-    """
+    """Prints sun position ouputs from RATP and CARIBU algorithm with the same inputs
+
+    :param day: input day
+    :type day: int
+    :param hour: input hour
+    :type hour: int
+    :param coordinates: [latitude, longitude, timezone]
+    :type coordinates: list
+    :param truesolartime: activates true solar time or local time to compute sun position
+    :type truesolartime: bool
+    """    
     print("---\t SUN COORDONATES\t ---")
     print("--- Convention x+ = North, vector from sky to floor")
     print("--- azimut: south clockwise E = -90° W = 90°\t zenith: \

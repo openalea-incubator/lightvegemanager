@@ -1,24 +1,72 @@
 '''
-Création d'une scène RATP avec une grille de voxels et une distribution
-d'angle
+    LightVegeManager_buildRATPscene
+    ********************************
+
+    Creation of a PyRATP.grid from inputs. The following functions create and initialize a grid from
+    either a triangles mesh, a l-egume grid or an empty geometric input
+
+    The argument ``parameters`` refers to one the three inputs dict of LightVegeManager. It is 
+    structured as so:
+
+    .. code:: python
+
+        ratp_args = {
+                # Grid specifications
+                "voxel size" : [dx, dy, dz],
+                "voxel size" : "dynamic",
+                
+                "origin" : [xorigin, yorigin, zorigin],
+                "origin" : [xorigin, yorigin],
+
+                "number voxels" : [nx, ny, nz],
+                "grid slicing" : "ground = 0."
+                "tesselation level" : int
+
+                # Leaf angle distribution
+                "angle distrib algo" : "compute global",
+                "angle distrib algo" : "compute voxel",
+                "angle distrib algo" : "file",
+
+                "nb angle classes" : int,
+                "angle distrib file" : filepath,
+
+                # Vegetation type
+                "soil reflectance" : [reflectance_band0, reflectance_band1, ...],
+                "reflectance coefficients" : [reflectance_band0, reflectance_band1, ...],
+                "mu" : [mu_scene0, mu_scene1, ...]
+            }
+
+    .. seealso:: For more details :ref:`Inputs description <inputs>`
+
 '''
 
-from PyRATP.pyratp import grid
+from alinea.pyratp import grid
 
 from src.LightVegeManager_trianglesmesh import *
 from src.LightVegeManager_voxelsmesh import *
 from src.LightVegeManager_leafangles import *
 
 def extract_grid_origin(parameters, minmax) :
-    # origine de la grille
+    """_summary_
+
+    :param parameters: RATP parameters from inputs of LightVegeManager
+    :type parameters: dict
+    :param minmax: list of mininuml point and maximum point in a triangles mesh
+    :type minmax: [3-tuple, 3-tuple]
+    :return: origin of the grid depending of input parameters and size of the mesh
+    :rtype: 3-tuple
+    """    
+    # option 1: origin not specified in the input, it is then the minimum point
     if "origin" not in parameters : 
         [xorig, yorig, zorig] = minmax[0]
         zorig = -zorig
     else : 
+        # option 2: only x and y are specified, z = - zmin
         if len(parameters["origin"]) == 2 :
             xorig, yorig, zorig = parameters["origin"][0],  \
                                     parameters["origin"][1], \
                                     -minmax[0][2]
+        # option 3: origin is specified
         elif len(parameters["origin"]) == 3 :
             [xorig, yorig, zorig] = parameters["origin"]
     
@@ -34,35 +82,86 @@ def build_RATPscene_from_trimesh(trimesh,
                                     infinite,
                                     stems_id=None,
                                     nb_input_scenes=0) :
-    # nombre d'entités
+    """Build a RATP grid from a triangles mesh.
+
+    :param trimesh: triangles mesh aggregated by indice elements
+        .. code-block:: { id : [triangle1, triangle2, ...]}
+
+    :type trimesh: dict
+    :param minmax: list of mininuml point and maximum point in a triangles mesh
+    :type minmax: [3-tuple, 3-tuple]
+    :param triLmax: longest side of all the triangles in trimesh
+    :type triLmax: float
+    :param matching_ids: 
+        dict that matches new element indices in trimesh with specy indice and
+        input element indice
+        .. code:: matching_ids = { new_element_id : (input_element_id, specy_id)}
+    :type matching_ids: dict
+    :param parameters: RATP parameters from inputs of LightVegeManager
+    :type parameters: dict
+    :param coordinates: [latitude, longitude, timezone]
+    :type coordinates: list
+    :param reflected: if the user wishes to activate reflected radiations
+    :type reflected: bool 
+    :param infinite: if the user wishes to activate infinitisation of the grid
+    :type infinite: bool
+    :param stems_id: list of potential stems element in the input scenes, defaults to None
+    :type stems_id: list of 2-tuple, optional
+    :param nb_input_scenes: number of input scenes in the geometry dict, defaults to 0
+    :type nb_input_scenes: int, optional
+    
+    :return: 
+        It returns 3 objects:
+
+        * ``ratpgrid``
+            pyratp.grid filled with areas of triangles in trimesh and input parameters
+            
+        * ``matching_tri_vox``
+            dict where key is a triangle indice and value the matching voxel indice where the 
+            barycenter of the triangle is located     
+        
+        * ``distrib``
+            dict with a ``"global"`` key and if ``["angle distrib algo"] = "compute voxel"`` 
+            a second entry where key is ``"voxel"``
+            
+            value for ``"voxel"`` is a ``numpy.array`` of dimension 
+            ``(numberofvoxels,numberofentities,numberofclasses)``
+
+            value for ``"global"`` is a list of ``numberofentities`` list of ``numberofclasses`` 
+            elements
+
+    :rtype: pyratp.grid, dict, dict
+    """                                    
+    # computes number of species from matching_ids
+    # indices in fortran starts from 1
     numberofentities = max([v[1] for v in matching_ids.values()]) + 1
     
-    ## construction de la distribution d'angle ##
+    ## Building Leaf Angle Distribution (only global distribution) ##
     distrib = {}
     distrib_algo = parameters["angle distrib algo"]
 
-    # calcul par entité
+    # computes global distribution
     if distrib_algo == "compute global" or \
         distrib_algo == "compute voxel" :
         distrib["global"] = compute_distrib_globale(    \
                                             trimesh,     \
                                             matching_ids, \
                                             parameters["nb angle classes"])
-    # lecture d'un fichier
+    # read a file with leaf angle distribution
     elif distrib_algo == "file" :
         read_distrib_file(parameters["angle distrib file"], numberofentities)
     
-    ## initialisation de la grille ##
-    # taille des voxels
+    ## Initialize Grid ##
+    # voxels size
     if parameters["voxel size"] == "dynamic" :
         dv = [5*triLmax for i in range(3)]
     else:
         dv = parameters["voxel size"]
 
-    # origine de la grille
+    # grid origin
     xorig, yorig, zorig = extract_grid_origin(parameters, minmax) 
     
-    # nombre de voxels
+    # number of voxels
     if "number voxels" in parameters :
         [nx, ny, nz] = parameters["number voxels"]
 
@@ -76,8 +175,6 @@ def build_RATPscene_from_trimesh(trimesh,
                                                     dv, 
                                                     grid_slicing)
 
-    # init grille
-    # si pas de rayonnement réfléchi on annules la réflexion du sol
     if reflected : soil_reflectance = parameters["soil reflectance"]
     else : soil_reflectance = [0., 0.]
     ratpgrid = grid.Grid.initialise(nx, ny, nz, 
@@ -90,13 +187,13 @@ def build_RATPscene_from_trimesh(trimesh,
                                     soil_reflectance, 
                                     toric=infinite)
         
-    ## remplissage de la grille ##
-    # tesselation des triangles dans les dimensions de la grille
+    ## Filling the Grid ##
+    # tesselation of triangles on the grid
     if parameters["tesselation level"] > 0 :
         tesselate_trimesh_on_grid(trimesh, ratpgrid, \
                                             parameters["tesselation level"])
 
-    # remplissage
+    # filling
     ratpgrid, matching_tri_vox = fill_ratpgrid_from_trimesh(
                                                     trimesh, 
                                                     matching_ids, 
@@ -104,7 +201,7 @@ def build_RATPscene_from_trimesh(trimesh,
                                                     stems_id,
                                                     nb_input_scenes)
 
-    ## distribution des angles par voxel
+    # leaf anfle distribution locally by voxels
     if distrib_algo == "compute voxel" :
         distrib["voxel"] = compute_distrib_voxel(trimesh, 
                                                 matching_ids, 
@@ -115,19 +212,33 @@ def build_RATPscene_from_trimesh(trimesh,
     return ratpgrid, matching_tri_vox, distrib
 
 def build_RATPscene_empty(parameters, minmax, coordinates, infinite) :
-    # nombre de voxels
+    """Build a RATP grid from an empty geometric input
+
+    :param parameters: RATP parameters from inputs of LightVegeManager
+    :type parameters: dict
+    :param minmax: list of mininuml point and maximum point in a triangles mesh
+    :type minmax: [3-tuple, 3-tuple]
+    :param coordinates: [latitude, longitude, timezone]
+    :type coordinates: list
+    :param infinite: if the user wishes to activate infinitisation of the grid
+    :type infinite: bool
+    
+    :return:
+        * ``ratpgrid``: pyratp.grid sets with input parameters   
+        
+        * ``distrib``: dict with one entry ``"global" : [1.]``
+
+    :rtype: pyratp.grid, dict
+    """    
     if "number voxels" in parameters :
         [nx, ny, nz] = parameters["number voxels"]
     else :
         nx,ny,nz = 1,1,1
     
-    # taille des voxels
     dv = parameters["voxel size"]
     
-    # origine de la grille
     xorig, yorig, zorig = extract_grid_origin(parameters, minmax) 
     
-    # init de la grille
     ratpgrid = grid.Grid.initialise(nx, ny, nz,
                                     dv[0], dv[1], dv[2],
                                     xorig, yorig, zorig,
@@ -146,20 +257,52 @@ def legumescene_to_RATPscene(legumescene,
                                 coordinates,
                                 reflected,
                                 infinite) :
-    '''
-    
-    legumescene est unique et regroupe toutes les entités
-    legumescene = {
-        "LA" : np.ndarray avec [nent,nz,ny,nx]
-        "distrib" : np.ndarray [nent, nclasses]
-    }
+    """Creates a RATP grid of voxels from a l-egume grid format
 
-    '''
+    :param legumescene:
+
+        l-egume grid represented by a dict with two entries:
+
+        *  ``"LA"``: equivalent to m_lais in l-egume, a numpy.array of dimension ``(nent, nz, ny, nx)``
+        which represents leaf area in each voxel for each specy
+
+        *  ``"distrib"``: equivalent to ls_dif in l-egume, a numpy.array of dimension ``(nent, nclasses)``
+        which represents the global leaf angle distribution for each input specy
+
+        .. note:: legumescene is the only input geometric scene which can handle several species
+        
+    :type legumescene: dict
+    :param parameters: RATP parameters from inputs of LightVegeManager
+    :type parameters: dict
+    :param coordinates: [latitude, longitude, timezone]
+    :type coordinates: list
+    :param reflected: if the user wishes to activate reflected radiations
+    :type reflected: bool
+    :param infinite: if the user wishes to activate infinitisation of the grid
+    :type infinite: bool
     
-    # distribution d'angle
+    :return:
+
+        It returns 3 objects
+
+        * ``ratpgrid``
+            pyratp.grid filled with areas of triangles in trimesh and input parameters
+                   
+        * ``distrib``
+            dict with only a ``"global"`` key
+            
+            value for ``"global"`` is a list of ``numberofentities`` list of ``numberofclasses`` 
+            elements
+
+        * ``nb0``
+            number of empty layers between top canopy and maximum layer in legumescene
+
+    :rtype: pyratp.grid, dict, int
+    """                                   
+
     distrib = {"global" : legumescene["distrib"]}
 
-    # initialisation de la grille
+    # extract grid parameters
     numberofentities = legumescene["LA"].shape[0]
     dv = parameters["voxel size"]
     dvolume = numpy.prod(dv)
@@ -168,7 +311,7 @@ def legumescene_to_RATPscene(legumescene,
     ny = legumescene["LA"].shape[2]
     nz = legumescene["LA"].shape[1]
 
-    # enlève les couches vides de l-egume au dessus du couvert
+    # count all the empty layers between top canopy and maximum layers in legumescene
     nb0 = 0
     laicum = numpy.sum(legumescene["LA"], axis=0)
     laicumvert = numpy.sum(laicum, axis=(1, 2))
@@ -179,8 +322,7 @@ def legumescene_to_RATPscene(legumescene,
             break
     nz = nz - nb0
     
-    # initialisation de la grille
-    # si pas de rayonnement réfléchi on annules la réflexion du sol
+    # grid initialization
     if reflected : soil_reflectance = parameters["soil reflectance"]
     else : soil_reflectance = [0., 0.]
     ratpgrid = grid.Grid.initialise(nx, ny, nz, 
@@ -194,7 +336,7 @@ def legumescene_to_RATPscene(legumescene,
                                     toric=infinite)
 
 
-    # remplissage de la grille
+    # grid filling
     fill_ratpgrid_from_legumescene(legumescene, ratpgrid, nb0, dvolume)
 
     return ratpgrid, distrib, nb0

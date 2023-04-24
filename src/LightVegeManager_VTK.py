@@ -1,27 +1,40 @@
 '''
-Ecriture de fichiers VTK visualisation
+    LightVegeManager_VTK
+    ********************
+
+    Writes VTK files from LightVegeManager geometry and lighting data. Used for visualisation
+    We recommend the software Paraview for visualisation
 '''
 
 import itertools
 import numpy
-import string
 
 from alinea.caribu import plantgl_adaptor
 
 def VTKtriangles(trimesh, var, varname, filename):
-    """Ecriture d'un fichier VTK à partir d'un maillage triangulation
-    possibilité d'associer des grandeurs aux triangles
-    
-    Args :
-        triangles : liste de Triangle3
-        var : liste de grandeurs associées aux triangles, pour n triangles
-             [
-                 [var1_1, ..., var1_n], ... , [varm_1, ..., varm_n]
-                 ]
-        varname : liste de string, liste des noms pour chaque grandeurs
-        filename : string, chemin du fichier à écrire
+    """Writes VTK files from a triangulation mesh. Possibility to associate physical values to the
+    triangles
 
-    """
+    :param trimesh: triangles mesh aggregated by indice elements
+        
+        .. code-block:: 
+
+            { id : [triangle1, triangle2, ...]}
+
+    :type trimesh: dict of list
+    :param var: list of physical values associated to each triangle. Each element of var is a physical value for each triangle.
+    Then, for n triangles and m values, var looks like:
+
+    .. code-block:: python
+
+        var = [[var1_1, ..., var1_n], ..., [varm_1, ..., varm_n]]
+
+    :type var: list of list
+    :param varname: list of variable names
+    :type varname: lits of string
+    :param filename: name and path for the output file
+    :type filename: string
+    """    
     # correct and remove spaces from varname
     varname = [n.replace(" ", "_") for n in varname]
 
@@ -87,14 +100,15 @@ def VTKtriangles(trimesh, var, varname, filename):
     varname=[]
 
 def VTKline(start, end, filename):
-    """Ecriture d'une ligne VTK
-    
-    Args :
-        start : Vector3 point de départ
-        end : Vector3 point d'arrivée
-        filename : string, chemin du fichier à écrire
-    """
+    """Writes a VTK file representing a line
 
+    :param start: starting point ``[x, y, z]`` of the line
+    :type start: list
+    :param end: ending point ``[x, y, z]`` of the line
+    :type end: list
+    :param filename: name and path for the output file
+    :type filename: string
+    """    
     f=open(filename, 'w')
     f.write('# vtk DataFile Version 3.0\n')
     f.write('vtk Polygon\n')
@@ -109,7 +123,24 @@ def VTKline(start, end, filename):
     f.close()
 
 def ratp_prepareVTK(ratpgrid, filename, columns=[], df_values=None) :
-    # par défaut imprime le LAD
+    """Sets and prepare data to write a voxel grid in VTK format from a RATP grid
+    Possibility to sets physical values to each voxel. Otherwise, it will assign leaf area density
+    for each voxel.
+
+    Then, it runs :func:VTKvoxels to write a VTK file with the grid of voxels.
+    
+    :param ratpgrid: RAPT grid of voxels
+    :type ratpgrid: pyratp.grid
+    :param filename: name and path for the output file
+    :type filename: string
+    :param columns: list of columns name of ``df_values`` to associate to each voxel, defaults to []
+    :type columns: list, optional
+    :param df_values: dataframe with a ``"Voxel"`` and a ``"VegetationType"`` columns, matching ratpgrid. 
+    It stores physical values associated to each voxel that you want to print, 
+    defaults to None
+    :type df_values: pandas.Dataframe, optional
+    """    
+    # default prints LAD
     kxyz, entities, lad = [], [], []
     for i in range(ratpgrid.nveg)  :
         for j in range(ratpgrid.nje[i]):
@@ -118,7 +149,7 @@ def ratp_prepareVTK(ratpgrid, filename, columns=[], df_values=None) :
             kxyz.append(int(i)+1)
     datafields = [numpy.array(kxyz), numpy.array(entities), numpy.array(lad)]
 
-    # autres variables
+    # other variables
     if columns  and df_values is not None:
         for name in columns :
             v = []
@@ -135,20 +166,25 @@ def ratp_prepareVTK(ratpgrid, filename, columns=[], df_values=None) :
     VTKvoxels(ratpgrid, datafields, columns, filename)
 
 def VTKvoxels(grid, datafields, varnames, nomfich):
-    '''    Display Voxels colored by variable with Paraview
-           RATP Grid is written in VTK Format as a structured grid
-           Inputs: ... variable : a list of 3 arrays composed of the a 
-           RATP variable to be plotted, corresponding entities, and Voxel ID
-                   ... grid : the RATP grid
-                   ... varname: name of the variable to be plotted
-                   ... nomfich: the VTK filename and path
-           Outputs: ... a VTK file
+    """Writes a VTK file with a grid of voxels and associated physical values.
+    Display Voxels colored by variable with Paraview
+    RATP Grid is written in VTK Format as a structured grid
 
-           datafields :  [0] : kxyz
-                        [1] : entities
-                        [2, ..., n] : variable_0, ... variable_n-2
-    '''
+    :param grid: the RATP grid
+    :type grid: pyratp.grid
+    :param datafields: a list of 3 arrays composed of the a 
+    RATP variable to be plotted, corresponding entities, and Voxel ID
 
+        * [0] : kxyz (numpy.array)
+        * [1] : entities (numpy.array)
+        * [2, ..., n] : variable_0, ... variable_n-2 (numpy.array)
+
+    :type datafields: list of list
+    :param varnames:  name of the variable to be plotted
+    :type varnames: list of string
+    :param nomfich: the VTK filename and path
+    :type nomfich: string
+    """    
     f=open(nomfich,'w')
 
     f.write('# vtk DataFile Version 3.0\n')
@@ -227,6 +263,24 @@ def VTKvoxels(grid, datafields, varnames, nomfich):
 
 
 def PlantGL_to_VTK(scenes, path, i=0, in_unit="m", out_unit="m"):
+    """Directly converts a list plantGL scenes to a single VTK file
+    The routine aggregates all the scenes in one global triangulation and then calls :func:VTKtriangles
+    Possbility to rescale measure unit scenes
+
+    :param scenes: list of scenes to be written
+    :type scenes: lits of plantgl.Scene
+    :param path: path of the file. File name is set by default with ``"triangles_plantgl_"+str(i)+".vtk"``
+    :type path: string
+    :param i: id of the file. Used if you want to batch a large number of scenes, defaults to 0
+    :type i: int, optional
+    :param in_unit: input measure unit, defaults to "m"
+    :type in_unit: str, optional
+    :param out_unit: output measure unit, defaults to "m"
+    :type out_unit: str, optional
+    :raises ValueError: in_unit or out_unit not a valid entry upon the listed measure units
+    """  
+
+    # rescale the scenes 
     units = {'mm': 0.001, 
                 'cm': 0.01, 
                 'dm': 0.1, 
@@ -242,7 +296,7 @@ def PlantGL_to_VTK(scenes, path, i=0, in_unit="m", out_unit="m"):
     if (in_unit != out_unit) : rescale=True
     
     trimesh = {}
-    # si on a plusieurs scènes
+    # aggregates the scenes
     if type(scenes) == list :
         for s in scenes :   
             trimesh = trimesh + plantgl_adaptor.scene_to_cscene(s)

@@ -1,19 +1,26 @@
 '''
-valeurs par défaut de toutes les entrées des dico d'entrées
+    LightVegeManager_defaultvalues
+    ******************************
+
+    Default for simulation fixed parameters
+    These parameters are sets in LightVegeManager if the user did not precise thoses inputs
+    
 '''
 
 def default_LightVegeManager_inputs() :
+    """returns default parameters for LightVegeManager constructor ``__init__``
+
+    :return: environment and light model parameters
+    :rtype: dict, dict
+    """    
     default_environnement = {}
-    # INRAE Lusignan
-    default_environnement["coordinates"] = [46.4, 0., 1.]
+
+    default_environnement["coordinates"] = [46.4, 0., 1.] # INRAE Lusignan
     default_environnement["sky"] = "turtle46"
     default_environnement["diffus"] = True
     default_environnement["direct"] = True
     default_environnement["reflected"] = False
     default_environnement["infinite"] = True
-
-    # pas encore de donnée géométrique par défaut
-    # default_geometry = {}
     
     default_ratp_parameters = {}
     default_ratp_parameters["voxel size"] = [0.1, 0.1, 0.1]

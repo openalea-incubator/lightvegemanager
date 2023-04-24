@@ -1,13 +1,62 @@
 '''
-gestion des entrées des modèles de lumières
+    
+    LightVegeManager_RATPinputs
+    ****************************
+
+    Manage vegetation and meteo input informations for RATP
+
+    The argument `parameters` refers to one the three inputs dict of LightVegeManager. It is 
+    structured as so:
+
+    .. code:: python
+
+        ratp_args = {
+                # Grid specifications
+                "voxel size" : [dx, dy, dz],
+                "voxel size" : "dynamic",
+                
+                "origin" : [xorigin, yorigin, zorigin],
+                "origin" : [xorigin, yorigin],
+
+                "number voxels" : [nx, ny, nz],
+                "grid slicing" : "ground = 0."
+                "tesselation level" : int
+
+                # Leaf angle distribution
+                "angle distrib algo" : "compute global",
+                "angle distrib algo" : "compute voxel",
+                "angle distrib algo" : "file",
+
+                "nb angle classes" : int,
+                "angle distrib file" : filepath,
+
+                # Vegetation type
+                "soil reflectance" : [reflectance_band0, reflectance_band1, ...],
+                "reflectance coefficients" : [reflectance_band0, reflectance_band1, ...],
+                "mu" : [mu_scene0, mu_scene1, ...]
+            }
+
+    .. seealso:: inputs.rst
 
 '''
 from alinea.caribu.sky_tools import spitters_horaire
 
-from PyRATP.pyratp.vegetation import Vegetation
-from PyRATP.pyratp.micrometeo import MicroMeteo
+from alinea.pyratp.vegetation import Vegetation
+from alinea.pyratp.micrometeo import MicroMeteo
+
 
 def RATP_vegetation(parameters, angle_distrib, reflected) :
+    """Initialise a RATP Vegetation object from LightVegeManager input datas
+
+    :param parameters: RATP parameters from inputs of LightVegeManager
+    :type parameters: dict
+    :param angle_distrib: leaf angle distribution
+    :type angle_distrib: dict
+    :param reflected: if the user wishes to activate reflected radiations
+    :type reflected: bool
+    :return: Vegetation types contains clumoing effect ratio, leaf angle distribution and reflectance/transmittance of leaves for each specy
+    :rtype: PyRATP.pyratp.vegetation.Vegetation
+    """    
     entities_param = []
     if parameters["angle distrib algo"] != "compute voxel":
         for id, mu_ent in enumerate(parameters["mu"]):
@@ -46,7 +95,28 @@ def RATP_meteo(energy,
                 truesolartime,
                 direct,
                 diffus) :
+    """Initialise a RATP MicroMeteo object from LightVegeManager input parameters
 
+    :param energy: input ray energy
+    :type energy: float
+    :param day: input day
+    :type day: int
+    :param hour: input hour
+    :type hour: int
+    :param coordinates: [latitude, longitude, timezone]
+    :type coordinates: list
+    :param parunit: unit of energy argument, "micromol.m-2.s-1" or else
+    :type parunit: string
+    :param truesolartime: activates true solar time or local time to compute sun position
+    :type truesolartime: bool
+    :param direct: if direct rays are activated
+    :type direct: bool
+    :param diffus: if diffuse rays are activated
+    :type diffus: bool
+    :return: input meteorological data at current time step
+    :rtype: PyRATP.pyratp.micrometeo.MicroMeteo
+    """
+    # RATP expects W.m-2 for input energy
     if parunit == "micromol.m-2.s-1" :
         #: Spitters's model estimating for the diffuse:direct ratio
         # coefficient 2.02 : 4.6 (conversion en W.m-2) x 0.439 (PAR -> global)

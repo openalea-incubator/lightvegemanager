@@ -1,0 +1,378 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Architecture of the tool &mdash; LightVegeManager 0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Inputs" href="inputs.html" />
+    <link rel="prev" title="Tutorials" href="tutorials.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> LightVegeManager
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="presentation.html">Presentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Architecture of the tool</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#package-content">Package Content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#code-structure">Code structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#front-end-the-main-commands">Front End: the main commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#back-end-more-details-about-how-the-tool-works">Back End: More details about how the tool works</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#geometric-merging">Geometric merging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#managing-indexes">Managing indexes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#triangle-subdivision">Triangle subdivision</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#caribu-l-egume-and-virtual-sensors">CARIBU, l-egume and virtual sensors</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="inputs.html">Inputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="others.html">Additionnal Functionality</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference Guide</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">LightVegeManager</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Architecture of the tool</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/architecture.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="architecture-of-the-tool">
+<span id="architecture"></span><h1>Architecture of the tool<a class="headerlink" href="#architecture-of-the-tool" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="package-content">
+<span id="package"></span><h2>Package Content<a class="headerlink" href="#package-content" title="Permalink to this headline">¶</a></h2>
+<p>The package has 5 folders and 3 files in its root:</p>
+<ul>
+<li><p>container: contains recipe to build a singularity environment for using LightVegeManager</p></li>
+<li><p>doc: user and reference documentations</p></li>
+<li><p>examples: proposes 3 complete simulations with example datas from plant models CN-WHeat and l-egume</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cnwheat_lightvegemanager.py</span></code> is a test comparing CN-wheat with CARIBU and RATP</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">legume_lightvegemanager.py</span></code> is a test comparing l-egume with CARIBU, RATP and RiRi</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">couplage_CARIBU.py</span></code> is a fictive simulation with CN-Wheat and l-egume with common computation with CARIBU for lighting</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>src: sources of LightVegeManager</p></li>
+<li><p>tests: scripts for unit tests</p></li>
+<li><p>.gitignore: files and folders to ignore by git</p></li>
+<li><p>README.md: Read Me file</p></li>
+<li><p>setup.py: setup script used for installation</p></li>
+</ul>
+</div>
+<div class="section" id="code-structure">
+<span id="structure"></span><h2>Code structure<a class="headerlink" href="#code-structure" title="Permalink to this headline">¶</a></h2>
+<p>The code structure of the tool is designed with a main class LightVegeManager, which calls modules for computing specific
+parts depending on the inputs.</p>
+<div class="figure align-center" id="id1">
+<img alt="_images/diagram_classmodules.png" src="_images/diagram_classmodules.png" />
+<p class="caption"><span class="caption-text">Dependances between modules</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>Modules are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="reference.html#module-src.LightVegeManager" title="src.LightVegeManager"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.LightVegeManager</span></code></a> Main class of the tool. Calls all the other modules in <code class="docutils literal notranslate"><span class="pre">src</span></code>.</p></li>
+<li><p><a class="reference internal" href="reference.html#module-src.LightVegeManager_CARIBUinputs" title="src.LightVegeManager_CARIBUinputs"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.LightVegeManager_CARIBUinputs</span></code></a> Manages and prepares input information for CARIBU.</p></li>
+<li><p><a class="reference internal" href="reference.html#module-src.LightVegeManager_RATPinputs" title="src.LightVegeManager_RATPinputs"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.LightVegeManager_RATPinputs</span></code></a> Manage vegetation and meteo input informations for RATP</p></li>
+<li><p><a class="reference internal" href="reference.html#module-src.LightVegeManager_VTK" title="src.LightVegeManager_VTK"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.LightVegeManager_VTK</span></code></a> Writes VTK files from LightVegeManager geometry and lighting data. Used for visualisation</p></li>
+<li><p><a class="reference internal" href="reference.html#module-src.LightVegeManager_basicgeometry" title="src.LightVegeManager_basicgeometry"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.LightVegeManager_basicgeometry</span></code></a> Provides basic geometric operations in 3D used by LightVegeManager.</p></li>
+<li><p><a class="reference internal" href="reference.html#module-src.LightVegeManager_buildRATPscene" title="src.LightVegeManager_buildRATPscene"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.LightVegeManager_buildRATPscene</span></code></a> Build a PyRATP.grid from inputs.</p></li>
+<li><p><a class="reference internal" href="reference.html#module-src.LightVegeManager_defaultvalues" title="src.LightVegeManager_defaultvalues"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.LightVegeManager_defaultvalues</span></code></a> Default for simulation fixed parameters</p></li>
+<li><p><a class="reference internal" href="reference.html#module-src.LightVegeManager_leafangles" title="src.LightVegeManager_leafangles"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.LightVegeManager_leafangles</span></code></a> Handles leaf angle distribution, both in its dynamic computing or reading a file</p></li>
+<li><p><a class="reference internal" href="reference.html#module-src.LightVegeManager_outputs" title="src.LightVegeManager_outputs"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.LightVegeManager_outputs</span></code></a> Manages and reformats output results from the light models in pandas.Dataframe with similar columns names</p></li>
+<li><p><a class="reference internal" href="reference.html#module-src.LightVegeManager_plantGL" title="src.LightVegeManager_plantGL"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.LightVegeManager_plantGL</span></code></a> Visualisation with plantGL</p></li>
+<li><p><a class="reference internal" href="reference.html#module-src.LightVegeManager_sky" title="src.LightVegeManager_sky"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.LightVegeManager_sky</span></code></a> Build a sky from LightVegeManager input informations</p></li>
+<li><p><a class="reference internal" href="reference.html#module-src.LightVegeManager_stems" title="src.LightVegeManager_stems"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.LightVegeManager_stems</span></code></a> Manages stems element</p></li>
+<li><p><a class="reference internal" href="reference.html#module-src.LightVegeManager_sun" title="src.LightVegeManager_sun"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.LightVegeManager_sun</span></code></a> Build a sun respecting each light model format</p></li>
+<li><p><a class="reference internal" href="reference.html#module-src.LightVegeManager_tesselator" title="src.LightVegeManager_tesselator"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.LightVegeManager_tesselator</span></code></a> Manages subdivision of a triangulation</p></li>
+<li><p><a class="reference internal" href="reference.html#module-src.LightVegeManager_transfer" title="src.LightVegeManager_transfer"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.LightVegeManager_transfer</span></code></a> Manages transfer of LightVegeManager results to plant Models</p></li>
+<li><p><a class="reference internal" href="reference.html#module-src.LightVegeManager_trianglesmesh" title="src.LightVegeManager_trianglesmesh"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.LightVegeManager_trianglesmesh</span></code></a> Builds and handles triangulation mesh.</p></li>
+<li><p><a class="reference internal" href="reference.html#module-src.LightVegeManager_voxelsmesh" title="src.LightVegeManager_voxelsmesh"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.LightVegeManager_voxelsmesh</span></code></a> Builds and handles axis oriented voxels mesh</p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="front-end-the-main-commands">
+<span id="frontend"></span><h2>Front End: the main commands<a class="headerlink" href="#front-end-the-main-commands" title="Permalink to this headline">¶</a></h2>
+<p>th tool is used through the class <code class="docutils literal notranslate"><span class="pre">LightVegeManager</span></code> and the following methods:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>constructor <code class="docutils literal notranslate"><span class="pre">__init__</span></code> builds the sky, which stays the same throughout all the simulation. It sets also default values if not precised in the inputs.</p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">build()</span></code> creates a common geometric scene from inputs and set parameters for the light model.</p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code> computes the lighting.</p></li>
+</ul>
+</div></blockquote>
+<p>The outputs from radiations are automatically gathered in a pandas Dataframe and accessible from the getters <code class="xref py py-meth docutils literal notranslate"><span class="pre">elements_outputs()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">triangles_outputs()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">voxels_outputs()</span></code>.</p>
+<p>As part of our initial objective, we added two methods in order to convert the results in formats understandable by CN-Wheat and l-egume:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_MTG()</span></code>, which updates a MTG table read by CN-Wheat</p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_l_egume()</span></code>, which updates two tables read by l-egume</p></li>
+</ul>
+</div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>l-egume needs a local information of transmitted lighting among a voxel grid. Then, you need to provide the grid dimensions to LightVegeManager.</p>
+</div>
+<p>The other getters available are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">sensors_outputs()</span></code>, outputs of virtual sensors, only with CARIBU</p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">soilenergy()</span></code>, radiation received by the soil, only with CARIBU</p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">sun()</span></code>, object containing sun position xyz</p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">maxtrianglearea()</span></code>, if you entered a triangle mesh, return the largest triangle</p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">tesselationtime()</span></code>, if you activated tesselation of a triangle mesh (redraw of triangles), return computation time</p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">modelruntime()</span></code>, return the computation time of the light model</p></li>
+</ul>
+</div></blockquote>
+<p>Finally, you also have additional tools available for analysing the inputs and visualising the outputs (<a class="reference internal" href="others.html#other"><span class="std std-ref">additional tools</span></a>).</p>
+</div>
+<div class="section" id="back-end-more-details-about-how-the-tool-works">
+<span id="backend"></span><h2>Back End: More details about how the tool works<a class="headerlink" href="#back-end-more-details-about-how-the-tool-works" title="Permalink to this headline">¶</a></h2>
+<p>First of all, the geometric merging is set in a Caribu scene format. It is a dict where keys are indices and values are list of triangles, one triangle is list of 3 3-tuple representing the vertices.
+Here is an example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># organ 1</span>
+<span class="n">triangle1</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)]</span>
+<span class="n">triangle2</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)]</span>
+
+<span class="c1"># organ 2</span>
+<span class="n">triangle3</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)]</span>
+
+<span class="n">caribuscene</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="p">[</span><span class="n">triangle1</span><span class="p">,</span> <span class="n">triangle2</span><span class="p">]</span> <span class="p">,</span>
+                <span class="mi">2</span> <span class="p">:</span> <span class="p">[</span><span class="n">triangle3</span><span class="p">]</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>We choose this format for its low processing cost, because it uses basic python objects.</p>
+<p>We also save and recreate a dict to organize the indices inside each input scene called <code class="docutils literal notranslate"><span class="pre">matching_ids</span></code> (<a class="reference internal" href="#indexes"><span class="std std-ref">index managment</span></a>).</p>
+<p>The input parameters defines a common way for setting each light model parameters.</p>
+<div class="section" id="geometric-merging">
+<h3>Geometric merging<a class="headerlink" href="#geometric-merging" title="Permalink to this headline">¶</a></h3>
+<div class="figure align-center" id="id2">
+<img alt="_images/merging.png" src="_images/merging.png" />
+<p class="caption"><span class="caption-text">Tool workflow for geometry</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p>We built a module to tesselate one triangle into four smaller triangles. The tesselation is applied either uniformly among all the triangle mesh or on a sides of a voxels grid.
+The tesselation following a grid is made in order to have a better matching of triangles in a voxels grid and attenuate the error of converting the mesh type.</p>
+<p>We also built the possibility to compute dynamicaly the leaf angle distribution, either globally among all triangles, or locally inside each voxel.</p>
+</div>
+<div class="section" id="managing-indexes">
+<span id="indexes"></span><h3>Managing indexes<a class="headerlink" href="#managing-indexes" title="Permalink to this headline">¶</a></h3>
+<p>LightVegeManager expects a list of geometric scenes in its inputs. Each scene represents a plant specy.
+Each scene can also by sorted by elements, which can represent plant organs or just sets of triangles.
+The tool will then reorder all the indexes in order to avoid any confusion.
+The correspondance between input indices and new indices is stored in the dict attribute <code class="docutils literal notranslate"><span class="pre">matching_ids</span></code>.</p>
+<p>Example of reordering:</p>
+<div class="figure align-center" id="id3">
+<img alt="_images/indices.png" src="_images/indices.png" />
+<p class="caption"><span class="caption-text">Reordering indices in LightVegeManager</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="triangle-subdivision">
+<h3>Triangle subdivision<a class="headerlink" href="#triangle-subdivision" title="Permalink to this headline">¶</a></h3>
+<p>We implemented an algorithm for subdividing a triangle in 4 triangles according to triangle position in a grid of voxels.
+The goal was to have a better matching between a triangulation and a grid of voxels.
+Triangles are subdivided if they are between several voxels.</p>
+<div class="figure align-center" id="id4">
+<a class="reference internal image-reference" href="_images/tesselation.PNG"><img alt="_images/tesselation.PNG" src="_images/tesselation.PNG" style="width: 512.0px; height: 230.0px;" /></a>
+<p class="caption"><span class="caption-text">Subdivision of a triangle</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="caribu-l-egume-and-virtual-sensors">
+<h3>CARIBU, l-egume and virtual sensors<a class="headerlink" href="#caribu-l-egume-and-virtual-sensors" title="Permalink to this headline">¶</a></h3>
+<p>l-egume needs two different values to understand lighting results:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>total intercepted radiation for each plant</p></li>
+<li><p>local transmitted radiation following a voxel grid</p></li>
+</ul>
+</div></blockquote>
+<p>In order to use CARIBU with l-egume, you need to retrieve transmitted radiations for each position of a voxel grid.
+LightVegeManager implements functions which can create a set of virtual sensors following a voxel grid.
+Then, with the virtual sensors and the soilmesh options activated, you can calculate the local transmitted radiation.
+Make sure to have the same grid dimensions as l-egume intern grid.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="inputs.html" class="btn btn-neutral float-right" title="Inputs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="tutorials.html" class="btn btn-neutral float-left" title="Tutorials" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2023, INRAE P3F
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

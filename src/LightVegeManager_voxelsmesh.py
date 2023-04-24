@@ -1,25 +1,41 @@
 '''
-contient le création et gestion d'une grille de voxel
+    LightVegeManager_voxelsmesh
+    ****************************
+
+    Builds and handles axis oriented voxels mesh
 '''
 
 import itertools
 
-from PyRATP.pyratp import grid
+from alinea.pyratp import grid
 
 from src.LightVegeManager_basicgeometry import *
 from src.LightVegeManager_tesselator import *
 from src.LightVegeManager_trianglesmesh import *
 
 def compute_grid_size_from_trimesh(pmin, pmax, dv, grid_slicing=None) :
+    """Dynamically compute number of voxels for each axis in the grid
+    The grid is ajusted to be the smallest box containing another mesh
+
+    :param pmin: Minimum point of a mesh ``[x, y, z]``
+    :type pmin: list
+    :param pmax: Maximum point of a mesh ``[x, y, z]``
+    :type pmax: list
+    :param dv: size a voxel in each direction ``[dx, dy, dz]``
+    :type dv: list
+    :param grid_slicing: possibility to force the ground to be at z=0, defaults to None
+    :type grid_slicing: string, optional
+    :return: number of voxels in each direction x, y and z
+    :rtype: int, int, int
+    """    
     [dx, dy, dz] = dv
 
-    # on ajuste les min-max si la scène est plane pour avoir un espace 3D
+    # if pmax == pmin we ajust to have one layer of voxels
     for i in range(3) :
         if pmin[i] == pmax[i]:
             pmax[i] += dv[i]
             pmin[i] -= dv[i]
 
-    # calcul
     nx = int((pmax[0] - pmin[0]) // dx)
     ny = int((pmax[1] - pmin[1]) // dy)
     if grid_slicing is not None :
@@ -34,7 +50,23 @@ def compute_grid_size_from_trimesh(pmin, pmax, dv, grid_slicing=None) :
     return nx, ny, nz
 
 def tesselate_trimesh_on_grid(trimesh, ratpgrid, levelmax) :
-    # traite les triangles de la shape
+    """Loop on all triangles of a triangulation to tesselate them for better matching a grid of voxels
+    Triangles will subdivide on sides of voxels respecting a certain maximum level
+
+    :param trimesh: triangles mesh aggregated by indice elements
+        
+        .. code-block:: 
+        
+            { id : [triangle1, triangle2, ...]}
+
+    :type trimesh: dict of list
+    :param ratpgrid: RATP grid of voxels
+    :type ratpgrid: pyratp.grid
+    :param levelmax: maximum level for subdividing triangles
+    :type levelmax: int
+    :return: a copy of trimesh with subdivided triangles
+    :rtype: dict of list
+    """    
     new_trimesh = {}
     for id_ele, triangles in trimesh.items() :
         new_tr_scene = []
@@ -48,9 +80,40 @@ def tesselate_trimesh_on_grid(trimesh, ratpgrid, levelmax) :
 def fill_ratpgrid_from_trimesh(trimesh, 
                                 matching_ids, 
                                 ratpgrid, 
-                                stems_id,
+                                stems_id=None,
                                 nb_input_scenes=0) :
-    # pour chaque triangle, indice entité, x, y, z, aire, azote
+    """Fills a RATP grid from a triangulation.
+    It gives barycenters and areas of triangles to update the leaf area density in the corresponding
+    voxel.
+
+    :param trimesh: triangles mesh aggregated by indice elements
+        
+        .. code-block:: 
+        
+            { id : [triangle1, triangle2, ...]}
+
+    :type trimesh: dict of list
+    :param matching_ids: 
+        dict that matches new element indices in cscene with specy indice and
+        input element indice, 
+
+        .. code-block:: 
+        
+            matching_ids = { new_element_id : (input_element_id, specy_id)}
+
+        this dict allows us to look how species there is the inputs geometric data
+
+    :type matching_ids: dict
+    :param ratpgrid: RATP grid of voxels
+    :type ratpgrid: pyratp.grid
+    :param stems_id: list of potential stems element in the input scenes, defaults to None
+    :type stems_id: list of 2-tuple, optional
+    :param nb_input_scenes: number of input geometrical scenes. It can be different with number of 
+    species if there is a l-egume grid in the input with several species in it, defaults to 0
+    :type nb_input_scenes: int, optional
+    :return: copy of ``ratpgrid`` with leaf area density values from barycenters and areas of the input triangles
+    :rtype: pyratp.grid
+    """                                
     entity, barx, bary, barz, a, n = [],[], [], [], [], []
     for id, ts in trimesh.items() :
         for t in ts :
@@ -59,8 +122,7 @@ def fill_ratpgrid_from_trimesh(trimesh,
             bary.append(bar[1])
             barz.append(bar[2])
             
-            # id : id de la shape, val : [id shape en input, id de l'entité]
-            # c'est une tige on divise par 2 le LAD
+            # if element is a stem, i.e. an opaque organ, we divide its area by 2 (only one face receive lighting)
             if isinstance(stems_id, list) :
                 if (matching_ids[id][0], 
                     matching_ids[id][1] - nb_input_scenes) in stems_id or \
@@ -75,6 +137,27 @@ def fill_ratpgrid_from_trimesh(trimesh,
     return grid.Grid.fill_1(entity, barx, bary, barz, a, n, ratpgrid)
 
 def fill_ratpgrid_from_legumescene(legumescene, ratpgrid, nb0, dvolume) :
+    """Fills a RATP grid from a l-egume grid
+    It updates ``ratpgrid``.
+
+    :param legumescene:
+        l-egume grid represented by a dict with two entries:
+
+        *  ``"LA"``: equivalent to m_lais in l-egume, a numpy.array of dimension ``(nent, nz, ny, nx)``
+        which represents leaf area in each voxel for each specy
+
+        *  ``"distrib"``: equivalent to ls_dif in l-egume, a numpy.array of dimension ``(nent, nclasses)``
+        which represents the global leaf angle distribution for each input specy
+
+        .. note:: legumescene is the only input geometric scene which can handle several species
+    :type legumescene: dict
+    :param ratpgrid: RATP grid of voxels
+    :type ratpgrid: pyratp.grid
+    :param nb0: number of empty layers from top of the canopy and maximum z layers in m_lais
+    :type nb0: int
+    :param dvolume: volume of one voxel ``(dx*dy*dz)``
+    :type dvolume: float
+    """    
     # remplissage des voxels avec la grille 
     n_vox_per_nent = []
     for ne in range(ratpgrid.nent):
@@ -133,19 +216,50 @@ def reduce_layers_from_trimesh(trimesh,
                                 nxyz,
                                 matching_ids, 
                                 ids=None) :
-    # réduction si le nombre de couches remplies < nombre de couches prévues
+    """Number of empty layers in a grid of voxels, from the top of the canopy to the last expected layer. 
+    It computes this number from a triangles mesh 
+
+    :param trimesh: triangles mesh aggregated by indice elements
+        
+        .. code-block:: 
+            
+            { id : [triangle1, triangle2, ...]}
+
+    :type trimesh: dict of list
+    :param pmax: Maximum point of a mesh ``[x, y, z]``
+    :type pmax: list
+    :param dxyz: size of sides of a voxel ``[dx, dy, dz]``
+    :type dxyz: list
+    :param nxyz: number of voxels in each direction ``[nx, ny, nz]``, nz is the expected number of layers
+    :type nxyz: list
+    :param matching_ids: 
+        dict that matches new element indices in cscene with specy indice and
+        input element indice, 
+        
+        .. code-block:: 
+        
+            matching_ids = { new_element_id : (input_element_id, specy_id)}
+
+        this dict allows us to look how species there is the inputs geometric data
+
+    :type matching_ids: dict
+    :param ids: list of specy indices considered not empty, defaults to None
+    :type ids: list of int, optional
+    :return: number of empty layers between top of the canopy (represented by ``trimesh``) and ``nxyz[2]``
+    :rtype: int
+    """                                
+    # reduction si number of filled layers < expected number of layers
     if ids is None :
         skylayer = (pmax[2]) // dxyz[2]
         if skylayer < nxyz[2] and  pmax[2] > 0 : 
             skylayer = int(nxyz[2] - 1 - skylayer)
     
-        # autrement on garde le nombre de voxels prévus
+        # otherwise we keep the initial number of layers
         else : skylayer = 0 
     
-    # on calcule le z max de la scène en omettant certaines espèces
+    # we compute the maximum z of trimesh by omitting some species listed in ids
     else:
-        # on regarde d'abord si l'indice des capteurs est dans la scène 
-        # d'entrée (cas si scene plantgl vide)
+        # we firstly check if some input species are not empty
         i = 0
         specie_empty = matching_ids[i][1] not in ids
         while ((matching_ids[i][1] not in ids) and \
@@ -153,9 +267,11 @@ def reduce_layers_from_trimesh(trimesh,
             i+=1
             if matching_ids[i][1] in ids : specie_empty = False
         
+        # geometry is empty
         if specie_empty : skylayer = nxyz[2] - 1
+        
+        # we compute empty layers from the non empty species
         else :
-            # zmax de la scène
             zmax = -999999  
             if trimesh :
                 for i in ids :

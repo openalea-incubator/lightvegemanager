@@ -1,7 +1,94 @@
-'''
-gère et reformate les sorties des modèles de lumières
+"""
+   
+    LightVegeManager_outputs
+    *************************
 
-'''
+    Manages and reformat output results from the light models in pandas.Dataframe with similar columns
+    names. 
+    
+    Light models managed in this module: 
+
+        - RATP
+        - CARIBU
+
+    Column names for voxels:
+
+        * ``'VegetationType'``: id of the specy
+        * ``'Iteration'``: RATP can handle multiple iterations in inputs, but it is not properly exploited in LightVegeManager yet
+        * ``'Day'``: input day if LightVegeManager
+        * ``'Hour'``: input hour if LightVegeManager
+        * ``'Voxel'``: index of current voxel
+        * ``'Nx'``: index in grid following x axis, corresponds to pyrapt.grid.numx
+        * ``'Ny'``: index in grid following y axis, corresponds to pyrapt.grid.numy
+        * ``'Nz'``: index in grid following z axis, corresponds to pyrapt.grid.numz
+        * ``'ShadedPAR'``: shaded energy in the current voxel, 0 if no direct light in the input
+        * ``'SunlitPAR'``: sunlit energy
+        * ``'ShadedArea'``: leaf area in voxel which is shaded
+        * ``'SunlitArea'``: leaf area in voxel which is sunlit
+        * ``'Area'``: total leaf area in the voxel
+        * ``'PARa'``: ( ShadedPAR * ShadedArea + SunlitPAR * SunlitArea ) / ( ShadedArea + SunlitArea )
+        * ``'Intercepted'``: relative portion of input rays intercepted by the voxel
+        * ``'Transmitted'``: relative portion of input rays leaving out the voxel
+
+    Column names for triangles:
+
+        * ``'VegetationType'``: id of the specy
+        * ``'Day'``: input day if LightVegeManager
+        * ``'Hour'``: input hour if LightVegeManager
+        * ``'Triangle'``: indice of the triangle
+        * ``'Organ'``: element where the triangle belongs
+
+        
+        if ligh model is CARIBU:
+
+            * ``'Area'``: area of the triangles
+        
+            for each bandwidth in the inputs you have two entries:
+
+            * ``band + " Eabs"``: energy absorbed by the triangle
+            * ``band + " Ei"``: energy intercepted by the triangle
+        
+        If light model is RATP:
+
+            * ``'Area'``: area of total leaf area in the voxel where the triangle is located
+            * ``'primitive_area'``: area of the triangle
+            * ``'Voxel'``: index of the voxel where the triangle is located
+            * ``'Nx'``: index in grid following x axis, corresponds to pyrapt.grid.numx
+            * ``'Ny'``: index in grid following y axis, corresponds to pyrapt.grid.numy
+            * ``'Nz'``: index in grid following z axis, corresponds to pyrapt.grid.numz
+            * ``'ShadedPAR'``: shaded energy in the current voxel
+            * ``'SunlitPAR'``: sunlit energy, 0 if no direct light in the input
+            * ``'ShadedArea'``: leaf area in voxel which is shaded
+            * ``'SunlitArea'``: leaf area in voxel which is sunlit
+            * ``'PARa'``: ( ShadedPAR * ShadedArea + SunlitPAR * SunlitArea ) / ( ShadedArea + SunlitArea )
+            * ``'Intercepted'``: relative portion of input rays intercepted by the voxel
+            * ``'Transmitted'``: relative portion of input rays leaving out the voxel
+
+    Column names for elements:
+
+        * ``'Day'``: input day if LightVegeManager
+        * ``'Hour'``: input hour if LightVegeManager
+        * ``'Organ'``: id of current element
+        * ``"VegetationType"``: id of the specy
+        * ``"Area"``: area of the element (sum of all triangles belonging to current element)
+
+        if light model is CARIBU, for each bandwidth in the optical inputs you have two entries:
+
+            * ``band + " Eabs"``: energy absorbed by the element, integrated on all triangles belonging to current element
+            * ``band + " Ei"``: energy intercepted by the triangle, integrated on all triangles belonging to current element
+
+
+        if light model is RATP, the following entries are integrated on all triangles belonging to current element 
+        with E, current element, t triangles in E and V an entry: :math:`\\frac{\\sum_{t \\in E} area_t * V_t}{area_E}`
+
+            * ``"PARa"``
+            * ``"Intercepted"``
+            * ``"Transmitted"``
+            * ``"SunlitPAR"``
+            * ``"SunlitArea"``
+            * ``"ShadedPAR"``
+            * ``"ShadedArea"``
+"""
 
 import pandas
 import itertools
@@ -9,6 +96,16 @@ import itertools
 from src.LightVegeManager_trianglesmesh import *
 
 def out_ratp_empty_grid(day, hour) :
+    """Returns an empty dataframe results for RATP
+
+    :param day: day of simulation
+    :type day: int
+    :param hour: hour of simulation
+    :type hour: int
+    :return: returns a dataframe with all the keys expected with a RATP simulation but results are empty
+        used if input geometry is empty 
+    :rtype: pandas.DataFrame
+    """    
     return  pandas.DataFrame({'VegetationType':[0],
                                 'Iteration':[1],
                                 'Day':day,
@@ -28,8 +125,22 @@ def out_ratp_empty_grid(day, hour) :
                             })
 
 def out_ratp_voxels(ratpgrid, res, parunit) :
-    # récupère les sorties de RATP
-    # np.array en une dimension, de taille nbvoxels x nbiteration
+    """Converts RATP results to pandas dataframe compared to the voxels
+
+    :param ratpgrid: RATP grid with voxels informations
+    :type ratpgrid: pyratp.grid
+    :param res: output table of RATP
+    :type res: pyratp.ratp.out_rayt
+    :param parunit: energy unit of input
+        RATP expects W.m-2 in input and return results in µmol.s-1.m-2.
+        if ``parunit="W.m-2"` the outputs is converted to W.m-2, otherwise results are in µmol.s-1.m-2
+    :type parunit: string
+    :return: res.T converted in a pandas Dataframe with voxels relative columns. The soil is not part
+    of the results
+    :rtype: pandas.DataFrame
+    """    
+    # decompress all outputs of RATP
+    # each output is a numpy.array of one dimension of size number of voxels x number of iterations
     VegetationType, \
     Iteration,      \
     day,            \
@@ -45,8 +156,6 @@ def out_ratp_voxels(ratpgrid, res, parunit) :
     if parunit == "W.m-2" :
         # ('PAR' is expected in  Watt.m-2 in RATP input, whereas output is in 
         # micromol => convert back to W.m2 (cf shortwavebalance, line 306))
-        # on reste en micromol !
-        # On enregistre tout dans une dataframe pandas
         ShadedPAR = ShadedPAR / 4.6
         SunlitPAR = SunlitPAR / 4.6
     
@@ -60,7 +169,7 @@ def out_ratp_voxels(ratpgrid, res, parunit) :
         else:
             para_list.append(0.)
     
-    # vérifie qu'on a pas de erel négatif
+    # check if we don't have negative erel
     erel_list=[]
     for i in range(len(xintav)):
         if xintav[i] >= 1e-6 :
@@ -68,7 +177,7 @@ def out_ratp_voxels(ratpgrid, res, parunit) :
         else:
             erel_list.append(0.)
 
-    # liste des indices
+    # voxel indices list read in RATP grid
     numx=[]
     numy=[]
     numz=[]
@@ -94,14 +203,33 @@ def out_ratp_voxels(ratpgrid, res, parunit) :
                                     'Transmitted': Ptransmitted
                                 })
                 
-    # ne prend pas le sol
+    # we don't return the soil
     return dfvox[dfvox['VegetationType'] > 0]
 
 def out_ratp_triangles(trimesh,
                         matching_ele_ent,
                         matching_tr_vox,
                         voxels_outputs) :
-    # création du tableau résultats des triangles
+    """Converts RATP results to pandas dataframe compared to the triangles (and voxels)
+
+    :param trimesh: triangles mesh aggregated by indice elements
+        .. code-block:: { id : [triangle1, triangle2, ...]}
+    :type trimesh: dict
+    :param matching_ele_ent: 
+        dict that matches new element indices in trimesh with specy indice and
+        input element indice, 
+        .. code:: matching_ids = { new_element_id : (input_element_id, specy_id)}
+
+    :type matching_ele_ent: dict
+    :param matching_tr_vox: dict where key is a triangle indice and value the matching voxel indice where the 
+        barycenter of the triangle is located   
+    :type matching_tr_vox: dict
+    :param voxels_outputs: output of :func:out_ratp_voxels
+    :type voxels_outputs: pandas.Dataframe
+    :return: output of :func:out_ratp_voxels merged with associated triangles
+    :rtype: pandas.Dataframe
+    """                        
+    # creation of triangle table
     entity = {}
     for id, match in matching_ele_ent.items():
         entity[id] = match[1] + 1
@@ -112,25 +240,41 @@ def out_ratp_triangles(trimesh,
     sh_id = [globalid_to_elementid(trimesh, i) for i in range(len(triangles))]
     s = [triangle_area(t) for t in triangles]
 
-    # nouvelle data frame avec les triangles en index
+    # new dataframe with triangles indexed
     dftriangles = pandas.DataFrame({'Triangle': index,
                                 'Organ': sh_id, 
                                 'Voxel':vox_id, 
                                 'VegetationType':[entity[id] for id in sh_id], 
                                 'primitive_area':s})
 
-    # supposé copie dans les index avec des colonnes en commun
-    # colonnes en commun : VegetationType, VoxelId
-    trianglesoutputs = pandas.merge(dftriangles, voxels_outputs)        
+    # common columns for merging : VegetationType, VoxelID
+    trianglesoutputs = pandas.merge(dftriangles, voxels_outputs)  
     
-    # tri les lignes par ordre de triangles
+    # sort lines by triangle indices
     return  trianglesoutputs.sort_values('Triangle')
 
 def out_ratp_elements(matching_ele_ent, 
                         reflected, 
                         reflectance_coef, 
                         trianglesoutputs) :
-    # enregistre les valeurs par shape et plantes
+    """If trimesh is not empty, aggregates RATP results by element (keys in dict trimesh)
+
+    :param matching_ele_ent: 
+        dict that matches new element indices in trimesh with specy indice and
+        input element indice, 
+        .. code:: matching_ids = { new_element_id : (input_element_id, specy_id)}
+
+    :type matching_ele_ent: dict
+    :param reflected: if the user wishes to activate reflected radiations
+    :type reflected: bool
+    :param reflectance_coef: coefficient for each specy and each input bandwidth 
+    :type reflectance_coef: list of list
+    :param trianglesoutputs: output of :func:out_ratp_triangles
+    :type trianglesoutputs: pandas.Dataframe
+    :return: dataframe integrated on element informations
+    :rtype: pandas.Dataframe
+    """                        
+    # save values by element and specy
     nshapes = len(matching_ele_ent)
     s_shapes = []
     s_area=[]
@@ -146,7 +290,7 @@ def out_ratp_elements(matching_ele_ent,
     s_areasun=[]
     s_areasha=[]
     for id in range(nshapes):
-        # itérations commencent à 1
+        # iterations starts at 1 (fortran)
         nent = matching_ele_ent[id][1]
         dffil = trianglesoutputs[(trianglesoutputs.Organ == id)]
         
@@ -157,14 +301,13 @@ def out_ratp_elements(matching_ele_ent,
         s_day.append(dffil["Day"].values[0])
         s_area.append(sum_area)
 
-        # le rayonnemenbt réfléchi est calculé dans RATP
+        # if reflected rays has been computed in RATP
         if reflected :
             para = sum(t_areas * dffil['PARa']) / sum_area
             s_para.append(para)
         
-        # sinon on le rajoute manuellement
         else:
-            # PAR incident
+            # incident PAR
             pari = sum(t_areas * dffil['PARa']) / sum_area
             s_pari.append(pari)
             s_para.append(pari - (pari * reflectance_coef[nent][0]))
@@ -199,7 +342,37 @@ def out_caribu_mix( rdrs,
                     raw_sky, aggregated_sky,
                     issensors,
                     issoilmesh) :
+    """Mix diffuse and direct rays results according to a ratio rdrs
 
+    :param rdrs: Spitters's model estimating for the diffuse:direct ratio
+    :type rdrs: float
+    :param c_scene_sun: CaribuScene with direct lighting computed (from a sun)
+    :type c_scene_sun: CaribuScene
+    :param c_scene_sky: CaribuScene with diffuse lighting computed (from a sky)
+    :type c_scene_sky: CaribuScene
+    :param raw_sun: results of c_scene_sun for triangles
+    :type raw_sun: dict of dict
+    :param aggregated_sun: results of c_scene_sun aggregated by element
+    :type aggregated_sun: dict of dict
+    :param raw_sky: results of c_scene_sky for triangles
+    :type raw_sky: dict of dict
+    :param aggregated_sky:  results of c_scene_sky aggregated by element
+    :type aggregated_sky: dict of dict
+    :param issensors: if option virtual sensors is activated
+    :type issensors: bool
+    :param issoilmesh: if option soil mesh is activated
+    :type issoilmesh: bool
+    :return:
+        if sensors is activated, it extracts its results from aggregated_sun and aggregated_sky
+
+        if soilmesh is activated, it extracts its results from c_scene_sun and c_scene_sky
+        
+        then it mixes raw, aggregated, virtual sensors and soil energy results such as 
+        
+        ``result = rdrs * diffuse_result + (1 - rdrs) * direct_result``
+
+    :rtype: dict of dict, dict of dict, dict of list, dict of float
+    """
     raw, aggregated, sensors, soil_energy = raw_sun, aggregated_sun, {}, {}
     for band in raw.keys() : 
         for ray in ['Eabs', 'Ei'] :
@@ -229,6 +402,19 @@ def out_caribu_mix( rdrs,
     return raw, aggregated, sensors, soil_energy
 
 def out_caribu_nomix(c_scene, aggregated, issensors, issoilmesh) :
+    """Extracts only sensors and soilmesh results if activated
+
+    :param c_scene: instance of CaribuScene containing geometry, light source(s), opt etc...
+    :type c_scene: CaribuScene
+    :param aggregated: result of CaribuScene.run 
+    :type aggregated: dict of dict
+    :param issensors: if option virtual sensors is activated
+    :type issensors: bool
+    :param issoilmesh: if option soil mesh is activated
+    :type issoilmesh: bool
+    :return: extracts sensors results from aggregated and soil energy from c_scene
+    :rtype: dict, dict
+    """    
     sensors, soil_energy = {}, {}
     
     if issensors :
@@ -244,7 +430,28 @@ def out_caribu_nomix(c_scene, aggregated, issensors, issoilmesh) :
     return sensors, soil_energy
 
 def out_caribu_elements(day, hour, trimesh, matching_ids, aggregated, sun_up) :
+    """Converts aggregated in a pandas.Dataframe following indices in LightVegeManager
 
+    :param day: day of simulation
+    :type day: int
+    :param hour: hour of simulation
+    :type hour: int
+    :param trimesh: triangles mesh aggregated by indice elements
+        .. code-block:: { id : [triangle1, triangle2, ...]}
+    :type trimesh: dict
+    :param matching_ele_ent: 
+        dict that matches new element indices in trimesh with specy indice and
+        input element indice, 
+        .. code:: matching_ids = { new_element_id : (input_element_id, specy_id)}
+
+    :type matching_ele_ent: dict
+    :param aggregated: result of CaribuScene.run 
+    :type aggregated: dict of dict
+    :param sun_up: if sun elevation is > 2° and direct rays are > 0 W.m²
+    :type sun_up: bool
+    :return: aggregated results rearrange in a Dataframe with element correspondance in LightVegeManager
+    :rtype: pandas.Dataframe
+    """
     (s_shapes, 
     s_area, 
     s_day, 
@@ -281,6 +488,28 @@ def out_caribu_elements(day, hour, trimesh, matching_ids, aggregated, sun_up) :
     return pandas.DataFrame(dico_shape)
 
 def out_caribu_triangles(day, hour, trimesh, matching_ids, raw, sun_up) :
+    """Converts raw in a pandas.Dataframe following simulation datas
+
+    :param day: day of simulation
+    :type day: int
+    :param hour: hour of simulation
+    :type hour: int
+    :param trimesh: triangles mesh aggregated by indice elements
+        .. code-block:: { id : [triangle1, triangle2, ...]}
+    :type trimesh: dict
+    :param matching_ele_ent: 
+        dict that matches new element indices in trimesh with specy indice and
+        input element indice, 
+        .. code:: matching_ids = { new_element_id : (input_element_id, specy_id)}
+
+    :type matching_ele_ent: dict
+    :param raw: triangles results from CaribuScene.run
+    :type raw: dict of dict
+    :param sun_up: if sun elevation is > 2° and direct rays are > 0 W.m²
+    :type sun_up: bool
+    :return: triangle results rearrange in a Dataframe
+    :rtype: pandas.Dataframe
+    """    
     nb_triangles = sum([len(triangles) for triangles in trimesh.values()])
     
     (s_shapes, 

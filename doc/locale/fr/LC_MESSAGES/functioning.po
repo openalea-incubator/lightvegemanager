@@ -1,0 +1,33 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2023, INRAE P3F
+# This file is distributed under the same license as the LightVegeManager
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: LightVegeManager\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-03-29 15:06+0200\n"
+"PO-Revision-Date: 2023-03-29 16:23+0200\n"
+"Last-Translator: \n"
+"Language-Team: fr <LL@li.org>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Generated-By: Babel 2.11.0\n"
+"X-Generator: Poedit 3.2.2\n"
+
+#: ../../functioning.rst:2
+msgid "General functioning"
+msgstr "Fonctionnement Général"
+
+#: ../../functioning.rst:4
+msgid ""
+"LightVegeManager is a management tool for plant modelling and easy "
+"lighting."
+msgstr ""
+"LightVegeManager est un outil de gestion pour la modélisation des "
+"plantes et facilite l'ensoleillement."

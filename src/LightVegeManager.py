@@ -1,10 +1,90 @@
 '''
-classe globale de l'outil, directions principales des itérations
-les autres ne sont que des outils supplémentaires
+    LightVegeManager
+    ****************
 
+    Main class of the tool. Calls all the other modules in ``src``.
+
+    3 inputs dict for setting all parameters:
+
+    .. code-block:: python
+    
+        geometry = {
+                    "scenes" : [scene0, scene1, scene2, ...] ,
+                    "domain" : ((xmin, ymin), (xmax, ymax)),
+                    "stems id" : [(id_element, id_scene), ...],
+                    "transformations" : {
+                                            "scenes unit" : kwarg ,
+                                            "rescale" : kwarg ,
+                                            "translate" : kwarg ,
+                                            "xyz orientation" : kwarg
+                                            }
+                        }
+
+    .. code-block:: python
+
+        environment = {
+                        "coordinates" : [latitude, longitude, timezone] ,
+                        
+                        "sky" : "turtle46" ,
+                        "sky" : ["file", filepath] ,
+                        "sky" : [nb_azimut, nb_zenith, "soc" or "uoc"] ,
+
+                        "direct" : bool, # sun radiations
+                        "diffus" : bool, # sky radiations
+                        "reflected" : bool, # reflected radiation in the canopy
+                        "infinite" : bool, # infinitisation of the scene
+                        }
+
+    Currently LightVegeManager handles the light models RATP and CARIBU:
+
+    .. code-block:: python
+
+        caribu_args = {
+                        "sun algo" : "ratp",
+                        "sun algo" : "caribu",
+
+                            "caribu opt" : {
+                                            band0 = (reflectance, transmittance),
+                                            band1 = (reflectance, transmittance),
+                                            ...
+                                            },
+                            "debug" : bool,
+                            "soil mesh" : bool,
+                            "sensors" : ["grid", dxyz, nxyz, orig, vtkpath, "vtk"]
+                        }
+
+    .. code-block:: python
+
+        ratp_args = {
+                        # Grid specifications
+                        "voxel size" : [dx, dy, dz],
+                        "voxel size" : "dynamic",
+                        
+                        "origin" : [xorigin, yorigin, zorigin],
+                        "origin" : [xorigin, yorigin],
+
+                        "number voxels" : [nx, ny, nz],
+                        "grid slicing" : "ground = 0."
+                        "tesselation level" : int
+
+                        # Leaf angle distribution
+                        "angle distrib algo" : "compute global",
+                        "angle distrib algo" : "compute voxel",
+                        "angle distrib algo" : "file",
+
+                        "nb angle classes" : int,
+                        "angle distrib file" : filepath,
+
+                        # Vegetation type
+                        "soil reflectance" : [reflectance_band0, reflectance_band1, ...],
+                        "reflectance coefficients" : [reflectance_band0, reflectance_band1, ...],
+                        "mu" : [mu_scene0, mu_scene1, ...]
+                    }
+
+    .. seealso:: For more details :ref:`Inputs description <inputs>`
 '''
 
-from PyRATP.pyratp.runratp import runRATP
+from alinea.pyratp.runratp import runRATP
 from alinea.caribu.CaribuScene import CaribuScene
 import legume.RIRI5 as riri
 
@@ -15,6 +95,7 @@ import subprocess
 from src.LightVegeManager_trianglesmesh import *
 from src.LightVegeManager_stems import *
 from src.LightVegeManager_leafangles import *
+from src.LightVegeManager_tesselator import *
 from src.LightVegeManager_sun import *
 from src.LightVegeManager_sky import *
 from src.LightVegeManager_RATPinputs import *
@@ -23,33 +104,88 @@ from src.LightVegeManager_outputs import *
 from src.LightVegeManager_buildRATPscene import *
 from src.LightVegeManager_transfer import *
 from src.LightVegeManager_VTK import *
+from src.LightVegeManager_plantGL import *
 from src.LightVegeManager_defaultvalues import *
 
-class LightVegeManager :
+class LightVegeManager(object) :
+    """Main class for the tool LightVegeManager
     
+    Common simulation order: 
+    
+    ``input geometries -> build and prepare data -> call light model -> transfer results to plant models``
+
+    It includes:
+
+        Main methods:
+
+        * ``__init__``: initializes and builds static object for the rest of simulation
+        * :meth:`build`: builds and prepare all geometric meshes
+        * :meth:`run`: calls a light model and manages its inputs and outputs
+
+        Transfer methods:
+
+        * :meth:`to_MTG`: transfers ligthing results to a MTG table
+        * :meth:`to_l_egume`: transfers ligthing results to l-egume by creating two arrays as inputs for the plant model
+
+        Analysis tools: analyses a set of triangles and formats them as a turbid medium inputs
+
+        * :meth:`s5`: fortran tool
+        * :meth:`s2v`: c++ tool
+
+        Visualisation tools:
+
+        * :meth:`VTK_nolight`: write VTK file with only geometric informations
+        * :meth:`VTK_light`: write VTK file with geometric informations and associated light results
+        * :meth:`VTK_sun`: : write VTK file representing the sun as a line
+
+        Getters: to use light results with external routines
+
+        * :meth:`legume_transmitted_light`
+        * :meth:`legume_intercepted_light`
+        * :meth:`elements_outputs`
+        * :meth:`triangles_outputs`
+        * :meth:`voxels_outputs`
+        * :meth:`sensors_outputs`
+        * :meth:`sun`
+        * :meth:`soilenergy`
+        * :meth:`maxtrianglearea`
+        * :meth:`legume_empty_layers`
+        * :meth:`tesselationtime`
+        * :meth:`modelruntime`
+
+    :param environment: Environment parameters, defaults to {}
+    :type environment: dict, optional
+    :param lightmodel: either ``"ratp"`` or ``"caribu"``, defaults to ""
+    :type lightmodel: str, optional
+    :param lightmodel_parameters: light model parameters, defaults to {}
+    :type lightmodel_parameters: dict, optional
+    :param main_unit: measure unit for the global scene where the light will be computed, defaults to "m"
+    :type main_unit: str, optional
+    :raises ValueError: lightmodel entry not valid, either ``'ratp'`` or ``'caribu'``
+    """     
     ## MAIN METHODS ##
     def __init__(self,
                     environment={},
                     lightmodel="",
                     lightmodel_parameters={},
-                    main_unit="m") :
-        # on récupère les informations des autres modules de la classe
+                    main_unit="m") :        
+        # gets default variables from LightVegeManager_defaultvalues.py
         default_environnement,    \
         default_ratp_parameters,  \
         default_caribu_parameters = default_LightVegeManager_inputs()
 
-        # vérifie que le modèle de lumière choisie est valide
+        # check if choosen light model is known by the tool
         if lightmodel != "ratp" and lightmodel != "caribu" :
             raise ValueError("Unknown lightmodel: can be either 'ratp' \
                                 or 'caribu' ")
 
-        # enregistre les informations fixes en entrée
+        # save inputs in the instance
         self.__environment = environment
         self.__lightmodel = lightmodel
         self.__lightmodel_parameters = lightmodel_parameters
         self.__main_unit = main_unit
 
-        # copie des valeurs par défaut
+        # copy of default values in input parameters on not initialized keys
         for key, value in default_environnement.items() :
             if key not in self.__environment : 
                 self.__environment[key] = value
@@ -60,22 +196,30 @@ class LightVegeManager :
             if key not in self.__lightmodel_parameters : 
                 self.__lightmodel_parameters[key] = value
 
-        # construction du ciel si besoin
+        # sky building
         skytype = self.__environment["sky"]
         if lightmodel == "caribu":
             if self.__environment["diffus"] : self.__sky = CARIBUsky(skytype)
         elif lightmodel == "ratp" : self.__sky = RATPsky(skytype)     
 
     def build(self, geometry = {}, global_scene_tesselate_level=0) :
+        """Builds a mesh of the simulation scene in the right light model format
+
+        :param geometry: geometric parameters, contains geometric scenes, defaults to {}
+        :type geometry: dict, optional
+        :param global_scene_tesselate_level: option to subdivide all triangles of the mesh a certain number of times (to fine tuning the mesh), defaults to 0
+        :type global_scene_tesselate_level: int, optional
+        :raises ValueError: Currently, converting voxels mesh to triangles mesh is not possible
+        """
         self.__geometry = geometry
 
-        # première lecture de la liste de scène
+        # First process of the scenes list, it gathers all triangulations
         self.__complete_trimesh, \
         self.__matching_ids,      \
         legume_grid,               \
         id_legume_scene = chain_triangulations(self.__geometry["scenes"])
 
-        # transformations géométriques des scènes
+        # applies geometric transformations on inputs scenes if precised
         if "transformations" in self.__geometry :
             apply_transformations(self.__complete_trimesh, 
                                     self.__matching_ids, 
@@ -84,7 +228,7 @@ class LightVegeManager :
 
         self.__areamax = compute_area_max(self.__complete_trimesh)
 
-        # tesselation globale de la triangulation
+        # global tesselation of triangulation
         if self.__matching_ids and global_scene_tesselate_level > 0 :
             new_trimesh = {}
             for id_ele, triangles in self.__complete_trimesh.items() :
@@ -101,17 +245,16 @@ class LightVegeManager :
 
         self.__triangleLmax = compute_trilenght_max(self.__complete_trimesh)
 
-        # triangulation finale pour CARIBU
         if self.__lightmodel == "caribu":
             if legume_grid :
                 raise ValueError("Conversion from voxels grid to triangles \
                                 is not possible yet")
         
-        # création d'une grille de voxels + distribution d'angles
+        # Builds voxels grid from input geometry
         elif self.__lightmodel == "ratp":
-            # triangulation non vide
+            # triangles in the inputs
             if self.__matching_ids :
-                # création d'une nouvelle espèce pour les tiges
+                # separates stem elements in a new specy
                 if "stems id" in self.__geometry :
                     manage_stems_for_ratp(self.__geometry["stems id"], 
                                             self.__matching_ids, 
@@ -133,7 +276,7 @@ class LightVegeManager :
                 self.__matching_tri_vox, \
                 self.__angle_distrib =  build_RATPscene_from_trimesh(*arg)
 
-            # création d'une entrée géo RATP vide
+            # creates an empty RATP grid of voxels if geometric inputs are empty
             else :
                 arg = (self.__lightmodel_parameters,      
                         [self.__pmin, self.__pmax],    
@@ -144,8 +287,7 @@ class LightVegeManager :
                 self.__angle_distrib =  build_RATPscene_empty(*arg)
                 self.__matching_tri_vox = {}
             
-            # si il y a une grille de voxels en entrée
-            # et qu'elle est unique on la convertit en grille RATP
+            # if there is a grid of voxels in the inputs, we converts it in a RATP grid
             if legume_grid and not self.__matching_ids :
                 arg = (self.__geometry["scenes"][0],
                         self.__lightmodel_parameters,       
@@ -158,12 +300,29 @@ class LightVegeManager :
                 self.__nb0 =  legumescene_to_RATPscene(*arg)
                     
     def run(self, 
-            energy=0, 
+            energy=0., 
             day=0, 
             hour=0, 
             parunit="micromol.m-2.s-1", 
             truesolartime=False,
             id_sensors=None) :
+        """Calls the light model and formats lighting results
+
+        :param energy: input radiation energy, defaults to 0
+        :type energy: float, optional
+        :param day: simulation day, defaults to 0
+        :type day: int, optional
+        :param hour: simulation hour, defaults to 0
+        :type hour: int, optional
+        :param parunit: input energy unit, light models manages radiations in different unit, you can precise input unit and LightVegeManager will convert it in the right unit, defaults to "micromol.m-2.s-1"
+        :type parunit: str, optional
+        :param truesolartime: simulation hour is a true solar time or local time (depending on simulation coordinates), defaults to False
+        :type truesolartime: bool, optional
+        :param id_sensors: if you use CARIBU with a grid of virtual sensors, you have to precise which input scenes the grid must match, defaults to None
+        :type id_sensors: list, optional
+        :raises ValueError: with CARIBU you can precise the sun algorithm to calculate sun position, can be either ``"caribu"`` or ``"ratp"``
+        :raises ValueError: valid radiations are ``"direct"``, ``"diffuse"``, ``"reflected"``
+        """            
         self.__energy = energy
         
         ## RATP ##
@@ -181,20 +340,21 @@ class LightVegeManager :
                                 self.__environment["diffus"])
 
             if self.__complete_voxmesh.nveg > 0 :
-                # calcul de RATP
+                # Run of RATP
                 start=time.time()
                 res = runRATP.DoIrradiation(self.__complete_voxmesh, 
                                             vegetation, 
                                             self.__sky, 
                                             meteo)
                 self.__time_runmodel = time.time() - start
-
+                
+                # output management
                 self.__voxels_outputs = out_ratp_voxels(
                                                     self.__complete_voxmesh,
                                                     res,
                                                     parunit)
 
-                # triangulation parmi les scènes d'entrée
+                # if there are triangulations in the inputs
                 if self.__matching_ids :
                     arg = (self.__complete_trimesh,
                                 self.__matching_ids,
@@ -216,7 +376,7 @@ class LightVegeManager :
         elif self.__lightmodel == "caribu" :
             sun_up = False
             if self.__environment["direct"] :
-                # calcul du soleil
+                # computes sun position
                 arg = (day, 
                         hour, 
                         self.__environment["coordinates"], 
@@ -228,15 +388,14 @@ class LightVegeManager :
                 else :
                     raise ValueError("sun algo not recognize")
             
-                # vérifie que le soleil soit levé
-                # critère élévation min fixé à 2° comme dans RATP 
-                # (shortwave_balance.F90 -> DirectBeam_Interception, l.68)
+                # check if sun is up
+                # criteria is set to elevation > 2°, from alinea shortwave_balance.F90 -> DirectBeam_Interception, l.68
                 sun_up = math.asin(-self.__sun[2])*(180/math.pi) > 2.
             
             compute = (sun_up and self.__environment["direct"]) or \
                     self.__environment["diffus"]
             if compute:             
-                # préparatifs de CARIBU
+                # CARIBU preparations
                 arg = (self.__complete_trimesh, 
                         self.__geometry, 
                         self.__matching_ids, 
@@ -248,7 +407,7 @@ class LightVegeManager :
                 issensors = "sensors" in self.__lightmodel_parameters
                 issoilmesh = self.__lightmodel_parameters["soil mesh"] != -1
                 
-                # init de la scène CARIBU
+                # Initialize a CaribuScene
                 if self.__environment["diffus"]  and \
                     self.__environment["direct"] :
                     c_scene_sky = CaribuScene(
@@ -285,7 +444,7 @@ class LightVegeManager :
                     debug = debug
                     )
                 
-                # lancement
+                # Runs CARIBU
                 arg = [c_scene, \
                         not self.__environment["reflected"], \
                         self.__environment["infinite"], \
@@ -330,7 +489,7 @@ class LightVegeManager :
                                                             issensors,
                                                             issoilmesh)
                     
-            # gestion des sorties
+            # Outputs management
             arg = [day,
                 hour,
                 self.__complete_trimesh,
@@ -363,7 +522,24 @@ class LightVegeManager :
             self.__time_runmodel = time.time() - start
     
     ## TRANSFER METHODS ##
-    def to_MTG(self, energy=1, mtg=None, id=None) :
+    def to_MTG(self, energy=1., mtg=None, id=None) :
+        """Transfers lighting results to a MTG table.
+        
+        .. warning:: The :meth:`run` must have been called before to have results dataframes.
+        
+        Results are ``pandas.Dataframe`` stored in the ``self``
+
+        :param energy: input energy, defaults to 1
+        :type energy: float, optional
+        :param mtg: MTG table with ``"PARa"`` and ``"Erel"`` entries in its properties, defaults to None
+        :type mtg: MTG, optional
+        :param id: you can precise to which input scenes the MTG table corresponds, defaults to None
+        :type id: list or tuple, optional
+        :raises AttributeError: you need to call :func:run first
+        """        
+        if (not self.__elements_outputs) :
+            raise AttributeError("No results yet, run a light modeling first")
+        
         # crée un tableau comme dans caribu_facade de fspm-wheat
         dico_par = {}
         para_dic = {}
@@ -392,13 +568,58 @@ class LightVegeManager :
             mtg.property(param).update(dico_par[param])
 
     def to_l_egume(self, 
-                    energy=1, 
+                    energy=1., 
                     m_lais = [], 
                     list_lstring = [], 
                     list_dicFeuilBilanR = [], 
                     list_invar = [], 
                     id=None) :
-                    
+        """Transfers lighting results to l-egume
+
+        .. warning:: The :meth:`run` must have been called before to have results dataframes.
+
+        .. warning:: l-egume needs transmitted energy informations located in a grid of voxels. You need to have the same dimensions in the lighting results.
+            
+            * With RATP, RATP grid must have the same dimensions as l-egume intern grid. 
+            
+            * With CARIBU, you must create a grid of virtual sensors in the same dimensions as l-egume intern grid.
+
+        Results are ``pandas.Dataframe`` stored in the ``self``
+
+        :param energy: input energy, defaults to 1
+        :type energy: float, optional
+        :param m_lais: leaf area represented in a numpy.array of dimension [number of species, number of z layers, number of y layers, number of x layers], defaults to []
+        :type m_lais: numpy.array, optional
+        :param list_lstring: from l-egume, each element corresponds to an input specy of l-egume. Each element is a dict lstring stores the l-system of each plant, defaults to []
+        :type list_lstring: list of dict, optional
+        :param list_dicFeuilBilanR: from l-egume, each element corresponds to an input specy of l-egume. Each element is a dict dicFeuiBilanR stores correspondances between voxels grid and each plant, defaults to []
+        :type list_dicFeuilBilanR: list of dict, optional
+        :param list_invar: from l-egume, each element corresponds to an input specy of l-egume. Each element is a dict invar stores instant intern variables of l-egume., defaults to []
+        :type list_invar: list of dict, optional
+        :param id: list of indices from input scenes which corresponds to current l-egume instance. If you have several plantmodel among the input scenes, you need to precise which results you want to transfer to which instance of l-egume. defaults to None
+        :type id: list, optional
+        :raises AttributeError: you need to call :meth:`run` first
+        :raises ValueError: unknown light model
+
+        :return: 
+
+            if light model is RATP :func:`transfer_ratp_legume` :
+
+                * ``res_abs_i``: absorbed energy in each voxels of a grid matching the dimensions of l-egume intern grid of voxels. One value for each specy.
+
+                * ``res_trans``: transmitted energy in each voxels of a grid matching the dimensions of l-egume intern grid of voxels
+
+            if light model is CARIBU :func:transfer_caribu_legume :
+
+                * update of list_invar: updates the keys ``"parap"`` and ``"parip"`` for each specy. Cumulatative energy per plant
+
+                * ``res_trans``: transmitted energy in each voxels of a grid matching the dimensions of l-egume intern grid of voxels
+        
+        :rtype: numpy.array
+        """                   
+        if (not self.__complete_voxmesh) or (not self.__elements_outputs) :
+            raise AttributeError("No results yet, run a light modeling first")
+
         epsilon = 1e-14
 
         if self.__lightmodel == "ratp" :
@@ -419,25 +640,66 @@ class LightVegeManager :
                                 id)
             
             return transfer_caribu_legume(energy,
-                                skylayer, 
-                                self.__elements_outputs, 
-                                self.__sensors_outputs, 
-                                self.__lightmodel_parameters["sensors"][1], 
-                                self.__lightmodel_parameters["sensors"][2], 
-                                m_lais, 
-                                list_invar, 
-                                list_lstring,
-                                list_dicFeuilBilanR, 
-                                self.__environment["infinite"],
-                                epsilon) 
+                                            skylayer, 
+                                            self.__elements_outputs, 
+                                            self.__sensors_outputs, 
+                                            self.__lightmodel_parameters["sensors"][1], 
+                                            self.__lightmodel_parameters["sensors"][2], 
+                                            m_lais, 
+                                            list_invar, 
+                                            list_lstring,
+                                            list_dicFeuilBilanR, 
+                                            self.__environment["infinite"],
+                                            epsilon) 
 
         else :
             raise ValueError("Unknown light model (ratp or caribu)")
 
     ## EXTERN TOOLS ##
     def s5(self):
-        '''construit les fichiers d'entrée pour s5 et l'exécute
-        '''
+        """Creates inputs files for s5 and runs it
+        s5 is an external tool made to analyse a set of triangles in order to use a grid of voxels.
+        It also computes leaf angle distribution from the triangulation
+
+        .. note:: All files are located in ``s5`` folder
+
+        **Input files created**
+
+            * fort.51: contains triangulation. Possibility to precise stem elements it is registered in the instance of LightVegeManager
+
+            * s5.par: stores grid of voxels informations and number of entities
+
+        **Output files created**
+
+            * fort.60
+            
+                dimensions xy of the grid
+
+                stats by specy
+
+                    - total leaf area
+                    - leaf area index
+                    - global zenital leaf angle distribution
+                    - global azimutal leaf angle distribution
+                
+                stats by voxels
+                
+                    - #specy | #ix | #iy | #iz (coordinate xyz of the voxel) | eaf area density
+                    - local zenital leaf angle distribution
+                    - local azimutal leaf angle distribution
+
+            * leafarea: for each specy, for each voxel
+                
+                ix | iy | iz | #specy | LAD | zenital-distribution | azimutal-distribution
+
+        **example**
+
+        >>> myscene # a plantgl Scene
+        >>> testofs5 = LightVegeManager() # create a instance
+        >>> testofs5.build( geometry={ "scenes" : [myscene] } ) # build the geometry
+        >>> testofs5.s5() # run of s5, creates input and output files
+
+        """        
         currentfolder = os.path.abspath( \
                                     os.path.dirname(os.path.dirname(__file__)))
         s5folder = os.path.join(currentfolder, os.path.normpath("s5"))
@@ -487,8 +749,56 @@ class LightVegeManager :
         print("\n"+"--- Fin de s5.f")
 
     def s2v(self):
-        '''construit les fichiers d'entrée pour s2v et l'exécute
-        '''
+        """Creates inputs files for s2v and runs it
+        s5 is an external tool made to analyse a set of triangles in order to use a grid of voxels.
+        It also computes leaf angle distribution from the triangulation
+
+        .. note:: All files are located in ``s2v`` folder
+
+        **Input files created**
+
+            * fort.51: stores triangulation. Possibility to precise stem elements it is registered in the instance of LightVegeManager
+
+            * s2v.par: stores grid of voxels informations and number of entities
+
+        **Output files created**
+
+            * s2v.log
+
+                logs about processing
+                
+                global statistics
+
+                    - total leaf area per specy
+                    - total leaf area
+                    - leaf area index
+                    - global zenital leaf angle distribution
+
+            * s2v.can
+
+                z layer where each triangle is located (and copy its vertices)
+            
+            * s2v.area
+
+                triangle id | z layer | triangle area
+
+            * out.dang: SAIL file
+
+                line 1: global leaf area index for specy 1
+                line 2: global zenital leaf angle distribution for specy 1
+
+            * leafarea: SAIL file
+
+                each line: 0 | idz | leaf area index for each slope class in current z layer | 0 | 0 | leaf area density on the layer
+
+        **example**
+
+        >>> myscene # a plantgl Scene
+        >>> testofs2v = LightVegeManager() # create a instance
+        >>> testofs2v.build( geometry={ "scenes" : [myscene] } ) # build the geometry
+        >>> testofs2v.s2v() # run of s2v, creates input and output files
+        
+        """ 
         currentfolder = os.path.abspath( \
                                     os.path.dirname(os.path.dirname(__file__)))
         s2vfolder = os.path.join(currentfolder, os.path.normpath("s2v"))
@@ -552,10 +862,17 @@ class LightVegeManager :
 
     ## VTK FILES ##
     def VTK_nolight(self, path, i=None, printtriangles=True, printvoxels=True) :
-        '''construit des fichiers VTK de la triangulation et de la grille de
-         voxels après leur construction
+        """Writes a VTK from mesh(es) in ``self``, with only geometric informations
 
-        '''       
+        :param path: file and path name
+        :type path: string
+        :param i: associate the created file with an indice in its filename, defaults to None
+        :type i: int, optional
+        :param printtriangles: write triangulation if one has been created in :func:build, defaults to True
+        :type printtriangles: bool, optional
+        :param printvoxels: write grid of voxels if one has been created in :func:build, defaults to True
+        :type printvoxels: bool, optional
+        """             
         if self.__lightmodel == "ratp" and printvoxels: 
             if i is None : filepath = path + "_voxels_nolight.vtk"
             else : filepath = path + "_voxels_nolight" + "_" + str(i) + ".vtk"
@@ -567,6 +884,23 @@ class LightVegeManager :
             VTKtriangles(self.__complete_trimesh, [], [], filepath)
 
     def VTK_light(self, path, i=None, printtriangles=True, printvoxels=True) :
+        """Writes a VTK from mesh(es) in ``self``, with geometric informations and lighting results
+
+        .. warning:: The :meth:`run` must have been called before to have results dataframes.
+
+        :param path: file and path name
+        :type path: string
+        :param i: associate the created file with an indice in its filename, defaults to None
+        :type i: int, optional
+        :param printtriangles: write triangulation if one has been created in :meth:`build`, defaults to True
+        :type printtriangles: bool, optional
+        :param printvoxels: write grid of voxels if one has been created in :meth:`build`, defaults to True
+        :type printvoxels: bool, optional
+        :raises AttributeError: you need to call :meth:`run` first
+        """        
+        if (not self.__complete_voxmesh) or (not self.__elements_outputs) :
+            raise AttributeError("No results yet, run a light modeling first")
+
         if (self.__lightmodel == "ratp" and \
                     (not hasattr(self, '_LightVegeManager__voxels_outputs'))) :
             print("--- VTK:  No light data, run the simulation")
@@ -616,6 +950,25 @@ class LightVegeManager :
                 VTKtriangles(self.__complete_trimesh, data, datanames, filepath)
 
     def VTK_sun(self, path, scale=2, orig=(0,0,0), center=True, i=None) :
+        """Write a VTK file representing the sun by a simple line
+
+        .. warning:: The :meth:`run` must have been called before to have results dataframes.    
+
+        if center is False, orig is the starting point the line and it ends at orig + scale*sun.position
+
+        if center is True, orig is the middle point of the line.
+
+        :param path: file and path name
+        :type path: string
+        :param scale: size of the line, defaults to 2
+        :type scale: int, optional
+        :param orig: starting or middle point of the line, defaults to (0,0,0)
+        :type orig: tuple, optional
+        :param center: if True orig is the middle of the line, otherwise it is the starting point, defaults to True
+        :type center: bool, optional
+        :param i: associate the created file with an indice in its filename, defaults to None
+        :type i: int, optional
+        """        
         if i is None : filepath = path + "_sun.vtk"
         else : filepath = path + "_sun" + "_" + str(i) + ".vtk"
 
@@ -631,26 +984,57 @@ class LightVegeManager :
     ## GETTERS ##
     @property
     def legume_transmitted_light(self):
+        """transmitted results if light model is RiRi light
+
+        :return: transmitted energy following a grid of voxels
+        :rtype: numpy.array
+        """        
         return self.__legume_transmitted_light 
     
     @property
     def legume_intercepted_light(self):
+        """Intercepted results if light model is RiRi light, 
+
+        :return: intercepted energy following a grid of voxels, for each specy
+        :rtype: numpy.array
+        """        
         return self.__legume_intercepted_light 
 
     @property
     def elements_outputs(self):
+        """Lighting results aggregate by element
+
+        :return: Column names can change depending on the light model. Commonly, there is element indice, its area and intercepted energy
+        :rtype: pandas.Dataframe
+        """        
         return self.__elements_outputs 
 
     @property
     def triangles_outputs(self):
+        """Lighting results aggregate by triangle, if it has a triangulation in its inputs
+
+        :return: .. seealso:: :mod:`src.LightVegeManager_outputs` for column names
+        :rtype: pandas.Dataframe
+        """        
         return self.__triangles_outputs 
     
     @property
     def voxels_outputs(self):
+        """Lighting results aggregate by voxels, only with RATP as the selected light model
+
+        :return: .. seealso:: :mod:`src.LightVegeManager_outputs` for column names
+        :rtype: pandas.Dataframe
+        """         
         return self.__voxels_outputs 
 
     @property
     def sensors_outputs(self):
+        """Lighting results aggregate by sensors.
+        Only with CARIBU if you activated the virtual sensors option
+
+        :return: The output format is the same as CARIBU output format. Dict with ``Eabs`` key for absorbed energy and ``Ei`` for incoming energy
+        :rtype: dict
+        """        
         try:
             return self.__sensors_outputs
         except AttributeError:
@@ -658,14 +1042,30 @@ class LightVegeManager :
 
     @property
     def sun(self):
+        """Return sun position of the last :func:run call
+
+        :return: vector (x, y, z)
+        :rtype: tuple
+        """        
         return self.__sun
 
     @property
     def soilenergy(self):
+        """Return soil energy, only with CARIBU if soilmesh option is activated
+
+        :return: The output format is the same as CARIBU output format. Dict with ``Eabs`` key for absorbed energy and ``Ei`` for incoming energy
+        :rtype: dict
+        """        
         return self.__soilenergy
 
     @property
     def maxtrianglearea(self):
+        """Returns the largest triangle of triangles mesh
+        Computed in :meth:`build`
+
+        :return: area the triangle
+        :rtype: float
+        """        
         try :
             return self.__areamax
         except AttributeError:
@@ -673,10 +1073,20 @@ class LightVegeManager :
   
     @property
     def legume_empty_layers(self):
+        """Returns number of empty layers between top of the canopy and number of z layers expected by l-egume
+
+        :return: result of :func:`fill_ratpgrid_from_legumescene`
+        :rtype: int
+        """        
         return self.__nb0
 
     @property
     def tesselationtime(self):
+        """_summary_
+
+        :return: _description_
+        :rtype: _type_
+        """        
         try:
             return self.__tess_time
         except AttributeError:
@@ -684,6 +1094,11 @@ class LightVegeManager :
     
     @property
     def modelruntime(self):
+        """Returns running time of the light model
+
+        :return: time in s
+        :rtype: float
+        """        
         try:
             return self.__time_runmodel
         except AttributeError :

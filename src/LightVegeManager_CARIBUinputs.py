@@ -1,5 +1,46 @@
 '''
-gestion des entrées des modèles de lumières
+    LightVegeManager_CARIBUinputs
+    ******************************
+
+    Manages and prepares input information for CARIBU.
+
+    In this module we use two of the LightVegeManager's inputs dict.
+
+    *  ``parameters`` corresponding to CARIBU parameters and contains
+
+        .. code-block:: python
+            
+            caribu_args = {
+                            "sun algo" : "ratp",
+                            "sun algo" : "caribu",
+
+                            "caribu opt" : {
+                                            band0 = (reflectance, transmittance),
+                                            band1 = (reflectance, transmittance),
+                                            ...
+                                            },
+                            "debug" : bool,
+                            "soil mesh" : bool,
+                            "sensors" : ["grid", dxyz, nxyz, orig, vtkpath, "vtk"]
+                            }
+    
+    * ``geometry`` corresponding to the geometric information with the scenes inputs
+
+        .. code-block:: python
+            
+            geometry = {
+                        "scenes" : [scene0, scene1, scene2, ...] ,
+                        "domain" : ((xmin, ymin), (xmax, ymax)),
+                        "stems id" : [(id_element, id_scene), ...],
+                        "transformations" : {
+                                                "scenes unit" : kwarg ,
+                                                "rescale" : kwarg ,
+                                                "translate" : kwarg ,
+                                                "xyz orientation" : kwarg
+                                            }
+                        }
+    
+    .. seealso:: For more details :ref:`Inputs description <inputs>`
 
 '''
 
@@ -15,7 +56,57 @@ def Prepare_CARIBU(trimesh,
                     parameters,
                     infinite, 
                     idsensors) :
-    # propriétés optiques
+    """Format optical parameters and prepare virtual sensors and debug if activated
+
+    :param trimesh: triangles mesh aggregated by indice elements
+        
+        .. code-block:: 
+        
+            { id : [triangle1, triangle2, ...]}
+
+    :type trimesh: dict
+    :param geometry: geometric parameters from inputs of LightVegeManager
+    :type geometry: dict
+    :param matching_ids: 
+        dict that matches new element indices in trimesh with specy indice and
+        input element indice, 
+        
+        .. code-block:: 
+        
+            matching_ids = { new_element_id : (input_element_id, specy_id)}
+
+    :type matching_ids: dict
+    :param minmax: list of mininuml point and maximum point in a triangles mesh
+    :type minmax: [3-tuple, 3-tuple]
+    :param parameters: RATP parameters from inputs of LightVegeManager
+    :type parameters: dict
+    :param infinite: if the user wishes to activate infinitisation of the grid
+    :type infinite: bool
+    :param idsensors: 
+        Sets which input scenes the grid of virtual sensors will match. 
+        Elements of this list refers to indices in the list ``geometry["scenes"]``.
+        If no input indices are given, the grid will match the global scene ``trimesh``. 
+        Otherwise, you can match the grid to a specific set of input scenes
+    :type idsensors: list of int
+    
+    :return:
+        
+        *  ``opt``: optical parameters formatted for CARIBU. It takes the form of dict, where each 
+            key is a bandlength (PAR, NIR etc...) and values are transmittance and reflectance
+            (or only reflectance for stems elements)
+        
+        *  ``sensors_caribu``: geometric data of the virtual sensors in CARIBU scene format. Sensors
+            are horizontal square made of two triangles
+            
+            .. code-block:: 
+                
+                sensors_caribu = { sensor_id : [triangle1, triangle2], ...}
+
+        * ``debug``: boolean if user wants to activate th edebug option in CARIBU
+
+    :rtype: dict, dict, bool
+    """                    
+    # manage stems element and creates optical parameters
     stems = []
     if 'stems id' in geometry : stems = geometry["stems id"]
     opt = CARIBU_opticals(matching_ids, 
@@ -40,9 +131,9 @@ def Prepare_CARIBU(trimesh,
         sensors_plantgl, \
         Pmax_capt = create_caribu_legume_sensors(*arg)
 
-    # pattern scene infini par défaut
+    # infinite scene pattern if not precised in the inputs
     if "domain" not in geometry :
-        # cas où il y a uniquement l-egume dans les scènes d'entrée
+        # special case for l-egume and virtual sensors
         if "sensors" in parameters and parameters["sensors"][0] == "grid" :
             reduction_domain = 0
             d = ((orig[0] + reduction_domain, 
@@ -55,21 +146,37 @@ def Prepare_CARIBU(trimesh,
 
         geometry["domain"] = d
 
-    # On active l'option verbose de CARIBU
     debug = False
     if "debug" in parameters and parameters["debug"] :  debug = True
     
     return opt, sensors_caribu, debug
     
 
-def CARIBU_opticals(matching_ids, parameters, stems_id) :
+def CARIBU_opticals(matching_ids, parameters, stems_id=None) :
+    """Sets optical parameters for CARIBU from LightVegeManager inputs
+    It removes transmittance for stems elements if precised
+
+    :param matching_ids: 
+        dict that matches new element indices in trimesh with specy indice and
+        input element indice, :code:`matching_ids = { new_element_id : (input_element_id, specy_id)}`
+    :type matching_ids: dict
+    :param parameters: RATP parameters from inputs of LightVegeManager
+    :type parameters: dict
+    :param stems_id: list of potential stems element in the input scenes, defaults to None
+    :type stems_id: list of 2-tuple, optional
+    :return: 
+        optical parameters formatted for CARIBU. It takes the form of dict, where each 
+        key is a bandlength (PAR, NIR etc...) and values are transmittance and reflectance
+        (or only reflectance for stems elements)
+    :rtype: dict
+    """    
     opt = {}
     for band, coef in parameters["caribu opt"].items() :
         opt[band] = {}
     for id, val in matching_ids.items():
         for band, coef in parameters["caribu opt"].items() :
-            # id : id de la shape, val : [id shape en input, id de l'entité]
-            # c'est une tige il n'y a pas de transmission
+            # id is element, stems_id is a list of (element id, specy id)
+            # if stem then no transmittance, the object is opaque
             if (val[0], val[1]) in stems_id:
                 #: (reflectance,) of the stems ou organe opaque
                 opt[band][id] = (coef[0],)  
@@ -93,7 +200,51 @@ def create_caribu_legume_sensors(dxyz,
                                 matching_ids, 
                                 id_sensors, 
                                 infinite) :
-    # réduction si le nombre de couches remplies < nombre de couches prévues
+    """Creates a set of virtual sensors following a voxels grid
+    each sensor is a square made by two triangles and takes place on the bottom face of a voxel
+    The grid follow the xyz axis (and so the voxels)
+
+    :param dxyz: [dx, dy, dz] size of a voxel in each direction
+    :type dxyz: list
+    :param nxyz: [nx, ny, nz] number of voxels on each axis
+    :type nxyz: list
+    :param orig: [x_origin, y_origin, z_origin], origin of the grid, cartesian coordinates
+    :type orig: list (or tuple)
+    :param pmax: [x, y, z] maximum point of trimesh in the xyz space
+    :type pmax: lsit (or tuple)
+    :param trimesh: triangles mesh aggregated by indice elements
+        
+        .. code-block:: 
+        
+            { id : [triangle1, triangle2, ...]}
+
+    :type trimesh: dict
+    :param matching_ids: 
+        dict that matches new element indices in trimesh with specy indice and
+        input element indice, :code:`matching_ids = { new_element_id : (input_element_id, specy_id)}`
+    :type matching_ids: dict
+    :param idsensors: 
+        Sets which input scenes the grid of virtual sensors will match. 
+        Elements of this list refers to indices in the list ``geometry["scenes"]``.
+        If no input indices are given, the grid will match the global scene ``trimesh``. 
+        Otherwise, you can match the grid to a specific set of input scenes
+    :type idsensors: list of int
+    :param infinite: if the user wishes to activate infinitisation of the grid
+    :type infinite: bool
+    :return: 
+        it returns 3 objects:
+
+            * ``sensors_caribu``, geometric data of the virtual sensors in CARIBU scene format. Sensors
+                are horizontal square made of two triangles :code:`sensors_caribu = { sensor_id : [triangle1, triangle2], ...}`
+
+            * ``s_capt``, PlantGL scene of the virtual sensors
+
+            * ``sensors_maxcenter``, [x, y, z] representing point on the highest sensors layer and middle of
+                xy plane in the grid
+
+    :rtype: dict, PlantGL scene, list
+    """
+    # if number of filled layers is less than number of expected layers (nxyz[2])
     skylayer = reduce_layers_from_trimesh(trimesh, 
                                             pmax,
                                             dxyz,
@@ -101,17 +252,23 @@ def create_caribu_legume_sensors(dxyz,
                                             matching_ids, 
                                             id_sensors)
             
-    # scene plantGL qui acceuillera les capteurs
+    # initialize the PlantGL scene
     s_capt = pgl.Scene()
     
+    # point to output
+    sensors_maxcenter = [ orig[0] + 0.5*dxyz[0]*nxyz[0] , 
+                            orig[1] + 0.5*dxyz[1]*nxyz[1] ,  
+                            orig[2] + dxyz[2] * (nxyz[2] - skylayer -1)]
+
+    # orientation changes depending if the scene is infinite or not
     if infinite : 
-        # capeur bas oriente vers le haut
+        # square looks upward
         points = [(0, 0, 0), 
                     (dxyz[0], 0, 0), 
                     (dxyz[0], dxyz[1], 0), 
                     (0, dxyz[1], 0)]
     else :
-        # capeur bas oriente vers le haut
+        # square looks downwards
         points = [(0, 0, 0),  
                     (0, dxyz[1], 0), 
                     (dxyz[0], dxyz[1], 0), 
@@ -119,104 +276,96 @@ def create_caribu_legume_sensors(dxyz,
     normals = [(0, 0, 1) for i in range(4)]
     indices = [(0, 1, 2, 3)]
 
-    # carré taille d'un voxel
-    carre = pgl.QuadSet(points, indices, normals, indices)
+    # plantGL square
+    square_pgl = pgl.QuadSet(points, indices, normals, indices)
     
+    # generate the sensors in plantGL format among the grid
     ID_capt = 0
     dico_translat = {}
     for ix in range(nxyz[0]):
         for iy in range(nxyz[1]):
             for iz in range(nxyz[2] - skylayer):
-                # vecteur de translation
-                tx = orig[0] + ix * dxyz[0]
-                ty = orig[1] + iy * dxyz[1]
-                tz = orig[2] + iz * dxyz[2]
+                # translation vector
+                tx = ix * dxyz[0]
+                ty = iy * dxyz[1]
+                tz = iz * dxyz[2]
 
-                # retient la translation
+                # save the vector
                 dico_translat[ID_capt] = [tx, ty, tz]
 
-                # ajoute un voxel à la scene des capteurs
-                Vox = pgl.Translated(geometry=carre, translation=(tx, ty, tz))
-                s_capt.add(pgl.Shape(geometry=Vox, id=ID_capt))
+                # adds a squared sensor to the plantGL scene
+                sensor = pgl.Translated(geometry=square_pgl, translation=(tx, ty, tz))
+                s_capt.add(pgl.Shape(geometry=sensor, id=ID_capt))
                 ID_capt += 1
 
-    
-    Dico_Sensors = {}
-    liste_hmax_capt = []
-    liste_x_capt = []
-    liste_y_capt = []
-    # mise en forme de triangulation CARIBU
-    for x in s_capt:
+    # sensors in CARIBU scene format with triangles
+    caribu_sensors = {}
+    for c in s_capt:
+        # Preparation
+        pt_lst = c.geometry.geometry.pointList
+        idx_lst = c.geometry.geometry.indexList
 
-        # pgl_to_caribu(x)
-
-        # Preparation capteurs
-        pt_lst = x.geometry.geometry.pointList
-        idx_lst = x.geometry.geometry.indexList
-
+        # two triangles for each squarred sensor
         for i in range(0, len(idx_lst)):
-            x11 = pt_lst[idx_lst[i][0]][0] + dico_translat[x.id][0]
-            y11 = pt_lst[idx_lst[i][0]][1] + dico_translat[x.id][1]
-            z11 = pt_lst[idx_lst[i][0]][2] + dico_translat[x.id][2]
+            triangles = []
+            
+            # upper triangle
+            x = [pt_lst[idx_lst[i][j]][0] + dico_translat[c.id][0] for j in range(3)]
+            y = [pt_lst[idx_lst[i][j]][1] + dico_translat[c.id][1] for j in range(3)]
+            z = [pt_lst[idx_lst[i][j]][2] + dico_translat[c.id][2] for j in range(3)]
+            triangles.append((list(zip(x, y, z))))
 
-            liste_hmax_capt.append(z11)
-            liste_x_capt.append(x11)
-            liste_y_capt.append(y11)
-
-            x12 = pt_lst[idx_lst[i][1]][0] + dico_translat[x.id][0]
-            y12 = pt_lst[idx_lst[i][1]][1] + dico_translat[x.id][1]
-            z12 = pt_lst[idx_lst[i][1]][2] + dico_translat[x.id][2]
-
-            liste_hmax_capt.append(z12)
-            liste_x_capt.append(x12)
-            liste_y_capt.append(y12)
-
-            x13 = pt_lst[idx_lst[i][2]][0] + dico_translat[x.id][0]
-            y13 = pt_lst[idx_lst[i][2]][1] + dico_translat[x.id][1]
-            z13 = pt_lst[idx_lst[i][2]][2] + dico_translat[x.id][2]
-
-            liste_hmax_capt.append(z13)
-            liste_x_capt.append(x13)
-            liste_y_capt.append(y13)
-
-            tple1 = [(x11, y11, z11), (x12, y12, z12), (x13, y13, z13)]
-            triangle = []
-            triangle.append(tple1)
-
-            x21 = pt_lst[idx_lst[i][0]][0] + dico_translat[x.id][0]
-            y21 = pt_lst[idx_lst[i][0]][1] + dico_translat[x.id][1]
-            z21 = pt_lst[idx_lst[i][0]][2] + dico_translat[x.id][2]
-
-            liste_hmax_capt.append(z21)
-            liste_x_capt.append(x21)
-            liste_y_capt.append(y21)
-
-            x22 = pt_lst[idx_lst[i][2]][0] + dico_translat[x.id][0]
-            y22 = pt_lst[idx_lst[i][2]][1] + dico_translat[x.id][1]
-            z22 = pt_lst[idx_lst[i][2]][2] + dico_translat[x.id][2]
-
-            liste_hmax_capt.append(z22)
-            liste_x_capt.append(x22)
-            liste_y_capt.append(y22)
-
-            x23 = pt_lst[idx_lst[i][3]][0] + dico_translat[x.id][0]
-            y23 = pt_lst[idx_lst[i][3]][1] + dico_translat[x.id][1]
-            z23 = pt_lst[idx_lst[i][3]][2] + dico_translat[x.id][2]
-
-            liste_hmax_capt.append(z23)
-            liste_x_capt.append(x23)
-            liste_y_capt.append(y23)
-
-            tple2 = [(x21, y21, z21), (x22, y22, z22), (x23, y23, z23)]
-            triangle.append(tple2)
-
-            Dico_Sensors[x.id] = triangle
+            # lower triangle
+            ids = [0, 2, 3]
+            x = [pt_lst[idx_lst[i][j]][0] + dico_translat[c.id][0] for j in ids]
+            y = [pt_lst[idx_lst[i][j]][1] + dico_translat[c.id][1] for j in ids]
+            z = [pt_lst[idx_lst[i][j]][2] + dico_translat[c.id][2] for j in ids]
+            triangles.append((list(zip(x, y, z))))
+            
+            # save the triangles
+            caribu_sensors[c.id] = triangles
     
-    return Dico_Sensors, s_capt, [(min(liste_x_capt) + max(liste_x_capt)) / 2,
-                                (min(liste_y_capt) + max(liste_y_capt)) / 2,
-                                max(liste_hmax_capt)]
+    return caribu_sensors, s_capt, sensors_maxcenter
 
 def run_caribu(c_scene, direct_active, infinite, sensors) :
+    """runs caribu depending on input options
+
+    :param c_scene: instance of CaribuScene containing geometry, light source(s), opt etc...
+    :type c_scene: CaribuScene
+    :param direct_active: Whether only first order interception is to be computed
+        Default is True (no rediffusions)
+    :type direct_active: bool
+    :param infinite: if the user wishes to activate infinitisation of the grid
+    :type infinite: bool
+    :param sensors: geometric data of the virtual sensors in CARIBU scene format. Sensors
+        are horizontal square made of two triangles
+        .. code:: sensors_caribu = { sensor_id : [triangle1, triangle2], ...}
+    :type sensors: dict
+    :return: results are stored in two dict
+
+        - raw (dict of dict) a {band_name: {result_name: property}} dict of dict.
+            Except for result_name='sensors', each property is a {primitive_id: [values,]} dict containing results
+            for individual triangles of the primitive
+        - aggregated (dict of dict) : a {band_name: {result_name: property}}
+            Except for result_name='sensors', each property is a {primitive_id: value} dict containing aggregated
+            results for each primitive
+        
+        result_name are :
+
+                    - area (float): the individual areas (m2)
+                    - Eabs (float): the surfacic density of energy absorbed (m-2)
+                    - Ei (float): the surfacic density of energy incoming  (m-2)
+                    additionally, if split_face is True:
+                    - Ei_inf (float): the surfacic density of energy incoming
+                    on the inferior face (m-2)
+                    - Ei_sup (float): the surfacic density of energy incoming
+                    on the superior face (m-2)
+                    - sensors (dict of dict): area, surfacic density of incoming
+                    direct energy and surfacic density of incoming total energy
+                    of sensors grouped by id, if any
+    
+    :rtype: dict of dict, dict of dict
+    """    
     if "sensors" is None :
         raw, aggregated = c_scene.run(direct=direct_active, infinite=infinite)
     else :
@@ -224,4 +373,3 @@ def run_caribu(c_scene, direct_active, infinite, sensors) :
                                                             sensors=sensors)
 
     return raw, aggregated
-
