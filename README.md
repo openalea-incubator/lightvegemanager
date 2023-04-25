@@ -1,5 +1,7 @@
 # Light management between plant models
 
+[](doc/_img/illus_lightvegemanager.png)
+
 ## Dependencies
 - python 3
 - numpy
