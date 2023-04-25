@@ -315,8 +315,7 @@ def apply_transformations(cscene, matching_ids, transformations, cscene_unit) :
             raise ValueError("Unknown final scene unit: select one in this \
                                     list ['mm','cm','dm','m','dam','hm','km']")
         
-        for key, value in transformations["scenes unit"].items() :
-            scene_unit = transformations["scenes unit"]
+        for key, scene_unit in transformations["scenes unit"].items() :
             if scene_unit not in units :
                 raise ValueError("Unknown scene %i unit: select one in this \
                             list ['mm','cm','dm','m','dam','hm','km']" % (key))

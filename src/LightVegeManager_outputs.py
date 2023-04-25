@@ -376,9 +376,9 @@ def out_caribu_mix( rdrs,
     raw, aggregated, sensors, soil_energy = raw_sun, aggregated_sun, {}, {}
     for band in raw.keys() : 
         for ray in ['Eabs', 'Ei'] :
-            for idt, v_sun in raw[band][ray].items() :
-                v_sky = raw_sky[band][ray][idt]
-                raw[band][ray][idt] = rdrs * v_sky + (1 - rdrs) * v_sun
+            for ide, v_sun in raw[band][ray].items() :
+                v_sky = raw_sky[band][ray][ide]
+                raw[band][ray][ide] = [rdrs * sky + (1 - rdrs) * sun for sun,sky in zip(v_sun, v_sky)]
 
             for ide, v_sun in aggregated[band][ray].items() :
                 v_sky = aggregated_sky[band][ray][ide]

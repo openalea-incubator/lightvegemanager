@@ -2,6 +2,8 @@
 
 ![](doc/_img/illus_lightvegemanager.png)
 
+Documentation: https://lightvegemanager.readthedocs.io/en/latest/
+
 ## Dependencies
 - python 3
 - numpy
