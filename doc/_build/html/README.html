@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>User Guide &mdash; LightVegeManager 0.0.0 documentation</title>
+  <title>LightVegeManager Documentation Notes &mdash; LightVegeManager 0.0.0 documentation</title>
   
 
   
@@ -136,13 +136,13 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>User Guide</li>
+      <li>LightVegeManager Documentation Notes</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/userguide.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/README.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -155,43 +155,46 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="user-guide">
-<h1>User Guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="presentation.html">Presentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="presentation.html#context">Context</a></li>
-<li class="toctree-l2"><a class="reference internal" href="presentation.html#intentions">Intentions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="presentation.html#how">How</a></li>
-<li class="toctree-l2"><a class="reference internal" href="presentation.html#lighting">Lighting</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="tutorials.html#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials.html#quickstart">Quickstart</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials.html#tutorials-with-jupyter">Tutorials with jupyter</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture of the tool</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="architecture.html#package-content">Package Content</a></li>
-<li class="toctree-l2"><a class="reference internal" href="architecture.html#code-structure">Code structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="architecture.html#front-end-the-main-commands">Front End: the main commands</a></li>
-<li class="toctree-l2"><a class="reference internal" href="architecture.html#back-end-more-details-about-how-the-tool-works">Back End: More details about how the tool works</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="inputs.html">Inputs</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="inputs.html#geometric-inputs">Geometric inputs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="inputs.html#environment-parameters">Environment parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="inputs.html#light-model-parameters">Light model parameters</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="others.html">Additionnal Functionality</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="others.html#inputs-analysis-tool">Inputs analysis Tool</a></li>
-<li class="toctree-l2"><a class="reference internal" href="others.html#visualisation">Visualisation</a></li>
-</ul>
-</li>
-</ul>
+  <div class="section" id="lightvegemanager-documentation-notes">
+<h1>LightVegeManager Documentation Notes<a class="headerlink" href="#lightvegemanager-documentation-notes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="compile-the-main-doc">
+<h2>Compile the main doc<a class="headerlink" href="#compile-the-main-doc" title="Permalink to this headline">¶</a></h2>
+<p>To compile the documentation use make in the doc folder:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>html
+</pre></div>
+</div>
+<p>Documentation will be generated (in HTML format) inside the <code class="docutils literal notranslate"><span class="pre">build/html</span></code> dir.</p>
+</div>
+<div class="section" id="start-over">
+<h2>Start over<a class="headerlink" href="#start-over" title="Permalink to this headline">¶</a></h2>
+<p>To clean up all generated documentation files and start from scratch run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>clean
+</pre></div>
+</div>
+<p>Keep in mind that this command won’t touch any documentation source files.</p>
+</div>
+<div class="section" id="add-a-langage-version-of-the-doc">
+<h2>Add a langage version of the doc<a class="headerlink" href="#add-a-langage-version-of-the-doc" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>To generate translation files first run:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>gettext
+</pre></div>
+</div>
+<p>This will create <code class="docutils literal notranslate"><span class="pre">.pot</span></code> file.</p>
+<ol class="arabic simple" start="2">
+<li><p>Then, from the <code class="docutils literal notranslate"><span class="pre">.pot</span></code> file, you need to create <code class="docutils literal notranslate"><span class="pre">.po</span></code> files with the command:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sphinx-intl<span class="w"> </span>update<span class="w"> </span>-p<span class="w"> </span>_build/gettext<span class="w"> </span>-l<span class="w"> </span>fr
+</pre></div>
+</div>
+<p>This will create the files in <code class="docutils literal notranslate"><span class="pre">locale/fr/LC</span> <span class="pre">MESSAGES</span></code>.</p>
+<ol class="arabic simple" start="3">
+<li><p>Finally for building the translated part, run:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sphinx-build.exe<span class="w"> </span>-b<span class="w"> </span>html<span class="w"> </span>-D<span class="w"> </span><span class="nv">language</span><span class="o">=</span>fr<span class="w"> </span>.<span class="w"> </span>.<span class="se">\_</span>build<span class="se">\h</span>tml<span class="se">\f</span>r
+</pre></div>
+</div>
 </div>
 </div>
 

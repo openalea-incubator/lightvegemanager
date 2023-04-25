@@ -203,13 +203,11 @@
 <div class="viewcode-block" id="compute_distrib_globale"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_leafangles.compute_distrib_globale">[docs]</a><span class="k">def</span> <span class="nf">compute_distrib_globale</span><span class="p">(</span><span class="n">trimesh</span><span class="p">,</span> <span class="n">matching_ids</span><span class="p">,</span> <span class="n">numberofclasses</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculation of a global leaf angle distribution from a triangle mesh</span>
 
-<span class="sd">    :param trimesh: triangles mesh aggregated by indice elements :python:`{ id : [triangle1, triangle2, ...]}`</span>
+<span class="sd">    :param trimesh: triangles mesh aggregated by indice elements :code:`{ id : [triangle1, triangle2, ...]}`</span>
 <span class="sd">    :type trimesh: dict</span>
 <span class="sd">    :param matching_ids: </span>
 <span class="sd">        dict that matches new element indices in trimesh with specy indice and</span>
-<span class="sd">        input element indice, </span>
-<span class="sd">        </span>
-<span class="sd">        :python:`matching_ids = { new_element_id : (input_element_id, specy_id)}`</span>
+<span class="sd">        input element indice, :code:`matching_ids = { new_element_id : (input_element_id, specy_id)}`</span>
 
 <span class="sd">        this dict allows us to look how species there is the inputs geometric data</span>
 
@@ -251,14 +249,11 @@
                             <span class="n">matching_tri_vox</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculation of a local leaf angle distribution from a triangle mesh on each voxel of a grid</span>
 
-<span class="sd">    :param trimesh: triangles mesh aggregated by indice elements :python:`{ id : [triangle1, triangle2, ...]}`</span>
+<span class="sd">    :param trimesh: triangles mesh aggregated by indice elements :code:`{ id : [triangle1, triangle2, ...]}`</span>
 <span class="sd">    :type trimesh: dict</span>
 <span class="sd">    :param matching_ids: </span>
 <span class="sd">        dict that matches new element indices in trimesh with specy indice and</span>
-<span class="sd">        input element indice, </span>
-<span class="sd">        </span>
-<span class="sd">        :python:`matching_ids = { new_element_id : (input_element_id, specy_id)}`</span>
-
+<span class="sd">        input element indice, :code:`matching_ids = { new_element_id : (input_element_id, specy_id)}`</span>
 <span class="sd">        this dict allows us to look how species there is the inputs geometric data</span>
 
 <span class="sd">    :type matching_ids: dict</span>

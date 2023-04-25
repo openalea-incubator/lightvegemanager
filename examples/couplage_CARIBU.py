@@ -8,14 +8,14 @@ import getopt
 try :
     from src.LightVegeManager import *
     from src.FSPMWheat_template import *
-    from src.l_egume_template import *
+    from examples.l_egume_template import *
 
 except ModuleNotFoundError:
     # ajoute le dossier lightvegemanager dans le sys.path
     sys.path.insert(1, os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
     from src.LightVegeManager import *
     from src.FSPMWheat_template import *
-    from src.l_egume_template import *
+    from examples.l_egume_template import *
 
 random.seed(1234)
 np.random.seed(1234)

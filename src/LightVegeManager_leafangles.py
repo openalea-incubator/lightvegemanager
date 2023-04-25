@@ -47,13 +47,11 @@ def read_distrib_file(path, numberofentities) :
 def compute_distrib_globale(trimesh, matching_ids, numberofclasses) :
     """Calculation of a global leaf angle distribution from a triangle mesh
 
-    :param trimesh: triangles mesh aggregated by indice elements :python:`{ id : [triangle1, triangle2, ...]}`
+    :param trimesh: triangles mesh aggregated by indice elements :code:`{ id : [triangle1, triangle2, ...]}`
     :type trimesh: dict
     :param matching_ids: 
         dict that matches new element indices in trimesh with specy indice and
-        input element indice, 
-        
-        :python:`matching_ids = { new_element_id : (input_element_id, specy_id)}`
+        input element indice, :code:`matching_ids = { new_element_id : (input_element_id, specy_id)}`
 
         this dict allows us to look how species there is the inputs geometric data
 
@@ -95,14 +93,11 @@ def compute_distrib_voxel(trimesh,
                             matching_tri_vox) :
     """Calculation of a local leaf angle distribution from a triangle mesh on each voxel of a grid
 
-    :param trimesh: triangles mesh aggregated by indice elements :python:`{ id : [triangle1, triangle2, ...]}`
+    :param trimesh: triangles mesh aggregated by indice elements :code:`{ id : [triangle1, triangle2, ...]}`
     :type trimesh: dict
     :param matching_ids: 
         dict that matches new element indices in trimesh with specy indice and
-        input element indice, 
-        
-        :python:`matching_ids = { new_element_id : (input_element_id, specy_id)}`
-
+        input element indice, :code:`matching_ids = { new_element_id : (input_element_id, specy_id)}`
         this dict allows us to look how species there is the inputs geometric data
 
     :type matching_ids: dict

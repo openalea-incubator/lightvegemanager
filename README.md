@@ -8,7 +8,7 @@
 - Openalea Lpy
 - Openalea PlantGL
 - CARIBU
-- PyRATP_Mobidiv (https://github.com/mwoussen/PyRATP_MobiDiv)
+- PyRATP (fork) (https://github.com/mwoussen/PyRATP)
 
 ## Installing the tool
 1) Create a conda environment with miniconda3
