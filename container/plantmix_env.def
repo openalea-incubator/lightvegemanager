@@ -18,7 +18,7 @@ From: miniconda3_py37_4.11.0.sif
 	apt install -y build-essential wget bzip2 unzip git gfortran freeglut3-dev libxext-dev libxrender-dev libglib2.0-0 libqhull-dev
 
     # installation des dépendances
-	wget https://raw.githubusercontent.com/mwoussen/lightvegemanager/master/spec-openalea_py37.txt
+	wget https://raw.githubusercontent.com/mwoussen/lightvegemanager/master/container/spec-openalea_py37.txt
 	conda install --file spec-openalea_py37.txt
 	
 	# modification de caribu à partir fork
@@ -47,9 +47,9 @@ From: miniconda3_py37_4.11.0.sif
 	python setup.py develop
     cd ..
 
-	# installe PyRATP_Mobidiv
-	git clone https://github.com/mwoussen/PyRATP_MobiDiv.git
-	cd PyRATP_MobiDiv
+	# installe PyRATP
+	git clone https://github.com/mwoussen/PyRATP.git
+	cd PyRATP
 	make
 	make clean
 	cd ..
