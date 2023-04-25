@@ -31,18 +31,18 @@ def simulation(geom, hour, situation, direct, diffus, ratp_mu, dv, folderout):
     environment["diffus"] = diffus
     environment["direct"] = direct
     environment["reflected"] = False
-    environment["reflectance coefficients"] = [[0.1, 0.05]]
-    environment["caribu opt"] = {} 
-    environment["caribu opt"]["par"] = (0.10, 0.05)
     environment["infinite"] = False
 
     ## Paramètres CARIBU ##
     caribu_parameters["sun algo"] = "ratp"
+    caribu_parameters["caribu opt"] = {} 
+    caribu_parameters["caribu opt"]["par"] = (0.10, 0.05)
 
     ## Paramètres RATP ##
     dx, dy, dz = dv, dv, dv # m
     ratp_parameters["voxel size"] = [dx, dy, dz]
     ratp_parameters["soil reflectance"] = [0., 0.]
+    ratp_parameters["reflectance coefficients"] = [[0.1, 0.05]]
     ratp_parameters["mu"] = ratp_mu
     ratp_parameters["tesselation level"] = 7
     ratp_parameters["angle distrib algo"] = "compute global"
@@ -57,32 +57,30 @@ def simulation(geom, hour, situation, direct, diffus, ratp_mu, dv, folderout):
     lghtcaribu = LightVegeManager(environment=environment,
                                     lightmodel="caribu", 
                                     lightmodel_parameters=caribu_parameters)
-    lghtcaribu.init_scenes(geometry, global_scene_tesselate_level=5)                                    
+    lghtcaribu.build(geometry, global_scene_tesselate_level=5)                                    
     lghtcaribu.run(energy=PARi, day=day, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
-    print(lghtcaribu.shapes_outputs)
+    print(lghtcaribu.elements_outputs)
 
     # VTK de la scène avec x+ = North
     path_out = folderout+"caribu_"+str(day)+"_"+str(hour)+"h"+"_"+situation
-    lghtcaribu.VTKout(path_out, 1)
+    lghtcaribu.VTK_light(path_out)
 
     #  RATP
     print("\n\t R A T P")
     lghtratp = LightVegeManager(environment=environment,
                                 lightmodel="ratp", 
                                 lightmodel_parameters=ratp_parameters)
-    lghtratp.init_scenes(geometry)
+    lghtratp.build(geometry)
     lghtratp.run(energy=PARi, day=day, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
-    print(lghtratp.shapes_outputs)
+    print(lghtratp.elements_outputs)
 
     # VTK de la scène avec x+ = North
     path_out = folderout+"ratp_"+str(day)+"_"+str(hour)+"h"+"_"+situation
-    lghtratp.VTKout(path_out, 1, voxels=True)
+    lghtratp.VTK_light(path_out)
 
 
     # ligne du soleil (rotation de 180° autour de z pour se mettre dans l'espace x+ = North)
-    VTKline(Vector3(float(-lghtcaribu.sun[0][1][0])*2, float(-lghtcaribu.sun[0][1][1])*2, float(lghtcaribu.sun[0][1][2])*2),
-            Vector3(float(lghtcaribu.sun[0][1][0])*2, float(lghtcaribu.sun[0][1][1])*2, -float(lghtcaribu.sun[0][1][2])*2),
-            folderout+"sun_day"+str(day)+"_"+str(hour)+"h.vtk")
+    lghtcaribu.VTK_sun(folderout+"sun_day"+str(day)+"_"+str(hour))
     print("\n")
 
 if __name__ == "__main__":

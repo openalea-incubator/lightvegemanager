@@ -1,0 +1,369 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>src.LightVegeManager_sun &mdash; LightVegeManager 0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> LightVegeManager
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../presentation.html">Presentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">Architecture of the tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inputs.html">Inputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../others.html">Additionnal Functionality</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">Reference Guide</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">LightVegeManager</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>src.LightVegeManager_sun</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for src.LightVegeManager_sun</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    LightVegeManager_sun</span>
+<span class="sd">    ********************</span>
+
+<span class="sd">    Build a sun respecting each light model format</span>
+<span class="sd">    </span>
+<span class="sd">    For computing the sun position you can either use CARIBU or RATP algorithm, which slightly change</span>
+<span class="sd">    in the process</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="kn">from</span> <span class="nn">alinea.pyratp</span> <span class="kn">import</span> <span class="n">pyratp</span>
+<span class="kn">from</span> <span class="nn">alinea.caribu.sky_tools</span> <span class="kn">import</span> <span class="n">Gensun</span>
+<span class="kn">from</span> <span class="nn">alinea.caribu.sky_tools</span> <span class="kn">import</span> <span class="n">GetLightsSun</span>
+<span class="kn">from</span> <span class="nn">alinea.caribu.sky_tools</span> <span class="kn">import</span> <span class="n">Sun</span>
+
+<div class="viewcode-block" id="ratp_sun"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_sun.ratp_sun">[docs]</a><span class="k">def</span> <span class="nf">ratp_sun</span><span class="p">(</span><span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">truesolartime</span><span class="p">)</span> <span class="p">:</span>  
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts output RATP sundirection routine to CARIBU light format</span>
+
+<span class="sd">    :param day: input day</span>
+<span class="sd">    :type day: int</span>
+<span class="sd">    :param hour: input hour</span>
+<span class="sd">    :type hour: int</span>
+<span class="sd">    :param coordinates: [latitude, longitude, timezone]</span>
+<span class="sd">    :type coordinates: list</span>
+<span class="sd">    :param truesolartime: activates true solar time or local time to compute sun position</span>
+<span class="sd">    :type truesolartime: bool</span>
+<span class="sd">    :return: sun direction in a tuple with cartesian coordinates (x,y,z), vector is oriented from sky to ground</span>
+<span class="sd">    :rtype: tuple</span>
+<span class="sd">    &quot;&quot;&quot;</span>            
+     <span class="c1"># ghost variables (not used)</span>
+    <span class="n">az</span><span class="p">,</span> <span class="n">ele</span> <span class="o">=</span> <span class="mf">5.</span><span class="p">,</span><span class="mf">9.</span>
+    <span class="n">pyratp</span><span class="o">.</span><span class="n">shortwave_balance</span><span class="o">.</span><span class="n">sundirection</span><span class="p">(</span><span class="n">ele</span><span class="p">,</span> <span class="n">az</span><span class="p">,</span> 
+                                            <span class="n">coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> 
+                                            <span class="n">coordinates</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> 
+                                            <span class="n">coordinates</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> 
+                                            <span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">truesolartime</span><span class="p">)</span>            
+    <span class="n">degtorad</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">180</span>
+
+    <span class="n">azrad</span> <span class="o">=</span> <span class="n">pyratp</span><span class="o">.</span><span class="n">shortwave_balance</span><span class="o">.</span><span class="n">azdeg</span>
+
+    <span class="c1"># Manage a special error situation</span>
+    <span class="c1"># Nan at 12h</span>
+    <span class="k">if</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">azrad</span><span class="p">)</span> <span class="ow">and</span> <span class="n">hour</span><span class="o">==</span><span class="mf">12.</span> <span class="p">:</span> 
+        <span class="c1"># we found this criteria by testing with CARIBU algo (GenSun)</span>
+        <span class="k">if</span> <span class="n">coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">21.11</span><span class="p">:</span>
+            <span class="n">azrad</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">azrad</span> <span class="o">=</span> <span class="mf">180.</span>
+
+    <span class="c1"># Converts azimut from South=0° clockwise (RATP) to North=0 clockwise (CARIBU.Gensun)</span>
+    <span class="n">azrad</span> <span class="o">=</span> <span class="o">-</span><span class="n">azrad</span> <span class="o">*</span> <span class="n">degtorad</span>
+
+    <span class="n">zenirad</span> <span class="o">=</span> <span class="n">pyratp</span><span class="o">.</span><span class="n">shortwave_balance</span><span class="o">.</span><span class="n">hdeg</span> <span class="o">*</span> <span class="n">degtorad</span>
+
+    <span class="c1"># vector is oriented from sky to ground</span>
+    <span class="n">sunx</span> <span class="o">=</span> <span class="n">suny</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">zenirad</span><span class="p">)</span>
+    <span class="n">sunx</span> <span class="o">*=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">azrad</span><span class="p">)</span>
+    <span class="n">suny</span> <span class="o">*=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">azrad</span><span class="p">)</span>
+    <span class="n">sunz</span> <span class="o">=</span> <span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">zenirad</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="p">(</span><span class="n">sunx</span><span class="p">,</span> <span class="n">suny</span><span class="p">,</span> <span class="n">sunz</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="caribu_sun"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_sun.caribu_sun">[docs]</a><span class="k">def</span> <span class="nf">caribu_sun</span><span class="p">(</span><span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">truesolartime</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute sun direction from CARIBU algorithm</span>
+
+<span class="sd">    :param day: input day</span>
+<span class="sd">    :type day: int</span>
+<span class="sd">    :param hour: input hour</span>
+<span class="sd">    :type hour: int</span>
+<span class="sd">    :param coordinates: [latitude, longitude, timezone]</span>
+<span class="sd">    :type coordinates: list</span>
+<span class="sd">    :param truesolartime: activates true solar time or local time to compute sun position</span>
+<span class="sd">    :type truesolartime: bool</span>
+<span class="sd">    :return: sun direction in a tuple with cartesian coordinates (x,y,z), vector is oriented from sky to ground</span>
+<span class="sd">    :rtype: tuple</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="c1"># if hour is local, we compute the solar hour</span>
+    <span class="c1"># algorithm from RATP, sundirection: shortwave_balance.f90</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">truesolartime</span><span class="p">:</span>
+        <span class="n">om</span> <span class="o">=</span><span class="mf">0.017202</span><span class="o">*</span><span class="p">(</span><span class="n">day</span><span class="o">-</span><span class="mf">3.244</span><span class="p">)</span>
+        <span class="n">teta</span><span class="o">=</span><span class="n">om</span><span class="o">+</span><span class="mf">0.03344</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">om</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="mf">0.021</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">om</span><span class="p">))</span><span class="o">-</span><span class="mf">1.3526</span>
+        <span class="n">tphi</span><span class="o">=</span><span class="mf">0.91747</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">teta</span><span class="p">)</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">teta</span><span class="p">)</span>
+        <span class="n">dphi</span><span class="o">=</span><span class="n">math</span><span class="o">.</span><span class="n">atan</span><span class="p">(</span><span class="n">tphi</span><span class="p">)</span><span class="o">-</span><span class="n">om</span><span class="o">+</span><span class="mf">1.3526</span>
+        <span class="k">if</span> <span class="n">dphi</span><span class="o">+</span><span class="mf">1.</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span> <span class="n">dphi</span><span class="o">=</span><span class="p">(</span><span class="n">dphi</span><span class="o">+</span><span class="mi">1</span><span class="o">+</span><span class="mf">1000.</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">%</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span><span class="o">-</span><span class="mf">1.</span>
+        <span class="n">eqntime</span><span class="o">=</span><span class="n">dphi</span><span class="o">*</span><span class="mf">229.2</span>
+        <span class="n">hour</span> <span class="o">=</span><span class="n">hour</span><span class="o">+</span><span class="n">coordinates</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">+</span><span class="n">coordinates</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mf">15.</span><span class="o">-</span><span class="n">eqntime</span><span class="o">/</span><span class="mf">60.</span> <span class="o">%</span> <span class="mf">24.</span>
+
+    <span class="c1"># Converts latitude in radian</span>
+    <span class="n">sun</span> <span class="o">=</span> <span class="n">Gensun</span><span class="o">.</span><span class="n">Gensun</span><span class="p">()(</span><span class="mf">1.</span><span class="p">,</span> <span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">180</span><span class="p">)</span>
+    <span class="n">sun</span> <span class="o">=</span> <span class="n">GetLightsSun</span><span class="o">.</span><span class="n">GetLightsSun</span><span class="p">(</span><span class="n">sun</span><span class="p">)</span>
+    <span class="n">sun_str_split</span> <span class="o">=</span> <span class="n">sun</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">sun_str_split</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> 
+            <span class="nb">float</span><span class="p">(</span><span class="n">sun_str_split</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> 
+            <span class="nb">float</span><span class="p">(</span><span class="n">sun_str_split</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span></div>
+
+<div class="viewcode-block" id="print_sun"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_sun.print_sun">[docs]</a><span class="k">def</span> <span class="nf">print_sun</span><span class="p">(</span><span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">truesolartime</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints sun position ouputs from RATP and CARIBU algorithm with the same inputs</span>
+
+<span class="sd">    :param day: input day</span>
+<span class="sd">    :type day: int</span>
+<span class="sd">    :param hour: input hour</span>
+<span class="sd">    :type hour: int</span>
+<span class="sd">    :param coordinates: [latitude, longitude, timezone]</span>
+<span class="sd">    :type coordinates: list</span>
+<span class="sd">    :param truesolartime: activates true solar time or local time to compute sun position</span>
+<span class="sd">    :type truesolartime: bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;---</span><span class="se">\t</span><span class="s2"> SUN COORDONATES</span><span class="se">\t</span><span class="s2"> ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- Convention x+ = North, vector from sky to floor&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- azimut: south clockwise E = -90° W = 90°</span><span class="se">\t</span><span class="s2"> zenith: </span><span class="se">\</span>
+<span class="s2">                                zenith = 0° horizon = 90°&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- day: </span><span class="si">%i</span><span class="s2"> </span><span class="se">\t</span><span class="s2"> hour: </span><span class="si">%i</span><span class="s2"> </span><span class="se">\t</span><span class="s2"> latitude: </span><span class="si">%0.2f</span><span class="s2"> °&quot;</span> <span class="o">%</span> 
+                                                <span class="p">(</span><span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    
+    <span class="k">if</span> <span class="n">truesolartime</span> <span class="p">:</span> 
+        <span class="n">caribuhour</span><span class="o">=</span><span class="n">hour</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- true solar time&quot;</span><span class="p">)</span>
+    
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="n">om</span> <span class="o">=</span><span class="mf">0.017202</span><span class="o">*</span><span class="p">(</span><span class="n">day</span><span class="o">-</span><span class="mf">3.244</span><span class="p">)</span>
+        <span class="n">teta</span><span class="o">=</span><span class="n">om</span><span class="o">+</span><span class="mf">0.03344</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">om</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="mf">0.021</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">om</span><span class="p">))</span><span class="o">-</span><span class="mf">1.3526</span>
+        <span class="n">tphi</span><span class="o">=</span><span class="mf">0.91747</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">teta</span><span class="p">)</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">teta</span><span class="p">)</span>
+        <span class="n">dphi</span><span class="o">=</span><span class="n">math</span><span class="o">.</span><span class="n">atan</span><span class="p">(</span><span class="n">tphi</span><span class="p">)</span><span class="o">-</span><span class="n">om</span><span class="o">+</span><span class="mf">1.3526</span>
+        <span class="k">if</span> <span class="n">dphi</span><span class="o">+</span><span class="mf">1.</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span> <span class="n">dphi</span><span class="o">=</span><span class="p">(</span><span class="n">dphi</span><span class="o">+</span><span class="mi">1</span><span class="o">+</span><span class="mf">1000.</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">%</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span><span class="o">-</span><span class="mf">1.</span>
+        <span class="n">eqntime</span><span class="o">=</span><span class="n">dphi</span><span class="o">*</span><span class="mf">229.2</span>
+        <span class="n">caribuhour</span> <span class="o">=</span><span class="n">hour</span><span class="o">+</span><span class="n">coordinates</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">+</span><span class="n">coordinates</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mf">15.</span><span class="o">-</span><span class="n">eqntime</span><span class="o">/</span><span class="mf">60.</span> <span class="o">%</span> <span class="mf">24.</span> 
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- local time, true solar time is </span><span class="si">%0.2f</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">caribuhour</span><span class="p">))</span>
+    
+    <span class="c1"># CARIBU et RATP sont dans la même convention de coordonnées, x+ = North</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- RATP ---&quot;</span><span class="p">)</span>
+    <span class="n">az</span><span class="p">,</span> <span class="n">ele</span> <span class="o">=</span> <span class="mf">5.</span><span class="p">,</span><span class="mf">9.</span> <span class="c1"># variables fantômes (non récupérées)</span>
+    <span class="n">pyratp</span><span class="o">.</span><span class="n">shortwave_balance</span><span class="o">.</span><span class="n">sundirection</span><span class="p">(</span><span class="n">ele</span><span class="p">,</span> <span class="n">az</span><span class="p">,</span> 
+                                            <span class="n">coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> 
+                                            <span class="n">coordinates</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> 
+                                            <span class="n">coordinates</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> 
+                                            <span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> 
+                                            <span class="n">truesolartime</span><span class="p">)</span>        
+    <span class="n">degtorad</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">180</span>
+    <span class="n">azrad</span> <span class="o">=</span> <span class="n">pyratp</span><span class="o">.</span><span class="n">shortwave_balance</span><span class="o">.</span><span class="n">azdeg</span>
+    <span class="k">if</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">azrad</span><span class="p">)</span> <span class="ow">and</span> <span class="n">hour</span><span class="o">==</span><span class="mf">12.</span> <span class="p">:</span> 
+        <span class="k">if</span> <span class="n">coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">21.11</span><span class="p">:</span>
+            <span class="n">azrad</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">azrad</span> <span class="o">=</span> <span class="mf">180.</span>
+    <span class="n">azrad</span> <span class="o">=</span> <span class="o">-</span><span class="n">azrad</span> <span class="o">*</span> <span class="n">degtorad</span>
+    <span class="n">elerad</span> <span class="o">=</span> <span class="n">pyratp</span><span class="o">.</span><span class="n">shortwave_balance</span><span class="o">.</span><span class="n">hdeg</span> <span class="o">*</span> <span class="n">degtorad</span>
+
+    <span class="n">sunx</span> <span class="o">=</span> <span class="n">suny</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">elerad</span><span class="p">)</span>
+    <span class="n">sunx</span> <span class="o">*=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">azrad</span><span class="p">)</span>
+    <span class="n">suny</span> <span class="o">*=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">azrad</span><span class="p">)</span>
+    <span class="n">sunz</span> <span class="o">=</span> <span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">elerad</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> azimut: </span><span class="si">%0.3f</span><span class="s2"> </span><span class="se">\t</span><span class="s2"> zenith: </span><span class="si">%0.3f</span><span class="s2">&quot;</span> <span class="o">%</span> \
+                        <span class="p">(</span><span class="o">-</span><span class="n">azrad</span><span class="o">*</span><span class="mi">180</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">pyratp</span><span class="o">.</span><span class="n">shortwave_balance</span><span class="o">.</span><span class="n">hdeg</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> x: </span><span class="si">%0.3f</span><span class="s2"> </span><span class="se">\t</span><span class="s2"> y: </span><span class="si">%0.3f</span><span class="s2"> </span><span class="se">\t</span><span class="s2"> z: </span><span class="si">%0.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sunx</span><span class="p">,</span> <span class="n">suny</span><span class="p">,</span> <span class="n">sunz</span><span class="p">))</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- CARIBU ---&quot;</span><span class="p">)</span>
+    <span class="n">suncaribu</span> <span class="o">=</span> <span class="n">Sun</span><span class="o">.</span><span class="n">Sun</span><span class="p">()</span>
+    <span class="n">suncaribu</span><span class="o">.</span><span class="n">_set_pos_astro</span><span class="p">(</span><span class="n">day</span><span class="p">,</span> <span class="n">caribuhour</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">180</span><span class="p">)</span>
+    <span class="n">sun_str_split</span> <span class="o">=</span> <span class="n">suncaribu</span><span class="o">.</span><span class="n">toLight</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> azimut: </span><span class="si">%0.3f</span><span class="s2"> </span><span class="se">\t</span><span class="s2"> zenith: </span><span class="si">%0.3f</span><span class="s2">&quot;</span> <span class="o">%</span> 
+                <span class="p">(</span><span class="o">-</span><span class="n">suncaribu</span><span class="o">.</span><span class="n">azim</span><span class="o">*</span><span class="mi">180</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">90</span><span class="o">-</span><span class="p">(</span><span class="n">suncaribu</span><span class="o">.</span><span class="n">elev</span><span class="o">*</span><span class="mi">180</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> x: </span><span class="si">%0.3f</span><span class="s2"> </span><span class="se">\t</span><span class="s2"> y: </span><span class="si">%0.3f</span><span class="s2"> </span><span class="se">\t</span><span class="s2"> z: </span><span class="si">%0.3f</span><span class="s2">&quot;</span> <span class="o">%</span> 
+                                                    <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">sun_str_split</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                                                    <span class="nb">float</span><span class="p">(</span><span class="n">sun_str_split</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+                                                    <span class="nb">float</span><span class="p">(</span><span class="n">sun_str_split</span><span class="p">[</span><span class="mi">3</span><span class="p">])))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2023, INRAE P3F
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

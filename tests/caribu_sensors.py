@@ -26,8 +26,7 @@ def testsensors(pgl_scene, folder_vtk_outputs):
     environment["reflected"] = False
     environment["infinite"] = False
 
-    environment["caribu opt"] = {} 
-    environment["caribu opt"]["par"] = (0.10, ) # plaque opaque 
+
 
     # grille de capteurs
     dxyz = [0.04, 0.04, 0.02] # en m
@@ -36,8 +35,10 @@ def testsensors(pgl_scene, folder_vtk_outputs):
     caribu_parameters["sensors"] = ["grid", dxyz, nxyz, orig, folder_vtk_outputs, "vtk"]
 
     # autres paramètres de CARIBU
-    caribu_parameters["debug"] = True
+    caribu_parameters["debug"] = False
     caribu_parameters["sun algo"] = "caribu"
+    caribu_parameters["caribu opt"] = {} 
+    caribu_parameters["caribu opt"]["par"] = (0.10, ) # plaque opaque 
 
     lghtcaribu = LightVegeManager(environment=environment,
                                 lightmodel="caribu",
@@ -54,11 +55,11 @@ def testsensors(pgl_scene, folder_vtk_outputs):
     day = 100
     hour = 16
     truesolartime = True
-    lghtcaribu.init_scenes(geometry)
-    lghtcaribu.VTKinit(folder_vtk_outputs+"init_")
+    lghtcaribu.build(geometry)
+    lghtcaribu.VTK_nolight(folder_vtk_outputs+"init_")
     lghtcaribu.run(energy=500, day=day, hour=hour, truesolartime=truesolartime, parunit="RG")
-    lghtcaribu.VTKout(folder_vtk_outputs, iteration=0)
-    lghtcaribu.VTKsun(folder_vtk_outputs, day, hour, truesolartime)
+    lghtcaribu.VTK_light(folder_vtk_outputs)
+    # lghtcaribu.VTKsun(folder_vtk_outputs, day, hour, truesolartime)
 
     print("=== END ===")
 

@@ -1,0 +1,418 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>src.LightVegeManager_sky &mdash; LightVegeManager 0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> LightVegeManager
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../presentation.html">Presentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">Architecture of the tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inputs.html">Inputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../others.html">Additionnal Functionality</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">Reference Guide</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">LightVegeManager</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>src.LightVegeManager_sky</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for src.LightVegeManager_sky</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    LightVegeManager_sky</span>
+<span class="sd">    ********************</span>
+
+<span class="sd">    Build a sky from LightVegeManager input informations</span>
+
+<span class="sd">    Possible sky options:</span>
+<span class="sd">        - ``&quot;turtle46&quot;`` : soc sky composed by 46 directions in a turtle shape</span>
+<span class="sd">        - filepath : string indicating a file path</span>
+<span class="sd">        - ``[nb_azimut, nb_zenith, &quot;soc&quot; or &quot;uoc&quot;]`` : build a sky with a custom number of directions</span>
+
+<span class="sd">    output :</span>
+<span class="sd">        - with RATP : pyratp.skyvault</span>
+<span class="sd">        - with CARIBU : [(weight, (dir[0], dir[1], dir[2])), ... ]</span>
+
+<span class="sd">    Sky file is in RATP format</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">from</span> <span class="nn">alinea.pyratp.skyvault</span> <span class="kn">import</span> <span class="n">Skyvault</span>
+<span class="kn">from</span> <span class="nn">alinea.caribu.sky_tools</span> <span class="kn">import</span> <span class="n">turtle</span>
+<span class="kn">from</span> <span class="nn">alinea.caribu.sky_tools</span> <span class="kn">import</span> <span class="n">GenSky</span>
+<span class="kn">from</span> <span class="nn">alinea.caribu.sky_tools</span> <span class="kn">import</span> <span class="n">GetLight</span>
+
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+
+<div class="viewcode-block" id="RATPsky"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_sky.RATPsky">[docs]</a><span class="k">def</span> <span class="nf">RATPsky</span><span class="p">(</span><span class="n">skytype</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates a pyratp.skyvault</span>
+
+<span class="sd">    :param skytype: the environment[&quot;sky&quot;] from the LightVegeManager inputs. It is either:</span>
+<span class="sd">        * ``&quot;turtle46&quot;``</span>
+<span class="sd">        * a filepath</span>
+<span class="sd">        * [nb_azimut, nb_zenith, &quot;soc&quot; or &quot;uoc&quot;], nb_azimut is the number of azimut directions and nb_zenith the number of zenital directions for cutting out the sky</span>
+<span class="sd">    :type skytype: string or list</span>
+<span class="sd">    :raises ValueError: if skytype is not one of the curretn 3 possibilities</span>
+<span class="sd">    :return: a sky in RATP format</span>
+<span class="sd">    :rtype: pyratp.skyvault</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="n">input_sky</span> <span class="o">=</span> <span class="n">skytype</span>
+    <span class="n">output_sky</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="n">input_sky</span> <span class="o">==</span> <span class="s2">&quot;turtle46&quot;</span> <span class="p">:</span> <span class="n">output_sky</span> <span class="o">=</span> <span class="n">Skyvault</span><span class="o">.</span><span class="n">initialise</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_sky</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> \
+        <span class="n">input_sky</span> <span class="o">!=</span> <span class="s2">&quot;turtle46&quot;</span> <span class="p">:</span>
+        <span class="n">output_sky</span> <span class="o">=</span> <span class="n">Skyvault</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">input_sky</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_sky</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> \
+        <span class="nb">len</span><span class="p">(</span><span class="n">input_sky</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="p">:</span>
+        <span class="n">ele</span><span class="p">,</span> \
+        <span class="n">azi</span><span class="p">,</span>  \
+        <span class="n">omega</span><span class="p">,</span> \
+            <span class="n">pc</span> <span class="o">=</span> <span class="n">discrete_sky</span><span class="p">(</span><span class="n">input_sky</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>  \
+                                <span class="n">input_sky</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> \
+                                <span class="n">input_sky</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="n">output_sky</span> <span class="o">=</span> <span class="n">Skyvault</span><span class="o">.</span><span class="n">initialise</span><span class="p">(</span><span class="n">ele</span><span class="p">,</span> <span class="n">azi</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">pc</span><span class="p">)</span>
+    
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown sky parameters : can be either </span><span class="se">\</span>
+<span class="s2">                            &#39;turtle46&#39; or a string filepath or    </span><span class="se">\</span>
+<span class="s2">                            [nb_azimut, nb_zenith, &#39;soc&#39; or &#39;uoc&#39;] &quot;</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">output_sky</span></div>
+
+
+<div class="viewcode-block" id="CARIBUsky"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_sky.CARIBUsky">[docs]</a><span class="k">def</span> <span class="nf">CARIBUsky</span><span class="p">(</span><span class="n">skytype</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a sky in CARIBU format</span>
+
+<span class="sd">    :param skytype: the environment[&quot;sky&quot;] from the LightVegeManager inputs. It is either:</span>
+<span class="sd">        * ``&quot;turtle46&quot;``</span>
+<span class="sd">        * a filepath</span>
+<span class="sd">        * [nb_azimut, nb_zenith, &quot;soc&quot; or &quot;uoc&quot;], nb_azimut is the number of azimut directions and nb_zenith the number of zenital directions for cutting out the sky</span>
+<span class="sd">    :type skytype: string or list</span>
+<span class="sd">    :raises ValueError: if skytype is not one of the curretn 3 possibilities</span>
+<span class="sd">    :return: a list of the directions representing the sky.</span>
+<span class="sd">    each entry of the list is a tuple (weight, vector), where weight is a float for the weight the direction and vector, a tuple (x, y, z), </span>
+<span class="sd">    representing the position of the sky direction, from sky to the ground</span>
+<span class="sd">    :rtype: list of tuple</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="n">input_sky</span> <span class="o">=</span> <span class="n">skytype</span>
+    <span class="n">output_sky</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># first option turtle of 46 directions</span>
+    <span class="k">if</span> <span class="n">input_sky</span> <span class="o">==</span> <span class="s2">&quot;turtle46&quot;</span><span class="p">:</span>
+        <span class="n">turtle_list</span> <span class="o">=</span> <span class="n">turtle</span><span class="o">.</span><span class="n">turtle</span><span class="p">()</span>
+        <span class="n">output_sky</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">e</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">turtle_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="nb">dir</span> <span class="o">=</span> <span class="n">turtle_list</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">((</span><span class="n">e</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">((</span><span class="nb">dir</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">dir</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">dir</span><span class="p">[</span><span class="mi">2</span><span class="p">]))))</span>
+            <span class="n">output_sky</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+    <span class="c1"># read a sky file</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_sky</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> \
+        <span class="n">input_sky</span> <span class="o">!=</span> <span class="s2">&quot;turtle46&quot;</span> <span class="p">:</span>
+        
+        <span class="n">listGene</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">input_sky</span><span class="p">)</span>
+        <span class="n">ndir</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">hmoy</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">ndir</span><span class="p">)</span>
+        <span class="n">azmoy</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">ndir</span><span class="p">)</span>
+        <span class="n">omega</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">ndir</span><span class="p">)</span>
+        <span class="n">pc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">ndir</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ndir</span><span class="p">):</span>
+            <span class="n">listGene</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">))</span>
+        <span class="n">tabGene</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">listGene</span><span class="p">)</span>
+        <span class="n">tabGene</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cast</span><span class="p">[</span><span class="s1">&#39;float64&#39;</span><span class="p">](</span><span class="n">tabGene</span><span class="p">)</span>
+        <span class="n">hmoy</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">tabGene</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span>
+        <span class="n">azmoy</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">tabGene</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span>
+        <span class="n">omega</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">tabGene</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">pc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">tabGene</span><span class="p">)[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        
+        <span class="c1"># converts in CARIBU format (azimut, zenit) -&gt; (x, y, z)</span>
+        <span class="n">output_sky</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pc</span><span class="p">)</span> <span class="p">:</span>
+            <span class="nb">dir</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+            <span class="nb">dir</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dir</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">hmoy</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="nb">dir</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">azmoy</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="nb">dir</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">azmoy</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="nb">dir</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">hmoy</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">((</span><span class="nb">float</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="nb">tuple</span><span class="p">((</span><span class="nb">dir</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">dir</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">dir</span><span class="p">[</span><span class="mi">2</span><span class="p">]))))</span>
+            <span class="n">output_sky</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_sky</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> \
+        <span class="nb">len</span><span class="p">(</span><span class="n">input_sky</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="p">:</span>
+        <span class="c1">#: (Energy, soc/uoc, azimuts, zenits)</span>
+        <span class="n">sky_string</span> <span class="o">=</span> <span class="n">GetLight</span><span class="o">.</span><span class="n">GetLight</span><span class="p">(</span><span class="n">GenSky</span><span class="o">.</span><span class="n">GenSky</span><span class="p">()(</span><span class="mf">1.</span><span class="p">,</span> <span class="n">input_sky</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> 
+                                                            <span class="n">input_sky</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> 
+                                                            <span class="n">input_sky</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>  
+
+        <span class="k">for</span> <span class="n">string</span> <span class="ow">in</span> <span class="n">sky_string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">string</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">string_split</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+                <span class="n">t</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">((</span><span class="nb">float</span><span class="p">(</span><span class="n">string_split</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> 
+                            <span class="nb">tuple</span><span class="p">((</span><span class="nb">float</span><span class="p">(</span><span class="n">string_split</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> 
+                                    <span class="nb">float</span><span class="p">(</span><span class="n">string_split</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> 
+                                    <span class="nb">float</span><span class="p">(</span><span class="n">string_split</span><span class="p">[</span><span class="mi">3</span><span class="p">])))))</span>
+                <span class="n">output_sky</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown sky parameters : can be either </span><span class="se">\</span>
+<span class="s2">                            &#39;turtle46&#39; or a string filepath or    </span><span class="se">\</span>
+<span class="s2">                            [nb_azimut, nb_zenith, &#39;soc&#39; or &#39;uoc&#39;] &quot;</span><span class="p">)</span>
+                            
+    <span class="k">return</span> <span class="n">output_sky</span></div>
+
+
+<div class="viewcode-block" id="writeskyfile"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_sky.writeskyfile">[docs]</a><span class="k">def</span> <span class="nf">writeskyfile</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">az</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">filepath</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Writes a file with sky information, readable by LightVegeManager</span>
+
+<span class="sd">    :param h: Elevation angle (degrees) pointing to the center of a sky fraction</span>
+<span class="sd">    :type h: list of float</span>
+<span class="sd">    :param az: Azimuth angle (degrees) pointing to the center of a sky fraction</span>
+<span class="sd">    :type az: list of float</span>
+<span class="sd">    :param omega: Solid angle associated to the direction of incidence</span>
+<span class="sd">    :type omega: list of float</span>
+<span class="sd">    :param weights: Relative contribution of the sky fraction to the sky illumination)</span>
+<span class="sd">    :type weights: list of float</span>
+<span class="sd">    :param filepath: name of the file to write</span>
+<span class="sd">    :type filepath: list of float</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="c1"># TODO: write it</span>
+    <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="discrete_sky"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_sky.discrete_sky">[docs]</a><span class="k">def</span> <span class="nf">discrete_sky</span><span class="p">(</span><span class="n">n_azimuts</span><span class="p">,</span> <span class="n">n_zeniths</span><span class="p">,</span> <span class="n">sky_type</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Cuts out a sky following input number of directions</span>
+
+<span class="sd">    :param n_azimuts: number of azimut directions of the sky</span>
+<span class="sd">    :type n_azimuts: int</span>
+<span class="sd">    :param n_zeniths: number of zenital directions of the sky</span>
+<span class="sd">    :type n_zeniths: int</span>
+<span class="sd">    :param sky_type: ``&quot;soc&quot;`` or ``&quot;uoc&quot;`` </span>
+<span class="sd">    :type sky_type: string</span>
+<span class="sd">    :return: 4 output lists of length n_azimuts * n_zeniths</span>
+<span class="sd">        * ele: elevations in degrees (angle soil to sky)</span>
+<span class="sd">        * azi: azimuts in degrees</span>
+<span class="sd">        * omega: solid angle of directions</span>
+<span class="sd">        * pc: relative contribution of directions to incident diffuse radiation</span>
+<span class="sd">    :rtype: list, list, list, list</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+
+    <span class="c1"># TODO: doesn&#39;t work properly</span>
+    <span class="n">ele</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">azi</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">da</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">n_azimuts</span>
+    <span class="n">dz</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">n_zeniths</span>    
+    <span class="n">todeg</span> <span class="o">=</span> <span class="mi">180</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span>          
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_azimuts</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_zeniths</span><span class="p">):</span>
+            <span class="n">azi</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">j</span> <span class="o">*</span> <span class="n">da</span> <span class="o">+</span> <span class="n">da</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">todeg</span><span class="p">)</span>
+            <span class="n">ele</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">k</span> <span class="o">*</span> <span class="n">dz</span> <span class="o">+</span> <span class="n">dz</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">todeg</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">n_azimuts</span><span class="o">*</span><span class="n">n_zeniths</span>
+    
+    <span class="n">omega</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="n">n</span><span class="p">]</span><span class="o">*</span><span class="n">n</span>
+    
+    <span class="k">def</span> <span class="nf">uoc</span> <span class="p">(</span><span class="n">teta</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">dp</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; teta: angle zenithal; phi: angle azimutal du soleil &quot;&quot;&quot;</span>
+        <span class="n">dt</span> <span class="o">/=</span> <span class="mf">2.</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">teta</span><span class="o">-</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">teta</span><span class="o">+</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">E</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="o">-</span><span class="n">y</span><span class="o">*</span><span class="n">y</span><span class="p">)</span><span class="o">*</span><span class="n">dp</span><span class="o">/</span><span class="mf">2.</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span>
+        <span class="k">return</span> <span class="n">E</span>
+    <span class="k">def</span> <span class="nf">soc</span> <span class="p">(</span><span class="n">teta</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">dp</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; teta: angle zenithal; phi: angle azimutal du soleil &quot;&quot;&quot;</span>
+        <span class="n">dt</span> <span class="o">/=</span> <span class="mf">2.</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">teta</span><span class="o">-</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">teta</span><span class="o">+</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">E</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="o">/</span><span class="mf">14.</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="o">-</span><span class="n">y</span><span class="o">*</span><span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="mi">6</span><span class="o">/</span><span class="mf">21.</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="o">-</span><span class="n">y</span><span class="o">*</span><span class="n">y</span><span class="o">*</span><span class="n">y</span><span class="p">))</span><span class="o">*</span><span class="n">dp</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span>
+        <span class="k">return</span> <span class="n">E</span>
+    <span class="n">pc</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_azimuts</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_zeniths</span><span class="p">):</span>
+            <span class="n">azim</span><span class="p">,</span> <span class="n">elv</span> <span class="o">=</span> <span class="n">j</span> <span class="o">*</span> <span class="n">da</span> <span class="o">+</span> <span class="n">da</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">k</span> <span class="o">*</span> <span class="n">dz</span> <span class="o">+</span> <span class="n">dz</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">I</span><span class="o">=</span><span class="mi">0</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">sky_type</span><span class="o">==</span><span class="s1">&#39;soc&#39;</span><span class="p">):</span>
+                <span class="n">I</span> <span class="o">=</span> <span class="n">soc</span><span class="p">(</span><span class="n">elv</span><span class="p">,</span> <span class="n">dz</span><span class="p">,</span> <span class="n">da</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="p">(</span><span class="n">sky_type</span><span class="o">==</span><span class="s1">&#39;uoc&#39;</span><span class="p">):</span>
+                <span class="n">I</span> <span class="o">=</span> <span class="n">soc</span><span class="p">(</span><span class="n">elv</span><span class="p">,</span> <span class="n">dz</span><span class="p">,</span> <span class="n">da</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ele</span><span class="p">,</span> <span class="n">azi</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">pc</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2023, INRAE P3F
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

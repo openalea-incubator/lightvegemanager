@@ -1,0 +1,573 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>src.LightVegeManager_CARIBUinputs &mdash; LightVegeManager 0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> LightVegeManager
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../presentation.html">Presentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">Architecture of the tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inputs.html">Inputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../others.html">Additionnal Functionality</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">Reference Guide</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">LightVegeManager</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>src.LightVegeManager_CARIBUinputs</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for src.LightVegeManager_CARIBUinputs</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    LightVegeManager_CARIBUinputs</span>
+<span class="sd">    ******************************</span>
+
+<span class="sd">    Manages and prepares input information for CARIBU.</span>
+
+<span class="sd">    In this module we use two of the LightVegeManager&#39;s inputs dict.</span>
+
+<span class="sd">    *  ``parameters`` corresponding to CARIBU parameters and contains</span>
+
+<span class="sd">        .. code-block:: python</span>
+<span class="sd">            </span>
+<span class="sd">            caribu_args = {</span>
+<span class="sd">                            &quot;sun algo&quot; : &quot;ratp&quot;,</span>
+<span class="sd">                            &quot;sun algo&quot; : &quot;caribu&quot;,</span>
+
+<span class="sd">                            &quot;caribu opt&quot; : {</span>
+<span class="sd">                                            band0 = (reflectance, transmittance),</span>
+<span class="sd">                                            band1 = (reflectance, transmittance),</span>
+<span class="sd">                                            ...</span>
+<span class="sd">                                            },</span>
+<span class="sd">                            &quot;debug&quot; : bool,</span>
+<span class="sd">                            &quot;soil mesh&quot; : bool,</span>
+<span class="sd">                            &quot;sensors&quot; : [&quot;grid&quot;, dxyz, nxyz, orig, vtkpath, &quot;vtk&quot;]</span>
+<span class="sd">                            }</span>
+<span class="sd">    </span>
+<span class="sd">    * ``geometry`` corresponding to the geometric information with the scenes inputs</span>
+
+<span class="sd">        .. code-block:: python</span>
+<span class="sd">            </span>
+<span class="sd">            geometry = {</span>
+<span class="sd">                        &quot;scenes&quot; : [scene0, scene1, scene2, ...] ,</span>
+<span class="sd">                        &quot;domain&quot; : ((xmin, ymin), (xmax, ymax)),</span>
+<span class="sd">                        &quot;stems id&quot; : [(id_element, id_scene), ...],</span>
+<span class="sd">                        &quot;transformations&quot; : {</span>
+<span class="sd">                                                &quot;scenes unit&quot; : kwarg ,</span>
+<span class="sd">                                                &quot;rescale&quot; : kwarg ,</span>
+<span class="sd">                                                &quot;translate&quot; : kwarg ,</span>
+<span class="sd">                                                &quot;xyz orientation&quot; : kwarg</span>
+<span class="sd">                                            }</span>
+<span class="sd">                        }</span>
+<span class="sd">    </span>
+<span class="sd">    .. seealso:: For more details :ref:`Inputs description &lt;inputs&gt;`</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">openalea.plantgl.all</span> <span class="k">as</span> <span class="nn">pgl</span>
+
+<span class="kn">from</span> <span class="nn">src.LightVegeManager_trianglesmesh</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">src.LightVegeManager_voxelsmesh</span> <span class="kn">import</span> <span class="o">*</span>
+
+<div class="viewcode-block" id="Prepare_CARIBU"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_CARIBUinputs.Prepare_CARIBU">[docs]</a><span class="k">def</span> <span class="nf">Prepare_CARIBU</span><span class="p">(</span><span class="n">trimesh</span><span class="p">,</span> 
+                    <span class="n">geometry</span><span class="p">,</span> 
+                    <span class="n">matching_ids</span><span class="p">,</span> 
+                    <span class="n">minmax</span><span class="p">,</span> 
+                    <span class="n">parameters</span><span class="p">,</span>
+                    <span class="n">infinite</span><span class="p">,</span> 
+                    <span class="n">idsensors</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Format optical parameters and prepare virtual sensors and debug if activated</span>
+
+<span class="sd">    :param trimesh: triangles mesh aggregated by indice elements</span>
+<span class="sd">        </span>
+<span class="sd">        .. code-block:: </span>
+<span class="sd">        </span>
+<span class="sd">            { id : [triangle1, triangle2, ...]}</span>
+
+<span class="sd">    :type trimesh: dict</span>
+<span class="sd">    :param geometry: geometric parameters from inputs of LightVegeManager</span>
+<span class="sd">    :type geometry: dict</span>
+<span class="sd">    :param matching_ids: </span>
+<span class="sd">        dict that matches new element indices in trimesh with specy indice and</span>
+<span class="sd">        input element indice, </span>
+<span class="sd">        </span>
+<span class="sd">        .. code-block:: </span>
+<span class="sd">        </span>
+<span class="sd">            matching_ids = { new_element_id : (input_element_id, specy_id)}</span>
+
+<span class="sd">    :type matching_ids: dict</span>
+<span class="sd">    :param minmax: list of mininuml point and maximum point in a triangles mesh</span>
+<span class="sd">    :type minmax: [3-tuple, 3-tuple]</span>
+<span class="sd">    :param parameters: RATP parameters from inputs of LightVegeManager</span>
+<span class="sd">    :type parameters: dict</span>
+<span class="sd">    :param infinite: if the user wishes to activate infinitisation of the grid</span>
+<span class="sd">    :type infinite: bool</span>
+<span class="sd">    :param idsensors: </span>
+<span class="sd">        Sets which input scenes the grid of virtual sensors will match. </span>
+<span class="sd">        Elements of this list refers to indices in the list ``geometry[&quot;scenes&quot;]``.</span>
+<span class="sd">        If no input indices are given, the grid will match the global scene ``trimesh``. </span>
+<span class="sd">        Otherwise, you can match the grid to a specific set of input scenes</span>
+<span class="sd">    :type idsensors: list of int</span>
+<span class="sd">    </span>
+<span class="sd">    :return:</span>
+<span class="sd">        </span>
+<span class="sd">        *  ``opt``: optical parameters formatted for CARIBU. It takes the form of dict, where each </span>
+<span class="sd">            key is a bandlength (PAR, NIR etc...) and values are transmittance and reflectance</span>
+<span class="sd">            (or only reflectance for stems elements)</span>
+<span class="sd">        </span>
+<span class="sd">        *  ``sensors_caribu``: geometric data of the virtual sensors in CARIBU scene format. Sensors</span>
+<span class="sd">            are horizontal square made of two triangles</span>
+<span class="sd">            </span>
+<span class="sd">            .. code-block:: </span>
+<span class="sd">                </span>
+<span class="sd">                sensors_caribu = { sensor_id : [triangle1, triangle2], ...}</span>
+
+<span class="sd">        * ``debug``: boolean if user wants to activate th edebug option in CARIBU</span>
+
+<span class="sd">    :rtype: dict, dict, bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>                    
+    <span class="c1"># manage stems element and creates optical parameters</span>
+    <span class="n">stems</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="s1">&#39;stems id&#39;</span> <span class="ow">in</span> <span class="n">geometry</span> <span class="p">:</span> <span class="n">stems</span> <span class="o">=</span> <span class="n">geometry</span><span class="p">[</span><span class="s2">&quot;stems id&quot;</span><span class="p">]</span>
+    <span class="n">opt</span> <span class="o">=</span> <span class="n">CARIBU_opticals</span><span class="p">(</span><span class="n">matching_ids</span><span class="p">,</span> 
+                            <span class="n">parameters</span><span class="p">,</span> 
+                            <span class="n">stems</span><span class="p">)</span>
+
+    <span class="c1"># debug, sensors, domain</span>
+    <span class="n">sensors_caribu</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="s2">&quot;sensors&quot;</span> <span class="ow">in</span> <span class="n">parameters</span> <span class="ow">and</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;sensors&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;grid&quot;</span> <span class="p">:</span>
+        <span class="n">dxyz</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;sensors&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">nxyz</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;sensors&quot;</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">orig</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;sensors&quot;</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">arg</span> <span class="o">=</span> <span class="p">(</span><span class="n">dxyz</span><span class="p">,</span>
+                <span class="n">nxyz</span><span class="p">,</span>
+                <span class="n">orig</span><span class="p">,</span>
+                <span class="n">minmax</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="n">trimesh</span><span class="p">,</span>
+                <span class="n">matching_ids</span><span class="p">,</span>
+                <span class="n">idsensors</span><span class="p">,</span>
+                <span class="n">infinite</span><span class="p">)</span>
+        <span class="n">sensors_caribu</span><span class="p">,</span> \
+        <span class="n">sensors_plantgl</span><span class="p">,</span> \
+        <span class="n">Pmax_capt</span> <span class="o">=</span> <span class="n">create_caribu_legume_sensors</span><span class="p">(</span><span class="o">*</span><span class="n">arg</span><span class="p">)</span>
+
+    <span class="c1"># infinite scene pattern if not precised in the inputs</span>
+    <span class="k">if</span> <span class="s2">&quot;domain&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">geometry</span> <span class="p">:</span>
+        <span class="c1"># special case for l-egume and virtual sensors</span>
+        <span class="k">if</span> <span class="s2">&quot;sensors&quot;</span> <span class="ow">in</span> <span class="n">parameters</span> <span class="ow">and</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;sensors&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;grid&quot;</span> <span class="p">:</span>
+            <span class="n">reduction_domain</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="p">((</span><span class="n">orig</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">reduction_domain</span><span class="p">,</span> 
+                    <span class="n">orig</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">reduction_domain</span><span class="p">),</span> 
+                        <span class="p">(</span><span class="n">nxyz</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">dxyz</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">reduction_domain</span><span class="p">,</span> 
+                            <span class="n">nxyz</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">dxyz</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">reduction_domain</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="p">((</span><span class="n">minmax</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">minmax</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]),</span> 
+                    <span class="p">(</span><span class="n">minmax</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">minmax</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]))</span>
+
+        <span class="n">geometry</span><span class="p">[</span><span class="s2">&quot;domain&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
+
+    <span class="n">debug</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="s2">&quot;debug&quot;</span> <span class="ow">in</span> <span class="n">parameters</span> <span class="ow">and</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;debug&quot;</span><span class="p">]</span> <span class="p">:</span>  <span class="n">debug</span> <span class="o">=</span> <span class="kc">True</span>
+    
+    <span class="k">return</span> <span class="n">opt</span><span class="p">,</span> <span class="n">sensors_caribu</span><span class="p">,</span> <span class="n">debug</span></div>
+    
+
+<div class="viewcode-block" id="CARIBU_opticals"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_CARIBUinputs.CARIBU_opticals">[docs]</a><span class="k">def</span> <span class="nf">CARIBU_opticals</span><span class="p">(</span><span class="n">matching_ids</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">stems_id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sets optical parameters for CARIBU from LightVegeManager inputs</span>
+<span class="sd">    It removes transmittance for stems elements if precised</span>
+
+<span class="sd">    :param matching_ids: </span>
+<span class="sd">        dict that matches new element indices in trimesh with specy indice and</span>
+<span class="sd">        input element indice, :code:`matching_ids = { new_element_id : (input_element_id, specy_id)}`</span>
+<span class="sd">    :type matching_ids: dict</span>
+<span class="sd">    :param parameters: RATP parameters from inputs of LightVegeManager</span>
+<span class="sd">    :type parameters: dict</span>
+<span class="sd">    :param stems_id: list of potential stems element in the input scenes, defaults to None</span>
+<span class="sd">    :type stems_id: list of 2-tuple, optional</span>
+<span class="sd">    :return: </span>
+<span class="sd">        optical parameters formatted for CARIBU. It takes the form of dict, where each </span>
+<span class="sd">        key is a bandlength (PAR, NIR etc...) and values are transmittance and reflectance</span>
+<span class="sd">        (or only reflectance for stems elements)</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="n">opt</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">band</span><span class="p">,</span> <span class="n">coef</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;caribu opt&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">:</span>
+        <span class="n">opt</span><span class="p">[</span><span class="n">band</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="nb">id</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">matching_ids</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">band</span><span class="p">,</span> <span class="n">coef</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;caribu opt&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">:</span>
+            <span class="c1"># id is element, stems_id is a list of (element id, specy id)</span>
+            <span class="c1"># if stem then no transmittance, the object is opaque</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">in</span> <span class="n">stems_id</span><span class="p">:</span>
+                <span class="c1">#: (reflectance,) of the stems ou organe opaque</span>
+                <span class="n">opt</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">coef</span><span class="p">[</span><span class="mi">0</span><span class="p">],)</span>  
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># A 2-tuple encode a symmetric translucent material defined</span>
+                <span class="c1"># by a reflectance and a transmittance</span>
+                <span class="c1"># A 4-tuple encode an asymmetric translucent material defined</span>
+                <span class="c1"># the reflectance and transmittance</span>
+                <span class="c1"># of the upper and lower side respectively </span>
+                <span class="c1">#: (reflectance, transmittance) of the adaxial side of the </span>
+                <span class="c1"># leaves, élément translucide symétrique</span>
+                <span class="n">opt</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">coef</span>
+
+    <span class="k">return</span> <span class="n">opt</span></div>
+
+<div class="viewcode-block" id="create_caribu_legume_sensors"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_CARIBUinputs.create_caribu_legume_sensors">[docs]</a><span class="k">def</span> <span class="nf">create_caribu_legume_sensors</span><span class="p">(</span><span class="n">dxyz</span><span class="p">,</span> 
+                                <span class="n">nxyz</span><span class="p">,</span> 
+                                <span class="n">orig</span><span class="p">,</span> 
+                                <span class="n">pmax</span><span class="p">,</span> 
+                                <span class="n">trimesh</span><span class="p">,</span> 
+                                <span class="n">matching_ids</span><span class="p">,</span> 
+                                <span class="n">id_sensors</span><span class="p">,</span> 
+                                <span class="n">infinite</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates a set of virtual sensors following a voxels grid</span>
+<span class="sd">    each sensor is a square made by two triangles and takes place on the bottom face of a voxel</span>
+<span class="sd">    The grid follow the xyz axis (and so the voxels)</span>
+
+<span class="sd">    :param dxyz: [dx, dy, dz] size of a voxel in each direction</span>
+<span class="sd">    :type dxyz: list</span>
+<span class="sd">    :param nxyz: [nx, ny, nz] number of voxels on each axis</span>
+<span class="sd">    :type nxyz: list</span>
+<span class="sd">    :param orig: [x_origin, y_origin, z_origin], origin of the grid, cartesian coordinates</span>
+<span class="sd">    :type orig: list (or tuple)</span>
+<span class="sd">    :param pmax: [x, y, z] maximum point of trimesh in the xyz space</span>
+<span class="sd">    :type pmax: lsit (or tuple)</span>
+<span class="sd">    :param trimesh: triangles mesh aggregated by indice elements</span>
+<span class="sd">        </span>
+<span class="sd">        .. code-block:: </span>
+<span class="sd">        </span>
+<span class="sd">            { id : [triangle1, triangle2, ...]}</span>
+
+<span class="sd">    :type trimesh: dict</span>
+<span class="sd">    :param matching_ids: </span>
+<span class="sd">        dict that matches new element indices in trimesh with specy indice and</span>
+<span class="sd">        input element indice, :code:`matching_ids = { new_element_id : (input_element_id, specy_id)}`</span>
+<span class="sd">    :type matching_ids: dict</span>
+<span class="sd">    :param idsensors: </span>
+<span class="sd">        Sets which input scenes the grid of virtual sensors will match. </span>
+<span class="sd">        Elements of this list refers to indices in the list ``geometry[&quot;scenes&quot;]``.</span>
+<span class="sd">        If no input indices are given, the grid will match the global scene ``trimesh``. </span>
+<span class="sd">        Otherwise, you can match the grid to a specific set of input scenes</span>
+<span class="sd">    :type idsensors: list of int</span>
+<span class="sd">    :param infinite: if the user wishes to activate infinitisation of the grid</span>
+<span class="sd">    :type infinite: bool</span>
+<span class="sd">    :return: </span>
+<span class="sd">        it returns 3 objects:</span>
+
+<span class="sd">            * ``sensors_caribu``, geometric data of the virtual sensors in CARIBU scene format. Sensors</span>
+<span class="sd">                are horizontal square made of two triangles :code:`sensors_caribu = { sensor_id : [triangle1, triangle2], ...}`</span>
+
+<span class="sd">            * ``s_capt``, PlantGL scene of the virtual sensors</span>
+
+<span class="sd">            * ``sensors_maxcenter``, [x, y, z] representing point on the highest sensors layer and middle of</span>
+<span class="sd">                xy plane in the grid</span>
+
+<span class="sd">    :rtype: dict, PlantGL scene, list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># if number of filled layers is less than number of expected layers (nxyz[2])</span>
+    <span class="n">skylayer</span> <span class="o">=</span> <span class="n">reduce_layers_from_trimesh</span><span class="p">(</span><span class="n">trimesh</span><span class="p">,</span> 
+                                            <span class="n">pmax</span><span class="p">,</span>
+                                            <span class="n">dxyz</span><span class="p">,</span>
+                                            <span class="n">nxyz</span><span class="p">,</span>
+                                            <span class="n">matching_ids</span><span class="p">,</span> 
+                                            <span class="n">id_sensors</span><span class="p">)</span>
+            
+    <span class="c1"># initialize the PlantGL scene</span>
+    <span class="n">s_capt</span> <span class="o">=</span> <span class="n">pgl</span><span class="o">.</span><span class="n">Scene</span><span class="p">()</span>
+    
+    <span class="c1"># point to output</span>
+    <span class="n">sensors_maxcenter</span> <span class="o">=</span> <span class="p">[</span> <span class="n">orig</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">dxyz</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">nxyz</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">,</span> 
+                            <span class="n">orig</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">dxyz</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">nxyz</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">,</span>  
+                            <span class="n">orig</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">dxyz</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">nxyz</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">skylayer</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+
+    <span class="c1"># orientation changes depending if the scene is infinite or not</span>
+    <span class="k">if</span> <span class="n">infinite</span> <span class="p">:</span> 
+        <span class="c1"># square looks upward</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> 
+                    <span class="p">(</span><span class="n">dxyz</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> 
+                    <span class="p">(</span><span class="n">dxyz</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dxyz</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">0</span><span class="p">),</span> 
+                    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dxyz</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">0</span><span class="p">)]</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="c1"># square looks downwards</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>  
+                    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dxyz</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">0</span><span class="p">),</span> 
+                    <span class="p">(</span><span class="n">dxyz</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dxyz</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">0</span><span class="p">),</span> 
+                    <span class="p">(</span><span class="n">dxyz</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span>  
+    <span class="n">normals</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)]</span>
+
+    <span class="c1"># plantGL square</span>
+    <span class="n">square_pgl</span> <span class="o">=</span> <span class="n">pgl</span><span class="o">.</span><span class="n">QuadSet</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">normals</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span>
+    
+    <span class="c1"># generate the sensors in plantGL format among the grid</span>
+    <span class="n">ID_capt</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">dico_translat</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nxyz</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="k">for</span> <span class="n">iy</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nxyz</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="n">iz</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nxyz</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">skylayer</span><span class="p">):</span>
+                <span class="c1"># translation vector</span>
+                <span class="n">tx</span> <span class="o">=</span> <span class="n">ix</span> <span class="o">*</span> <span class="n">dxyz</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">ty</span> <span class="o">=</span> <span class="n">iy</span> <span class="o">*</span> <span class="n">dxyz</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">tz</span> <span class="o">=</span> <span class="n">iz</span> <span class="o">*</span> <span class="n">dxyz</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+                <span class="c1"># save the vector</span>
+                <span class="n">dico_translat</span><span class="p">[</span><span class="n">ID_capt</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">tx</span><span class="p">,</span> <span class="n">ty</span><span class="p">,</span> <span class="n">tz</span><span class="p">]</span>
+
+                <span class="c1"># adds a squared sensor to the plantGL scene</span>
+                <span class="n">sensor</span> <span class="o">=</span> <span class="n">pgl</span><span class="o">.</span><span class="n">Translated</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">square_pgl</span><span class="p">,</span> <span class="n">translation</span><span class="o">=</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">ty</span><span class="p">,</span> <span class="n">tz</span><span class="p">))</span>
+                <span class="n">s_capt</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">pgl</span><span class="o">.</span><span class="n">Shape</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">sensor</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">ID_capt</span><span class="p">))</span>
+                <span class="n">ID_capt</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="c1"># sensors in CARIBU scene format with triangles</span>
+    <span class="n">caribu_sensors</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">s_capt</span><span class="p">:</span>
+        <span class="c1"># Preparation</span>
+        <span class="n">pt_lst</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pointList</span>
+        <span class="n">idx_lst</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">indexList</span>
+
+        <span class="c1"># two triangles for each squarred sensor</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx_lst</span><span class="p">)):</span>
+            <span class="n">triangles</span> <span class="o">=</span> <span class="p">[]</span>
+            
+            <span class="c1"># upper triangle</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">pt_lst</span><span class="p">[</span><span class="n">idx_lst</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">dico_translat</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">id</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">pt_lst</span><span class="p">[</span><span class="n">idx_lst</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">dico_translat</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">id</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="p">[</span><span class="n">pt_lst</span><span class="p">[</span><span class="n">idx_lst</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]][</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">dico_translat</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">id</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+            <span class="n">triangles</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">))))</span>
+
+            <span class="c1"># lower triangle</span>
+            <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">pt_lst</span><span class="p">[</span><span class="n">idx_lst</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">dico_translat</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">id</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">pt_lst</span><span class="p">[</span><span class="n">idx_lst</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">dico_translat</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">id</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="p">[</span><span class="n">pt_lst</span><span class="p">[</span><span class="n">idx_lst</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]][</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">dico_translat</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">id</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
+            <span class="n">triangles</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">))))</span>
+            
+            <span class="c1"># save the triangles</span>
+            <span class="n">caribu_sensors</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">triangles</span>
+    
+    <span class="k">return</span> <span class="n">caribu_sensors</span><span class="p">,</span> <span class="n">s_capt</span><span class="p">,</span> <span class="n">sensors_maxcenter</span></div>
+
+<div class="viewcode-block" id="run_caribu"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_CARIBUinputs.run_caribu">[docs]</a><span class="k">def</span> <span class="nf">run_caribu</span><span class="p">(</span><span class="n">c_scene</span><span class="p">,</span> <span class="n">direct_active</span><span class="p">,</span> <span class="n">infinite</span><span class="p">,</span> <span class="n">sensors</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;runs caribu depending on input options</span>
+
+<span class="sd">    :param c_scene: instance of CaribuScene containing geometry, light source(s), opt etc...</span>
+<span class="sd">    :type c_scene: CaribuScene</span>
+<span class="sd">    :param direct_active: Whether only first order interception is to be computed</span>
+<span class="sd">        Default is True (no rediffusions)</span>
+<span class="sd">    :type direct_active: bool</span>
+<span class="sd">    :param infinite: if the user wishes to activate infinitisation of the grid</span>
+<span class="sd">    :type infinite: bool</span>
+<span class="sd">    :param sensors: geometric data of the virtual sensors in CARIBU scene format. Sensors</span>
+<span class="sd">        are horizontal square made of two triangles</span>
+<span class="sd">        .. code:: sensors_caribu = { sensor_id : [triangle1, triangle2], ...}</span>
+<span class="sd">    :type sensors: dict</span>
+<span class="sd">    :return: results are stored in two dict</span>
+
+<span class="sd">        - raw (dict of dict) a {band_name: {result_name: property}} dict of dict.</span>
+<span class="sd">            Except for result_name=&#39;sensors&#39;, each property is a {primitive_id: [values,]} dict containing results</span>
+<span class="sd">            for individual triangles of the primitive</span>
+<span class="sd">        - aggregated (dict of dict) : a {band_name: {result_name: property}}</span>
+<span class="sd">            Except for result_name=&#39;sensors&#39;, each property is a {primitive_id: value} dict containing aggregated</span>
+<span class="sd">            results for each primitive</span>
+<span class="sd">        </span>
+<span class="sd">        result_name are :</span>
+
+<span class="sd">                    - area (float): the individual areas (m2)</span>
+<span class="sd">                    - Eabs (float): the surfacic density of energy absorbed (m-2)</span>
+<span class="sd">                    - Ei (float): the surfacic density of energy incoming  (m-2)</span>
+<span class="sd">                    additionally, if split_face is True:</span>
+<span class="sd">                    - Ei_inf (float): the surfacic density of energy incoming</span>
+<span class="sd">                    on the inferior face (m-2)</span>
+<span class="sd">                    - Ei_sup (float): the surfacic density of energy incoming</span>
+<span class="sd">                    on the superior face (m-2)</span>
+<span class="sd">                    - sensors (dict of dict): area, surfacic density of incoming</span>
+<span class="sd">                    direct energy and surfacic density of incoming total energy</span>
+<span class="sd">                    of sensors grouped by id, if any</span>
+<span class="sd">    </span>
+<span class="sd">    :rtype: dict of dict, dict of dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="k">if</span> <span class="s2">&quot;sensors&quot;</span> <span class="ow">is</span> <span class="kc">None</span> <span class="p">:</span>
+        <span class="n">raw</span><span class="p">,</span> <span class="n">aggregated</span> <span class="o">=</span> <span class="n">c_scene</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">direct</span><span class="o">=</span><span class="n">direct_active</span><span class="p">,</span> <span class="n">infinite</span><span class="o">=</span><span class="n">infinite</span><span class="p">)</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="n">raw</span><span class="p">,</span> <span class="n">aggregated</span> <span class="o">=</span> <span class="n">c_scene</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">direct</span><span class="o">=</span><span class="n">direct_active</span><span class="p">,</span> <span class="n">infinite</span><span class="o">=</span><span class="n">infinite</span><span class="p">,</span> 
+                                                            <span class="n">sensors</span><span class="o">=</span><span class="n">sensors</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">raw</span><span class="p">,</span> <span class="n">aggregated</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2023, INRAE P3F
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

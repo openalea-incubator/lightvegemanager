@@ -1,0 +1,751 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>src.LightVegeManager_outputs &mdash; LightVegeManager 0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> LightVegeManager
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../presentation.html">Presentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">Architecture of the tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inputs.html">Inputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../others.html">Additionnal Functionality</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">Reference Guide</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">LightVegeManager</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>src.LightVegeManager_outputs</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for src.LightVegeManager_outputs</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">   </span>
+<span class="sd">    LightVegeManager_outputs</span>
+<span class="sd">    *************************</span>
+
+<span class="sd">    Manages and reformat output results from the light models in pandas.Dataframe with similar columns</span>
+<span class="sd">    names. </span>
+<span class="sd">    </span>
+<span class="sd">    Light models managed in this module: </span>
+
+<span class="sd">        - RATP</span>
+<span class="sd">        - CARIBU</span>
+
+<span class="sd">    Column names for voxels:</span>
+
+<span class="sd">        * ``&#39;VegetationType&#39;``: id of the specy</span>
+<span class="sd">        * ``&#39;Iteration&#39;``: RATP can handle multiple iterations in inputs, but it is not properly exploited in LightVegeManager yet</span>
+<span class="sd">        * ``&#39;Day&#39;``: input day if LightVegeManager</span>
+<span class="sd">        * ``&#39;Hour&#39;``: input hour if LightVegeManager</span>
+<span class="sd">        * ``&#39;Voxel&#39;``: index of current voxel</span>
+<span class="sd">        * ``&#39;Nx&#39;``: index in grid following x axis, corresponds to pyrapt.grid.numx</span>
+<span class="sd">        * ``&#39;Ny&#39;``: index in grid following y axis, corresponds to pyrapt.grid.numy</span>
+<span class="sd">        * ``&#39;Nz&#39;``: index in grid following z axis, corresponds to pyrapt.grid.numz</span>
+<span class="sd">        * ``&#39;ShadedPAR&#39;``: shaded energy in the current voxel, 0 if no direct light in the input</span>
+<span class="sd">        * ``&#39;SunlitPAR&#39;``: sunlit energy</span>
+<span class="sd">        * ``&#39;ShadedArea&#39;``: leaf area in voxel which is shaded</span>
+<span class="sd">        * ``&#39;SunlitArea&#39;``: leaf area in voxel which is sunlit</span>
+<span class="sd">        * ``&#39;Area&#39;``: total leaf area in the voxel</span>
+<span class="sd">        * ``&#39;PARa&#39;``: ( ShadedPAR * ShadedArea + SunlitPAR * SunlitArea ) / ( ShadedArea + SunlitArea )</span>
+<span class="sd">        * ``&#39;Intercepted&#39;``: relative portion of input rays intercepted by the voxel</span>
+<span class="sd">        * ``&#39;Transmitted&#39;``: relative portion of input rays leaving out the voxel</span>
+
+<span class="sd">    Column names for triangles:</span>
+
+<span class="sd">        * ``&#39;VegetationType&#39;``: id of the specy</span>
+<span class="sd">        * ``&#39;Day&#39;``: input day if LightVegeManager</span>
+<span class="sd">        * ``&#39;Hour&#39;``: input hour if LightVegeManager</span>
+<span class="sd">        * ``&#39;Triangle&#39;``: indice of the triangle</span>
+<span class="sd">        * ``&#39;Organ&#39;``: element where the triangle belongs</span>
+
+<span class="sd">        </span>
+<span class="sd">        if ligh model is CARIBU:</span>
+
+<span class="sd">            * ``&#39;Area&#39;``: area of the triangles</span>
+<span class="sd">        </span>
+<span class="sd">            for each bandwidth in the inputs you have two entries:</span>
+
+<span class="sd">            * ``band + &quot; Eabs&quot;``: energy absorbed by the triangle</span>
+<span class="sd">            * ``band + &quot; Ei&quot;``: energy intercepted by the triangle</span>
+<span class="sd">        </span>
+<span class="sd">        If light model is RATP:</span>
+
+<span class="sd">            * ``&#39;Area&#39;``: area of total leaf area in the voxel where the triangle is located</span>
+<span class="sd">            * ``&#39;primitive_area&#39;``: area of the triangle</span>
+<span class="sd">            * ``&#39;Voxel&#39;``: index of the voxel where the triangle is located</span>
+<span class="sd">            * ``&#39;Nx&#39;``: index in grid following x axis, corresponds to pyrapt.grid.numx</span>
+<span class="sd">            * ``&#39;Ny&#39;``: index in grid following y axis, corresponds to pyrapt.grid.numy</span>
+<span class="sd">            * ``&#39;Nz&#39;``: index in grid following z axis, corresponds to pyrapt.grid.numz</span>
+<span class="sd">            * ``&#39;ShadedPAR&#39;``: shaded energy in the current voxel</span>
+<span class="sd">            * ``&#39;SunlitPAR&#39;``: sunlit energy, 0 if no direct light in the input</span>
+<span class="sd">            * ``&#39;ShadedArea&#39;``: leaf area in voxel which is shaded</span>
+<span class="sd">            * ``&#39;SunlitArea&#39;``: leaf area in voxel which is sunlit</span>
+<span class="sd">            * ``&#39;PARa&#39;``: ( ShadedPAR * ShadedArea + SunlitPAR * SunlitArea ) / ( ShadedArea + SunlitArea )</span>
+<span class="sd">            * ``&#39;Intercepted&#39;``: relative portion of input rays intercepted by the voxel</span>
+<span class="sd">            * ``&#39;Transmitted&#39;``: relative portion of input rays leaving out the voxel</span>
+
+<span class="sd">    Column names for elements:</span>
+
+<span class="sd">        * ``&#39;Day&#39;``: input day if LightVegeManager</span>
+<span class="sd">        * ``&#39;Hour&#39;``: input hour if LightVegeManager</span>
+<span class="sd">        * ``&#39;Organ&#39;``: id of current element</span>
+<span class="sd">        * ``&quot;VegetationType&quot;``: id of the specy</span>
+<span class="sd">        * ``&quot;Area&quot;``: area of the element (sum of all triangles belonging to current element)</span>
+
+<span class="sd">        if light model is CARIBU, for each bandwidth in the optical inputs you have two entries:</span>
+
+<span class="sd">            * ``band + &quot; Eabs&quot;``: energy absorbed by the element, integrated on all triangles belonging to current element</span>
+<span class="sd">            * ``band + &quot; Ei&quot;``: energy intercepted by the triangle, integrated on all triangles belonging to current element</span>
+
+
+<span class="sd">        if light model is RATP, the following entries are integrated on all triangles belonging to current element </span>
+<span class="sd">        with E, current element, t triangles in E and V an entry: :math:`\\frac{\\sum_{t \\in E} area_t * V_t}{area_E}`</span>
+
+<span class="sd">            * ``&quot;PARa&quot;``</span>
+<span class="sd">            * ``&quot;Intercepted&quot;``</span>
+<span class="sd">            * ``&quot;Transmitted&quot;``</span>
+<span class="sd">            * ``&quot;SunlitPAR&quot;``</span>
+<span class="sd">            * ``&quot;SunlitArea&quot;``</span>
+<span class="sd">            * ``&quot;ShadedPAR&quot;``</span>
+<span class="sd">            * ``&quot;ShadedArea&quot;``</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="kn">from</span> <span class="nn">src.LightVegeManager_trianglesmesh</span> <span class="kn">import</span> <span class="o">*</span>
+
+<div class="viewcode-block" id="out_ratp_empty_grid"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_outputs.out_ratp_empty_grid">[docs]</a><span class="k">def</span> <span class="nf">out_ratp_empty_grid</span><span class="p">(</span><span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns an empty dataframe results for RATP</span>
+
+<span class="sd">    :param day: day of simulation</span>
+<span class="sd">    :type day: int</span>
+<span class="sd">    :param hour: hour of simulation</span>
+<span class="sd">    :type hour: int</span>
+<span class="sd">    :return: returns a dataframe with all the keys expected with a RATP simulation but results are empty</span>
+<span class="sd">        used if input geometry is empty </span>
+<span class="sd">    :rtype: pandas.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="k">return</span>  <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;VegetationType&#39;</span><span class="p">:[</span><span class="mi">0</span><span class="p">],</span>
+                                <span class="s1">&#39;Iteration&#39;</span><span class="p">:[</span><span class="mi">1</span><span class="p">],</span>
+                                <span class="s1">&#39;Day&#39;</span><span class="p">:</span><span class="n">day</span><span class="p">,</span>
+                                <span class="s1">&#39;Hour&#39;</span><span class="p">:</span><span class="n">hour</span><span class="p">,</span>
+                                <span class="s1">&#39;Voxel&#39;</span><span class="p">:[</span><span class="mi">0</span><span class="p">],</span>
+                                <span class="s1">&#39;Nx&#39;</span><span class="p">:[</span><span class="mi">0</span><span class="p">],</span>
+                                <span class="s1">&#39;Ny&#39;</span><span class="p">:[</span><span class="mi">0</span><span class="p">],</span>
+                                <span class="s1">&#39;Nz&#39;</span><span class="p">:[</span><span class="mi">0</span><span class="p">],</span>
+                                <span class="s1">&#39;ShadedPAR&#39;</span><span class="p">:[</span><span class="mi">0</span><span class="p">],</span>
+                                <span class="s1">&#39;SunlitPAR&#39;</span><span class="p">:[</span><span class="mi">0</span><span class="p">],</span>
+                                <span class="s1">&#39;ShadedArea&#39;</span><span class="p">:[</span><span class="mi">0</span><span class="p">],</span>
+                                <span class="s1">&#39;SunlitArea&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                <span class="s1">&#39;Area&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                <span class="s1">&#39;PARa&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                <span class="s1">&#39;Intercepted&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                <span class="s1">&#39;Transmitted&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                            <span class="p">})</span></div>
+
+<div class="viewcode-block" id="out_ratp_voxels"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_outputs.out_ratp_voxels">[docs]</a><span class="k">def</span> <span class="nf">out_ratp_voxels</span><span class="p">(</span><span class="n">ratpgrid</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">parunit</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts RATP results to pandas dataframe compared to the voxels</span>
+
+<span class="sd">    :param ratpgrid: RATP grid with voxels informations</span>
+<span class="sd">    :type ratpgrid: pyratp.grid</span>
+<span class="sd">    :param res: output table of RATP</span>
+<span class="sd">    :type res: pyratp.ratp.out_rayt</span>
+<span class="sd">    :param parunit: energy unit of input</span>
+<span class="sd">        RATP expects W.m-2 in input and return results in µmol.s-1.m-2.</span>
+<span class="sd">        if ``parunit=&quot;W.m-2&quot;` the outputs is converted to W.m-2, otherwise results are in µmol.s-1.m-2</span>
+<span class="sd">    :type parunit: string</span>
+<span class="sd">    :return: res.T converted in a pandas Dataframe with voxels relative columns. The soil is not part</span>
+<span class="sd">    of the results</span>
+<span class="sd">    :rtype: pandas.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="c1"># decompress all outputs of RATP</span>
+    <span class="c1"># each output is a numpy.array of one dimension of size number of voxels x number of iterations</span>
+    <span class="n">VegetationType</span><span class="p">,</span> \
+    <span class="n">Iteration</span><span class="p">,</span>      \
+    <span class="n">day</span><span class="p">,</span>            \
+    <span class="n">hour</span><span class="p">,</span>           \
+    <span class="n">VoxelId</span><span class="p">,</span>        \
+    <span class="n">ShadedPAR</span><span class="p">,</span>      \
+    <span class="n">SunlitPAR</span><span class="p">,</span>      \
+    <span class="n">ShadedArea</span><span class="p">,</span>     \
+    <span class="n">SunlitArea</span><span class="p">,</span>     \
+    <span class="n">xintav</span><span class="p">,</span>         \
+    <span class="n">Ptransmitted</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="k">if</span> <span class="n">parunit</span> <span class="o">==</span> <span class="s2">&quot;W.m-2&quot;</span> <span class="p">:</span>
+        <span class="c1"># (&#39;PAR&#39; is expected in  Watt.m-2 in RATP input, whereas output is in </span>
+        <span class="c1"># micromol =&gt; convert back to W.m2 (cf shortwavebalance, line 306))</span>
+        <span class="n">ShadedPAR</span> <span class="o">=</span> <span class="n">ShadedPAR</span> <span class="o">/</span> <span class="mf">4.6</span>
+        <span class="n">SunlitPAR</span> <span class="o">=</span> <span class="n">SunlitPAR</span> <span class="o">/</span> <span class="mf">4.6</span>
+    
+    <span class="n">para_list</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ShadedPAR</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ShadedArea</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">SunlitArea</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">:</span>
+            <span class="n">shaded</span> <span class="o">=</span> <span class="n">ShadedPAR</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">ShadedArea</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">sunlit</span> <span class="o">=</span> <span class="n">SunlitPAR</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">SunlitArea</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">area</span> <span class="o">=</span> <span class="n">ShadedArea</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">SunlitArea</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">para_list</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">shaded</span> <span class="o">+</span> <span class="n">sunlit</span> <span class="p">)</span><span class="o">/</span><span class="n">area</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">para_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">0.</span><span class="p">)</span>
+    
+    <span class="c1"># check if we don&#39;t have negative erel</span>
+    <span class="n">erel_list</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xintav</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">xintav</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">1e-6</span> <span class="p">:</span>
+            <span class="n">erel_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xintav</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">erel_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">0.</span><span class="p">)</span>
+
+    <span class="c1"># voxel indices list read in RATP grid</span>
+    <span class="n">numx</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">numy</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">numz</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">VoxelId</span> <span class="p">:</span>
+        <span class="n">numx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ratpgrid</span><span class="o">.</span><span class="n">numx</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">numy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ratpgrid</span><span class="o">.</span><span class="n">numy</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">numz</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ratpgrid</span><span class="o">.</span><span class="n">numz</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">dfvox</span> <span class="o">=</span>  <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;VegetationType&#39;</span><span class="p">:</span><span class="n">VegetationType</span><span class="p">,</span>
+                                    <span class="s1">&#39;Day&#39;</span><span class="p">:</span><span class="n">day</span><span class="p">,</span>
+                                    <span class="s1">&#39;Hour&#39;</span><span class="p">:</span><span class="n">hour</span><span class="p">,</span>
+                                    <span class="s1">&#39;Voxel&#39;</span><span class="p">:</span><span class="n">VoxelId</span><span class="p">,</span>
+                                    <span class="s1">&#39;Nx&#39;</span><span class="p">:</span><span class="n">numx</span><span class="p">,</span>
+                                    <span class="s1">&#39;Ny&#39;</span><span class="p">:</span><span class="n">numy</span><span class="p">,</span>
+                                    <span class="s1">&#39;Nz&#39;</span><span class="p">:</span><span class="n">numz</span><span class="p">,</span>
+                                    <span class="s1">&#39;ShadedPAR&#39;</span><span class="p">:</span><span class="n">ShadedPAR</span><span class="p">,</span>
+                                    <span class="s1">&#39;SunlitPAR&#39;</span><span class="p">:</span><span class="n">SunlitPAR</span><span class="p">,</span>
+                                    <span class="s1">&#39;ShadedArea&#39;</span><span class="p">:</span><span class="n">ShadedArea</span><span class="p">,</span>
+                                    <span class="s1">&#39;SunlitArea&#39;</span><span class="p">:</span> <span class="n">SunlitArea</span><span class="p">,</span>
+                                    <span class="s1">&#39;Area&#39;</span><span class="p">:</span> <span class="n">ShadedArea</span> <span class="o">+</span> <span class="n">SunlitArea</span><span class="p">,</span>
+                                    <span class="s1">&#39;PARa&#39;</span><span class="p">:</span> <span class="n">para_list</span><span class="p">,</span>
+                                    <span class="s1">&#39;Intercepted&#39;</span><span class="p">:</span> <span class="n">erel_list</span><span class="p">,</span> 
+                                    <span class="s1">&#39;Transmitted&#39;</span><span class="p">:</span> <span class="n">Ptransmitted</span>
+                                <span class="p">})</span>
+                
+    <span class="c1"># we don&#39;t return the soil</span>
+    <span class="k">return</span> <span class="n">dfvox</span><span class="p">[</span><span class="n">dfvox</span><span class="p">[</span><span class="s1">&#39;VegetationType&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="out_ratp_triangles"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_outputs.out_ratp_triangles">[docs]</a><span class="k">def</span> <span class="nf">out_ratp_triangles</span><span class="p">(</span><span class="n">trimesh</span><span class="p">,</span>
+                        <span class="n">matching_ele_ent</span><span class="p">,</span>
+                        <span class="n">matching_tr_vox</span><span class="p">,</span>
+                        <span class="n">voxels_outputs</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts RATP results to pandas dataframe compared to the triangles (and voxels)</span>
+
+<span class="sd">    :param trimesh: triangles mesh aggregated by indice elements</span>
+<span class="sd">        .. code-block:: { id : [triangle1, triangle2, ...]}</span>
+<span class="sd">    :type trimesh: dict</span>
+<span class="sd">    :param matching_ele_ent: </span>
+<span class="sd">        dict that matches new element indices in trimesh with specy indice and</span>
+<span class="sd">        input element indice, </span>
+<span class="sd">        .. code:: matching_ids = { new_element_id : (input_element_id, specy_id)}</span>
+
+<span class="sd">    :type matching_ele_ent: dict</span>
+<span class="sd">    :param matching_tr_vox: dict where key is a triangle indice and value the matching voxel indice where the </span>
+<span class="sd">        barycenter of the triangle is located   </span>
+<span class="sd">    :type matching_tr_vox: dict</span>
+<span class="sd">    :param voxels_outputs: output of :func:out_ratp_voxels</span>
+<span class="sd">    :type voxels_outputs: pandas.Dataframe</span>
+<span class="sd">    :return: output of :func:out_ratp_voxels merged with associated triangles</span>
+<span class="sd">    :rtype: pandas.Dataframe</span>
+<span class="sd">    &quot;&quot;&quot;</span>                        
+    <span class="c1"># creation of triangle table</span>
+    <span class="n">entity</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="nb">id</span><span class="p">,</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matching_ele_ent</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">entity</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+    
+    <span class="n">index</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">matching_tr_vox</span><span class="p">))</span>
+    <span class="n">vox_id</span> <span class="o">=</span> <span class="p">[</span><span class="n">matching_tr_vox</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">index</span><span class="p">]</span>
+    <span class="n">triangles</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="n">trimesh</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+    <span class="n">sh_id</span> <span class="o">=</span> <span class="p">[</span><span class="n">globalid_to_elementid</span><span class="p">(</span><span class="n">trimesh</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">triangles</span><span class="p">))]</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="p">[</span><span class="n">triangle_area</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">triangles</span><span class="p">]</span>
+
+    <span class="c1"># new dataframe with triangles indexed</span>
+    <span class="n">dftriangles</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;Triangle&#39;</span><span class="p">:</span> <span class="n">index</span><span class="p">,</span>
+                                <span class="s1">&#39;Organ&#39;</span><span class="p">:</span> <span class="n">sh_id</span><span class="p">,</span> 
+                                <span class="s1">&#39;Voxel&#39;</span><span class="p">:</span><span class="n">vox_id</span><span class="p">,</span> 
+                                <span class="s1">&#39;VegetationType&#39;</span><span class="p">:[</span><span class="n">entity</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">sh_id</span><span class="p">],</span> 
+                                <span class="s1">&#39;primitive_area&#39;</span><span class="p">:</span><span class="n">s</span><span class="p">})</span>
+
+    <span class="c1"># common columns for merging : VegetationType, VoxelID</span>
+    <span class="n">trianglesoutputs</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">dftriangles</span><span class="p">,</span> <span class="n">voxels_outputs</span><span class="p">)</span>  
+    
+    <span class="c1"># sort lines by triangle indices</span>
+    <span class="k">return</span>  <span class="n">trianglesoutputs</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;Triangle&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="out_ratp_elements"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_outputs.out_ratp_elements">[docs]</a><span class="k">def</span> <span class="nf">out_ratp_elements</span><span class="p">(</span><span class="n">matching_ele_ent</span><span class="p">,</span> 
+                        <span class="n">reflected</span><span class="p">,</span> 
+                        <span class="n">reflectance_coef</span><span class="p">,</span> 
+                        <span class="n">trianglesoutputs</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;If trimesh is not empty, aggregates RATP results by element (keys in dict trimesh)</span>
+
+<span class="sd">    :param matching_ele_ent: </span>
+<span class="sd">        dict that matches new element indices in trimesh with specy indice and</span>
+<span class="sd">        input element indice, </span>
+<span class="sd">        .. code:: matching_ids = { new_element_id : (input_element_id, specy_id)}</span>
+
+<span class="sd">    :type matching_ele_ent: dict</span>
+<span class="sd">    :param reflected: if the user wishes to activate reflected radiations</span>
+<span class="sd">    :type reflected: bool</span>
+<span class="sd">    :param reflectance_coef: coefficient for each specy and each input bandwidth </span>
+<span class="sd">    :type reflectance_coef: list of list</span>
+<span class="sd">    :param trianglesoutputs: output of :func:out_ratp_triangles</span>
+<span class="sd">    :type trianglesoutputs: pandas.Dataframe</span>
+<span class="sd">    :return: dataframe integrated on element informations</span>
+<span class="sd">    :rtype: pandas.Dataframe</span>
+<span class="sd">    &quot;&quot;&quot;</span>                        
+    <span class="c1"># save values by element and specy</span>
+    <span class="n">nshapes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">matching_ele_ent</span><span class="p">)</span>
+    <span class="n">s_shapes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">s_area</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">s_para</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">s_pari</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">s_intercepted</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">s_transmis</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">s_day</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">s_hour</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">s_ent</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">s_parsun</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">s_parsha</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">s_areasun</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">s_areasha</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nshapes</span><span class="p">):</span>
+        <span class="c1"># iterations starts at 1 (fortran)</span>
+        <span class="n">nent</span> <span class="o">=</span> <span class="n">matching_ele_ent</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">dffil</span> <span class="o">=</span> <span class="n">trianglesoutputs</span><span class="p">[(</span><span class="n">trianglesoutputs</span><span class="o">.</span><span class="n">Organ</span> <span class="o">==</span> <span class="nb">id</span><span class="p">)]</span>
+        
+        <span class="n">t_areas</span> <span class="o">=</span> <span class="n">dffil</span><span class="p">[</span><span class="s2">&quot;primitive_area&quot;</span><span class="p">]</span>
+        <span class="n">sum_area</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">t_areas</span><span class="p">)</span>
+        
+        <span class="n">s_hour</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dffil</span><span class="p">[</span><span class="s2">&quot;Hour&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">s_day</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dffil</span><span class="p">[</span><span class="s2">&quot;Day&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">s_area</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sum_area</span><span class="p">)</span>
+
+        <span class="c1"># if reflected rays has been computed in RATP</span>
+        <span class="k">if</span> <span class="n">reflected</span> <span class="p">:</span>
+            <span class="n">para</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">t_areas</span> <span class="o">*</span> <span class="n">dffil</span><span class="p">[</span><span class="s1">&#39;PARa&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="n">sum_area</span>
+            <span class="n">s_para</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">para</span><span class="p">)</span>
+        
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># incident PAR</span>
+            <span class="n">pari</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">t_areas</span> <span class="o">*</span> <span class="n">dffil</span><span class="p">[</span><span class="s1">&#39;PARa&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="n">sum_area</span>
+            <span class="n">s_pari</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pari</span><span class="p">)</span>
+            <span class="n">s_para</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pari</span> <span class="o">-</span> <span class="p">(</span><span class="n">pari</span> <span class="o">*</span> <span class="n">reflectance_coef</span><span class="p">[</span><span class="n">nent</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span>
+        
+        <span class="n">s_parsun</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">t_areas</span> <span class="o">*</span> <span class="n">dffil</span><span class="p">[</span><span class="s1">&#39;SunlitPAR&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="n">sum_area</span><span class="p">)</span>
+        <span class="n">s_parsha</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">t_areas</span> <span class="o">*</span> <span class="n">dffil</span><span class="p">[</span><span class="s1">&#39;ShadedPAR&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="n">sum_area</span><span class="p">)</span>
+        <span class="n">s_areasun</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">t_areas</span> <span class="o">*</span> <span class="n">dffil</span><span class="p">[</span><span class="s1">&#39;SunlitArea&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="n">sum_area</span><span class="p">)</span>
+        <span class="n">s_areasha</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">t_areas</span> <span class="o">*</span> <span class="n">dffil</span><span class="p">[</span><span class="s1">&#39;ShadedArea&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="n">sum_area</span><span class="p">)</span>
+        <span class="n">s_intercepted</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">t_areas</span> <span class="o">*</span> <span class="n">dffil</span><span class="p">[</span><span class="s1">&#39;Intercepted&#39;</span><span class="p">])</span> <span class="o">/</span><span class="n">sum_area</span><span class="p">)</span>
+        <span class="n">s_transmis</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">t_areas</span> <span class="o">*</span> <span class="n">dffil</span><span class="p">[</span><span class="s1">&#39;Transmitted&#39;</span><span class="p">])</span> <span class="o">/</span><span class="n">sum_area</span><span class="p">)</span>
+        <span class="n">s_ent</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dffil</span><span class="p">[</span><span class="s2">&quot;VegetationType&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">s_shapes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">matching_ele_ent</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+    
+    <span class="k">return</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+                                <span class="s2">&quot;Day&quot;</span> <span class="p">:</span> <span class="n">s_day</span><span class="p">,</span>
+                                <span class="s2">&quot;Hour&quot;</span> <span class="p">:</span> <span class="n">s_hour</span><span class="p">,</span>
+                                <span class="s2">&quot;Organ&quot;</span> <span class="p">:</span> <span class="n">s_shapes</span><span class="p">,</span>
+                                <span class="s2">&quot;VegetationType&quot;</span> <span class="p">:</span> <span class="n">s_ent</span><span class="p">,</span>
+                                <span class="s2">&quot;Area&quot;</span> <span class="p">:</span> <span class="n">s_area</span><span class="p">,</span>
+                                <span class="s2">&quot;PARa&quot;</span> <span class="p">:</span> <span class="n">s_para</span><span class="p">,</span>
+                                <span class="s2">&quot;Intercepted&quot;</span> <span class="p">:</span> <span class="n">s_intercepted</span><span class="p">,</span>
+                                <span class="s2">&quot;Transmitted&quot;</span> <span class="p">:</span> <span class="n">s_intercepted</span><span class="p">,</span>
+                                <span class="s2">&quot;SunlitPAR&quot;</span> <span class="p">:</span> <span class="n">s_parsun</span><span class="p">,</span>
+                                <span class="s2">&quot;SunlitArea&quot;</span> <span class="p">:</span> <span class="n">s_areasun</span><span class="p">,</span>
+                                <span class="s2">&quot;ShadedPAR&quot;</span> <span class="p">:</span> <span class="n">s_parsha</span><span class="p">,</span>
+                                <span class="s2">&quot;ShadedArea&quot;</span> <span class="p">:</span> <span class="n">s_areasha</span>
+                            <span class="p">})</span></div>
+
+<div class="viewcode-block" id="out_caribu_mix"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_outputs.out_caribu_mix">[docs]</a><span class="k">def</span> <span class="nf">out_caribu_mix</span><span class="p">(</span> <span class="n">rdrs</span><span class="p">,</span>
+                    <span class="n">c_scene_sun</span><span class="p">,</span> <span class="n">c_scene_sky</span><span class="p">,</span>
+                    <span class="n">raw_sun</span><span class="p">,</span> <span class="n">aggregated_sun</span><span class="p">,</span> 
+                    <span class="n">raw_sky</span><span class="p">,</span> <span class="n">aggregated_sky</span><span class="p">,</span>
+                    <span class="n">issensors</span><span class="p">,</span>
+                    <span class="n">issoilmesh</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mix diffuse and direct rays results according to a ratio rdrs</span>
+
+<span class="sd">    :param rdrs: Spitters&#39;s model estimating for the diffuse:direct ratio</span>
+<span class="sd">    :type rdrs: float</span>
+<span class="sd">    :param c_scene_sun: CaribuScene with direct lighting computed (from a sun)</span>
+<span class="sd">    :type c_scene_sun: CaribuScene</span>
+<span class="sd">    :param c_scene_sky: CaribuScene with diffuse lighting computed (from a sky)</span>
+<span class="sd">    :type c_scene_sky: CaribuScene</span>
+<span class="sd">    :param raw_sun: results of c_scene_sun for triangles</span>
+<span class="sd">    :type raw_sun: dict of dict</span>
+<span class="sd">    :param aggregated_sun: results of c_scene_sun aggregated by element</span>
+<span class="sd">    :type aggregated_sun: dict of dict</span>
+<span class="sd">    :param raw_sky: results of c_scene_sky for triangles</span>
+<span class="sd">    :type raw_sky: dict of dict</span>
+<span class="sd">    :param aggregated_sky:  results of c_scene_sky aggregated by element</span>
+<span class="sd">    :type aggregated_sky: dict of dict</span>
+<span class="sd">    :param issensors: if option virtual sensors is activated</span>
+<span class="sd">    :type issensors: bool</span>
+<span class="sd">    :param issoilmesh: if option soil mesh is activated</span>
+<span class="sd">    :type issoilmesh: bool</span>
+<span class="sd">    :return:</span>
+<span class="sd">        if sensors is activated, it extracts its results from aggregated_sun and aggregated_sky</span>
+
+<span class="sd">        if soilmesh is activated, it extracts its results from c_scene_sun and c_scene_sky</span>
+<span class="sd">        </span>
+<span class="sd">        then it mixes raw, aggregated, virtual sensors and soil energy results such as </span>
+<span class="sd">        </span>
+<span class="sd">        ``result = rdrs * diffuse_result + (1 - rdrs) * direct_result``</span>
+
+<span class="sd">    :rtype: dict of dict, dict of dict, dict of list, dict of float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">raw</span><span class="p">,</span> <span class="n">aggregated</span><span class="p">,</span> <span class="n">sensors</span><span class="p">,</span> <span class="n">soil_energy</span> <span class="o">=</span> <span class="n">raw_sun</span><span class="p">,</span> <span class="n">aggregated_sun</span><span class="p">,</span> <span class="p">{},</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="p">:</span> 
+        <span class="k">for</span> <span class="n">ray</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Eabs&#39;</span><span class="p">,</span> <span class="s1">&#39;Ei&#39;</span><span class="p">]</span> <span class="p">:</span>
+            <span class="k">for</span> <span class="n">idt</span><span class="p">,</span> <span class="n">v_sun</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">ray</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">:</span>
+                <span class="n">v_sky</span> <span class="o">=</span> <span class="n">raw_sky</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">ray</span><span class="p">][</span><span class="n">idt</span><span class="p">]</span>
+                <span class="n">raw</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">ray</span><span class="p">][</span><span class="n">idt</span><span class="p">]</span> <span class="o">=</span> <span class="n">rdrs</span> <span class="o">*</span> <span class="n">v_sky</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">rdrs</span><span class="p">)</span> <span class="o">*</span> <span class="n">v_sun</span>
+
+            <span class="k">for</span> <span class="n">ide</span><span class="p">,</span> <span class="n">v_sun</span> <span class="ow">in</span> <span class="n">aggregated</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">ray</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">:</span>
+                <span class="n">v_sky</span> <span class="o">=</span> <span class="n">aggregated_sky</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">ray</span><span class="p">][</span><span class="n">ide</span><span class="p">]</span>
+                <span class="n">aggregated</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">ray</span><span class="p">][</span><span class="n">ide</span><span class="p">]</span> <span class="o">=</span> <span class="n">rdrs</span> <span class="o">*</span> <span class="n">v_sky</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">rdrs</span><span class="p">)</span> <span class="o">*</span> <span class="n">v_sun</span>
+
+        <span class="k">if</span> <span class="n">issensors</span> <span class="p">:</span>
+            <span class="n">sensors</span><span class="p">[</span><span class="n">band</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="nb">id</span><span class="p">,</span> <span class="n">v_sun</span> <span class="ow">in</span> <span class="n">aggregated_sun</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="s1">&#39;sensors&#39;</span><span class="p">][</span><span class="s1">&#39;Ei&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">:</span>
+                <span class="n">v_sky</span> <span class="o">=</span> <span class="n">aggregated_sky</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="s1">&#39;sensors&#39;</span><span class="p">][</span><span class="s1">&#39;Ei&#39;</span><span class="p">][</span><span class="nb">id</span><span class="p">]</span>
+                <span class="n">sensors</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">rdrs</span> <span class="o">*</span> <span class="n">v_sky</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">rdrs</span><span class="p">)</span> <span class="o">*</span> <span class="n">v_sun</span>
+
+    <span class="k">if</span> <span class="n">issoilmesh</span> <span class="p">:</span> 
+        <span class="n">q1</span><span class="p">,</span> <span class="n">e1</span> <span class="o">=</span> <span class="n">c_scene_sky</span><span class="o">.</span><span class="n">getSoilEnergy</span><span class="p">()</span>
+        <span class="n">q2</span><span class="p">,</span> <span class="n">e2</span> <span class="o">=</span> <span class="n">c_scene_sun</span><span class="o">.</span><span class="n">getSoilEnergy</span><span class="p">()</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">rdrs</span> <span class="o">*</span> <span class="n">q1</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">rdrs</span><span class="p">)</span> <span class="o">*</span> <span class="n">q2</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">rdrs</span> <span class="o">*</span> <span class="n">e1</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">rdrs</span><span class="p">)</span> <span class="o">*</span> <span class="n">e2</span>
+
+        <span class="n">soil_energy</span><span class="p">[</span><span class="s1">&#39;Qi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span>
+        <span class="n">soil_energy</span><span class="p">[</span><span class="s1">&#39;Einc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span>
+
+    <span class="k">return</span> <span class="n">raw</span><span class="p">,</span> <span class="n">aggregated</span><span class="p">,</span> <span class="n">sensors</span><span class="p">,</span> <span class="n">soil_energy</span></div>
+
+<div class="viewcode-block" id="out_caribu_nomix"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_outputs.out_caribu_nomix">[docs]</a><span class="k">def</span> <span class="nf">out_caribu_nomix</span><span class="p">(</span><span class="n">c_scene</span><span class="p">,</span> <span class="n">aggregated</span><span class="p">,</span> <span class="n">issensors</span><span class="p">,</span> <span class="n">issoilmesh</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extracts only sensors and soilmesh results if activated</span>
+
+<span class="sd">    :param c_scene: instance of CaribuScene containing geometry, light source(s), opt etc...</span>
+<span class="sd">    :type c_scene: CaribuScene</span>
+<span class="sd">    :param aggregated: result of CaribuScene.run </span>
+<span class="sd">    :type aggregated: dict of dict</span>
+<span class="sd">    :param issensors: if option virtual sensors is activated</span>
+<span class="sd">    :type issensors: bool</span>
+<span class="sd">    :param issoilmesh: if option soil mesh is activated</span>
+<span class="sd">    :type issoilmesh: bool</span>
+<span class="sd">    :return: extracts sensors results from aggregated and soil energy from c_scene</span>
+<span class="sd">    :rtype: dict, dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="n">sensors</span><span class="p">,</span> <span class="n">soil_energy</span> <span class="o">=</span> <span class="p">{},</span> <span class="p">{}</span>
+    
+    <span class="k">if</span> <span class="n">issensors</span> <span class="p">:</span>
+        <span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="n">aggregated</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="p">:</span>
+            <span class="n">sensors</span><span class="p">[</span><span class="n">band</span><span class="p">]</span> <span class="o">=</span>  <span class="n">aggregated</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="s1">&#39;sensors&#39;</span><span class="p">][</span><span class="s1">&#39;Ei&#39;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">issoilmesh</span> <span class="p">:</span>
+        <span class="n">q</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="n">c_scene</span><span class="o">.</span><span class="n">getSoilEnergy</span><span class="p">()</span>
+        
+        <span class="n">soil_energy</span><span class="p">[</span><span class="s1">&#39;Qi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span>
+        <span class="n">soil_energy</span><span class="p">[</span><span class="s1">&#39;Einc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span>
+
+    <span class="k">return</span> <span class="n">sensors</span><span class="p">,</span> <span class="n">soil_energy</span></div>
+
+<div class="viewcode-block" id="out_caribu_elements"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_outputs.out_caribu_elements">[docs]</a><span class="k">def</span> <span class="nf">out_caribu_elements</span><span class="p">(</span><span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">trimesh</span><span class="p">,</span> <span class="n">matching_ids</span><span class="p">,</span> <span class="n">aggregated</span><span class="p">,</span> <span class="n">sun_up</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts aggregated in a pandas.Dataframe following indices in LightVegeManager</span>
+
+<span class="sd">    :param day: day of simulation</span>
+<span class="sd">    :type day: int</span>
+<span class="sd">    :param hour: hour of simulation</span>
+<span class="sd">    :type hour: int</span>
+<span class="sd">    :param trimesh: triangles mesh aggregated by indice elements</span>
+<span class="sd">        .. code-block:: { id : [triangle1, triangle2, ...]}</span>
+<span class="sd">    :type trimesh: dict</span>
+<span class="sd">    :param matching_ele_ent: </span>
+<span class="sd">        dict that matches new element indices in trimesh with specy indice and</span>
+<span class="sd">        input element indice, </span>
+<span class="sd">        .. code:: matching_ids = { new_element_id : (input_element_id, specy_id)}</span>
+
+<span class="sd">    :type matching_ele_ent: dict</span>
+<span class="sd">    :param aggregated: result of CaribuScene.run </span>
+<span class="sd">    :type aggregated: dict of dict</span>
+<span class="sd">    :param sun_up: if sun elevation is &gt; 2° and direct rays are &gt; 0 W.m²</span>
+<span class="sd">    :type sun_up: bool</span>
+<span class="sd">    :return: aggregated results rearrange in a Dataframe with element correspondance in LightVegeManager</span>
+<span class="sd">    :rtype: pandas.Dataframe</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="p">(</span><span class="n">s_shapes</span><span class="p">,</span> 
+    <span class="n">s_area</span><span class="p">,</span> 
+    <span class="n">s_day</span><span class="p">,</span> 
+    <span class="n">s_hour</span><span class="p">,</span> 
+    <span class="n">s_ent</span><span class="p">)</span> <span class="o">=</span> <span class="p">([</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">matching_ids</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+    
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span><span class="n">val</span> <span class="ow">in</span> <span class="n">matching_ids</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">s_shapes</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">s_area</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">triangle_area</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">trimesh</span><span class="p">[</span><span class="n">key</span><span class="p">]])</span>
+        <span class="n">s_day</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">day</span>
+        <span class="n">s_hour</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">hour</span>
+        <span class="n">s_ent</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">matching_ids</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">dico_shape</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;Day&quot;</span> <span class="p">:</span> <span class="n">s_day</span><span class="p">,</span>
+        <span class="s2">&quot;Hour&quot;</span> <span class="p">:</span> <span class="n">s_hour</span><span class="p">,</span>
+        <span class="s2">&quot;Organ&quot;</span> <span class="p">:</span> <span class="n">s_shapes</span><span class="p">,</span>
+        <span class="s2">&quot;VegetationType&quot;</span> <span class="p">:</span> <span class="n">s_ent</span><span class="p">,</span>
+        <span class="s2">&quot;Area&quot;</span> <span class="p">:</span> <span class="n">s_area</span>
+    <span class="p">}</span>
+    
+    <span class="n">s_Eabs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">s_Ei</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">band</span><span class="p">,</span> <span class="n">dict_val</span> <span class="ow">in</span> <span class="n">aggregated</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">:</span> 
+        <span class="n">s_Eabs</span><span class="p">[</span><span class="n">band</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">matching_ids</span><span class="p">)</span>
+        <span class="n">s_Ei</span><span class="p">[</span><span class="n">band</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">matching_ids</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span><span class="n">val</span> <span class="ow">in</span> <span class="n">matching_ids</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">sun_up</span><span class="p">:</span> <span class="n">s_Eabs</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">dict_val</span><span class="p">[</span><span class="s1">&#39;Eabs&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">sun_up</span><span class="p">:</span> <span class="n">s_Ei</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">dict_val</span><span class="p">[</span><span class="s1">&#39;Ei&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span>
+    
+        <span class="n">dico_shape</span><span class="p">[</span><span class="n">band</span> <span class="o">+</span> <span class="s2">&quot; Eabs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">s_Eabs</span><span class="p">[</span><span class="n">band</span><span class="p">]</span>
+        <span class="n">dico_shape</span><span class="p">[</span><span class="n">band</span> <span class="o">+</span> <span class="s2">&quot; Ei&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">s_Ei</span><span class="p">[</span><span class="n">band</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">dico_shape</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="out_caribu_triangles"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_outputs.out_caribu_triangles">[docs]</a><span class="k">def</span> <span class="nf">out_caribu_triangles</span><span class="p">(</span><span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">trimesh</span><span class="p">,</span> <span class="n">matching_ids</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">sun_up</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts raw in a pandas.Dataframe following simulation datas</span>
+
+<span class="sd">    :param day: day of simulation</span>
+<span class="sd">    :type day: int</span>
+<span class="sd">    :param hour: hour of simulation</span>
+<span class="sd">    :type hour: int</span>
+<span class="sd">    :param trimesh: triangles mesh aggregated by indice elements</span>
+<span class="sd">        .. code-block:: { id : [triangle1, triangle2, ...]}</span>
+<span class="sd">    :type trimesh: dict</span>
+<span class="sd">    :param matching_ele_ent: </span>
+<span class="sd">        dict that matches new element indices in trimesh with specy indice and</span>
+<span class="sd">        input element indice, </span>
+<span class="sd">        .. code:: matching_ids = { new_element_id : (input_element_id, specy_id)}</span>
+
+<span class="sd">    :type matching_ele_ent: dict</span>
+<span class="sd">    :param raw: triangles results from CaribuScene.run</span>
+<span class="sd">    :type raw: dict of dict</span>
+<span class="sd">    :param sun_up: if sun elevation is &gt; 2° and direct rays are &gt; 0 W.m²</span>
+<span class="sd">    :type sun_up: bool</span>
+<span class="sd">    :return: triangle results rearrange in a Dataframe</span>
+<span class="sd">    :rtype: pandas.Dataframe</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="n">nb_triangles</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">triangles</span><span class="p">)</span> <span class="k">for</span> <span class="n">triangles</span> <span class="ow">in</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
+    
+    <span class="p">(</span><span class="n">s_shapes</span><span class="p">,</span> 
+    <span class="n">s_tr</span><span class="p">,</span>
+    <span class="n">s_area</span><span class="p">,</span> 
+    <span class="n">s_day</span><span class="p">,</span> 
+    <span class="n">s_hour</span><span class="p">,</span> 
+    <span class="n">s_ent</span><span class="p">)</span> <span class="o">=</span> <span class="p">([</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">nb_triangles</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">))</span>
+
+    <span class="n">id_tr</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">ele</span><span class="p">,</span> <span class="n">triangles</span> <span class="ow">in</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">triangles</span> <span class="p">:</span>
+            <span class="n">s_shapes</span><span class="p">[</span><span class="n">id_tr</span><span class="p">]</span> <span class="o">=</span> <span class="n">ele</span>
+            <span class="n">s_tr</span><span class="p">[</span><span class="n">id_tr</span><span class="p">]</span> <span class="o">=</span> <span class="n">id_tr</span>
+            <span class="n">s_area</span><span class="p">[</span><span class="n">id_tr</span><span class="p">]</span> <span class="o">=</span> <span class="n">triangle_area</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+            <span class="n">s_day</span><span class="p">[</span><span class="n">id_tr</span><span class="p">]</span> <span class="o">=</span> <span class="n">day</span>
+            <span class="n">s_hour</span><span class="p">[</span><span class="n">id_tr</span><span class="p">]</span> <span class="o">=</span> <span class="n">hour</span>
+            <span class="n">s_ent</span><span class="p">[</span><span class="n">id_tr</span><span class="p">]</span> <span class="o">=</span> <span class="n">matching_ids</span><span class="p">[</span><span class="n">ele</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">id_tr</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="n">dico_tr</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;Day&quot;</span> <span class="p">:</span> <span class="n">s_day</span><span class="p">,</span>
+        <span class="s2">&quot;Hour&quot;</span> <span class="p">:</span> <span class="n">s_hour</span><span class="p">,</span>
+        <span class="s2">&quot;Triangle&quot;</span> <span class="p">:</span> <span class="n">s_tr</span><span class="p">,</span>
+        <span class="s2">&quot;Organ&quot;</span> <span class="p">:</span> <span class="n">s_shapes</span><span class="p">,</span>
+        <span class="s2">&quot;VegetationType&quot;</span> <span class="p">:</span> <span class="n">s_ent</span><span class="p">,</span>
+        <span class="s2">&quot;Area&quot;</span> <span class="p">:</span> <span class="n">s_area</span>
+    <span class="p">}</span>
+    
+    <span class="n">s_Eabs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">s_Ei</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">band</span><span class="p">,</span> <span class="n">dict_val</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">:</span> 
+        <span class="k">if</span> <span class="n">sun_up</span><span class="p">:</span> <span class="n">s_Eabs</span><span class="p">[</span><span class="n">band</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">dict_val</span><span class="p">[</span><span class="s1">&#39;Eabs&#39;</span><span class="p">][</span><span class="n">ele</span><span class="p">]</span> <span class="k">for</span> <span class="n">ele</span> <span class="ow">in</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">keys</span><span class="p">()]))</span>
+        <span class="k">if</span> <span class="n">sun_up</span><span class="p">:</span> <span class="n">s_Ei</span><span class="p">[</span><span class="n">band</span><span class="p">]</span> <span class="o">=</span>  \
+            <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">dict_val</span><span class="p">[</span><span class="s1">&#39;Ei&#39;</span><span class="p">][</span><span class="n">ele</span><span class="p">]</span> <span class="k">for</span> <span class="n">ele</span> <span class="ow">in</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">keys</span><span class="p">()]))</span>
+    
+        <span class="n">dico_tr</span><span class="p">[</span><span class="n">band</span> <span class="o">+</span> <span class="s2">&quot; Eabs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">s_Eabs</span><span class="p">[</span><span class="n">band</span><span class="p">]</span>
+        <span class="n">dico_tr</span><span class="p">[</span><span class="n">band</span> <span class="o">+</span> <span class="s2">&quot; Ei&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">s_Ei</span><span class="p">[</span><span class="n">band</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">dico_tr</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2023, INRAE P3F
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

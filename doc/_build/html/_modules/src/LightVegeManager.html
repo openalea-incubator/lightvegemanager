@@ -1,0 +1,1303 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>src.LightVegeManager &mdash; LightVegeManager 0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> LightVegeManager
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../presentation.html">Presentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">Architecture of the tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inputs.html">Inputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../others.html">Additionnal Functionality</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">Reference Guide</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">LightVegeManager</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>src.LightVegeManager</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for src.LightVegeManager</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    LightVegeManager</span>
+<span class="sd">    ****************</span>
+
+<span class="sd">    Main class of the tool. Calls all the other modules in ``src``.</span>
+
+<span class="sd">    3 inputs dict for setting all parameters:</span>
+
+<span class="sd">    .. code-block:: python</span>
+<span class="sd">    </span>
+<span class="sd">        geometry = {</span>
+<span class="sd">                    &quot;scenes&quot; : [scene0, scene1, scene2, ...] ,</span>
+<span class="sd">                    &quot;domain&quot; : ((xmin, ymin), (xmax, ymax)),</span>
+<span class="sd">                    &quot;stems id&quot; : [(id_element, id_scene), ...],</span>
+<span class="sd">                    &quot;transformations&quot; : {</span>
+<span class="sd">                                            &quot;scenes unit&quot; : kwarg ,</span>
+<span class="sd">                                            &quot;rescale&quot; : kwarg ,</span>
+<span class="sd">                                            &quot;translate&quot; : kwarg ,</span>
+<span class="sd">                                            &quot;xyz orientation&quot; : kwarg</span>
+<span class="sd">                                            }</span>
+<span class="sd">                        }</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        environment = {</span>
+<span class="sd">                        &quot;coordinates&quot; : [latitude, longitude, timezone] ,</span>
+<span class="sd">                        </span>
+<span class="sd">                        &quot;sky&quot; : &quot;turtle46&quot; ,</span>
+<span class="sd">                        &quot;sky&quot; : [&quot;file&quot;, filepath] ,</span>
+<span class="sd">                        &quot;sky&quot; : [nb_azimut, nb_zenith, &quot;soc&quot; or &quot;uoc&quot;] ,</span>
+
+<span class="sd">                        &quot;direct&quot; : bool, # sun radiations</span>
+<span class="sd">                        &quot;diffus&quot; : bool, # sky radiations</span>
+<span class="sd">                        &quot;reflected&quot; : bool, # reflected radiation in the canopy</span>
+<span class="sd">                        &quot;infinite&quot; : bool, # infinitisation of the scene</span>
+<span class="sd">                        }</span>
+
+<span class="sd">    Currently LightVegeManager handles the light models RATP and CARIBU:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        caribu_args = {</span>
+<span class="sd">                        &quot;sun algo&quot; : &quot;ratp&quot;,</span>
+<span class="sd">                        &quot;sun algo&quot; : &quot;caribu&quot;,</span>
+
+<span class="sd">                            &quot;caribu opt&quot; : {</span>
+<span class="sd">                                            band0 = (reflectance, transmittance),</span>
+<span class="sd">                                            band1 = (reflectance, transmittance),</span>
+<span class="sd">                                            ...</span>
+<span class="sd">                                            },</span>
+<span class="sd">                            &quot;debug&quot; : bool,</span>
+<span class="sd">                            &quot;soil mesh&quot; : bool,</span>
+<span class="sd">                            &quot;sensors&quot; : [&quot;grid&quot;, dxyz, nxyz, orig, vtkpath, &quot;vtk&quot;]</span>
+<span class="sd">                        }</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        ratp_args = {</span>
+<span class="sd">                        # Grid specifications</span>
+<span class="sd">                        &quot;voxel size&quot; : [dx, dy, dz],</span>
+<span class="sd">                        &quot;voxel size&quot; : &quot;dynamic&quot;,</span>
+<span class="sd">                        </span>
+<span class="sd">                        &quot;origin&quot; : [xorigin, yorigin, zorigin],</span>
+<span class="sd">                        &quot;origin&quot; : [xorigin, yorigin],</span>
+
+<span class="sd">                        &quot;number voxels&quot; : [nx, ny, nz],</span>
+<span class="sd">                        &quot;grid slicing&quot; : &quot;ground = 0.&quot;</span>
+<span class="sd">                        &quot;tesselation level&quot; : int</span>
+
+<span class="sd">                        # Leaf angle distribution</span>
+<span class="sd">                        &quot;angle distrib algo&quot; : &quot;compute global&quot;,</span>
+<span class="sd">                        &quot;angle distrib algo&quot; : &quot;compute voxel&quot;,</span>
+<span class="sd">                        &quot;angle distrib algo&quot; : &quot;file&quot;,</span>
+
+<span class="sd">                        &quot;nb angle classes&quot; : int,</span>
+<span class="sd">                        &quot;angle distrib file&quot; : filepath,</span>
+
+<span class="sd">                        # Vegetation type</span>
+<span class="sd">                        &quot;soil reflectance&quot; : [reflectance_band0, reflectance_band1, ...],</span>
+<span class="sd">                        &quot;reflectance coefficients&quot; : [reflectance_band0, reflectance_band1, ...],</span>
+<span class="sd">                        &quot;mu&quot; : [mu_scene0, mu_scene1, ...]</span>
+<span class="sd">                    }</span>
+
+<span class="sd">    .. seealso:: For more details :ref:`Inputs description &lt;inputs&gt;`</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">from</span> <span class="nn">alinea.pyratp.runratp</span> <span class="kn">import</span> <span class="n">runRATP</span>
+<span class="kn">from</span> <span class="nn">alinea.caribu.CaribuScene</span> <span class="kn">import</span> <span class="n">CaribuScene</span>
+<span class="kn">import</span> <span class="nn">legume.RIRI5</span> <span class="k">as</span> <span class="nn">riri</span>
+
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+
+<span class="kn">from</span> <span class="nn">src.LightVegeManager_trianglesmesh</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">src.LightVegeManager_stems</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">src.LightVegeManager_leafangles</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">src.LightVegeManager_tesselator</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">src.LightVegeManager_sun</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">src.LightVegeManager_sky</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">src.LightVegeManager_RATPinputs</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">src.LightVegeManager_CARIBUinputs</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">src.LightVegeManager_outputs</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">src.LightVegeManager_buildRATPscene</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">src.LightVegeManager_transfer</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">src.LightVegeManager_VTK</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">src.LightVegeManager_plantGL</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">src.LightVegeManager_defaultvalues</span> <span class="kn">import</span> <span class="o">*</span>
+
+<div class="viewcode-block" id="LightVegeManager"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager.LightVegeManager">[docs]</a><span class="k">class</span> <span class="nc">LightVegeManager</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main class for the tool LightVegeManager</span>
+<span class="sd">    </span>
+<span class="sd">    Common simulation order: </span>
+<span class="sd">    </span>
+<span class="sd">    ``input geometries -&gt; build and prepare data -&gt; call light model -&gt; transfer results to plant models``</span>
+
+<span class="sd">    It includes:</span>
+
+<span class="sd">        Main methods:</span>
+
+<span class="sd">        * ``__init__``: initializes and builds static object for the rest of simulation</span>
+<span class="sd">        * :meth:`build`: builds and prepare all geometric meshes</span>
+<span class="sd">        * :meth:`run`: calls a light model and manages its inputs and outputs</span>
+
+<span class="sd">        Transfer methods:</span>
+
+<span class="sd">        * :meth:`to_MTG`: transfers ligthing results to a MTG table</span>
+<span class="sd">        * :meth:`to_l_egume`: transfers ligthing results to l-egume by creating two arrays as inputs for the plant model</span>
+
+<span class="sd">        Analysis tools: analyses a set of triangles and formats them as a turbid medium inputs</span>
+
+<span class="sd">        * :meth:`s5`: fortran tool</span>
+<span class="sd">        * :meth:`s2v`: c++ tool</span>
+
+<span class="sd">        Visualisation tools:</span>
+
+<span class="sd">        * :meth:`VTK_nolight`: write VTK file with only geometric informations</span>
+<span class="sd">        * :meth:`VTK_light`: write VTK file with geometric informations and associated light results</span>
+<span class="sd">        * :meth:`VTK_sun`: : write VTK file representing the sun as a line</span>
+
+<span class="sd">        Getters: to use light results with external routines</span>
+
+<span class="sd">        * :meth:`legume_transmitted_light`</span>
+<span class="sd">        * :meth:`legume_intercepted_light`</span>
+<span class="sd">        * :meth:`elements_outputs`</span>
+<span class="sd">        * :meth:`triangles_outputs`</span>
+<span class="sd">        * :meth:`voxels_outputs`</span>
+<span class="sd">        * :meth:`sensors_outputs`</span>
+<span class="sd">        * :meth:`sun`</span>
+<span class="sd">        * :meth:`soilenergy`</span>
+<span class="sd">        * :meth:`maxtrianglearea`</span>
+<span class="sd">        * :meth:`legume_empty_layers`</span>
+<span class="sd">        * :meth:`tesselationtime`</span>
+<span class="sd">        * :meth:`modelruntime`</span>
+
+<span class="sd">    :param environment: Environment parameters, defaults to {}</span>
+<span class="sd">    :type environment: dict, optional</span>
+<span class="sd">    :param lightmodel: either ``&quot;ratp&quot;`` or ``&quot;caribu&quot;``, defaults to &quot;&quot;</span>
+<span class="sd">    :type lightmodel: str, optional</span>
+<span class="sd">    :param lightmodel_parameters: light model parameters, defaults to {}</span>
+<span class="sd">    :type lightmodel_parameters: dict, optional</span>
+<span class="sd">    :param main_unit: measure unit for the global scene where the light will be computed, defaults to &quot;m&quot;</span>
+<span class="sd">    :type main_unit: str, optional</span>
+<span class="sd">    :raises ValueError: lightmodel entry not valid, either ``&#39;ratp&#39;`` or ``&#39;caribu&#39;``</span>
+<span class="sd">    &quot;&quot;&quot;</span>     
+    <span class="c1">## MAIN METHODS ##</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                    <span class="n">environment</span><span class="o">=</span><span class="p">{},</span>
+                    <span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                    <span class="n">lightmodel_parameters</span><span class="o">=</span><span class="p">{},</span>
+                    <span class="n">main_unit</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">)</span> <span class="p">:</span>        
+        <span class="c1"># gets default variables from LightVegeManager_defaultvalues.py</span>
+        <span class="n">default_environnement</span><span class="p">,</span>    \
+        <span class="n">default_ratp_parameters</span><span class="p">,</span>  \
+        <span class="n">default_caribu_parameters</span> <span class="o">=</span> <span class="n">default_LightVegeManager_inputs</span><span class="p">()</span>
+
+        <span class="c1"># check if choosen light model is known by the tool</span>
+        <span class="k">if</span> <span class="n">lightmodel</span> <span class="o">!=</span> <span class="s2">&quot;ratp&quot;</span> <span class="ow">and</span> <span class="n">lightmodel</span> <span class="o">!=</span> <span class="s2">&quot;caribu&quot;</span> <span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown lightmodel: can be either &#39;ratp&#39; </span><span class="se">\</span>
+<span class="s2">                                or &#39;caribu&#39; &quot;</span><span class="p">)</span>
+
+        <span class="c1"># save inputs in the instance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span> <span class="o">=</span> <span class="n">environment</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel</span> <span class="o">=</span> <span class="n">lightmodel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span> <span class="o">=</span> <span class="n">lightmodel_parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__main_unit</span> <span class="o">=</span> <span class="n">main_unit</span>
+
+        <span class="c1"># copy of default values in input parameters on not initialized keys</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">default_environnement</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span> <span class="p">:</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        
+        <span class="k">if</span> <span class="n">lightmodel</span> <span class="o">==</span> <span class="s2">&quot;caribu&quot;</span> <span class="p">:</span> <span class="n">lghtdict</span> <span class="o">=</span> <span class="n">default_caribu_parameters</span>
+        <span class="k">elif</span> <span class="n">lightmodel</span> <span class="o">==</span> <span class="s2">&quot;ratp&quot;</span> <span class="p">:</span> <span class="n">lghtdict</span> <span class="o">=</span> <span class="n">default_ratp_parameters</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">lghtdict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span> <span class="p">:</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="c1"># sky building</span>
+        <span class="n">skytype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;sky&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">lightmodel</span> <span class="o">==</span> <span class="s2">&quot;caribu&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;diffus&quot;</span><span class="p">]</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sky</span> <span class="o">=</span> <span class="n">CARIBUsky</span><span class="p">(</span><span class="n">skytype</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">lightmodel</span> <span class="o">==</span> <span class="s2">&quot;ratp&quot;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sky</span> <span class="o">=</span> <span class="n">RATPsky</span><span class="p">(</span><span class="n">skytype</span><span class="p">)</span>     
+
+<div class="viewcode-block" id="LightVegeManager.build"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager.LightVegeManager.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geometry</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">global_scene_tesselate_level</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Builds a mesh of the simulation scene in the right light model format</span>
+
+<span class="sd">        :param geometry: geometric parameters, contains geometric scenes, defaults to {}</span>
+<span class="sd">        :type geometry: dict, optional</span>
+<span class="sd">        :param global_scene_tesselate_level: option to subdivide all triangles of the mesh a certain number of times (to fine tuning the mesh), defaults to 0</span>
+<span class="sd">        :type global_scene_tesselate_level: int, optional</span>
+<span class="sd">        :raises ValueError: Currently, converting voxels mesh to triangles mesh is not possible</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__geometry</span> <span class="o">=</span> <span class="n">geometry</span>
+
+        <span class="c1"># First process of the scenes list, it gathers all triangulations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__complete_trimesh</span><span class="p">,</span> \
+        <span class="bp">self</span><span class="o">.</span><span class="n">__matching_ids</span><span class="p">,</span>      \
+        <span class="n">legume_grid</span><span class="p">,</span>               \
+        <span class="n">id_legume_scene</span> <span class="o">=</span> <span class="n">chain_triangulations</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__geometry</span><span class="p">[</span><span class="s2">&quot;scenes&quot;</span><span class="p">])</span>
+
+        <span class="c1"># applies geometric transformations on inputs scenes if precised</span>
+        <span class="k">if</span> <span class="s2">&quot;transformations&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__geometry</span> <span class="p">:</span>
+            <span class="n">apply_transformations</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__complete_trimesh</span><span class="p">,</span> 
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">__matching_ids</span><span class="p">,</span> 
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">__geometry</span><span class="p">[</span><span class="s2">&quot;transformations&quot;</span><span class="p">],</span> 
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">__main_unit</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__areamax</span> <span class="o">=</span> <span class="n">compute_area_max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__complete_trimesh</span><span class="p">)</span>
+
+        <span class="c1"># global tesselation of triangulation</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__matching_ids</span> <span class="ow">and</span> <span class="n">global_scene_tesselate_level</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">:</span>
+            <span class="n">new_trimesh</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">id_ele</span><span class="p">,</span> <span class="n">triangles</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__complete_trimesh</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">:</span>
+                <span class="n">new_tr_scene</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">triangles</span> <span class="p">:</span>
+                    <span class="n">level</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="n">iterate_triangles</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">global_scene_tesselate_level</span><span class="p">,</span> 
+                                                                <span class="n">new_tr_scene</span><span class="p">)</span>
+                <span class="n">new_trimesh</span><span class="p">[</span><span class="n">id_ele</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_tr_scene</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__complete_trimesh</span> <span class="o">=</span> <span class="n">new_trimesh</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__pmin</span><span class="p">,</span> \
+        <span class="bp">self</span><span class="o">.</span><span class="n">__pmax</span> <span class="o">=</span> <span class="n">compute_minmax_coord</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__complete_trimesh</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__triangleLmax</span> <span class="o">=</span> <span class="n">compute_trilenght_max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__complete_trimesh</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel</span> <span class="o">==</span> <span class="s2">&quot;caribu&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">legume_grid</span> <span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Conversion from voxels grid to triangles </span><span class="se">\</span>
+<span class="s2">                                is not possible yet&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Builds voxels grid from input geometry</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel</span> <span class="o">==</span> <span class="s2">&quot;ratp&quot;</span><span class="p">:</span>
+            <span class="c1"># triangles in the inputs</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__matching_ids</span> <span class="p">:</span>
+                <span class="c1"># separates stem elements in a new specy</span>
+                <span class="k">if</span> <span class="s2">&quot;stems id&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__geometry</span> <span class="p">:</span>
+                    <span class="n">manage_stems_for_ratp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__geometry</span><span class="p">[</span><span class="s2">&quot;stems id&quot;</span><span class="p">],</span> 
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">__matching_ids</span><span class="p">,</span> 
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span><span class="p">)</span>
+                <span class="k">else</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__geometry</span><span class="p">[</span><span class="s2">&quot;stems id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+                <span class="n">arg</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__complete_trimesh</span><span class="p">,</span>        
+                        <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">__pmin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__pmax</span><span class="p">],</span>     
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__triangleLmax</span><span class="p">,</span>             
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__matching_ids</span><span class="p">,</span>              
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span><span class="p">,</span>      
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;coordinates&quot;</span><span class="p">],</span> 
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;reflected&quot;</span><span class="p">],</span> 
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;infinite&quot;</span><span class="p">],</span>      
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__geometry</span><span class="p">[</span><span class="s2">&quot;stems id&quot;</span><span class="p">],</span>          
+                        <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__geometry</span><span class="p">[</span><span class="s2">&quot;scenes&quot;</span><span class="p">]))</span>
+    
+                <span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="p">,</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">__matching_tri_vox</span><span class="p">,</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">__angle_distrib</span> <span class="o">=</span>  <span class="n">build_RATPscene_from_trimesh</span><span class="p">(</span><span class="o">*</span><span class="n">arg</span><span class="p">)</span>
+
+            <span class="c1"># creates an empty RATP grid of voxels if geometric inputs are empty</span>
+            <span class="k">else</span> <span class="p">:</span>
+                <span class="n">arg</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span><span class="p">,</span>      
+                        <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">__pmin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__pmax</span><span class="p">],</span>    
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;coordinates&quot;</span><span class="p">],</span>  
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;infinite&quot;</span><span class="p">])</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="p">,</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">__angle_distrib</span> <span class="o">=</span>  <span class="n">build_RATPscene_empty</span><span class="p">(</span><span class="o">*</span><span class="n">arg</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__matching_tri_vox</span> <span class="o">=</span> <span class="p">{}</span>
+            
+            <span class="c1"># if there is a grid of voxels in the inputs, we converts it in a RATP grid</span>
+            <span class="k">if</span> <span class="n">legume_grid</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__matching_ids</span> <span class="p">:</span>
+                <span class="n">arg</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__geometry</span><span class="p">[</span><span class="s2">&quot;scenes&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span><span class="p">,</span>       
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;coordinates&quot;</span><span class="p">],</span>  
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;reflected&quot;</span><span class="p">],</span> 
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;infinite&quot;</span><span class="p">])</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="p">,</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">__angle_distrib</span><span class="p">,</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">__nb0</span> <span class="o">=</span>  <span class="n">legumescene_to_RATPscene</span><span class="p">(</span><span class="o">*</span><span class="n">arg</span><span class="p">)</span></div>
+                    
+<div class="viewcode-block" id="LightVegeManager.run"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager.LightVegeManager.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+            <span class="n">energy</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> 
+            <span class="n">day</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> 
+            <span class="n">hour</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> 
+            <span class="n">parunit</span><span class="o">=</span><span class="s2">&quot;micromol.m-2.s-1&quot;</span><span class="p">,</span> 
+            <span class="n">truesolartime</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">id_sensors</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calls the light model and formats lighting results</span>
+
+<span class="sd">        :param energy: input radiation energy, defaults to 0</span>
+<span class="sd">        :type energy: float, optional</span>
+<span class="sd">        :param day: simulation day, defaults to 0</span>
+<span class="sd">        :type day: int, optional</span>
+<span class="sd">        :param hour: simulation hour, defaults to 0</span>
+<span class="sd">        :type hour: int, optional</span>
+<span class="sd">        :param parunit: input energy unit, light models manages radiations in different unit, you can precise input unit and LightVegeManager will convert it in the right unit, defaults to &quot;micromol.m-2.s-1&quot;</span>
+<span class="sd">        :type parunit: str, optional</span>
+<span class="sd">        :param truesolartime: simulation hour is a true solar time or local time (depending on simulation coordinates), defaults to False</span>
+<span class="sd">        :type truesolartime: bool, optional</span>
+<span class="sd">        :param id_sensors: if you use CARIBU with a grid of virtual sensors, you have to precise which input scenes the grid must match, defaults to None</span>
+<span class="sd">        :type id_sensors: list, optional</span>
+<span class="sd">        :raises ValueError: with CARIBU you can precise the sun algorithm to calculate sun position, can be either ``&quot;caribu&quot;`` or ``&quot;ratp&quot;``</span>
+<span class="sd">        :raises ValueError: valid radiations are ``&quot;direct&quot;``, ``&quot;diffuse&quot;``, ``&quot;reflected&quot;``</span>
+<span class="sd">        &quot;&quot;&quot;</span>            
+        <span class="bp">self</span><span class="o">.</span><span class="n">__energy</span> <span class="o">=</span> <span class="n">energy</span>
+        
+        <span class="c1">## RATP ##</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel</span> <span class="o">==</span> <span class="s2">&quot;ratp&quot;</span> <span class="p">:</span>
+            <span class="n">vegetation</span> <span class="o">=</span> <span class="n">RATP_vegetation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span><span class="p">,</span> 
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">__angle_distrib</span><span class="p">,</span> 
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;reflected&quot;</span><span class="p">])</span>
+            <span class="n">meteo</span> <span class="o">=</span> <span class="n">RATP_meteo</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span>    
+                                <span class="n">day</span><span class="p">,</span> 
+                                <span class="n">hour</span><span class="p">,</span> 
+                                <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;coordinates&quot;</span><span class="p">],</span>
+                                <span class="n">parunit</span><span class="p">,</span> 
+                                <span class="n">truesolartime</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;direct&quot;</span><span class="p">],</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;diffus&quot;</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="o">.</span><span class="n">nveg</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">:</span>
+                <span class="c1"># Run of RATP</span>
+                <span class="n">start</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">runRATP</span><span class="o">.</span><span class="n">DoIrradiation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="p">,</span> 
+                                            <span class="n">vegetation</span><span class="p">,</span> 
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">__sky</span><span class="p">,</span> 
+                                            <span class="n">meteo</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__time_runmodel</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+                
+                <span class="c1"># output management</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__voxels_outputs</span> <span class="o">=</span> <span class="n">out_ratp_voxels</span><span class="p">(</span>
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="p">,</span>
+                                                    <span class="n">res</span><span class="p">,</span>
+                                                    <span class="n">parunit</span><span class="p">)</span>
+
+                <span class="c1"># if there are triangulations in the inputs</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__matching_ids</span> <span class="p">:</span>
+                    <span class="n">arg</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__complete_trimesh</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">__matching_ids</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">__matching_tri_vox</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">__voxels_outputs</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__triangles_outputs</span> <span class="o">=</span> <span class="n">out_ratp_triangles</span><span class="p">(</span><span class="o">*</span><span class="n">arg</span><span class="p">)</span>
+
+                    <span class="n">arg</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__matching_ids</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;reflected&quot;</span><span class="p">],</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span><span class="p">[</span><span class="s2">&quot;reflectance coefficients&quot;</span><span class="p">],</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__triangles_outputs</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__elements_outputs</span> <span class="o">=</span> <span class="n">out_ratp_elements</span><span class="p">(</span><span class="o">*</span><span class="n">arg</span><span class="p">)</span>
+
+            <span class="k">else</span> <span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- Empty RATP grid&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__voxels_outputs</span> <span class="o">=</span> <span class="n">out_ratp_empty_grid</span><span class="p">(</span><span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">)</span>
+
+        <span class="c1">## CARIBU ##</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel</span> <span class="o">==</span> <span class="s2">&quot;caribu&quot;</span> <span class="p">:</span>
+            <span class="n">sun_up</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;direct&quot;</span><span class="p">]</span> <span class="p">:</span>
+                <span class="c1"># computes sun position</span>
+                <span class="n">arg</span> <span class="o">=</span> <span class="p">(</span><span class="n">day</span><span class="p">,</span> 
+                        <span class="n">hour</span><span class="p">,</span> 
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;coordinates&quot;</span><span class="p">],</span> 
+                        <span class="n">truesolartime</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span><span class="p">[</span><span class="s2">&quot;sun algo&quot;</span><span class="p">]</span><span class="o">==</span><span class="s2">&quot;ratp&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__sun</span> <span class="o">=</span> <span class="n">ratp_sun</span><span class="p">(</span><span class="o">*</span><span class="n">arg</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span><span class="p">[</span><span class="s2">&quot;sun algo&quot;</span><span class="p">]</span><span class="o">==</span><span class="s2">&quot;caribu&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__sun</span> <span class="o">=</span> <span class="n">caribu_sun</span><span class="p">(</span><span class="o">*</span><span class="n">arg</span><span class="p">)</span>
+                <span class="k">else</span> <span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;sun algo not recognize&quot;</span><span class="p">)</span>
+            
+                <span class="c1"># check if sun is up</span>
+                <span class="c1"># criteria is set to elevation &gt; 2°, from alinea shortwave_balance.F90 -&gt; DirectBeam_Interception, l.68</span>
+                <span class="n">sun_up</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">asin</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">__sun</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="mi">180</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">2.</span>
+            
+            <span class="n">compute</span> <span class="o">=</span> <span class="p">(</span><span class="n">sun_up</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;direct&quot;</span><span class="p">])</span> <span class="ow">or</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;diffus&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">compute</span><span class="p">:</span>             
+                <span class="c1"># CARIBU preparations</span>
+                <span class="n">arg</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__complete_trimesh</span><span class="p">,</span> 
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__geometry</span><span class="p">,</span> 
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__matching_ids</span><span class="p">,</span> 
+                        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__pmin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__pmax</span><span class="p">),</span> 
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;infinite&quot;</span><span class="p">],</span> 
+                        <span class="n">id_sensors</span><span class="p">)</span>
+                <span class="n">opt</span><span class="p">,</span> <span class="n">sensors_caribu</span><span class="p">,</span> <span class="n">debug</span> <span class="o">=</span> <span class="n">Prepare_CARIBU</span><span class="p">(</span><span class="o">*</span><span class="n">arg</span><span class="p">)</span>
+                <span class="n">issensors</span> <span class="o">=</span> <span class="s2">&quot;sensors&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span>
+                <span class="n">issoilmesh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span><span class="p">[</span><span class="s2">&quot;soil mesh&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span>
+                
+                <span class="c1"># Initialize a CaribuScene</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;diffus&quot;</span><span class="p">]</span>  <span class="ow">and</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;direct&quot;</span><span class="p">]</span> <span class="p">:</span>
+                    <span class="n">c_scene_sky</span> <span class="o">=</span> <span class="n">CaribuScene</span><span class="p">(</span>
+                        <span class="n">scene</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__complete_trimesh</span><span class="p">,</span> 
+                        <span class="n">light</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__sky</span><span class="p">,</span> 
+                        <span class="n">opt</span><span class="o">=</span><span class="n">opt</span><span class="p">,</span> 
+                        <span class="n">scene_unit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__main_unit</span><span class="p">,</span> 
+                        <span class="n">pattern</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__geometry</span><span class="p">[</span><span class="s2">&quot;domain&quot;</span><span class="p">],</span> 
+                        <span class="n">soil_mesh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span><span class="p">[</span><span class="s2">&quot;soil mesh&quot;</span><span class="p">],</span> 
+                        <span class="n">debug</span> <span class="o">=</span> <span class="n">debug</span>
+                        <span class="p">)</span>
+                    <span class="n">sun_sky_option</span> <span class="o">=</span> <span class="s2">&quot;mix&quot;</span>
+                    <span class="n">light</span> <span class="o">=</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">((</span><span class="mf">1.</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sun</span><span class="p">))]</span>
+
+                <span class="k">else</span> <span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;diffus&quot;</span><span class="p">]</span> <span class="p">:</span>
+                        <span class="n">light</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sky</span>
+                        <span class="n">sun_sky_option</span> <span class="o">=</span> <span class="s2">&quot;sky&quot;</span>
+                    
+                    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;direct&quot;</span><span class="p">]</span> <span class="p">:</span>
+                        <span class="n">light</span> <span class="o">=</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">((</span><span class="mf">1.</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sun</span><span class="p">))]</span>
+                        <span class="n">sun_sky_option</span> <span class="o">=</span> <span class="s2">&quot;sun&quot;</span>
+
+                    <span class="k">else</span> <span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Error with radiative inputs&quot;</span><span class="p">)</span>
+
+                <span class="n">c_scene</span> <span class="o">=</span> <span class="n">CaribuScene</span><span class="p">(</span>
+                    <span class="n">scene</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__complete_trimesh</span><span class="p">,</span> 
+                    <span class="n">light</span><span class="o">=</span><span class="n">light</span><span class="p">,</span> 
+                    <span class="n">opt</span><span class="o">=</span><span class="n">opt</span><span class="p">,</span> 
+                    <span class="n">scene_unit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__main_unit</span><span class="p">,</span> 
+                    <span class="n">pattern</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__geometry</span><span class="p">[</span><span class="s2">&quot;domain&quot;</span><span class="p">],</span> 
+                    <span class="n">soil_mesh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span><span class="p">[</span><span class="s2">&quot;soil mesh&quot;</span><span class="p">],</span> 
+                    <span class="n">debug</span> <span class="o">=</span> <span class="n">debug</span>
+                    <span class="p">)</span>
+                
+                <span class="c1"># Runs CARIBU</span>
+                <span class="n">arg</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_scene</span><span class="p">,</span> \
+                        <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;reflected&quot;</span><span class="p">],</span> \
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;infinite&quot;</span><span class="p">],</span> \
+                        <span class="n">sensors_caribu</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">sun_sky_option</span> <span class="o">==</span> <span class="s2">&quot;mix&quot;</span><span class="p">:</span>
+                    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+                    <span class="n">raw_sun</span><span class="p">,</span> <span class="n">aggregated_sun</span> <span class="o">=</span> <span class="n">run_caribu</span><span class="p">(</span><span class="o">*</span><span class="n">arg</span><span class="p">)</span>
+                    <span class="n">arg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">c_scene_sky</span>
+                    <span class="n">raw_sky</span><span class="p">,</span> <span class="n">aggregated_sky</span> <span class="o">=</span> <span class="n">run_caribu</span><span class="p">(</span><span class="o">*</span><span class="n">arg</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__time_runmodel</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+
+                    <span class="c1">#: Spitters&#39;s model estimating for the diffuse:direct ratio</span>
+                    <span class="c1"># % de sky dans la valeur d&#39;énergie finale</span>
+                    <span class="n">Rg</span> <span class="o">=</span> <span class="n">energy</span> <span class="o">/</span> <span class="mf">2.02</span>  <span class="c1">#: Global Radiation (W.m-2)</span>
+                    <span class="c1">#: Diffuse fraction of the global irradiance</span>
+                    <span class="n">rdrs</span> <span class="o">=</span> <span class="n">spitters_horaire</span><span class="o">.</span><span class="n">RdRsH</span><span class="p">(</span>
+                                <span class="n">Rg</span><span class="o">=</span><span class="n">Rg</span><span class="p">,</span> 
+                                <span class="n">DOY</span><span class="o">=</span><span class="n">day</span><span class="p">,</span> 
+                                <span class="n">heureTU</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> 
+                                <span class="n">latitude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;coordinates&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+                    <span class="n">raw</span><span class="p">,</span>                    \
+                    <span class="n">aggregated</span><span class="p">,</span>             \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__sensors_outputs</span><span class="p">,</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__soilenergy</span> <span class="o">=</span> <span class="n">out_caribu_mix</span><span class="p">(</span><span class="n">rdrs</span><span class="p">,</span>
+                                                        <span class="n">c_scene</span><span class="p">,</span>
+                                                        <span class="n">c_scene_sky</span><span class="p">,</span>
+                                                        <span class="n">raw_sun</span><span class="p">,</span> 
+                                                        <span class="n">aggregated_sun</span><span class="p">,</span> 
+                                                        <span class="n">raw_sky</span><span class="p">,</span> 
+                                                        <span class="n">aggregated_sky</span><span class="p">,</span>
+                                                        <span class="n">issensors</span><span class="p">,</span>
+                                                        <span class="n">issoilmesh</span><span class="p">)</span>
+                <span class="k">else</span> <span class="p">:</span>
+                    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+                    <span class="n">raw</span><span class="p">,</span> <span class="n">aggregated</span> <span class="o">=</span> <span class="n">run_caribu</span><span class="p">(</span><span class="o">*</span><span class="n">arg</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__time_runmodel</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__sensors_outputs</span><span class="p">,</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__soilenergy</span> <span class="o">=</span> <span class="n">out_caribu_nomix</span><span class="p">(</span><span class="n">c_scene</span><span class="p">,</span>
+                                                            <span class="n">aggregated</span><span class="p">,</span>
+                                                            <span class="n">issensors</span><span class="p">,</span>
+                                                            <span class="n">issoilmesh</span><span class="p">)</span>
+                    
+            <span class="c1"># Outputs management</span>
+            <span class="n">arg</span> <span class="o">=</span> <span class="p">[</span><span class="n">day</span><span class="p">,</span>
+                <span class="n">hour</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__complete_trimesh</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__matching_ids</span><span class="p">,</span>
+                <span class="n">aggregated</span><span class="p">,</span>
+                <span class="n">compute</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__elements_outputs</span> <span class="o">=</span> <span class="n">out_caribu_elements</span><span class="p">(</span><span class="o">*</span><span class="n">arg</span><span class="p">)</span>
+            <span class="n">arg</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">raw</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__triangles_outputs</span> <span class="o">=</span> <span class="n">out_caribu_triangles</span><span class="p">(</span><span class="o">*</span><span class="n">arg</span><span class="p">)</span>
+            
+        <span class="c1">## RiRi (l-egume) ##</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel</span> <span class="o">==</span> <span class="s2">&quot;riri&quot;</span> <span class="p">:</span>
+            <span class="n">dS</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span><span class="p">[</span><span class="s2">&quot;voxel size&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> \
+                                <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span><span class="p">[</span><span class="s2">&quot;voxel size&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+            
+            <span class="n">tag_light_inputs</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">__geometry</span><span class="p">[</span><span class="s2">&quot;scenes&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;LA&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">dS</span><span class="p">,</span> 
+                                <span class="bp">self</span><span class="o">.</span><span class="n">__geometry</span><span class="p">[</span><span class="s2">&quot;scenes&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;triplets&quot;</span><span class="p">],</span> 
+                                <span class="bp">self</span><span class="o">.</span><span class="n">__geometry</span><span class="p">[</span><span class="s2">&quot;scenes&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;distrib&quot;</span><span class="p">],</span> 
+                                <span class="n">energy</span> <span class="o">*</span> <span class="n">dS</span><span class="p">]</span>
+
+            <span class="c1"># mise a jour de res_trans, res_abs_i, res_rfr, ls_epsi</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__legume_transmitted_light</span><span class="p">,</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">__legume_intercepted_light</span> <span class="o">=</span> \
+                        <span class="n">riri</span><span class="o">.</span><span class="n">calc_extinc_allray_multi_reduced</span><span class="p">(</span>
+                                        <span class="o">*</span><span class="n">tag_light_inputs</span><span class="p">,</span> 
+                                        <span class="n">optsky</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__in_environment</span><span class="p">[</span><span class="s2">&quot;sky&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> 
+                                        <span class="n">opt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__in_environment</span><span class="p">[</span><span class="s2">&quot;sky&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+                                                                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__time_runmodel</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span></div>
+    
+    <span class="c1">## TRANSFER METHODS ##</span>
+<div class="viewcode-block" id="LightVegeManager.to_MTG"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager.LightVegeManager.to_MTG">[docs]</a>    <span class="k">def</span> <span class="nf">to_MTG</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">energy</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">mtg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Transfers lighting results to a MTG table.</span>
+<span class="sd">        </span>
+<span class="sd">        .. warning:: The :meth:`run` must have been called before to have results dataframes.</span>
+<span class="sd">        </span>
+<span class="sd">        Results are ``pandas.Dataframe`` stored in the ``self``</span>
+
+<span class="sd">        :param energy: input energy, defaults to 1</span>
+<span class="sd">        :type energy: float, optional</span>
+<span class="sd">        :param mtg: MTG table with ``&quot;PARa&quot;`` and ``&quot;Erel&quot;`` entries in its properties, defaults to None</span>
+<span class="sd">        :type mtg: MTG, optional</span>
+<span class="sd">        :param id: you can precise to which input scenes the MTG table corresponds, defaults to None</span>
+<span class="sd">        :type id: list or tuple, optional</span>
+<span class="sd">        :raises AttributeError: you need to call :func:run first</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__elements_outputs</span><span class="p">)</span> <span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;No results yet, run a light modeling first&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># crée un tableau comme dans caribu_facade de fspm-wheat</span>
+        <span class="n">dico_par</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">para_dic</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">erel_dic</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="nb">id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="p">:</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__elements_outputs</span><span class="p">[</span><span class="s2">&quot;Organ&quot;</span><span class="p">]:</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__elements_outputs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">__elements_outputs</span><span class="o">.</span><span class="n">Organ</span><span class="o">==</span><span class="n">s</span><span class="p">]</span>
+                <span class="n">para_dic</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;par Eabs&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">energy</span>
+                <span class="n">erel_dic</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;par Eabs&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">__energy</span>
+        
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">==</span> <span class="nb">tuple</span> <span class="p">:</span>
+            <span class="k">for</span> <span class="n">esp</span> <span class="ow">in</span> <span class="nb">id</span><span class="p">:</span>
+                <span class="n">df_outputs_esp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__elements_outputs</span><span class="p">[</span> \
+                                <span class="bp">self</span><span class="o">.</span><span class="n">__elements_outputs</span><span class="o">.</span><span class="n">VegetationType</span><span class="o">==</span><span class="n">esp</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">df_outputs_esp</span><span class="p">[</span><span class="s2">&quot;Organ&quot;</span><span class="p">]:</span>
+                    <span class="n">d</span> <span class="o">=</span> <span class="n">df_outputs_esp</span><span class="p">[</span><span class="n">df_outputs_esp</span><span class="o">.</span><span class="n">Organ</span><span class="o">==</span><span class="n">s</span><span class="p">]</span>
+                    <span class="n">para_dic</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;par Eabs&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">energy</span>
+                    <span class="n">erel_dic</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;par Eabs&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">__energy</span>
+        <span class="n">dico_par</span><span class="p">[</span><span class="s2">&quot;PARa&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">para_dic</span>
+        <span class="n">dico_par</span><span class="p">[</span><span class="s2">&quot;Erel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">erel_dic</span>
+
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">dico_par</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">param</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mtg</span><span class="o">.</span><span class="n">properties</span><span class="p">():</span>
+                <span class="n">mtg</span><span class="o">.</span><span class="n">add_property</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+            <span class="c1"># update the MTG</span>
+            <span class="n">mtg</span><span class="o">.</span><span class="n">property</span><span class="p">(</span><span class="n">param</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dico_par</span><span class="p">[</span><span class="n">param</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="LightVegeManager.to_l_egume"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager.LightVegeManager.to_l_egume">[docs]</a>    <span class="k">def</span> <span class="nf">to_l_egume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+                    <span class="n">energy</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> 
+                    <span class="n">m_lais</span> <span class="o">=</span> <span class="p">[],</span> 
+                    <span class="n">list_lstring</span> <span class="o">=</span> <span class="p">[],</span> 
+                    <span class="n">list_dicFeuilBilanR</span> <span class="o">=</span> <span class="p">[],</span> 
+                    <span class="n">list_invar</span> <span class="o">=</span> <span class="p">[],</span> 
+                    <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Transfers lighting results to l-egume</span>
+
+<span class="sd">        .. warning:: The :meth:`run` must have been called before to have results dataframes.</span>
+
+<span class="sd">        .. warning:: l-egume needs transmitted energy informations located in a grid of voxels. You need to have the same dimensions in the lighting results.</span>
+<span class="sd">            </span>
+<span class="sd">            * With RATP, RATP grid must have the same dimensions as l-egume intern grid. </span>
+<span class="sd">            </span>
+<span class="sd">            * With CARIBU, you must create a grid of virtual sensors in the same dimensions as l-egume intern grid.</span>
+
+<span class="sd">        Results are ``pandas.Dataframe`` stored in the ``self``</span>
+
+<span class="sd">        :param energy: input energy, defaults to 1</span>
+<span class="sd">        :type energy: float, optional</span>
+<span class="sd">        :param m_lais: leaf area represented in a numpy.array of dimension [number of species, number of z layers, number of y layers, number of x layers], defaults to []</span>
+<span class="sd">        :type m_lais: numpy.array, optional</span>
+<span class="sd">        :param list_lstring: from l-egume, each element corresponds to an input specy of l-egume. Each element is a dict lstring stores the l-system of each plant, defaults to []</span>
+<span class="sd">        :type list_lstring: list of dict, optional</span>
+<span class="sd">        :param list_dicFeuilBilanR: from l-egume, each element corresponds to an input specy of l-egume. Each element is a dict dicFeuiBilanR stores correspondances between voxels grid and each plant, defaults to []</span>
+<span class="sd">        :type list_dicFeuilBilanR: list of dict, optional</span>
+<span class="sd">        :param list_invar: from l-egume, each element corresponds to an input specy of l-egume. Each element is a dict invar stores instant intern variables of l-egume., defaults to []</span>
+<span class="sd">        :type list_invar: list of dict, optional</span>
+<span class="sd">        :param id: list of indices from input scenes which corresponds to current l-egume instance. If you have several plantmodel among the input scenes, you need to precise which results you want to transfer to which instance of l-egume. defaults to None</span>
+<span class="sd">        :type id: list, optional</span>
+<span class="sd">        :raises AttributeError: you need to call :meth:`run` first</span>
+<span class="sd">        :raises ValueError: unknown light model</span>
+
+<span class="sd">        :return: </span>
+
+<span class="sd">            if light model is RATP :func:`transfer_ratp_legume` :</span>
+
+<span class="sd">                * ``res_abs_i``: absorbed energy in each voxels of a grid matching the dimensions of l-egume intern grid of voxels. One value for each specy.</span>
+
+<span class="sd">                * ``res_trans``: transmitted energy in each voxels of a grid matching the dimensions of l-egume intern grid of voxels</span>
+
+<span class="sd">            if light model is CARIBU :func:transfer_caribu_legume :</span>
+
+<span class="sd">                * update of list_invar: updates the keys ``&quot;parap&quot;`` and ``&quot;parip&quot;`` for each specy. Cumulatative energy per plant</span>
+
+<span class="sd">                * ``res_trans``: transmitted energy in each voxels of a grid matching the dimensions of l-egume intern grid of voxels</span>
+<span class="sd">        </span>
+<span class="sd">        :rtype: numpy.array</span>
+<span class="sd">        &quot;&quot;&quot;</span>                   
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__elements_outputs</span><span class="p">)</span> <span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;No results yet, run a light modeling first&quot;</span><span class="p">)</span>
+
+        <span class="n">epsilon</span> <span class="o">=</span> <span class="mf">1e-14</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel</span> <span class="o">==</span> <span class="s2">&quot;ratp&quot;</span> <span class="p">:</span>
+            <span class="k">return</span> <span class="n">transfer_ratp_legume</span><span class="p">(</span><span class="n">m_lais</span><span class="p">,</span> 
+                                        <span class="n">energy</span><span class="p">,</span> 
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="p">,</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">__voxels_outputs</span><span class="p">,</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">__nb0</span><span class="p">,</span>
+                                        <span class="n">epsilon</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel</span> <span class="o">==</span> <span class="s2">&quot;caribu&quot;</span> <span class="p">:</span>
+            <span class="n">skylayer</span> <span class="o">=</span> <span class="n">reduce_layers_from_trimesh</span><span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">__complete_trimesh</span><span class="p">,</span> 
+                                <span class="bp">self</span><span class="o">.</span><span class="n">__pmax</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span><span class="p">[</span><span class="s2">&quot;sensors&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span><span class="p">[</span><span class="s2">&quot;sensors&quot;</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">__matching_ids</span><span class="p">,</span> 
+                                <span class="nb">id</span><span class="p">)</span>
+            
+            <span class="k">return</span> <span class="n">transfer_caribu_legume</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span>
+                                            <span class="n">skylayer</span><span class="p">,</span> 
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">__elements_outputs</span><span class="p">,</span> 
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">__sensors_outputs</span><span class="p">,</span> 
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span><span class="p">[</span><span class="s2">&quot;sensors&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> 
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span><span class="p">[</span><span class="s2">&quot;sensors&quot;</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> 
+                                            <span class="n">m_lais</span><span class="p">,</span> 
+                                            <span class="n">list_invar</span><span class="p">,</span> 
+                                            <span class="n">list_lstring</span><span class="p">,</span>
+                                            <span class="n">list_dicFeuilBilanR</span><span class="p">,</span> 
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;infinite&quot;</span><span class="p">],</span>
+                                            <span class="n">epsilon</span><span class="p">)</span> 
+
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown light model (ratp or caribu)&quot;</span><span class="p">)</span></div>
+
+    <span class="c1">## EXTERN TOOLS ##</span>
+<div class="viewcode-block" id="LightVegeManager.s5"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager.LightVegeManager.s5">[docs]</a>    <span class="k">def</span> <span class="nf">s5</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates inputs files for s5 and runs it</span>
+<span class="sd">        s5 is an external tool made to analyse a set of triangles in order to use a grid of voxels.</span>
+<span class="sd">        It also computes leaf angle distribution from the triangulation</span>
+
+<span class="sd">        .. note:: All files are located in ``s5`` folder</span>
+
+<span class="sd">        **Input files created**</span>
+
+<span class="sd">            * fort.51: contains triangulation. Possibility to precise stem elements it is registered in the instance of LightVegeManager</span>
+
+<span class="sd">            * s5.par: stores grid of voxels informations and number of entities</span>
+
+<span class="sd">        **Output files created**</span>
+
+<span class="sd">            * fort.60</span>
+<span class="sd">            </span>
+<span class="sd">                dimensions xy of the grid</span>
+
+<span class="sd">                stats by specy</span>
+
+<span class="sd">                    - total leaf area</span>
+<span class="sd">                    - leaf area index</span>
+<span class="sd">                    - global zenital leaf angle distribution</span>
+<span class="sd">                    - global azimutal leaf angle distribution</span>
+<span class="sd">                </span>
+<span class="sd">                stats by voxels</span>
+<span class="sd">                </span>
+<span class="sd">                    - #specy | #ix | #iy | #iz (coordinate xyz of the voxel) | eaf area density</span>
+<span class="sd">                    - local zenital leaf angle distribution</span>
+<span class="sd">                    - local azimutal leaf angle distribution</span>
+
+<span class="sd">            * leafarea: for each specy, for each voxel</span>
+<span class="sd">                </span>
+<span class="sd">                ix | iy | iz | #specy | LAD | zenital-distribution | azimutal-distribution</span>
+
+<span class="sd">        **example**</span>
+
+<span class="sd">        &gt;&gt;&gt; myscene # a plantgl Scene</span>
+<span class="sd">        &gt;&gt;&gt; testofs5 = LightVegeManager() # create a instance</span>
+<span class="sd">        &gt;&gt;&gt; testofs5.build( geometry={ &quot;scenes&quot; : [myscene] } ) # build the geometry</span>
+<span class="sd">        &gt;&gt;&gt; testofs5.s5() # run of s5, creates input and output files</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="n">currentfolder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span> \
+                                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span>
+        <span class="n">s5folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">currentfolder</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="s2">&quot;s5&quot;</span><span class="p">))</span>
+        <span class="n">fort51</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">s5folder</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="s2">&quot;fort.51&quot;</span><span class="p">))</span>
+        <span class="n">s5par</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">s5folder</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="s2">&quot;s5.par&quot;</span><span class="p">))</span>
+
+        <span class="c1"># écriture du fichier fort.51 contenant la triangulation</span>
+        <span class="n">f</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">fort51</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="n">c_tr</span><span class="o">=</span><span class="mi">1</span>
+        <span class="k">for</span> <span class="nb">id</span><span class="p">,</span> <span class="n">triangles</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__complete_trimesh</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">:</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">triangles</span> <span class="p">:</span>
+                <span class="k">if</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__matching_ids</span><span class="p">[</span><span class="nb">id</span><span class="p">])</span> <span class="ow">in</span> \
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">__geometry</span><span class="p">[</span><span class="s2">&quot;stems id&quot;</span><span class="p">]:</span>
+                    <span class="n">stem</span><span class="o">=</span><span class="s1">&#39;000&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">stem</span><span class="o">=</span><span class="s1">&#39;001&#39;</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__matching_ids</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span>         \
+                        <span class="nb">str</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%05i</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__matching_ids</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">+</span> \
+                        <span class="n">stem</span> <span class="o">+</span> <span class="s1">&#39;000&#39;</span>
+                
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;p</span><span class="se">\t</span><span class="s2">1</span><span class="se">\t</span><span class="si">%s</span><span class="se">\t</span><span class="s2">3</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">label</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%f</span><span class="se">\t</span><span class="si">%f</span><span class="se">\t</span><span class="si">%f</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]))</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">c_tr</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="c1"># écriture du fichier s5.par contenant les informations de la grille</span>
+        <span class="n">f</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">s5par</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>    
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%i</span><span class="se">\t</span><span class="si">%i</span><span class="se">\t</span><span class="si">%i</span><span class="se">\t</span><span class="si">%i</span><span class="se">\t</span><span class="s2">0</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="o">.</span><span class="n">nent</span><span class="p">,</span> 
+                                            <span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> 
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="o">.</span><span class="n">njz</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="o">.</span><span class="n">njz</span><span class="p">):</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%f</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="o">.</span><span class="n">dz</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">njx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="o">.</span><span class="n">njx</span>
+        <span class="n">njy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="o">.</span><span class="n">njy</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="o">.</span><span class="n">dx</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="o">.</span><span class="n">dy</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%f</span><span class="se">\t</span><span class="si">%i</span><span class="se">\t</span><span class="si">%f</span><span class="se">\t</span><span class="si">%f</span><span class="se">\t</span><span class="si">%i</span><span class="se">\t</span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">njx</span><span class="o">*</span><span class="n">dx</span><span class="p">,</span> <span class="n">njx</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">njy</span><span class="o">*</span><span class="n">dy</span><span class="p">,</span> <span class="n">njy</span><span class="p">,</span> <span class="n">dy</span><span class="p">))</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="c1"># exécution de s5 dans un sous process</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;.\s5.exe&quot;</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">s5folder</span><span class="p">)</span>
+        
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">+</span><span class="s2">&quot;--- Fin de s5.f&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="LightVegeManager.s2v"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager.LightVegeManager.s2v">[docs]</a>    <span class="k">def</span> <span class="nf">s2v</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates inputs files for s2v and runs it</span>
+<span class="sd">        s5 is an external tool made to analyse a set of triangles in order to use a grid of voxels.</span>
+<span class="sd">        It also computes leaf angle distribution from the triangulation</span>
+
+<span class="sd">        .. note:: All files are located in ``s2v`` folder</span>
+
+<span class="sd">        **Input files created**</span>
+
+<span class="sd">            * fort.51: stores triangulation. Possibility to precise stem elements it is registered in the instance of LightVegeManager</span>
+
+<span class="sd">            * s2v.par: stores grid of voxels informations and number of entities</span>
+
+<span class="sd">        **Output files created**</span>
+
+<span class="sd">            * s2v.log</span>
+
+<span class="sd">                logs about processing</span>
+<span class="sd">                </span>
+<span class="sd">                global statistics</span>
+
+<span class="sd">                    - total leaf area per specy</span>
+<span class="sd">                    - total leaf area</span>
+<span class="sd">                    - leaf area index</span>
+<span class="sd">                    - global zenital leaf angle distribution</span>
+
+<span class="sd">            * s2v.can</span>
+
+<span class="sd">                z layer where each triangle is located (and copy its vertices)</span>
+<span class="sd">            </span>
+<span class="sd">            * s2v.area</span>
+
+<span class="sd">                triangle id | z layer | triangle area</span>
+
+<span class="sd">            * out.dang: SAIL file</span>
+
+<span class="sd">                line 1: global leaf area index for specy 1</span>
+<span class="sd">                line 2: global zenital leaf angle distribution for specy 1</span>
+
+<span class="sd">            * leafarea: SAIL file</span>
+
+<span class="sd">                each line: 0 | idz | leaf area index for each slope class in current z layer | 0 | 0 | leaf area density on the layer</span>
+
+<span class="sd">        **example**</span>
+
+<span class="sd">        &gt;&gt;&gt; myscene # a plantgl Scene</span>
+<span class="sd">        &gt;&gt;&gt; testofs2v = LightVegeManager() # create a instance</span>
+<span class="sd">        &gt;&gt;&gt; testofs2v.build( geometry={ &quot;scenes&quot; : [myscene] } ) # build the geometry</span>
+<span class="sd">        &gt;&gt;&gt; testofs2v.s2v() # run of s2v, creates input and output files</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span> 
+        <span class="n">currentfolder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span> \
+                                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span>
+        <span class="n">s2vfolder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">currentfolder</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="s2">&quot;s2v&quot;</span><span class="p">))</span>
+        <span class="n">fort51</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">s2vfolder</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="s2">&quot;fort.51&quot;</span><span class="p">))</span>
+        <span class="n">s2vpar</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">s2vfolder</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="s2">&quot;s2v.par&quot;</span><span class="p">))</span>
+
+        <span class="c1"># écriture du fichier fort.51 contenant la triangulation</span>
+        <span class="n">f</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">fort51</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="n">c_tr</span><span class="o">=</span><span class="mi">1</span>
+        <span class="k">for</span> <span class="nb">id</span><span class="p">,</span> <span class="n">triangles</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__complete_trimesh</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">:</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">triangles</span> <span class="p">:</span>
+                <span class="k">if</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__matching_ids</span><span class="p">[</span><span class="nb">id</span><span class="p">])</span> <span class="ow">in</span> \
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">__geometry</span><span class="p">[</span><span class="s2">&quot;stems id&quot;</span><span class="p">]:</span>
+                    <span class="n">stem</span><span class="o">=</span><span class="s1">&#39;000&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">stem</span><span class="o">=</span><span class="s1">&#39;001&#39;</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__matching_ids</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span>         \
+                        <span class="nb">str</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%05i</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__matching_ids</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">+</span> \
+                        <span class="n">stem</span> <span class="o">+</span> <span class="s1">&#39;000&#39;</span>
+                
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;p</span><span class="se">\t</span><span class="s2">1</span><span class="se">\t</span><span class="si">%s</span><span class="se">\t</span><span class="s2">3</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">label</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%f</span><span class="se">\t</span><span class="si">%f</span><span class="se">\t</span><span class="si">%f</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]))</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">c_tr</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="n">f</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">s2vpar</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="c1"># ligne 1 </span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;9 9 </span><span class="si">%i</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="o">.</span><span class="n">njz</span><span class="p">))</span>
+
+        <span class="c1"># ligne 2</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="o">.</span><span class="n">njz</span><span class="p">):</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%f</span><span class="s2"> &quot;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="o">.</span><span class="n">dz</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># ligne 3</span>
+        <span class="n">njx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="o">.</span><span class="n">njx</span>
+        <span class="n">njy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="o">.</span><span class="n">njy</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="o">.</span><span class="n">dx</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="o">.</span><span class="n">dy</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%f</span><span class="s2"> </span><span class="si">%i</span><span class="s2"> </span><span class="si">%f</span><span class="s2"> </span><span class="si">%f</span><span class="s2"> </span><span class="si">%i</span><span class="s2"> </span><span class="si">%f</span><span class="s2"> </span><span class="si">%i</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">njx</span><span class="o">*</span><span class="n">dx</span><span class="p">,</span> 
+                                            <span class="n">njx</span><span class="p">,</span> 
+                                            <span class="n">dx</span><span class="p">,</span> 
+                                            <span class="n">njy</span><span class="o">*</span><span class="n">dy</span><span class="p">,</span> 
+                                            <span class="n">njy</span><span class="p">,</span> 
+                                            <span class="n">dy</span><span class="p">,</span> 
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="o">.</span><span class="n">nent</span><span class="p">))</span>
+
+        <span class="c1"># ligne 4</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%f</span><span class="s2"> </span><span class="si">%f</span><span class="s2"> </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="o">.</span><span class="n">xorig</span><span class="p">,</span> 
+                                <span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="o">.</span><span class="n">yorig</span><span class="p">,</span> 
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="o">.</span><span class="n">zorig</span><span class="p">))</span>
+
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="c1"># exécution de s5 dans un sous process</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;.\s2v.exe&quot;</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">s2vfolder</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- Fin de s2v.cpp&quot;</span><span class="p">)</span></div>
+
+    <span class="c1">## VTK FILES ##</span>
+<div class="viewcode-block" id="LightVegeManager.VTK_nolight"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager.LightVegeManager.VTK_nolight">[docs]</a>    <span class="k">def</span> <span class="nf">VTK_nolight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">printtriangles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">printvoxels</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Writes a VTK from mesh(es) in ``self``, with only geometric informations</span>
+
+<span class="sd">        :param path: file and path name</span>
+<span class="sd">        :type path: string</span>
+<span class="sd">        :param i: associate the created file with an indice in its filename, defaults to None</span>
+<span class="sd">        :type i: int, optional</span>
+<span class="sd">        :param printtriangles: write triangulation if one has been created in :func:build, defaults to True</span>
+<span class="sd">        :type printtriangles: bool, optional</span>
+<span class="sd">        :param printvoxels: write grid of voxels if one has been created in :func:build, defaults to True</span>
+<span class="sd">        :type printvoxels: bool, optional</span>
+<span class="sd">        &quot;&quot;&quot;</span>             
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel</span> <span class="o">==</span> <span class="s2">&quot;ratp&quot;</span> <span class="ow">and</span> <span class="n">printvoxels</span><span class="p">:</span> 
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">is</span> <span class="kc">None</span> <span class="p">:</span> <span class="n">filepath</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;_voxels_nolight.vtk&quot;</span>
+            <span class="k">else</span> <span class="p">:</span> <span class="n">filepath</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;_voxels_nolight&quot;</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.vtk&quot;</span>
+            <span class="n">ratp_prepareVTK</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="p">,</span> <span class="n">filepath</span><span class="p">)</span>
+            
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__matching_ids</span> <span class="ow">and</span> <span class="n">printtriangles</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">is</span> <span class="kc">None</span> <span class="p">:</span> <span class="n">filepath</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;_triangles_nolight.vtk&quot;</span>
+            <span class="k">else</span> <span class="p">:</span> <span class="n">filepath</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;_triangles_nolight&quot;</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;.vtk&quot;</span>
+            <span class="n">VTKtriangles</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__complete_trimesh</span><span class="p">,</span> <span class="p">[],</span> <span class="p">[],</span> <span class="n">filepath</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="LightVegeManager.VTK_light"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager.LightVegeManager.VTK_light">[docs]</a>    <span class="k">def</span> <span class="nf">VTK_light</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">printtriangles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">printvoxels</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Writes a VTK from mesh(es) in ``self``, with geometric informations and lighting results</span>
+
+<span class="sd">        .. warning:: The :meth:`run` must have been called before to have results dataframes.</span>
+
+<span class="sd">        :param path: file and path name</span>
+<span class="sd">        :type path: string</span>
+<span class="sd">        :param i: associate the created file with an indice in its filename, defaults to None</span>
+<span class="sd">        :type i: int, optional</span>
+<span class="sd">        :param printtriangles: write triangulation if one has been created in :meth:`build`, defaults to True</span>
+<span class="sd">        :type printtriangles: bool, optional</span>
+<span class="sd">        :param printvoxels: write grid of voxels if one has been created in :meth:`build`, defaults to True</span>
+<span class="sd">        :type printvoxels: bool, optional</span>
+<span class="sd">        :raises AttributeError: you need to call :meth:`run` first</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__elements_outputs</span><span class="p">)</span> <span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;No results yet, run a light modeling first&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel</span> <span class="o">==</span> <span class="s2">&quot;ratp&quot;</span> <span class="ow">and</span> \
+                    <span class="p">(</span><span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_LightVegeManager__voxels_outputs&#39;</span><span class="p">)))</span> <span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- VTK:  No light data, run the simulation&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">VTK_nolight</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">printtriangles</span><span class="p">,</span> <span class="n">printvoxels</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel</span> <span class="o">==</span> <span class="s2">&quot;caribu&quot;</span> <span class="ow">and</span> \
+                    <span class="p">(</span><span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_LightVegeManager__triangles_outputs&#39;</span><span class="p">)))</span> <span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- VTK:  No light data, run the simulation&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">VTK_nolight</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">printtriangles</span><span class="p">,</span> <span class="n">printvoxels</span><span class="p">)</span>
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel</span> <span class="o">==</span> <span class="s2">&quot;ratp&quot;</span> <span class="ow">and</span> <span class="n">printvoxels</span><span class="p">:</span> 
+                <span class="k">if</span> <span class="n">i</span> <span class="ow">is</span> <span class="kc">None</span> <span class="p">:</span> <span class="n">filepath</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;_voxels_light.vtk&quot;</span>
+                <span class="k">else</span> <span class="p">:</span> <span class="n">filepath</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;_voxels_light&quot;</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.vtk&quot;</span>
+
+                <span class="n">datanames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ShadedPAR&#39;</span><span class="p">,</span> 
+                                <span class="s1">&#39;SunlitPAR&#39;</span><span class="p">,</span> 
+                                <span class="s1">&#39;ShadedArea&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;SunlitArea&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;PARa&#39;</span><span class="p">,</span> 
+                                <span class="s1">&#39;Intercepted&#39;</span><span class="p">,</span> 
+                                <span class="s1">&#39;Transmitted&#39;</span><span class="p">]</span>
+
+                <span class="n">ratp_prepareVTK</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="p">,</span> 
+                                    <span class="n">filepath</span><span class="p">,</span> 
+                                    <span class="n">datanames</span><span class="p">,</span> 
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">__voxels_outputs</span><span class="p">)</span>
+                
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__matching_ids</span> <span class="ow">and</span> <span class="n">printtriangles</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="ow">is</span> <span class="kc">None</span> <span class="p">:</span> <span class="n">filepath</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;_triangles_light.vtk&quot;</span>
+                <span class="k">else</span> <span class="p">:</span> <span class="n">filepath</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;_triangles_light&quot;</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.vtk&quot;</span>
+
+                <span class="n">datanames</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel</span> <span class="o">==</span> <span class="s2">&quot;ratp&quot;</span> <span class="p">:</span>
+                    <span class="n">datanames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ShadedPAR&#39;</span><span class="p">,</span> 
+                                <span class="s1">&#39;SunlitPAR&#39;</span><span class="p">,</span> 
+                                <span class="s1">&#39;ShadedArea&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;SunlitArea&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;PARa&#39;</span><span class="p">,</span> 
+                                <span class="s1">&#39;Intercepted&#39;</span><span class="p">,</span> 
+                                <span class="s1">&#39;Transmitted&#39;</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel</span> <span class="o">==</span> <span class="s2">&quot;caribu&quot;</span> <span class="p">:</span>
+                    <span class="n">datanames</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span><span class="p">[</span><span class="s2">&quot;caribu opt&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="p">:</span>
+                        <span class="n">datanames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">band</span> <span class="o">+</span> <span class="s2">&quot; Eabs&quot;</span><span class="p">)</span>
+                        <span class="n">datanames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">band</span> <span class="o">+</span> <span class="s2">&quot; Ei&quot;</span><span class="p">)</span>
+
+                <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__triangles_outputs</span><span class="p">[</span><span class="n">name</span><span class="p">])</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">datanames</span><span class="p">]</span>
+                <span class="n">VTKtriangles</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__complete_trimesh</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">datanames</span><span class="p">,</span> <span class="n">filepath</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="LightVegeManager.VTK_sun"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager.LightVegeManager.VTK_sun">[docs]</a>    <span class="k">def</span> <span class="nf">VTK_sun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">orig</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">center</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write a VTK file representing the sun by a simple line</span>
+
+<span class="sd">        .. warning:: The :meth:`run` must have been called before to have results dataframes.    </span>
+
+<span class="sd">        if center is False, orig is the starting point the line and it ends at orig + scale*sun.position</span>
+
+<span class="sd">        if center is True, orig is the middle point of the line.</span>
+
+<span class="sd">        :param path: file and path name</span>
+<span class="sd">        :type path: string</span>
+<span class="sd">        :param scale: size of the line, defaults to 2</span>
+<span class="sd">        :type scale: int, optional</span>
+<span class="sd">        :param orig: starting or middle point of the line, defaults to (0,0,0)</span>
+<span class="sd">        :type orig: tuple, optional</span>
+<span class="sd">        :param center: if True orig is the middle of the line, otherwise it is the starting point, defaults to True</span>
+<span class="sd">        :type center: bool, optional</span>
+<span class="sd">        :param i: associate the created file with an indice in its filename, defaults to None</span>
+<span class="sd">        :type i: int, optional</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="k">if</span> <span class="n">i</span> <span class="ow">is</span> <span class="kc">None</span> <span class="p">:</span> <span class="n">filepath</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;_sun.vtk&quot;</span>
+        <span class="k">else</span> <span class="p">:</span> <span class="n">filepath</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;_sun&quot;</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.vtk&quot;</span>
+
+        <span class="k">if</span> <span class="n">center</span> <span class="p">:</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">scale</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">orig</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sun</span><span class="p">)])</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="o">-</span><span class="n">scale</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">orig</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sun</span><span class="p">)])</span>
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">orig</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">scale</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">orig</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sun</span><span class="p">)])</span>
+
+        <span class="n">VTKline</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">filepath</span><span class="p">)</span></div>
+    
+    <span class="c1">## GETTERS ##</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">legume_transmitted_light</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;transmitted results if light model is RiRi light</span>
+
+<span class="sd">        :return: transmitted energy following a grid of voxels</span>
+<span class="sd">        :rtype: numpy.array</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__legume_transmitted_light</span> 
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">legume_intercepted_light</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Intercepted results if light model is RiRi light, </span>
+
+<span class="sd">        :return: intercepted energy following a grid of voxels, for each specy</span>
+<span class="sd">        :rtype: numpy.array</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__legume_intercepted_light</span> 
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">elements_outputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Lighting results aggregate by element</span>
+
+<span class="sd">        :return: Column names can change depending on the light model. Commonly, there is element indice, its area and intercepted energy</span>
+<span class="sd">        :rtype: pandas.Dataframe</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__elements_outputs</span> 
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">triangles_outputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Lighting results aggregate by triangle, if it has a triangulation in its inputs</span>
+
+<span class="sd">        :return: .. seealso:: :mod:`src.LightVegeManager_outputs` for column names</span>
+<span class="sd">        :rtype: pandas.Dataframe</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__triangles_outputs</span> 
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">voxels_outputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Lighting results aggregate by voxels, only with RATP as the selected light model</span>
+
+<span class="sd">        :return: .. seealso:: :mod:`src.LightVegeManager_outputs` for column names</span>
+<span class="sd">        :rtype: pandas.Dataframe</span>
+<span class="sd">        &quot;&quot;&quot;</span>         
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__voxels_outputs</span> 
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sensors_outputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Lighting results aggregate by sensors.</span>
+<span class="sd">        Only with CARIBU if you activated the virtual sensors option</span>
+
+<span class="sd">        :return: The output format is the same as CARIBU output format. Dict with ``Eabs`` key for absorbed energy and ``Ei`` for incoming energy</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sensors_outputs</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sun</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return sun position of the last :func:run call</span>
+
+<span class="sd">        :return: vector (x, y, z)</span>
+<span class="sd">        :rtype: tuple</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sun</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">soilenergy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return soil energy, only with CARIBU if soilmesh option is activated</span>
+
+<span class="sd">        :return: The output format is the same as CARIBU output format. Dict with ``Eabs`` key for absorbed energy and ``Ei`` for incoming energy</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__soilenergy</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">maxtrianglearea</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the largest triangle of triangles mesh</span>
+<span class="sd">        Computed in :meth:`build`</span>
+
+<span class="sd">        :return: area the triangle</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="k">try</span> <span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__areamax</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.</span>
+  
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">legume_empty_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns number of empty layers between top of the canopy and number of z layers expected by l-egume</span>
+
+<span class="sd">        :return: result of :func:`fill_ratpgrid_from_legumescene`</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__nb0</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tesselationtime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;_summary_</span>
+
+<span class="sd">        :return: _description_</span>
+<span class="sd">        :rtype: _type_</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tess_time</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">modelruntime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns running time of the light model</span>
+
+<span class="sd">        :return: time in s</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__time_runmodel</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2023, INRAE P3F
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

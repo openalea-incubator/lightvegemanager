@@ -1,0 +1,508 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Inputs &mdash; LightVegeManager 0.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Additionnal Functionality" href="others.html" />
+    <link rel="prev" title="Architecture of the tool" href="architecture.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> LightVegeManager
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="presentation.html">Presentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture of the tool</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Inputs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#geometric-inputs">Geometric inputs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scenes">Scenes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geometric-transformations">Geometric transformations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scenes-unit"><code class="docutils literal notranslate"><span class="pre">&quot;scenes</span> <span class="pre">unit&quot;</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rescale"><code class="docutils literal notranslate"><span class="pre">&quot;rescale&quot;</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#translate"><code class="docutils literal notranslate"><span class="pre">&quot;translate&quot;</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#xyz-orientation"><code class="docutils literal notranslate"><span class="pre">&quot;xyz</span> <span class="pre">orientation&quot;</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#environment-parameters">Environment parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#light-model-parameters">Light model parameters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#caribu-surfacic-approach">CARIBU: surfacic approach</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ratp-volumic-approach">RATP: volumic approach</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#grid-specifications">Grid specifications</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#leaf-angle-distribution">Leaf angle distribution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#vegetation-type">Vegetation type</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="others.html">Additionnal Functionality</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference Guide</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">LightVegeManager</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Inputs</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/inputs.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="inputs">
+<span id="id1"></span><h1>Inputs<a class="headerlink" href="#inputs" title="Permalink to this headline">¶</a></h1>
+<p>In LightVegeManager, we choose to organize the input parameters in 3 python dict: geometric, environment and light model parameters.</p>
+<div class="section" id="geometric-inputs">
+<span id="geometric"></span><h2>Geometric inputs<a class="headerlink" href="#geometric-inputs" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">geometry</span> <span class="o">=</span> <span class="p">{</span>
+                       <span class="s2">&quot;scenes&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="n">scene0</span><span class="p">,</span> <span class="n">scene1</span><span class="p">,</span> <span class="n">scene2</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="p">,</span>
+                       <span class="s2">&quot;domain&quot;</span> <span class="p">:</span> <span class="p">((</span><span class="n">xmin</span><span class="p">,</span> <span class="n">ymin</span><span class="p">),</span> <span class="p">(</span><span class="n">xmax</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)),</span>
+                       <span class="s2">&quot;stems id&quot;</span> <span class="p">:</span> <span class="p">[(</span><span class="n">id_element</span><span class="p">,</span> <span class="n">id_scene</span><span class="p">),</span> <span class="o">...</span><span class="p">],</span>
+                       <span class="s2">&quot;transformations&quot;</span> <span class="p">:</span> <span class="p">{</span>
+                                                                    <span class="s2">&quot;scenes unit&quot;</span> <span class="p">:</span> <span class="n">kwarg</span> <span class="p">,</span>
+                                                                    <span class="s2">&quot;rescale&quot;</span> <span class="p">:</span> <span class="n">kwarg</span> <span class="p">,</span>
+                                                                    <span class="s2">&quot;translate&quot;</span> <span class="p">:</span> <span class="n">kwarg</span> <span class="p">,</span>
+                                                                    <span class="s2">&quot;xyz orientation&quot;</span> <span class="p">:</span> <span class="n">kwarg</span>
+                                                                    <span class="p">}</span>
+            <span class="p">}</span>
+</pre></div>
+</div>
+<p>It contains the geometric scenes and directives to operate on them.
+You can also add descriptions on the scenes, especially if you have a large numbers of scenes and plant model evolved.
+Each scene must contains only one specy of plant, except for l-egume grid format, which can contains multiple species.
+As the geometric informations are likely to change during a simulation, this dict is not read by the constructor but rather by the <code class="xref py py-meth docutils literal notranslate"><span class="pre">build()</span></code> method.</p>
+<div class="section" id="scenes">
+<span id="id2"></span><h3>Scenes<a class="headerlink" href="#scenes" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">&quot;scenes&quot;</span></code> key needs a list of the geometric scenes.
+Each scene represents one plant specie, except for voxel grid format. There is no restrictions on the numbers of input scenes.
+Possible format are:</p>
+<blockquote>
+<div><ul>
+<li><p>PlantGL scene</p></li>
+<li><p>MTG table</p></li>
+<li><p>VGX file</p></li>
+<li><p>CaribuScene dict</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># a vertice is a 3-tuple of float</span>
+<span class="n">triangle1</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">z1</span><span class="p">),</span> <span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">z2</span><span class="p">),</span> <span class="p">(</span><span class="n">x3</span><span class="p">,</span> <span class="n">y3</span><span class="p">,</span> <span class="n">z3</span><span class="p">)</span> <span class="p">]</span>
+<span class="n">triangle2</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="n">x4</span><span class="p">,</span> <span class="n">y4</span><span class="p">,</span> <span class="n">z4</span><span class="p">),</span> <span class="p">(</span><span class="n">x5</span><span class="p">,</span> <span class="n">y5</span><span class="p">,</span> <span class="n">z5</span><span class="p">),</span> <span class="p">(</span><span class="n">x6</span><span class="p">,</span> <span class="n">y6</span><span class="p">,</span> <span class="n">z6</span><span class="p">)</span> <span class="p">]</span>
+<span class="n">mycaribuscene</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">888</span> <span class="p">:</span> <span class="p">[</span> <span class="n">triangle1</span><span class="p">,</span> <span class="n">triangle2</span> <span class="p">]</span> <span class="p">}</span>
+
+<span class="c1"># 888 is the id of the element composed by triangle1 and triangle2</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Voxels grid: a dict with two keys:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;LA&quot;</span></code>: a <code class="docutils literal notranslate"><span class="pre">scipy.array</span></code> of dimension <code class="docutils literal notranslate"><span class="pre">[number</span> <span class="pre">of</span> <span class="pre">species,</span> <span class="pre">nz,</span> <span class="pre">ny,</span> <span class="pre">nx]</span></code> and stores for each voxel of each specie a leaf area</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;distrib&quot;</span></code>: a list of <code class="docutils literal notranslate"><span class="pre">scipy.array</span></code> for each specy storing a leaf angle distribution</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">&quot;domain&quot;</span></code> is necessary for CARIBU and infinite scene, it defines the xy square to replicate.
+<code class="docutils literal notranslate"><span class="pre">&quot;stems</span> <span class="pre">id&quot;</span></code> indicates the organ id of possible stems. They will be considered as strictly opaque element.</p>
+</div>
+<div class="section" id="geometric-transformations">
+<h3>Geometric transformations<a class="headerlink" href="#geometric-transformations" title="Permalink to this headline">¶</a></h3>
+<p>There is an optional fourth input key in the geometric dict, used to specify geometric transformations on several scenes.
+For example, you can arrange your inputs scenes in a specific pattern by translating them.
+The value of each entry is a dict:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;transformation&quot;</span> <span class="p">:</span> <span class="p">{</span> <span class="n">index_from_input_scenes</span> <span class="p">:</span> <span class="n">transformation_value</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Possible keys are the following:</p>
+<div class="section" id="scenes-unit">
+<h4><code class="docutils literal notranslate"><span class="pre">&quot;scenes</span> <span class="pre">unit&quot;</span></code><a class="headerlink" href="#scenes-unit" title="Permalink to this headline">¶</a></h4>
+<p>Associates a measure unit among this list <code class="docutils literal notranslate"><span class="pre">['mm','cm','dm','m','dam','hm','km']</span></code> with a scene.
+You can also assign a unit to the inside global scene, the tool will rescale all the scenes in the same unit.</p>
+<p>example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">transformations</span><span class="p">[</span><span class="s2">&quot;scenes unit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span> <span class="p">:</span> <span class="s1">&#39;m&#39;</span><span class="p">,</span>
+                                  <span class="mi">1</span> <span class="p">:</span> <span class="s1">&#39;cm&#39;</span><span class="p">,</span>
+                                  <span class="mi">2</span> <span class="p">:</span> <span class="s1">&#39;hm&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="rescale">
+<h4><code class="docutils literal notranslate"><span class="pre">&quot;rescale&quot;</span></code><a class="headerlink" href="#rescale" title="Permalink to this headline">¶</a></h4>
+<p>Multiply all the lengths of a scene by a ratio.</p>
+<p>example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">transformations</span><span class="p">[</span><span class="s2">&quot;rescale&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span> <span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+                              <span class="mi">2</span> <span class="p">:</span> <span class="mi">5</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="translate">
+<h4><code class="docutils literal notranslate"><span class="pre">&quot;translate&quot;</span></code><a class="headerlink" href="#translate" title="Permalink to this headline">¶</a></h4>
+<p>Apply a translation vector to a scene. A vector is 3-tuple.</p>
+<p>example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">transformations</span><span class="p">[</span><span class="s2">&quot;translate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span> <span class="p">:</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                                <span class="mi">1</span> <span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">)}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="xyz-orientation">
+<h4><code class="docutils literal notranslate"><span class="pre">&quot;xyz</span> <span class="pre">orientation&quot;</span></code><a class="headerlink" href="#xyz-orientation" title="Permalink to this headline">¶</a></h4>
+<p>Change the orientation of a scene among the xyz axis.
+When a model creates a scene in a different convention used by the light models, LightVegeManager allows for a common convention.
+RATP and CARIBU use the convention x+ matches to North.</p>
+<p>Possible convention:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;x+</span> <span class="pre">=</span> <span class="pre">S&quot;</span></code>: x+ matches to South</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;x+</span> <span class="pre">=</span> <span class="pre">W&quot;</span></code>: x+ matches to West</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;x+</span> <span class="pre">=</span> <span class="pre">E&quot;</span></code>: x+ matches to East</p></li>
+</ul>
+</div></blockquote>
+<p>example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">transformations</span><span class="p">[</span><span class="s2">&quot;xyz orientation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span> <span class="p">:</span> <span class="s2">&quot;x+ = S&quot;</span><span class="p">,</span>
+                                      <span class="mi">1</span> <span class="p">:</span> <span class="s2">&quot;x+ = W&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="environment-parameters">
+<span id="environment"></span><h2>Environment parameters<a class="headerlink" href="#environment-parameters" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">environment</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;coordinates&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="n">latitude</span><span class="p">,</span> <span class="n">longitude</span><span class="p">,</span> <span class="n">timezone</span><span class="p">]</span> <span class="p">,</span>
+
+                <span class="s2">&quot;sky&quot;</span> <span class="p">:</span> <span class="s2">&quot;turtle46&quot;</span> <span class="p">,</span>
+                <span class="s2">&quot;sky&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;file&quot;</span><span class="p">,</span> <span class="n">filepath</span><span class="p">]</span> <span class="p">,</span>
+                <span class="s2">&quot;sky&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="n">nb_azimut</span><span class="p">,</span> <span class="n">nb_zenith</span><span class="p">,</span> <span class="s2">&quot;soc&quot;</span> <span class="ow">or</span> <span class="s2">&quot;uoc&quot;</span><span class="p">]</span> <span class="p">,</span>
+
+                <span class="s2">&quot;direct&quot;</span> <span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="c1"># sun radiations</span>
+                <span class="s2">&quot;diffus&quot;</span> <span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="c1"># sky radiations</span>
+                <span class="s2">&quot;reflected&quot;</span> <span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="c1"># reflected radiation in the canopy</span>
+                <span class="s2">&quot;infinite&quot;</span> <span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="c1"># infinitisation of the scene</span>
+                <span class="p">}</span>
+</pre></div>
+</div>
+<p>Contains parameters related to the environment of modelling and static parameters during all the simulation.</p>
+<p>The sky is defined by the <code class="docutils literal notranslate"><span class="pre">&quot;sky&quot;</span></code> key and has 3 different possibilities:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;turtle46&quot;</span></code> : SOC sky with 46 directions in “turtle” shape</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[&quot;file&quot;,</span> <span class="pre">filepath]</span></code> : sky defined by the file <code class="docutils literal notranslate"><span class="pre">filepath</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[nb_azimut,</span> <span class="pre">nb_zenith,</span> <span class="pre">&quot;soc&quot;</span> <span class="pre">ou</span> <span class="pre">&quot;uoc&quot;]</span></code>: computes dynamically the source directions</p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="light-model-parameters">
+<h2>Light model parameters<a class="headerlink" href="#light-model-parameters" title="Permalink to this headline">¶</a></h2>
+<p>Specific parameters for each light model, as they use very different syntax and approach.</p>
+<div class="section" id="caribu-surfacic-approach">
+<span id="caribuparam"></span><h3>CARIBU: surfacic approach<a class="headerlink" href="#caribu-surfacic-approach" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">caribu_args</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;sun algo&quot;</span> <span class="p">:</span> <span class="s2">&quot;ratp&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;sun algo&quot;</span> <span class="p">:</span> <span class="s2">&quot;caribu&quot;</span><span class="p">,</span>
+
+                    <span class="s2">&quot;caribu opt&quot;</span> <span class="p">:</span> <span class="p">{</span>
+                                    <span class="n">band0</span> <span class="o">=</span> <span class="p">(</span><span class="n">reflectance</span><span class="p">,</span> <span class="n">transmittance</span><span class="p">),</span>
+                                    <span class="n">band1</span> <span class="o">=</span> <span class="p">(</span><span class="n">reflectance</span><span class="p">,</span> <span class="n">transmittance</span><span class="p">),</span>
+                                    <span class="o">...</span>
+                                    <span class="p">},</span>
+                    <span class="s2">&quot;debug&quot;</span> <span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+                    <span class="s2">&quot;soil mesh&quot;</span> <span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+                    <span class="s2">&quot;sensors&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">,</span> <span class="n">dxyz</span><span class="p">,</span> <span class="n">nxyz</span><span class="p">,</span> <span class="n">orig</span><span class="p">,</span> <span class="n">vtkpath</span><span class="p">,</span> <span class="s2">&quot;vtk&quot;</span><span class="p">]</span>
+                <span class="p">}</span>
+</pre></div>
+</div>
+<p>The key <code class="docutils literal notranslate"><span class="pre">&quot;sun</span> <span class="pre">algo&quot;</span></code> specifies how to calculate the sun position. Possibilities are <code class="docutils literal notranslate"><span class="pre">&quot;ratp&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;caribu&quot;</span></code>, which will call the function related to either one of the light models.</p>
+<p><code class="docutils literal notranslate"><span class="pre">&quot;caribu</span> <span class="pre">opt&quot;</span></code> defines the optical parameters in CARIBU format. For example:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">caribu_parameters</span><span class="p">[</span><span class="s2">&quot;caribu opt&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                                    <span class="s2">&quot;par&quot;</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.10</span><span class="p">,</span> <span class="mf">0.07</span><span class="p">)</span> <span class="p">,</span>
+                                    <span class="s2">&quot;nir&quot;</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">)</span>
+                                    <span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>For virtual sensors, we propose the construction following a grid of voxels, where a sensor is the bottom side of a voxel.</p>
+<blockquote>
+<div><blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">caribu_parameters</span><span class="p">[</span><span class="s2">&quot;sensors&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">,</span> <span class="n">dxyz</span><span class="p">,</span> <span class="n">nxyz</span><span class="p">,</span> <span class="n">orig</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="s2">&quot;vtk&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Where:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">dxyz</span> <span class="pre">=</span> <span class="pre">[x,</span> <span class="pre">y,</span> <span class="pre">z]</span></code> : list of size of each side of a voxel</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nxyz</span> <span class="pre">=</span> <span class="pre">[nx,</span> <span class="pre">ny,</span> <span class="pre">nz]</span></code> : list of number of voxels in each direction</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">path</span></code> : string of file path where to save the vtk file of the sensors</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;vtk&quot;</span></code> : flag to specify you want to write sensors in VTK format for visualisation</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">path</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;vtk&quot;</span></code> are optional elements in the list</p>
+</div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>At the moment, only grid option is available for sensors</p>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="ratp-volumic-approach">
+<span id="ratpparam"></span><h3>RATP: volumic approach<a class="headerlink" href="#ratp-volumic-approach" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ratp_args</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="c1"># Grid specifications</span>
+                <span class="s2">&quot;voxel size&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dz</span><span class="p">],</span>
+                <span class="s2">&quot;voxel size&quot;</span> <span class="p">:</span> <span class="s2">&quot;dynamic&quot;</span><span class="p">,</span>
+
+                <span class="s2">&quot;origin&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="n">xorigin</span><span class="p">,</span> <span class="n">yorigin</span><span class="p">,</span> <span class="n">zorigin</span><span class="p">],</span>
+                <span class="s2">&quot;origin&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="n">xorigin</span><span class="p">,</span> <span class="n">yorigin</span><span class="p">],</span>
+
+                <span class="s2">&quot;number voxels&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">],</span>
+                <span class="s2">&quot;grid slicing&quot;</span> <span class="p">:</span> <span class="s2">&quot;ground = 0.&quot;</span>
+                <span class="s2">&quot;tesselation level&quot;</span> <span class="p">:</span> <span class="nb">int</span>
+
+                <span class="c1"># Leaf angle distribution</span>
+                <span class="s2">&quot;angle distrib algo&quot;</span> <span class="p">:</span> <span class="s2">&quot;compute global&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;angle distrib algo&quot;</span> <span class="p">:</span> <span class="s2">&quot;compute voxel&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;angle distrib algo&quot;</span> <span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+
+                <span class="s2">&quot;nb angle classes&quot;</span> <span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                <span class="s2">&quot;angle distrib file&quot;</span> <span class="p">:</span> <span class="n">filepath</span><span class="p">,</span>
+
+                <span class="c1"># Vegetation type</span>
+                <span class="s2">&quot;soil reflectance&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="n">reflectance_band0</span><span class="p">,</span> <span class="n">reflectance_band1</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+                <span class="s2">&quot;reflectance coefficients&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="n">reflectance_band0</span><span class="p">,</span> <span class="n">reflectance_band1</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+                <span class="s2">&quot;mu&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="n">mu_scene0</span><span class="p">,</span> <span class="n">mu_scene1</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+            <span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="grid-specifications">
+<h4>Grid specifications<a class="headerlink" href="#grid-specifications" title="Permalink to this headline">¶</a></h4>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;voxel</span> <span class="pre">size&quot;</span></code>: defines the size of one voxel, 2 possibilities</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[float,</span> <span class="pre">float,</span> <span class="pre">float]</span></code>: for a length on each direction (xyz)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;dynamic&quot;</span></code>: create squared voxels where the length of a side is l = 5.max(area(triangle))</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;number</span> <span class="pre">voxels&quot;</span></code>: <code class="docutils literal notranslate"><span class="pre">[nx,</span> <span class="pre">ny,</span> <span class="pre">nz]</span></code>, defines the number of voxels on each xyz axis. If not specified, the tool computes dynamically the grid size according to input geometries.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;origin&quot;</span></code>: possibility to define the grid origin.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[xorigin,</span> <span class="pre">yorigin,</span> <span class="pre">zorigin]</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[xorigin,</span> <span class="pre">yorigin]</span></code> and <code class="docutils literal notranslate"><span class="pre">zorigin</span> <span class="pre">=</span> <span class="pre">-zmin</span></code></p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;grid</span> <span class="pre">slicing&quot;</span></code>: if <code class="docutils literal notranslate"><span class="pre">&quot;grid</span> <span class="pre">slicing&quot;</span> <span class="pre">:</span> <span class="pre">&quot;ground</span> <span class="pre">=</span> <span class="pre">0.&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;number</span> <span class="pre">voxels&quot;</span></code> is not specified and there are triangles in the input geometries, it rescales the grid to avoid the soil layer &lt; 0</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;tesselation</span> <span class="pre">level&quot;</span></code>: if there are triangles in the input geometries, you can tesselate them a certain number of times to match the voxel grid.</p></li>
+</ul>
+</div>
+<div class="section" id="leaf-angle-distribution">
+<h4>Leaf angle distribution<a class="headerlink" href="#leaf-angle-distribution" title="Permalink to this headline">¶</a></h4>
+<p>You can specify how the leaf angle distribution is computed. It can be computed dynamically from a triangulation.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;angle</span> <span class="pre">distrib</span> <span class="pre">algo&quot;</span></code>: 3 possibilities</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;compute</span> <span class="pre">global&quot;</span></code>: LightVegeManager computes a global leaf angle distribution</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;compute</span> <span class="pre">voxel&quot;</span></code>: LightVegeManager computes a local leaf angle distribution in each voxel of the grid</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">file</span></code>: LightVegeManager reads a global leaf angle distribution in a file</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;nb</span> <span class="pre">angle</span> <span class="pre">classes&quot;</span></code>: if <code class="docutils literal notranslate"><span class="pre">&quot;angle</span> <span class="pre">distrib</span> <span class="pre">algo&quot;</span> <span class="pre">=</span> <span class="pre">&quot;compute</span> <span class="pre">global&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;angle</span> <span class="pre">distrib</span> <span class="pre">algo&quot;</span> <span class="pre">=</span> <span class="pre">&quot;compute</span> <span class="pre">voxel&quot;</span></code>, number of angle classes in the distribution</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;angle</span> <span class="pre">distrib</span> <span class="pre">file&quot;</span></code>: if <code class="docutils literal notranslate"><span class="pre">&quot;angle</span> <span class="pre">distrib</span> <span class="pre">algo&quot;</span> <span class="pre">=</span> <span class="pre">file&quot;</span></code> string precising the file path to read</p></li>
+</ul>
+</div>
+<div class="section" id="vegetation-type">
+<h4>Vegetation type<a class="headerlink" href="#vegetation-type" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;soil</span> <span class="pre">reflectance&quot;</span></code>: if precised, soil reflects rays by a coefficient, one float by wavelength <code class="docutils literal notranslate"><span class="pre">[coef_par,</span> <span class="pre">coef_nir]</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;reflectance</span> <span class="pre">coefficients&quot;</span></code>: if precised, leaf reflects rays by a coefficient, one float by wavelength <code class="docutils literal notranslate"><span class="pre">[coef_par,</span> <span class="pre">coef_nir]</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;mu&quot;</span></code>: clumping effect for each input species</p></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="others.html" class="btn btn-neutral float-right" title="Additionnal Functionality" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="architecture.html" class="btn btn-neutral float-left" title="Architecture of the tool" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2023, INRAE P3F
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
