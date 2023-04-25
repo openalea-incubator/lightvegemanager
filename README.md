@@ -70,12 +70,12 @@
         python setup.py develop
         ```
 
-8) Install PyRATP_Mobidiv
+8) Install PyRATP
     1) Git console :
         ```bash
-        git clone https://github.com/mwoussen/PyRATP_MobiDiv
+        git clone https://github.com/mwoussen/PyRATP
         ```
-    2) installation in the conda environment (in folder `PyRATP_MobiDiv`)
+    2) installation in the conda environment (in folder `PyRATP`)
         ```bash
         make mode=develop
         make clean
