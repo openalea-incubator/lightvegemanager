@@ -9,9 +9,9 @@ import itertools
 
 from alinea.pyratp import grid
 
-from src.LightVegeManager_basicgeometry import *
-from src.LightVegeManager_tesselator import *
-from src.LightVegeManager_trianglesmesh import *
+from LightVegeManager_basicgeometry import *
+from LightVegeManager_tesselator import *
+from LightVegeManager_trianglesmesh import *
 
 def compute_grid_size_from_trimesh(pmin, pmax, dv, grid_slicing=None) :
     """Dynamically compute number of voxels for each axis in the grid

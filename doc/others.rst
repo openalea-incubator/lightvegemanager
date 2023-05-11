@@ -1,9 +1,9 @@
 .. _other:
 
-Additionnal Functionality
-=========================
+Additionnal Functionalities
+===========================
 
-We implemented more useful functionnalies to improve the tools.
+Here are more functionalities implemented in the tool.
 
 Inputs analysis Tool
 --------------------

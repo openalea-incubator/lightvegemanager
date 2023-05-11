@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>src.LightVegeManager_voxelsmesh &mdash; LightVegeManager 0.0.0 documentation</title>
+  <title> LightVegeManager_voxelsmesh &mdash; LightVegeManager 0.0.0 documentation</title>
   
 
   
@@ -22,9 +22,8 @@
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -86,7 +85,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../architecture.html">Architecture of the tool</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../inputs.html">Inputs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../others.html">Additionnal Functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../others.html">Additionnal Functionalities</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
 <ul>
@@ -138,7 +137,7 @@
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
-      <li>src.LightVegeManager_voxelsmesh</li>
+      <li> LightVegeManager_voxelsmesh</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -153,7 +152,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for src.LightVegeManager_voxelsmesh</h1><div class="highlight"><pre>
+  <h1>Source code for  LightVegeManager_voxelsmesh</h1><div class="highlight"><pre>
 <span></span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    LightVegeManager_voxelsmesh</span>
 <span class="sd">    ****************************</span>
@@ -165,11 +164,11 @@
 
 <span class="kn">from</span> <span class="nn">alinea.pyratp</span> <span class="kn">import</span> <span class="n">grid</span>
 
-<span class="kn">from</span> <span class="nn">src.LightVegeManager_basicgeometry</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">src.LightVegeManager_tesselator</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">src.LightVegeManager_trianglesmesh</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn"> LightVegeManager_basicgeometry</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn"> LightVegeManager_tesselator</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn"> LightVegeManager_trianglesmesh</span> <span class="kn">import</span> <span class="o">*</span>
 
-<div class="viewcode-block" id="compute_grid_size_from_trimesh"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_voxelsmesh.compute_grid_size_from_trimesh">[docs]</a><span class="k">def</span> <span class="nf">compute_grid_size_from_trimesh</span><span class="p">(</span><span class="n">pmin</span><span class="p">,</span> <span class="n">pmax</span><span class="p">,</span> <span class="n">dv</span><span class="p">,</span> <span class="n">grid_slicing</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="compute_grid_size_from_trimesh"><a class="viewcode-back" href="../../reference.html# LightVegeManager_voxelsmesh.compute_grid_size_from_trimesh">[docs]</a><span class="k">def</span> <span class="nf">compute_grid_size_from_trimesh</span><span class="p">(</span><span class="n">pmin</span><span class="p">,</span> <span class="n">pmax</span><span class="p">,</span> <span class="n">dv</span><span class="p">,</span> <span class="n">grid_slicing</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Dynamically compute number of voxels for each axis in the grid</span>
 <span class="sd">    The grid is ajusted to be the smallest box containing another mesh</span>
 
@@ -205,7 +204,7 @@
 
     <span class="k">return</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span></div>
 
-<div class="viewcode-block" id="tesselate_trimesh_on_grid"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_voxelsmesh.tesselate_trimesh_on_grid">[docs]</a><span class="k">def</span> <span class="nf">tesselate_trimesh_on_grid</span><span class="p">(</span><span class="n">trimesh</span><span class="p">,</span> <span class="n">ratpgrid</span><span class="p">,</span> <span class="n">levelmax</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="tesselate_trimesh_on_grid"><a class="viewcode-back" href="../../reference.html# LightVegeManager_voxelsmesh.tesselate_trimesh_on_grid">[docs]</a><span class="k">def</span> <span class="nf">tesselate_trimesh_on_grid</span><span class="p">(</span><span class="n">trimesh</span><span class="p">,</span> <span class="n">ratpgrid</span><span class="p">,</span> <span class="n">levelmax</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Loop on all triangles of a triangulation to tesselate them for better matching a grid of voxels</span>
 <span class="sd">    Triangles will subdivide on sides of voxels respecting a certain maximum level</span>
 
@@ -233,7 +232,7 @@
 
     <span class="k">return</span> <span class="n">new_trimesh</span></div>
 
-<div class="viewcode-block" id="fill_ratpgrid_from_trimesh"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_voxelsmesh.fill_ratpgrid_from_trimesh">[docs]</a><span class="k">def</span> <span class="nf">fill_ratpgrid_from_trimesh</span><span class="p">(</span><span class="n">trimesh</span><span class="p">,</span> 
+<div class="viewcode-block" id="fill_ratpgrid_from_trimesh"><a class="viewcode-back" href="../../reference.html# LightVegeManager_voxelsmesh.fill_ratpgrid_from_trimesh">[docs]</a><span class="k">def</span> <span class="nf">fill_ratpgrid_from_trimesh</span><span class="p">(</span><span class="n">trimesh</span><span class="p">,</span> 
                                 <span class="n">matching_ids</span><span class="p">,</span> 
                                 <span class="n">ratpgrid</span><span class="p">,</span> 
                                 <span class="n">stems_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -292,7 +291,7 @@
 
     <span class="k">return</span> <span class="n">grid</span><span class="o">.</span><span class="n">Grid</span><span class="o">.</span><span class="n">fill_1</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">barx</span><span class="p">,</span> <span class="n">bary</span><span class="p">,</span> <span class="n">barz</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">ratpgrid</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="fill_ratpgrid_from_legumescene"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_voxelsmesh.fill_ratpgrid_from_legumescene">[docs]</a><span class="k">def</span> <span class="nf">fill_ratpgrid_from_legumescene</span><span class="p">(</span><span class="n">legumescene</span><span class="p">,</span> <span class="n">ratpgrid</span><span class="p">,</span> <span class="n">nb0</span><span class="p">,</span> <span class="n">dvolume</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="fill_ratpgrid_from_legumescene"><a class="viewcode-back" href="../../reference.html# LightVegeManager_voxelsmesh.fill_ratpgrid_from_legumescene">[docs]</a><span class="k">def</span> <span class="nf">fill_ratpgrid_from_legumescene</span><span class="p">(</span><span class="n">legumescene</span><span class="p">,</span> <span class="n">ratpgrid</span><span class="p">,</span> <span class="n">nb0</span><span class="p">,</span> <span class="n">dvolume</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Fills a RATP grid from a l-egume grid</span>
 <span class="sd">    It updates ``ratpgrid``.</span>
 
@@ -366,7 +365,7 @@
                     <span class="n">ratpgrid</span><span class="o">.</span><span class="n">voxel_canopy</span><span class="p">[</span><span class="n">ratpgrid</span><span class="o">.</span><span class="n">nume</span><span class="p">[</span><span class="n">je</span><span class="p">,</span><span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span></div>
 
 
-<div class="viewcode-block" id="reduce_layers_from_trimesh"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_voxelsmesh.reduce_layers_from_trimesh">[docs]</a><span class="k">def</span> <span class="nf">reduce_layers_from_trimesh</span><span class="p">(</span><span class="n">trimesh</span><span class="p">,</span> 
+<div class="viewcode-block" id="reduce_layers_from_trimesh"><a class="viewcode-back" href="../../reference.html# LightVegeManager_voxelsmesh.reduce_layers_from_trimesh">[docs]</a><span class="k">def</span> <span class="nf">reduce_layers_from_trimesh</span><span class="p">(</span><span class="n">trimesh</span><span class="p">,</span> 
                                 <span class="n">pmax</span><span class="p">,</span>
                                 <span class="n">dxyz</span><span class="p">,</span>
                                 <span class="n">nxyz</span><span class="p">,</span>

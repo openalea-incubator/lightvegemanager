@@ -6,9 +6,11 @@ if sys.version_info < (3, 0):
     sys.exit(1)
 
 setup(
-    name="LightVegeManager",
-    version="0.0.0",
-    description="Works only with cn-wheat",
+    name="lightvegemanager",
+    version="1.0.0",
+    description="Light management tool for plant modelling with tools from OpenAlea platform",
     url="https://github.com/mwoussen/lightvegemanager",
-    packages=find_packages(include=["src","runscript"]),
+
+    packages=find_packages('src'),
+    package_dir={'': 'src'},
 )

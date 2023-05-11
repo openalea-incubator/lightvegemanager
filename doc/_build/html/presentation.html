@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Presentation &mdash; LightVegeManager 0.0.0 documentation</title>
@@ -22,9 +23,8 @@
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -98,7 +98,7 @@
 <li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture of the tool</a></li>
 <li class="toctree-l1"><a class="reference internal" href="inputs.html">Inputs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="others.html">Additionnal Functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="others.html">Additionnal Functionalities</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
 <ul>
@@ -167,25 +167,27 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="presentation">
-<span id="id1"></span><h1>Presentation<a class="headerlink" href="#presentation" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="context">
-<h2>Context<a class="headerlink" href="#context" title="Permalink to this headline">¶</a></h2>
+  <section id="presentation">
+<span id="id1"></span><h1>Presentation<a class="headerlink" href="#presentation" title="Permalink to this heading">¶</a></h1>
+<section id="context">
+<h2>Context<a class="headerlink" href="#context" title="Permalink to this heading">¶</a></h2>
 <p>This package was born in the framework of the research project MobiDiv (<a class="reference external" href="https://anr.fr/ProjetIA-20-PCPA-0006">https://anr.fr/ProjetIA-20-PCPA-0006</a>), which aims to find solutions for pesticide-free agriculture.
 One of the targets of this project is to model coupled crops between wheats, modelled by CN-Wheat (<a class="reference external" href="https://www.quantitative-plant.org/model/CN-Wheat">https://www.quantitative-plant.org/model/CN-Wheat</a>), and alfalfas, thanks to l-egume model (<a class="reference external" href="https://github.com/glouarn/l-egume">https://github.com/glouarn/l-egume</a>).
 Thus, LightVegeManager was created to manage the lighting in a vegetal simulation, in formats understandable by the tools proposed on the OpenAlea platform (<a class="reference external" href="https://github.com/openalea">https://github.com/openalea</a>).</p>
-</div>
-<div class="section" id="intentions">
-<h2>Intentions<a class="headerlink" href="#intentions" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="intentions">
+<h2>Intentions<a class="headerlink" href="#intentions" title="Permalink to this heading">¶</a></h2>
 <p>We want to simplify the light management when several models, plant and lighting, are involved.
 The tool manages many input and output formats, in order to match a wide variety of situations.</p>
-</div>
-<div class="section" id="how">
-<h2>How<a class="headerlink" href="#how" title="Permalink to this headline">¶</a></h2>
-<div class="figure align-center" id="id2">
+</section>
+<section id="how">
+<h2>How<a class="headerlink" href="#how" title="Permalink to this heading">¶</a></h2>
+<figure class="align-center" id="id2">
 <img alt="_images/how.png" src="_images/how.png" />
-<p class="caption"><span class="caption-text">General Functionning</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">General Functionning</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>It reads the following input formats:</p>
 <blockquote>
 <div><ul class="simple">
@@ -205,34 +207,38 @@ The tool manages many input and output formats, in order to match a wide variety
 <li><p>Pandas Dataframe, in multiple scales (triangles, voxels, elements) depending on the light model.</p></li>
 </ul>
 </div></blockquote>
-</div>
-<div class="section" id="lighting">
-<h2>Lighting<a class="headerlink" href="#lighting" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="lighting">
+<h2>Lighting<a class="headerlink" href="#lighting" title="Permalink to this heading">¶</a></h2>
 <p>At the moment, LightVegeManager can handle three lighting models, CARIBU (<a class="reference external" href="https://github.com/openalea-incubator/caribu">https://github.com/openalea-incubator/caribu</a>), PyRATP (<a class="reference external" href="https://github.com/openalea-incubator/PyRATP">https://github.com/openalea-incubator/PyRATP</a>), and RiRi modified in l-egume (<a class="reference external" href="https://github.com/glouarn/l-egume">https://github.com/glouarn/l-egume</a>).
 Those models are ajusted for virtual plant canopies with considerations, like infinitisation of the scene, which are preferred for simulating large crop fields.</p>
 <p>They offers two different approach for light modelling:</p>
-<div class="section" id="surfacic-approach-caribu">
-<h3>Surfacic approach (CARIBU)<a class="headerlink" href="#surfacic-approach-caribu" title="Permalink to this headline">¶</a></h3>
-<div class="figure align-center" id="id3">
+<section id="surfacic-approach-caribu">
+<h3>Surfacic approach (CARIBU)<a class="headerlink" href="#surfacic-approach-caribu" title="Permalink to this heading">¶</a></h3>
+<figure class="align-center" id="id3">
 <img alt="_images/triangles.PNG" src="_images/triangles.PNG" />
-<p class="caption"><span class="caption-text">Example of a triangulation</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Example of a triangulation</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>The radiations are computed on a set of triangles.
 This approach offers a high precision of lighting on the different organs, but has a high cost in time computation.</p>
-</div>
-<div class="section" id="volumic-approach-pyratp-riri">
-<h3>Volumic approach (PyRATP, RiRi)<a class="headerlink" href="#volumic-approach-pyratp-riri" title="Permalink to this headline">¶</a></h3>
-<div class="figure align-center" id="id4">
+</section>
+<section id="volumic-approach-pyratp-riri">
+<h3>Volumic approach (PyRATP, RiRi)<a class="headerlink" href="#volumic-approach-pyratp-riri" title="Permalink to this heading">¶</a></h3>
+<figure class="align-center" id="id4">
 <img alt="_images/voxels.PNG" src="_images/voxels.PNG" />
-<p class="caption"><span class="caption-text">Example of a grid of voxels</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Example of a grid of voxels</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>The geometric scene is represented by a set of voxels, which contains a leaf area and a leaf angle informations.
 Then, the models solves turbid medium equations from the rays inside the grid.
 This approach has a higher approximation of geometry, but is well adapted for dense canopy.
 The computation cost is highly reduced regarding the surfacic approach but the geometric scene must matches the turbid medium representation and hypothesis.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
            </div>

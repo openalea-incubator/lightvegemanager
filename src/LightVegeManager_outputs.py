@@ -93,7 +93,7 @@
 import pandas
 import itertools
 
-from src.LightVegeManager_trianglesmesh import *
+from LightVegeManager_trianglesmesh import *
 
 def out_ratp_empty_grid(day, hour) :
     """Returns an empty dataframe results for RATP

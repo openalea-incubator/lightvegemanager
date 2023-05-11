@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>src.LightVegeManager_outputs &mdash; LightVegeManager 0.0.0 documentation</title>
+  <title> LightVegeManager_outputs &mdash; LightVegeManager 0.0.0 documentation</title>
   
 
   
@@ -22,9 +22,8 @@
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -86,7 +85,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../architecture.html">Architecture of the tool</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../inputs.html">Inputs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../others.html">Additionnal Functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../others.html">Additionnal Functionalities</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
 <ul>
@@ -138,7 +137,7 @@
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
-      <li>src.LightVegeManager_outputs</li>
+      <li> LightVegeManager_outputs</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -153,7 +152,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for src.LightVegeManager_outputs</h1><div class="highlight"><pre>
+  <h1>Source code for  LightVegeManager_outputs</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">   </span>
 <span class="sd">    LightVegeManager_outputs</span>
@@ -249,9 +248,9 @@
 <span class="kn">import</span> <span class="nn">pandas</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
 
-<span class="kn">from</span> <span class="nn">src.LightVegeManager_trianglesmesh</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn"> LightVegeManager_trianglesmesh</span> <span class="kn">import</span> <span class="o">*</span>
 
-<div class="viewcode-block" id="out_ratp_empty_grid"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_outputs.out_ratp_empty_grid">[docs]</a><span class="k">def</span> <span class="nf">out_ratp_empty_grid</span><span class="p">(</span><span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="out_ratp_empty_grid"><a class="viewcode-back" href="../../reference.html# LightVegeManager_outputs.out_ratp_empty_grid">[docs]</a><span class="k">def</span> <span class="nf">out_ratp_empty_grid</span><span class="p">(</span><span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns an empty dataframe results for RATP</span>
 
 <span class="sd">    :param day: day of simulation</span>
@@ -280,7 +279,7 @@
                                 <span class="s1">&#39;Transmitted&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                             <span class="p">})</span></div>
 
-<div class="viewcode-block" id="out_ratp_voxels"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_outputs.out_ratp_voxels">[docs]</a><span class="k">def</span> <span class="nf">out_ratp_voxels</span><span class="p">(</span><span class="n">ratpgrid</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">parunit</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="out_ratp_voxels"><a class="viewcode-back" href="../../reference.html# LightVegeManager_outputs.out_ratp_voxels">[docs]</a><span class="k">def</span> <span class="nf">out_ratp_voxels</span><span class="p">(</span><span class="n">ratpgrid</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">parunit</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts RATP results to pandas dataframe compared to the voxels</span>
 
 <span class="sd">    :param ratpgrid: RATP grid with voxels informations</span>
@@ -362,7 +361,7 @@
     <span class="c1"># we don&#39;t return the soil</span>
     <span class="k">return</span> <span class="n">dfvox</span><span class="p">[</span><span class="n">dfvox</span><span class="p">[</span><span class="s1">&#39;VegetationType&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="out_ratp_triangles"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_outputs.out_ratp_triangles">[docs]</a><span class="k">def</span> <span class="nf">out_ratp_triangles</span><span class="p">(</span><span class="n">trimesh</span><span class="p">,</span>
+<div class="viewcode-block" id="out_ratp_triangles"><a class="viewcode-back" href="../../reference.html# LightVegeManager_outputs.out_ratp_triangles">[docs]</a><span class="k">def</span> <span class="nf">out_ratp_triangles</span><span class="p">(</span><span class="n">trimesh</span><span class="p">,</span>
                         <span class="n">matching_ele_ent</span><span class="p">,</span>
                         <span class="n">matching_tr_vox</span><span class="p">,</span>
                         <span class="n">voxels_outputs</span><span class="p">)</span> <span class="p">:</span>
@@ -409,7 +408,7 @@
     <span class="c1"># sort lines by triangle indices</span>
     <span class="k">return</span>  <span class="n">trianglesoutputs</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;Triangle&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="out_ratp_elements"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_outputs.out_ratp_elements">[docs]</a><span class="k">def</span> <span class="nf">out_ratp_elements</span><span class="p">(</span><span class="n">matching_ele_ent</span><span class="p">,</span> 
+<div class="viewcode-block" id="out_ratp_elements"><a class="viewcode-back" href="../../reference.html# LightVegeManager_outputs.out_ratp_elements">[docs]</a><span class="k">def</span> <span class="nf">out_ratp_elements</span><span class="p">(</span><span class="n">matching_ele_ent</span><span class="p">,</span> 
                         <span class="n">reflected</span><span class="p">,</span> 
                         <span class="n">reflectance_coef</span><span class="p">,</span> 
                         <span class="n">trianglesoutputs</span><span class="p">)</span> <span class="p">:</span>
@@ -492,7 +491,7 @@
                                 <span class="s2">&quot;ShadedArea&quot;</span> <span class="p">:</span> <span class="n">s_areasha</span>
                             <span class="p">})</span></div>
 
-<div class="viewcode-block" id="out_caribu_mix"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_outputs.out_caribu_mix">[docs]</a><span class="k">def</span> <span class="nf">out_caribu_mix</span><span class="p">(</span> <span class="n">rdrs</span><span class="p">,</span>
+<div class="viewcode-block" id="out_caribu_mix"><a class="viewcode-back" href="../../reference.html# LightVegeManager_outputs.out_caribu_mix">[docs]</a><span class="k">def</span> <span class="nf">out_caribu_mix</span><span class="p">(</span> <span class="n">rdrs</span><span class="p">,</span>
                     <span class="n">c_scene_sun</span><span class="p">,</span> <span class="n">c_scene_sky</span><span class="p">,</span>
                     <span class="n">raw_sun</span><span class="p">,</span> <span class="n">aggregated_sun</span><span class="p">,</span> 
                     <span class="n">raw_sky</span><span class="p">,</span> <span class="n">aggregated_sky</span><span class="p">,</span>
@@ -532,9 +531,9 @@
     <span class="n">raw</span><span class="p">,</span> <span class="n">aggregated</span><span class="p">,</span> <span class="n">sensors</span><span class="p">,</span> <span class="n">soil_energy</span> <span class="o">=</span> <span class="n">raw_sun</span><span class="p">,</span> <span class="n">aggregated_sun</span><span class="p">,</span> <span class="p">{},</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="p">:</span> 
         <span class="k">for</span> <span class="n">ray</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Eabs&#39;</span><span class="p">,</span> <span class="s1">&#39;Ei&#39;</span><span class="p">]</span> <span class="p">:</span>
-            <span class="k">for</span> <span class="n">idt</span><span class="p">,</span> <span class="n">v_sun</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">ray</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">:</span>
-                <span class="n">v_sky</span> <span class="o">=</span> <span class="n">raw_sky</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">ray</span><span class="p">][</span><span class="n">idt</span><span class="p">]</span>
-                <span class="n">raw</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">ray</span><span class="p">][</span><span class="n">idt</span><span class="p">]</span> <span class="o">=</span> <span class="n">rdrs</span> <span class="o">*</span> <span class="n">v_sky</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">rdrs</span><span class="p">)</span> <span class="o">*</span> <span class="n">v_sun</span>
+            <span class="k">for</span> <span class="n">ide</span><span class="p">,</span> <span class="n">v_sun</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">ray</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">:</span>
+                <span class="n">v_sky</span> <span class="o">=</span> <span class="n">raw_sky</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">ray</span><span class="p">][</span><span class="n">ide</span><span class="p">]</span>
+                <span class="n">raw</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">ray</span><span class="p">][</span><span class="n">ide</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">rdrs</span> <span class="o">*</span> <span class="n">sky</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">rdrs</span><span class="p">)</span> <span class="o">*</span> <span class="n">sun</span> <span class="k">for</span> <span class="n">sun</span><span class="p">,</span><span class="n">sky</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">v_sun</span><span class="p">,</span> <span class="n">v_sky</span><span class="p">)]</span>
 
             <span class="k">for</span> <span class="n">ide</span><span class="p">,</span> <span class="n">v_sun</span> <span class="ow">in</span> <span class="n">aggregated</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">ray</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">:</span>
                 <span class="n">v_sky</span> <span class="o">=</span> <span class="n">aggregated_sky</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">ray</span><span class="p">][</span><span class="n">ide</span><span class="p">]</span>
@@ -557,7 +556,7 @@
 
     <span class="k">return</span> <span class="n">raw</span><span class="p">,</span> <span class="n">aggregated</span><span class="p">,</span> <span class="n">sensors</span><span class="p">,</span> <span class="n">soil_energy</span></div>
 
-<div class="viewcode-block" id="out_caribu_nomix"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_outputs.out_caribu_nomix">[docs]</a><span class="k">def</span> <span class="nf">out_caribu_nomix</span><span class="p">(</span><span class="n">c_scene</span><span class="p">,</span> <span class="n">aggregated</span><span class="p">,</span> <span class="n">issensors</span><span class="p">,</span> <span class="n">issoilmesh</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="out_caribu_nomix"><a class="viewcode-back" href="../../reference.html# LightVegeManager_outputs.out_caribu_nomix">[docs]</a><span class="k">def</span> <span class="nf">out_caribu_nomix</span><span class="p">(</span><span class="n">c_scene</span><span class="p">,</span> <span class="n">aggregated</span><span class="p">,</span> <span class="n">issensors</span><span class="p">,</span> <span class="n">issoilmesh</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Extracts only sensors and soilmesh results if activated</span>
 
 <span class="sd">    :param c_scene: instance of CaribuScene containing geometry, light source(s), opt etc...</span>
@@ -585,7 +584,7 @@
 
     <span class="k">return</span> <span class="n">sensors</span><span class="p">,</span> <span class="n">soil_energy</span></div>
 
-<div class="viewcode-block" id="out_caribu_elements"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_outputs.out_caribu_elements">[docs]</a><span class="k">def</span> <span class="nf">out_caribu_elements</span><span class="p">(</span><span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">trimesh</span><span class="p">,</span> <span class="n">matching_ids</span><span class="p">,</span> <span class="n">aggregated</span><span class="p">,</span> <span class="n">sun_up</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="out_caribu_elements"><a class="viewcode-back" href="../../reference.html# LightVegeManager_outputs.out_caribu_elements">[docs]</a><span class="k">def</span> <span class="nf">out_caribu_elements</span><span class="p">(</span><span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">trimesh</span><span class="p">,</span> <span class="n">matching_ids</span><span class="p">,</span> <span class="n">aggregated</span><span class="p">,</span> <span class="n">sun_up</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts aggregated in a pandas.Dataframe following indices in LightVegeManager</span>
 
 <span class="sd">    :param day: day of simulation</span>
@@ -643,7 +642,7 @@
 
     <span class="k">return</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">dico_shape</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="out_caribu_triangles"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_outputs.out_caribu_triangles">[docs]</a><span class="k">def</span> <span class="nf">out_caribu_triangles</span><span class="p">(</span><span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">trimesh</span><span class="p">,</span> <span class="n">matching_ids</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">sun_up</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="out_caribu_triangles"><a class="viewcode-back" href="../../reference.html# LightVegeManager_outputs.out_caribu_triangles">[docs]</a><span class="k">def</span> <span class="nf">out_caribu_triangles</span><span class="p">(</span><span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">trimesh</span><span class="p">,</span> <span class="n">matching_ids</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">sun_up</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts raw in a pandas.Dataframe following simulation datas</span>
 
 <span class="sd">    :param day: day of simulation</span>

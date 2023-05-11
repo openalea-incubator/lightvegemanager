@@ -3,15 +3,15 @@ import sys
 
 # si le package est déjà installé
 try :
-    from src.LightVegeManager import *
+    from  LightVegeManager import *
 
 except ModuleNotFoundError:
     # ajoute le dossier lightvegemanager dans le sys.path
     sys.path.insert(1, os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
-    from src.LightVegeManager import *
+    from  LightVegeManager import *
     
 import openalea.plantgl.all as pgl_all
-from src.LightVegeManager_VTK import *
+from  LightVegeManager_VTK import *
 
 
 def run_and_vtk(lightvegemanager, folderout, PARi, day, hour) :

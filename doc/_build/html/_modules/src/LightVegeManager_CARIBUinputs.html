@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>src.LightVegeManager_CARIBUinputs &mdash; LightVegeManager 0.0.0 documentation</title>
+  <title> LightVegeManager_CARIBUinputs &mdash; LightVegeManager 0.0.0 documentation</title>
   
 
   
@@ -22,9 +22,8 @@
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -86,7 +85,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../architecture.html">Architecture of the tool</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../inputs.html">Inputs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../others.html">Additionnal Functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../others.html">Additionnal Functionalities</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
 <ul>
@@ -138,7 +137,7 @@
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
-      <li>src.LightVegeManager_CARIBUinputs</li>
+      <li> LightVegeManager_CARIBUinputs</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -153,7 +152,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for src.LightVegeManager_CARIBUinputs</h1><div class="highlight"><pre>
+  <h1>Source code for  LightVegeManager_CARIBUinputs</h1><div class="highlight"><pre>
 <span></span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    LightVegeManager_CARIBUinputs</span>
 <span class="sd">    ******************************</span>
@@ -202,10 +201,10 @@
 
 <span class="kn">import</span> <span class="nn">openalea.plantgl.all</span> <span class="k">as</span> <span class="nn">pgl</span>
 
-<span class="kn">from</span> <span class="nn">src.LightVegeManager_trianglesmesh</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">src.LightVegeManager_voxelsmesh</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn"> LightVegeManager_trianglesmesh</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn"> LightVegeManager_voxelsmesh</span> <span class="kn">import</span> <span class="o">*</span>
 
-<div class="viewcode-block" id="Prepare_CARIBU"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_CARIBUinputs.Prepare_CARIBU">[docs]</a><span class="k">def</span> <span class="nf">Prepare_CARIBU</span><span class="p">(</span><span class="n">trimesh</span><span class="p">,</span> 
+<div class="viewcode-block" id="Prepare_CARIBU"><a class="viewcode-back" href="../../reference.html# LightVegeManager_CARIBUinputs.Prepare_CARIBU">[docs]</a><span class="k">def</span> <span class="nf">Prepare_CARIBU</span><span class="p">(</span><span class="n">trimesh</span><span class="p">,</span> 
                     <span class="n">geometry</span><span class="p">,</span> 
                     <span class="n">matching_ids</span><span class="p">,</span> 
                     <span class="n">minmax</span><span class="p">,</span> 
@@ -308,7 +307,7 @@
     <span class="k">return</span> <span class="n">opt</span><span class="p">,</span> <span class="n">sensors_caribu</span><span class="p">,</span> <span class="n">debug</span></div>
     
 
-<div class="viewcode-block" id="CARIBU_opticals"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_CARIBUinputs.CARIBU_opticals">[docs]</a><span class="k">def</span> <span class="nf">CARIBU_opticals</span><span class="p">(</span><span class="n">matching_ids</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">stems_id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="CARIBU_opticals"><a class="viewcode-back" href="../../reference.html# LightVegeManager_CARIBUinputs.CARIBU_opticals">[docs]</a><span class="k">def</span> <span class="nf">CARIBU_opticals</span><span class="p">(</span><span class="n">matching_ids</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">stems_id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Sets optical parameters for CARIBU from LightVegeManager inputs</span>
 <span class="sd">    It removes transmittance for stems elements if precised</span>
 
@@ -348,7 +347,7 @@
 
     <span class="k">return</span> <span class="n">opt</span></div>
 
-<div class="viewcode-block" id="create_caribu_legume_sensors"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_CARIBUinputs.create_caribu_legume_sensors">[docs]</a><span class="k">def</span> <span class="nf">create_caribu_legume_sensors</span><span class="p">(</span><span class="n">dxyz</span><span class="p">,</span> 
+<div class="viewcode-block" id="create_caribu_legume_sensors"><a class="viewcode-back" href="../../reference.html# LightVegeManager_CARIBUinputs.create_caribu_legume_sensors">[docs]</a><span class="k">def</span> <span class="nf">create_caribu_legume_sensors</span><span class="p">(</span><span class="n">dxyz</span><span class="p">,</span> 
                                 <span class="n">nxyz</span><span class="p">,</span> 
                                 <span class="n">orig</span><span class="p">,</span> 
                                 <span class="n">pmax</span><span class="p">,</span> 
@@ -483,7 +482,7 @@
     
     <span class="k">return</span> <span class="n">caribu_sensors</span><span class="p">,</span> <span class="n">s_capt</span><span class="p">,</span> <span class="n">sensors_maxcenter</span></div>
 
-<div class="viewcode-block" id="run_caribu"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_CARIBUinputs.run_caribu">[docs]</a><span class="k">def</span> <span class="nf">run_caribu</span><span class="p">(</span><span class="n">c_scene</span><span class="p">,</span> <span class="n">direct_active</span><span class="p">,</span> <span class="n">infinite</span><span class="p">,</span> <span class="n">sensors</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="run_caribu"><a class="viewcode-back" href="../../reference.html# LightVegeManager_CARIBUinputs.run_caribu">[docs]</a><span class="k">def</span> <span class="nf">run_caribu</span><span class="p">(</span><span class="n">c_scene</span><span class="p">,</span> <span class="n">direct_active</span><span class="p">,</span> <span class="n">infinite</span><span class="p">,</span> <span class="n">sensors</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;runs caribu depending on input options</span>
 
 <span class="sd">    :param c_scene: instance of CaribuScene containing geometry, light source(s), opt etc...</span>

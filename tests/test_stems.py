@@ -1,37 +1,36 @@
 import os
 import sys
 
-# si le package est déjà installé
 try :
-    from src.LightVegeManager import *
+    from  LightVegeManager import *
 
 except ModuleNotFoundError:
     # ajoute le dossier lightvegemanager dans le sys.path
     sys.path.insert(1, os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
-    from src.LightVegeManager import *
+    from  LightVegeManager import *
     
 import openalea.plantgl.all as pgl_all
 
 """
-vérification de la prise en charge des éléments tiges
-plusieurs plaques horizontales dans un voxel comme suit (censé correspondre à l'hypothèse turbid medium) : 
+    Stems processing checking
+    -------------------------
+
+    Scene for verification is a set of horizontal planes in one voxel as so:
+
     -------------
     |   ----    |
     |     ____  |
     | ----      |
     -------------
 
-On compare la moyenne du PAR sur les plaques entre CARIBU et RATP
-
-Prise en compte des tiges
-    * CARIBU
-        le calcul du PAR incident est effectué sans disctinction sur les triangles, puis on soustrait
-        la portion réfléchi. On soustrait uniquement la partie transmise aux éléments non tiges
+    We compare the PAR mean on all the planes between CARIBU and RATP
     
-    * RATP
-        l'aire des triangles appartenant à la tige est divisée par 2
-        
+    Stems processing
+        * CARIBU
+            Computing of incident PAR is done with no transmittance, triangles are opaques
 
+        * RATP
+            triangles area are divided by 2
 """
 
 def run_print(lghtcaribu, lghtratp, PARi, day, hour):

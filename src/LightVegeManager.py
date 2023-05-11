@@ -92,20 +92,20 @@ import time
 import os
 import subprocess
 
-from src.LightVegeManager_trianglesmesh import *
-from src.LightVegeManager_stems import *
-from src.LightVegeManager_leafangles import *
-from src.LightVegeManager_tesselator import *
-from src.LightVegeManager_sun import *
-from src.LightVegeManager_sky import *
-from src.LightVegeManager_RATPinputs import *
-from src.LightVegeManager_CARIBUinputs import *
-from src.LightVegeManager_outputs import *
-from src.LightVegeManager_buildRATPscene import *
-from src.LightVegeManager_transfer import *
-from src.LightVegeManager_VTK import *
-from src.LightVegeManager_plantGL import *
-from src.LightVegeManager_defaultvalues import *
+from  LightVegeManager_trianglesmesh import *
+from  LightVegeManager_stems import *
+from  LightVegeManager_leafangles import *
+from  LightVegeManager_tesselator import *
+from  LightVegeManager_sun import *
+from  LightVegeManager_sky import *
+from  LightVegeManager_RATPinputs import *
+from  LightVegeManager_CARIBUinputs import *
+from  LightVegeManager_outputs import *
+from  LightVegeManager_buildRATPscene import *
+from  LightVegeManager_transfer import *
+from  LightVegeManager_VTK import *
+from  LightVegeManager_plantGL import *
+from  LightVegeManager_defaultvalues import *
 
 class LightVegeManager(object) :
     """Main class for the tool LightVegeManager
@@ -1013,7 +1013,7 @@ class LightVegeManager(object) :
     def triangles_outputs(self):
         """Lighting results aggregate by triangle, if it has a triangulation in its inputs
 
-        :return: .. seealso:: :mod:`src.LightVegeManager_outputs` for column names
+        :return: .. seealso:: :mod:` LightVegeManager_outputs` for column names
         :rtype: pandas.Dataframe
         """        
         return self.__triangles_outputs 
@@ -1022,7 +1022,7 @@ class LightVegeManager(object) :
     def voxels_outputs(self):
         """Lighting results aggregate by voxels, only with RATP as the selected light model
 
-        :return: .. seealso:: :mod:`src.LightVegeManager_outputs` for column names
+        :return: .. seealso:: :mod:` LightVegeManager_outputs` for column names
         :rtype: pandas.Dataframe
         """         
         return self.__voxels_outputs 

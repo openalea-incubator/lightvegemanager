@@ -13,7 +13,7 @@
 import numpy
 import bisect
 
-from src.LightVegeManager_trianglesmesh import *
+from LightVegeManager_trianglesmesh import *
 
 
 def read_distrib_file(path, numberofentities) :

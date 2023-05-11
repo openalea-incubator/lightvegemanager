@@ -46,8 +46,8 @@
 
 import openalea.plantgl.all as pgl
 
-from src.LightVegeManager_trianglesmesh import *
-from src.LightVegeManager_voxelsmesh import *
+from LightVegeManager_trianglesmesh import *
+from LightVegeManager_voxelsmesh import *
 
 def Prepare_CARIBU(trimesh, 
                     geometry, 

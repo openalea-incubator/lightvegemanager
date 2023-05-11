@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>src.LightVegeManager_buildRATPscene &mdash; LightVegeManager 0.0.0 documentation</title>
+  <title> LightVegeManager_buildRATPscene &mdash; LightVegeManager 0.0.0 documentation</title>
   
 
   
@@ -22,9 +22,8 @@
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -86,7 +85,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../architecture.html">Architecture of the tool</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../inputs.html">Inputs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../others.html">Additionnal Functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../others.html">Additionnal Functionalities</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
 <ul>
@@ -138,7 +137,7 @@
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
-      <li>src.LightVegeManager_buildRATPscene</li>
+      <li> LightVegeManager_buildRATPscene</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -153,7 +152,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for src.LightVegeManager_buildRATPscene</h1><div class="highlight"><pre>
+  <h1>Source code for  LightVegeManager_buildRATPscene</h1><div class="highlight"><pre>
 <span></span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    LightVegeManager_buildRATPscene</span>
 <span class="sd">    ********************************</span>
@@ -198,11 +197,11 @@
 
 <span class="kn">from</span> <span class="nn">alinea.pyratp</span> <span class="kn">import</span> <span class="n">grid</span>
 
-<span class="kn">from</span> <span class="nn">src.LightVegeManager_trianglesmesh</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">src.LightVegeManager_voxelsmesh</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">src.LightVegeManager_leafangles</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn"> LightVegeManager_trianglesmesh</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn"> LightVegeManager_voxelsmesh</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn"> LightVegeManager_leafangles</span> <span class="kn">import</span> <span class="o">*</span>
 
-<div class="viewcode-block" id="extract_grid_origin"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_buildRATPscene.extract_grid_origin">[docs]</a><span class="k">def</span> <span class="nf">extract_grid_origin</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">minmax</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="extract_grid_origin"><a class="viewcode-back" href="../../reference.html# LightVegeManager_buildRATPscene.extract_grid_origin">[docs]</a><span class="k">def</span> <span class="nf">extract_grid_origin</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">minmax</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;_summary_</span>
 
 <span class="sd">    :param parameters: RATP parameters from inputs of LightVegeManager</span>
@@ -228,7 +227,7 @@
     
     <span class="k">return</span> <span class="n">xorig</span><span class="p">,</span> <span class="n">yorig</span><span class="p">,</span> <span class="n">zorig</span></div>
 
-<div class="viewcode-block" id="build_RATPscene_from_trimesh"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_buildRATPscene.build_RATPscene_from_trimesh">[docs]</a><span class="k">def</span> <span class="nf">build_RATPscene_from_trimesh</span><span class="p">(</span><span class="n">trimesh</span><span class="p">,</span> 
+<div class="viewcode-block" id="build_RATPscene_from_trimesh"><a class="viewcode-back" href="../../reference.html# LightVegeManager_buildRATPscene.build_RATPscene_from_trimesh">[docs]</a><span class="k">def</span> <span class="nf">build_RATPscene_from_trimesh</span><span class="p">(</span><span class="n">trimesh</span><span class="p">,</span> 
                                     <span class="n">minmax</span><span class="p">,</span> 
                                     <span class="n">triLmax</span><span class="p">,</span>
                                     <span class="n">matching_ids</span><span class="p">,</span> 
@@ -367,7 +366,7 @@
     
     <span class="k">return</span> <span class="n">ratpgrid</span><span class="p">,</span> <span class="n">matching_tri_vox</span><span class="p">,</span> <span class="n">distrib</span></div>
 
-<div class="viewcode-block" id="build_RATPscene_empty"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_buildRATPscene.build_RATPscene_empty">[docs]</a><span class="k">def</span> <span class="nf">build_RATPscene_empty</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">minmax</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">infinite</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="build_RATPscene_empty"><a class="viewcode-back" href="../../reference.html# LightVegeManager_buildRATPscene.build_RATPscene_empty">[docs]</a><span class="k">def</span> <span class="nf">build_RATPscene_empty</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">minmax</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">infinite</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a RATP grid from an empty geometric input</span>
 
 <span class="sd">    :param parameters: RATP parameters from inputs of LightVegeManager</span>
@@ -408,7 +407,7 @@
 
     <span class="k">return</span> <span class="n">ratpgrid</span><span class="p">,</span> <span class="n">distrib</span></div>
     
-<div class="viewcode-block" id="legumescene_to_RATPscene"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_buildRATPscene.legumescene_to_RATPscene">[docs]</a><span class="k">def</span> <span class="nf">legumescene_to_RATPscene</span><span class="p">(</span><span class="n">legumescene</span><span class="p">,</span>
+<div class="viewcode-block" id="legumescene_to_RATPscene"><a class="viewcode-back" href="../../reference.html# LightVegeManager_buildRATPscene.legumescene_to_RATPscene">[docs]</a><span class="k">def</span> <span class="nf">legumescene_to_RATPscene</span><span class="p">(</span><span class="n">legumescene</span><span class="p">,</span>
                                 <span class="n">parameters</span><span class="p">,</span>
                                 <span class="n">coordinates</span><span class="p">,</span>
                                 <span class="n">reflected</span><span class="p">,</span>

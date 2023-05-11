@@ -5,10 +5,11 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Additionnal Functionality &mdash; LightVegeManager 0.0.0 documentation</title>
+  <title>Additionnal Functionalities &mdash; LightVegeManager 0.0.0 documentation</title>
   
 
   
@@ -22,9 +23,8 @@
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -88,7 +88,7 @@
 <li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture of the tool</a></li>
 <li class="toctree-l1"><a class="reference internal" href="inputs.html">Inputs</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Additionnal Functionality</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Additionnal Functionalities</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#inputs-analysis-tool">Inputs analysis Tool</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#visualisation">Visualisation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#vtk-files">VTK files</a></li>
@@ -146,7 +146,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Additionnal Functionality</li>
+      <li>Additionnal Functionalities</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -165,20 +165,20 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="additionnal-functionality">
-<span id="other"></span><h1>Additionnal Functionality<a class="headerlink" href="#additionnal-functionality" title="Permalink to this headline">¶</a></h1>
-<p>We implemented more useful functionnalies to improve the tools.</p>
-<div class="section" id="inputs-analysis-tool">
-<h2>Inputs analysis Tool<a class="headerlink" href="#inputs-analysis-tool" title="Permalink to this headline">¶</a></h2>
+  <section id="additionnal-functionalities">
+<span id="other"></span><h1>Additionnal Functionalities<a class="headerlink" href="#additionnal-functionalities" title="Permalink to this heading">¶</a></h1>
+<p>Here are more functionalities implemented in the tool.</p>
+<section id="inputs-analysis-tool">
+<h2>Inputs analysis Tool<a class="headerlink" href="#inputs-analysis-tool" title="Permalink to this heading">¶</a></h2>
 <p>For computing a leaf area distribution, you can run s5 or s2v tools, which was developped in previous projects.
 This tools are accessible with the methods <code class="xref py py-meth docutils literal notranslate"><span class="pre">s5()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">s2v()</span></code>.
 Those tools will create output files with leaf angle distribution, leaf area density and
 other informations related to turbid medium, from a triangles mesh inside a LightVegeManager object.</p>
-</div>
-<div class="section" id="visualisation">
-<h2>Visualisation<a class="headerlink" href="#visualisation" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="vtk-files">
-<h3>VTK files<a class="headerlink" href="#vtk-files" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="visualisation">
+<h2>Visualisation<a class="headerlink" href="#visualisation" title="Permalink to this heading">¶</a></h2>
+<section id="vtk-files">
+<h3>VTK files<a class="headerlink" href="#vtk-files" title="Permalink to this heading">¶</a></h3>
 <p>You can create VTK files from the geometric information you have in the inputs. Files can be either triangles or voxels mesh. Available methods</p>
 <blockquote>
 <div><ul class="simple">
@@ -187,13 +187,13 @@ other informations related to turbid medium, from a triangles mesh inside a Ligh
 <li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">VTK_sun()</span></code>: write a line representing the sun position</p></li>
 </ul>
 </div></blockquote>
-</div>
-<div class="section" id="plantgl-visualizer">
-<h3>PlantGL visualizer<a class="headerlink" href="#plantgl-visualizer" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="plantgl-visualizer">
+<h3>PlantGL visualizer<a class="headerlink" href="#plantgl-visualizer" title="Permalink to this heading">¶</a></h3>
 <p>Currently in development.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
            </div>

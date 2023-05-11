@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Inputs &mdash; LightVegeManager 0.0.0 documentation</title>
@@ -22,9 +23,8 @@
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -37,7 +37,7 @@
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Additionnal Functionality" href="others.html" />
+    <link rel="next" title="Additionnal Functionalities" href="others.html" />
     <link rel="prev" title="Architecture of the tool" href="architecture.html" /> 
 </head>
 
@@ -112,7 +112,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="others.html">Additionnal Functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="others.html">Additionnal Functionalities</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
 <ul>
@@ -181,11 +181,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="inputs">
-<span id="id1"></span><h1>Inputs<a class="headerlink" href="#inputs" title="Permalink to this headline">¶</a></h1>
+  <section id="inputs">
+<span id="id1"></span><h1>Inputs<a class="headerlink" href="#inputs" title="Permalink to this heading">¶</a></h1>
 <p>In LightVegeManager, we choose to organize the input parameters in 3 python dict: geometric, environment and light model parameters.</p>
-<div class="section" id="geometric-inputs">
-<span id="geometric"></span><h2>Geometric inputs<a class="headerlink" href="#geometric-inputs" title="Permalink to this headline">¶</a></h2>
+<section id="geometric-inputs">
+<span id="geometric"></span><h2>Geometric inputs<a class="headerlink" href="#geometric-inputs" title="Permalink to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">geometry</span> <span class="o">=</span> <span class="p">{</span>
                        <span class="s2">&quot;scenes&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="n">scene0</span><span class="p">,</span> <span class="n">scene1</span><span class="p">,</span> <span class="n">scene2</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="p">,</span>
                        <span class="s2">&quot;domain&quot;</span> <span class="p">:</span> <span class="p">((</span><span class="n">xmin</span><span class="p">,</span> <span class="n">ymin</span><span class="p">),</span> <span class="p">(</span><span class="n">xmax</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)),</span>
@@ -203,8 +203,8 @@
 You can also add descriptions on the scenes, especially if you have a large numbers of scenes and plant model evolved.
 Each scene must contains only one specy of plant, except for l-egume grid format, which can contains multiple species.
 As the geometric informations are likely to change during a simulation, this dict is not read by the constructor but rather by the <code class="xref py py-meth docutils literal notranslate"><span class="pre">build()</span></code> method.</p>
-<div class="section" id="scenes">
-<span id="id2"></span><h3>Scenes<a class="headerlink" href="#scenes" title="Permalink to this headline">¶</a></h3>
+<section id="scenes">
+<span id="id2"></span><h3>Scenes<a class="headerlink" href="#scenes" title="Permalink to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">&quot;scenes&quot;</span></code> key needs a list of the geometric scenes.
 Each scene represents one plant specie, except for voxel grid format. There is no restrictions on the numbers of input scenes.
 Possible format are:</p>
@@ -237,9 +237,9 @@ Possible format are:</p>
 </div></blockquote>
 <p><code class="docutils literal notranslate"><span class="pre">&quot;domain&quot;</span></code> is necessary for CARIBU and infinite scene, it defines the xy square to replicate.
 <code class="docutils literal notranslate"><span class="pre">&quot;stems</span> <span class="pre">id&quot;</span></code> indicates the organ id of possible stems. They will be considered as strictly opaque element.</p>
-</div>
-<div class="section" id="geometric-transformations">
-<h3>Geometric transformations<a class="headerlink" href="#geometric-transformations" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="geometric-transformations">
+<h3>Geometric transformations<a class="headerlink" href="#geometric-transformations" title="Permalink to this heading">¶</a></h3>
 <p>There is an optional fourth input key in the geometric dict, used to specify geometric transformations on several scenes.
 For example, you can arrange your inputs scenes in a specific pattern by translating them.
 The value of each entry is a dict:</p>
@@ -247,8 +247,8 @@ The value of each entry is a dict:</p>
 </pre></div>
 </div>
 <p>Possible keys are the following:</p>
-<div class="section" id="scenes-unit">
-<h4><code class="docutils literal notranslate"><span class="pre">&quot;scenes</span> <span class="pre">unit&quot;</span></code><a class="headerlink" href="#scenes-unit" title="Permalink to this headline">¶</a></h4>
+<section id="scenes-unit">
+<h4><code class="docutils literal notranslate"><span class="pre">&quot;scenes</span> <span class="pre">unit&quot;</span></code><a class="headerlink" href="#scenes-unit" title="Permalink to this heading">¶</a></h4>
 <p>Associates a measure unit among this list <code class="docutils literal notranslate"><span class="pre">['mm','cm','dm','m','dam','hm','km']</span></code> with a scene.
 You can also assign a unit to the inside global scene, the tool will rescale all the scenes in the same unit.</p>
 <p>example:</p>
@@ -257,27 +257,27 @@ You can also assign a unit to the inside global scene, the tool will rescale all
                                   <span class="mi">2</span> <span class="p">:</span> <span class="s1">&#39;hm&#39;</span><span class="p">}</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="rescale">
-<h4><code class="docutils literal notranslate"><span class="pre">&quot;rescale&quot;</span></code><a class="headerlink" href="#rescale" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="rescale">
+<h4><code class="docutils literal notranslate"><span class="pre">&quot;rescale&quot;</span></code><a class="headerlink" href="#rescale" title="Permalink to this heading">¶</a></h4>
 <p>Multiply all the lengths of a scene by a ratio.</p>
 <p>example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">transformations</span><span class="p">[</span><span class="s2">&quot;rescale&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span> <span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
                               <span class="mi">2</span> <span class="p">:</span> <span class="mi">5</span><span class="p">}</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="translate">
-<h4><code class="docutils literal notranslate"><span class="pre">&quot;translate&quot;</span></code><a class="headerlink" href="#translate" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="translate">
+<h4><code class="docutils literal notranslate"><span class="pre">&quot;translate&quot;</span></code><a class="headerlink" href="#translate" title="Permalink to this heading">¶</a></h4>
 <p>Apply a translation vector to a scene. A vector is 3-tuple.</p>
 <p>example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">transformations</span><span class="p">[</span><span class="s2">&quot;translate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span> <span class="p">:</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
                                 <span class="mi">1</span> <span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">)}</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="xyz-orientation">
-<h4><code class="docutils literal notranslate"><span class="pre">&quot;xyz</span> <span class="pre">orientation&quot;</span></code><a class="headerlink" href="#xyz-orientation" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="xyz-orientation">
+<h4><code class="docutils literal notranslate"><span class="pre">&quot;xyz</span> <span class="pre">orientation&quot;</span></code><a class="headerlink" href="#xyz-orientation" title="Permalink to this heading">¶</a></h4>
 <p>Change the orientation of a scene among the xyz axis.
 When a model creates a scene in a different convention used by the light models, LightVegeManager allows for a common convention.
 RATP and CARIBU use the convention x+ matches to North.</p>
@@ -294,11 +294,11 @@ RATP and CARIBU use the convention x+ matches to North.</p>
                                       <span class="mi">1</span> <span class="p">:</span> <span class="s2">&quot;x+ = W&quot;</span><span class="p">}</span>
 </pre></div>
 </div>
-</div>
-</div>
-</div>
-<div class="section" id="environment-parameters">
-<span id="environment"></span><h2>Environment parameters<a class="headerlink" href="#environment-parameters" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+</section>
+<section id="environment-parameters">
+<span id="environment"></span><h2>Environment parameters<a class="headerlink" href="#environment-parameters" title="Permalink to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">environment</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="s2">&quot;coordinates&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="n">latitude</span><span class="p">,</span> <span class="n">longitude</span><span class="p">,</span> <span class="n">timezone</span><span class="p">]</span> <span class="p">,</span>
 
@@ -322,12 +322,12 @@ RATP and CARIBU use the convention x+ matches to North.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">[nb_azimut,</span> <span class="pre">nb_zenith,</span> <span class="pre">&quot;soc&quot;</span> <span class="pre">ou</span> <span class="pre">&quot;uoc&quot;]</span></code>: computes dynamically the source directions</p></li>
 </ul>
 </div></blockquote>
-</div>
-<div class="section" id="light-model-parameters">
-<h2>Light model parameters<a class="headerlink" href="#light-model-parameters" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="light-model-parameters">
+<h2>Light model parameters<a class="headerlink" href="#light-model-parameters" title="Permalink to this heading">¶</a></h2>
 <p>Specific parameters for each light model, as they use very different syntax and approach.</p>
-<div class="section" id="caribu-surfacic-approach">
-<span id="caribuparam"></span><h3>CARIBU: surfacic approach<a class="headerlink" href="#caribu-surfacic-approach" title="Permalink to this headline">¶</a></h3>
+<section id="caribu-surfacic-approach">
+<span id="caribuparam"></span><h3>CARIBU: surfacic approach<a class="headerlink" href="#caribu-surfacic-approach" title="Permalink to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">caribu_args</span> <span class="o">=</span> <span class="p">{</span>
                     <span class="s2">&quot;sun algo&quot;</span> <span class="p">:</span> <span class="s2">&quot;ratp&quot;</span><span class="p">,</span>
                     <span class="s2">&quot;sun algo&quot;</span> <span class="p">:</span> <span class="s2">&quot;caribu&quot;</span><span class="p">,</span>
@@ -373,9 +373,9 @@ RATP and CARIBU use the convention x+ matches to North.</p>
 <p>At the moment, only grid option is available for sensors</p>
 </div>
 </div></blockquote>
-</div>
-<div class="section" id="ratp-volumic-approach">
-<span id="ratpparam"></span><h3>RATP: volumic approach<a class="headerlink" href="#ratp-volumic-approach" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="ratp-volumic-approach">
+<span id="ratpparam"></span><h3>RATP: volumic approach<a class="headerlink" href="#ratp-volumic-approach" title="Permalink to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ratp_args</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="c1"># Grid specifications</span>
                 <span class="s2">&quot;voxel size&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dz</span><span class="p">],</span>
@@ -403,8 +403,8 @@ RATP and CARIBU use the convention x+ matches to North.</p>
             <span class="p">}</span>
 </pre></div>
 </div>
-<div class="section" id="grid-specifications">
-<h4>Grid specifications<a class="headerlink" href="#grid-specifications" title="Permalink to this headline">¶</a></h4>
+<section id="grid-specifications">
+<h4>Grid specifications<a class="headerlink" href="#grid-specifications" title="Permalink to this heading">¶</a></h4>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;voxel</span> <span class="pre">size&quot;</span></code>: defines the size of one voxel, 2 possibilities</p>
 <blockquote>
@@ -426,9 +426,9 @@ RATP and CARIBU use the convention x+ matches to North.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;grid</span> <span class="pre">slicing&quot;</span></code>: if <code class="docutils literal notranslate"><span class="pre">&quot;grid</span> <span class="pre">slicing&quot;</span> <span class="pre">:</span> <span class="pre">&quot;ground</span> <span class="pre">=</span> <span class="pre">0.&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;number</span> <span class="pre">voxels&quot;</span></code> is not specified and there are triangles in the input geometries, it rescales the grid to avoid the soil layer &lt; 0</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;tesselation</span> <span class="pre">level&quot;</span></code>: if there are triangles in the input geometries, you can tesselate them a certain number of times to match the voxel grid.</p></li>
 </ul>
-</div>
-<div class="section" id="leaf-angle-distribution">
-<h4>Leaf angle distribution<a class="headerlink" href="#leaf-angle-distribution" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="leaf-angle-distribution">
+<h4>Leaf angle distribution<a class="headerlink" href="#leaf-angle-distribution" title="Permalink to this heading">¶</a></h4>
 <p>You can specify how the leaf angle distribution is computed. It can be computed dynamically from a triangulation.</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;angle</span> <span class="pre">distrib</span> <span class="pre">algo&quot;</span></code>: 3 possibilities</p>
@@ -443,18 +443,18 @@ RATP and CARIBU use the convention x+ matches to North.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;nb</span> <span class="pre">angle</span> <span class="pre">classes&quot;</span></code>: if <code class="docutils literal notranslate"><span class="pre">&quot;angle</span> <span class="pre">distrib</span> <span class="pre">algo&quot;</span> <span class="pre">=</span> <span class="pre">&quot;compute</span> <span class="pre">global&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;angle</span> <span class="pre">distrib</span> <span class="pre">algo&quot;</span> <span class="pre">=</span> <span class="pre">&quot;compute</span> <span class="pre">voxel&quot;</span></code>, number of angle classes in the distribution</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;angle</span> <span class="pre">distrib</span> <span class="pre">file&quot;</span></code>: if <code class="docutils literal notranslate"><span class="pre">&quot;angle</span> <span class="pre">distrib</span> <span class="pre">algo&quot;</span> <span class="pre">=</span> <span class="pre">file&quot;</span></code> string precising the file path to read</p></li>
 </ul>
-</div>
-<div class="section" id="vegetation-type">
-<h4>Vegetation type<a class="headerlink" href="#vegetation-type" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="vegetation-type">
+<h4>Vegetation type<a class="headerlink" href="#vegetation-type" title="Permalink to this heading">¶</a></h4>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;soil</span> <span class="pre">reflectance&quot;</span></code>: if precised, soil reflects rays by a coefficient, one float by wavelength <code class="docutils literal notranslate"><span class="pre">[coef_par,</span> <span class="pre">coef_nir]</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;reflectance</span> <span class="pre">coefficients&quot;</span></code>: if precised, leaf reflects rays by a coefficient, one float by wavelength <code class="docutils literal notranslate"><span class="pre">[coef_par,</span> <span class="pre">coef_nir]</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;mu&quot;</span></code>: clumping effect for each input species</p></li>
 </ul>
-</div>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
+</section>
 
 
            </div>
@@ -464,7 +464,7 @@ RATP and CARIBU use the convention x+ matches to North.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="others.html" class="btn btn-neutral float-right" title="Additionnal Functionality" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="others.html" class="btn btn-neutral float-right" title="Additionnal Functionalities" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="architecture.html" class="btn btn-neutral float-left" title="Architecture of the tool" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

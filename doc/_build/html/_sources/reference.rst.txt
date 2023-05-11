@@ -10,138 +10,138 @@ describing what they are and what they do.
 
 .. contents:: 
 
-:mod:`src.LightVegeManager` module
+:mod:` LightVegeManager` module
 -------------------------------------
 
-.. automodule:: src.LightVegeManager
+.. automodule::  LightVegeManager
    :members:
    :undoc-members:
    :show-inheritance:
 
-:mod:`src.LightVegeManager_CARIBUinputs` module
+:mod:` LightVegeManager_CARIBUinputs` module
 ------------------------------------------------------------
 
-.. automodule:: src.LightVegeManager_CARIBUinputs
+.. automodule::  LightVegeManager_CARIBUinputs
    :members:
    :undoc-members:
    :show-inheritance:
 
-:mod:`src.LightVegeManager_RATPinputs` module
+:mod:` LightVegeManager_RATPinputs` module
 ------------------------------------------------------------
 
-.. automodule:: src.LightVegeManager_RATPinputs
+.. automodule::  LightVegeManager_RATPinputs
    :members:
    :undoc-members:
    :show-inheritance:
 
-:mod:`src.LightVegeManager_VTK` module
+:mod:` LightVegeManager_VTK` module
 ------------------------------------------------------------
 
-.. automodule:: src.LightVegeManager_VTK
+.. automodule::  LightVegeManager_VTK
    :members:
    :undoc-members:
    :show-inheritance:
 
-:mod:`src.LightVegeManager_basicgeometry` module
+:mod:` LightVegeManager_basicgeometry` module
 ------------------------------------------------------------
 
-.. automodule:: src.LightVegeManager_basicgeometry
+.. automodule::  LightVegeManager_basicgeometry
    :members:
    :undoc-members:
    :show-inheritance:
 
-:mod:`src.LightVegeManager_buildRATPscene` module
+:mod:` LightVegeManager_buildRATPscene` module
 ------------------------------------------------------------
 
-.. automodule:: src.LightVegeManager_buildRATPscene
+.. automodule::  LightVegeManager_buildRATPscene
    :members:
    :undoc-members:
    :show-inheritance:
 
-:mod:`src.LightVegeManager_defaultvalues` module
+:mod:` LightVegeManager_defaultvalues` module
 ------------------------------------------------------------
 
-.. automodule:: src.LightVegeManager_defaultvalues
+.. automodule::  LightVegeManager_defaultvalues
    :members:
    :undoc-members:
    :show-inheritance:
 
-:mod:`src.LightVegeManager_leafangles` module
+:mod:` LightVegeManager_leafangles` module
 ------------------------------------------------------------
 
-.. automodule:: src.LightVegeManager_leafangles
+.. automodule::  LightVegeManager_leafangles
    :members:
    :undoc-members:
    :show-inheritance:
 
-:mod:`src.LightVegeManager_outputs` module
+:mod:` LightVegeManager_outputs` module
 ------------------------------------------------------------
 
-.. automodule:: src.LightVegeManager_outputs
+.. automodule::  LightVegeManager_outputs
    :members:
    :undoc-members:
    :show-inheritance:
 
-:mod:`src.LightVegeManager_plantGL` module
+:mod:` LightVegeManager_plantGL` module
 ------------------------------------------------------------
 
-.. automodule:: src.LightVegeManager_plantGL
+.. automodule::  LightVegeManager_plantGL
    :members:
    :undoc-members:
    :show-inheritance:
 
-:mod:`src.LightVegeManager_sky` module
+:mod:` LightVegeManager_sky` module
 ------------------------------------------------------------
 
-.. automodule:: src.LightVegeManager_sky
+.. automodule::  LightVegeManager_sky
    :members:
    :undoc-members:
    :show-inheritance:
 
-:mod:`src.LightVegeManager_stems` module
+:mod:` LightVegeManager_stems` module
 ------------------------------------------------------------
 
-.. automodule:: src.LightVegeManager_stems
+.. automodule::  LightVegeManager_stems
    :members:
    :undoc-members:
    :show-inheritance:
 
-:mod:`src.LightVegeManager_sun` module
+:mod:` LightVegeManager_sun` module
 ------------------------------------------------------------
 
-.. automodule:: src.LightVegeManager_sun
+.. automodule::  LightVegeManager_sun
    :members:
    :undoc-members:
    :show-inheritance:
 
-:mod:`src.LightVegeManager_tesselator` module
+:mod:` LightVegeManager_tesselator` module
 ------------------------------------------------------------
 
-.. automodule:: src.LightVegeManager_tesselator
+.. automodule::  LightVegeManager_tesselator
    :members:
    :undoc-members:
    :show-inheritance:
 
-:mod:`src.LightVegeManager_transfer` module
+:mod:` LightVegeManager_transfer` module
 ------------------------------------------------------------
 
-.. automodule:: src.LightVegeManager_transfer
+.. automodule::  LightVegeManager_transfer
    :members:
    :undoc-members:
    :show-inheritance:
 
-:mod:`src.LightVegeManager_trianglesmesh` module
+:mod:` LightVegeManager_trianglesmesh` module
 ------------------------------------------------------------
 
-.. automodule:: src.LightVegeManager_trianglesmesh
+.. automodule::  LightVegeManager_trianglesmesh
    :members:
    :undoc-members:
    :show-inheritance:
 
-:mod:`src.LightVegeManager_voxelsmesh` module
+:mod:` LightVegeManager_voxelsmesh` module
 ------------------------------------------------------------
 
-.. automodule:: src.LightVegeManager_voxelsmesh
+.. automodule::  LightVegeManager_voxelsmesh
    :members:
    :undoc-members:
    :show-inheritance:

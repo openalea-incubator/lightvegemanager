@@ -42,9 +42,9 @@
 
 from alinea.pyratp import grid
 
-from src.LightVegeManager_trianglesmesh import *
-from src.LightVegeManager_voxelsmesh import *
-from src.LightVegeManager_leafangles import *
+from LightVegeManager_trianglesmesh import *
+from LightVegeManager_voxelsmesh import *
+from LightVegeManager_leafangles import *
 
 def extract_grid_origin(parameters, minmax) :
     """_summary_

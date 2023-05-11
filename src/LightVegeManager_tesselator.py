@@ -11,7 +11,7 @@
 
 from alinea.pyratp import grid
 
-from src.LightVegeManager_basicgeometry import *
+from LightVegeManager_basicgeometry import *
 
 ## NOT USED, PyRATP.pyratp.grid.grid_index is preferred
 def whichvoxel(p, mygrid):

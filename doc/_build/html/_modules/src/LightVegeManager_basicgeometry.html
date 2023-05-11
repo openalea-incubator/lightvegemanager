@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>src.LightVegeManager_basicgeometry &mdash; LightVegeManager 0.0.0 documentation</title>
+  <title> LightVegeManager_basicgeometry &mdash; LightVegeManager 0.0.0 documentation</title>
   
 
   
@@ -22,9 +22,8 @@
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -86,7 +85,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../architecture.html">Architecture of the tool</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../inputs.html">Inputs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../others.html">Additionnal Functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../others.html">Additionnal Functionalities</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
 <ul>
@@ -138,7 +137,7 @@
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
-      <li>src.LightVegeManager_basicgeometry</li>
+      <li> LightVegeManager_basicgeometry</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -153,7 +152,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for src.LightVegeManager_basicgeometry</h1><div class="highlight"><pre>
+  <h1>Source code for  LightVegeManager_basicgeometry</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    LightVegeManager_basicgeometry</span>
 <span class="sd">    ******************************</span>
@@ -168,7 +167,7 @@
 <span class="kn">import</span> <span class="nn">math</span>
 
 
-<div class="viewcode-block" id="crossproduct"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_basicgeometry.crossproduct">[docs]</a><span class="k">def</span> <span class="nf">crossproduct</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="crossproduct"><a class="viewcode-back" href="../../reference.html# LightVegeManager_basicgeometry.crossproduct">[docs]</a><span class="k">def</span> <span class="nf">crossproduct</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Crossproduct between two vectors v1^v2</span>
 
 <span class="sd">    :param v1: vector 1</span>
@@ -183,7 +182,7 @@
     <span class="n">z</span> <span class="o">=</span> <span class="n">v1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">v2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">v2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">v1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="middle"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_basicgeometry.middle">[docs]</a><span class="k">def</span> <span class="nf">middle</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="middle"><a class="viewcode-back" href="../../reference.html# LightVegeManager_basicgeometry.middle">[docs]</a><span class="k">def</span> <span class="nf">middle</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Middle point between v1 and v2</span>
 
 <span class="sd">    :param v1: vector 1</span>
@@ -196,7 +195,7 @@
     <span class="n">p</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">a</span><span class="o">+</span><span class="n">b</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">)])</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="triangle_normal"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_basicgeometry.triangle_normal">[docs]</a><span class="k">def</span> <span class="nf">triangle_normal</span><span class="p">(</span><span class="n">triangle</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="triangle_normal"><a class="viewcode-back" href="../../reference.html# LightVegeManager_basicgeometry.triangle_normal">[docs]</a><span class="k">def</span> <span class="nf">triangle_normal</span><span class="p">(</span><span class="n">triangle</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes normal of an oriented triangle (3D)</span>
 
 <span class="sd">    .. note:: a triangle is ``[(x1,y1,z1),(x2,y2,z2),(x3,y3,z3)]``</span>
@@ -217,7 +216,7 @@
     <span class="n">norm</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">sum</span><span class="p">([</span><span class="n">c</span><span class="o">**</span><span class="mi">2</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">n</span><span class="p">]))</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">norm</span><span class="p">,</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">norm</span><span class="p">,</span> <span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="n">norm</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="triangle_elevation"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_basicgeometry.triangle_elevation">[docs]</a><span class="k">def</span> <span class="nf">triangle_elevation</span><span class="p">(</span><span class="n">triangle</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="triangle_elevation"><a class="viewcode-back" href="../../reference.html# LightVegeManager_basicgeometry.triangle_elevation">[docs]</a><span class="k">def</span> <span class="nf">triangle_elevation</span><span class="p">(</span><span class="n">triangle</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes normal elevation of triangle</span>
 
 <span class="sd">    .. note:: a triangle is ``[(x1,y1,z1),(x2,y2,z2),(x3,y3,z3)]``</span>
@@ -242,7 +241,7 @@
     
     <span class="k">return</span> <span class="n">e</span></div>
 
-<div class="viewcode-block" id="triangle_area"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_basicgeometry.triangle_area">[docs]</a><span class="k">def</span> <span class="nf">triangle_area</span><span class="p">(</span><span class="n">triangle</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="triangle_area"><a class="viewcode-back" href="../../reference.html# LightVegeManager_basicgeometry.triangle_area">[docs]</a><span class="k">def</span> <span class="nf">triangle_area</span><span class="p">(</span><span class="n">triangle</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;triangle area</span>
 
 <span class="sd">    .. note:: a triangle is ``[(x1,y1,z1),(x2,y2,z2),(x3,y3,z3)]``</span>
@@ -259,7 +258,7 @@
     <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">,</span> <span class="n">c</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">y</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">z</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span></div>
 
-<div class="viewcode-block" id="triangle_barycenter"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_basicgeometry.triangle_barycenter">[docs]</a><span class="k">def</span> <span class="nf">triangle_barycenter</span><span class="p">(</span><span class="n">triangle</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="triangle_barycenter"><a class="viewcode-back" href="../../reference.html# LightVegeManager_basicgeometry.triangle_barycenter">[docs]</a><span class="k">def</span> <span class="nf">triangle_barycenter</span><span class="p">(</span><span class="n">triangle</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;triangle barycenter</span>
 <span class="sd">    </span>
 <span class="sd">    .. note:: a triangle is ``[(x1,y1,z1),(x2,y2,z2),(x3,y3,z3)]``</span>
@@ -271,7 +270,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>    
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">s</span><span class="o">/</span><span class="mi">3</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">[</span><span class="n">x</span><span class="o">+</span><span class="n">y</span><span class="o">+</span><span class="n">z</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">triangle</span><span class="p">)]])</span></div>
 
-<div class="viewcode-block" id="rescale"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_basicgeometry.rescale">[docs]</a><span class="k">def</span> <span class="nf">rescale</span><span class="p">(</span><span class="n">triangles</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="rescale"><a class="viewcode-back" href="../../reference.html# LightVegeManager_basicgeometry.rescale">[docs]</a><span class="k">def</span> <span class="nf">rescale</span><span class="p">(</span><span class="n">triangles</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Multiplies all triangle vertices by a ratio h</span>
 
 <span class="sd">    .. note:: a triangle is ``[(x1,y1,z1),(x2,y2,z2),(x3,y3,z3)]``</span>
@@ -292,7 +291,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">[[</span><span class="nb">tuple</span><span class="p">([</span><span class="n">x</span><span class="o">*</span><span class="n">h</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">p</span><span class="p">])</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">t</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">triangles</span><span class="p">]</span> </div>
 
-<div class="viewcode-block" id="translate"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_basicgeometry.translate">[docs]</a><span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="n">triangles</span><span class="p">,</span> <span class="n">tvec</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="translate"><a class="viewcode-back" href="../../reference.html# LightVegeManager_basicgeometry.translate">[docs]</a><span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="n">triangles</span><span class="p">,</span> <span class="n">tvec</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Moves a list of triangles with a translation of vector tvec</span>
 
 <span class="sd">    .. note:: a triangle is ``[(x1,y1,z1),(x2,y2,z2),(x3,y3,z3)]``</span>
@@ -316,7 +315,7 @@
     <span class="k">return</span> <span class="p">[[</span><span class="nb">tuple</span><span class="p">([</span><span class="n">x</span><span class="o">+</span><span class="n">y</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">tvec</span><span class="p">)])</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">t</span><span class="p">]</span> \
                                                     <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">triangles</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="zrotate"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_basicgeometry.zrotate">[docs]</a><span class="k">def</span> <span class="nf">zrotate</span><span class="p">(</span><span class="n">triangles</span><span class="p">,</span> <span class="n">omegadeg</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="zrotate"><a class="viewcode-back" href="../../reference.html# LightVegeManager_basicgeometry.zrotate">[docs]</a><span class="k">def</span> <span class="nf">zrotate</span><span class="p">(</span><span class="n">triangles</span><span class="p">,</span> <span class="n">omegadeg</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Rotates a list of triangles in the xy plane from an angle</span>
 <span class="sd">    </span>
 <span class="sd">    .. note:: a triangle is ``[(x1,y1,z1),(x2,y2,z2),(x3,y3,z3)]``</span>

@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>LightVegeManager Documentation Notes &mdash; LightVegeManager 0.0.0 documentation</title>
@@ -22,9 +23,8 @@
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -86,7 +86,7 @@
 <li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture of the tool</a></li>
 <li class="toctree-l1"><a class="reference internal" href="inputs.html">Inputs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="others.html">Additionnal Functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="others.html">Additionnal Functionalities</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
 <ul>
@@ -155,26 +155,26 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="lightvegemanager-documentation-notes">
-<h1>LightVegeManager Documentation Notes<a class="headerlink" href="#lightvegemanager-documentation-notes" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="compile-the-main-doc">
-<h2>Compile the main doc<a class="headerlink" href="#compile-the-main-doc" title="Permalink to this headline">¶</a></h2>
+  <section id="lightvegemanager-documentation-notes">
+<h1>LightVegeManager Documentation Notes<a class="headerlink" href="#lightvegemanager-documentation-notes" title="Permalink to this heading">¶</a></h1>
+<section id="compile-the-main-doc">
+<h2>Compile the main doc<a class="headerlink" href="#compile-the-main-doc" title="Permalink to this heading">¶</a></h2>
 <p>To compile the documentation use make in the doc folder:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>html
 </pre></div>
 </div>
 <p>Documentation will be generated (in HTML format) inside the <code class="docutils literal notranslate"><span class="pre">build/html</span></code> dir.</p>
-</div>
-<div class="section" id="start-over">
-<h2>Start over<a class="headerlink" href="#start-over" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="start-over">
+<h2>Start over<a class="headerlink" href="#start-over" title="Permalink to this heading">¶</a></h2>
 <p>To clean up all generated documentation files and start from scratch run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>clean
 </pre></div>
 </div>
 <p>Keep in mind that this command won’t touch any documentation source files.</p>
-</div>
-<div class="section" id="add-a-langage-version-of-the-doc">
-<h2>Add a langage version of the doc<a class="headerlink" href="#add-a-langage-version-of-the-doc" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="add-a-langage-version-of-the-doc">
+<h2>Add a langage version of the doc<a class="headerlink" href="#add-a-langage-version-of-the-doc" title="Permalink to this heading">¶</a></h2>
 <ol class="arabic simple">
 <li><p>To generate translation files first run:</p></li>
 </ol>
@@ -195,8 +195,8 @@
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sphinx-build.exe<span class="w"> </span>-b<span class="w"> </span>html<span class="w"> </span>-D<span class="w"> </span><span class="nv">language</span><span class="o">=</span>fr<span class="w"> </span>.<span class="w"> </span>.<span class="se">\_</span>build<span class="se">\h</span>tml<span class="se">\f</span>r
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

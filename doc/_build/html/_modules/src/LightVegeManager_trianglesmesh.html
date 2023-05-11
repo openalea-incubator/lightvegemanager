@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>src.LightVegeManager_trianglesmesh &mdash; LightVegeManager 0.0.0 documentation</title>
+  <title> LightVegeManager_trianglesmesh &mdash; LightVegeManager 0.0.0 documentation</title>
   
 
   
@@ -22,9 +22,8 @@
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -86,7 +85,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../architecture.html">Architecture of the tool</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../inputs.html">Inputs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../others.html">Additionnal Functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../others.html">Additionnal Functionalities</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
 <ul>
@@ -138,7 +137,7 @@
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
-      <li>src.LightVegeManager_trianglesmesh</li>
+      <li> LightVegeManager_trianglesmesh</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -153,7 +152,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for src.LightVegeManager_trianglesmesh</h1><div class="highlight"><pre>
+  <h1>Source code for  LightVegeManager_trianglesmesh</h1><div class="highlight"><pre>
 <span></span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    LightVegeManager_trianglesmesh</span>
 
@@ -189,9 +188,9 @@
 <span class="kn">from</span> <span class="nn">alinea.caribu</span> <span class="kn">import</span> <span class="n">plantgl_adaptor</span>
 <span class="kn">from</span> <span class="nn">openalea.mtg.mtg</span> <span class="kn">import</span> <span class="n">MTG</span>
 
-<span class="kn">from</span> <span class="nn">src.LightVegeManager_basicgeometry</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn"> LightVegeManager_basicgeometry</span> <span class="kn">import</span> <span class="o">*</span>
 
-<div class="viewcode-block" id="triangles_entity"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_trianglesmesh.triangles_entity">[docs]</a><span class="k">def</span> <span class="nf">triangles_entity</span><span class="p">(</span><span class="n">cscene</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">matching_ids</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="triangles_entity"><a class="viewcode-back" href="../../reference.html# LightVegeManager_trianglesmesh.triangles_entity">[docs]</a><span class="k">def</span> <span class="nf">triangles_entity</span><span class="p">(</span><span class="n">cscene</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">matching_ids</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a list of triangles belonging to the specy ``entity_id``</span>
 
 <span class="sd">    :param cscene: LightVegeManager triangulations mesh</span>
@@ -213,7 +212,7 @@
                                         <span class="k">if</span> <span class="n">matching_ids</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">entity_id</span><span class="p">]</span>
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="n">select_triangles</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="globalid_to_elementid"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_trianglesmesh.globalid_to_elementid">[docs]</a><span class="k">def</span> <span class="nf">globalid_to_elementid</span><span class="p">(</span><span class="n">cscene</span><span class="p">,</span> <span class="n">triangleid</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="globalid_to_elementid"><a class="viewcode-back" href="../../reference.html# LightVegeManager_trianglesmesh.globalid_to_elementid">[docs]</a><span class="k">def</span> <span class="nf">globalid_to_elementid</span><span class="p">(</span><span class="n">cscene</span><span class="p">,</span> <span class="n">triangleid</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the element index in cscene from a global triangle indice, </span>
 <span class="sd">    as if triangles were in a list without a sorting by element.</span>
 
@@ -233,7 +232,7 @@
     <span class="c1"># returns i as if cumul_triangles_per_ele[i-1] &lt;= triangleid &lt; cumul_triangles_per_ele[i]</span>
     <span class="k">return</span> <span class="n">bisect</span><span class="o">.</span><span class="n">bisect</span><span class="p">(</span><span class="n">cumul_triangles_per_ele</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">triangleid</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="globalid_to_triangle"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_trianglesmesh.globalid_to_triangle">[docs]</a><span class="k">def</span> <span class="nf">globalid_to_triangle</span><span class="p">(</span><span class="n">cscene</span><span class="p">,</span> <span class="n">triangleid</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="globalid_to_triangle"><a class="viewcode-back" href="../../reference.html# LightVegeManager_trianglesmesh.globalid_to_triangle">[docs]</a><span class="k">def</span> <span class="nf">globalid_to_triangle</span><span class="p">(</span><span class="n">cscene</span><span class="p">,</span> <span class="n">triangleid</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the corresponding triangle in cscene from a global triangle indice,</span>
 <span class="sd">    as if triangles were in a list without a sorting by element.</span>
 
@@ -252,7 +251,7 @@
     <span class="n">ele</span> <span class="o">=</span> <span class="n">globalid_to_elementid</span><span class="p">(</span><span class="n">cscene</span><span class="p">,</span> <span class="n">triangleid</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">cscene</span><span class="p">[</span><span class="n">ele</span><span class="p">][</span><span class="n">triangleid</span> <span class="o">-</span> <span class="nb">sum</span><span class="p">(</span><span class="n">cumul_triangles_per_ele</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">ele</span><span class="p">])]</span></div>
 
-<div class="viewcode-block" id="compute_area_max"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_trianglesmesh.compute_area_max">[docs]</a><span class="k">def</span> <span class="nf">compute_area_max</span><span class="p">(</span><span class="n">cscene</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="compute_area_max"><a class="viewcode-back" href="../../reference.html# LightVegeManager_trianglesmesh.compute_area_max">[docs]</a><span class="k">def</span> <span class="nf">compute_area_max</span><span class="p">(</span><span class="n">cscene</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Maximum triangle area in a triangulation</span>
 
 <span class="sd">    :param cscene: LightVegeManager triangulations mesh</span>
@@ -266,7 +265,7 @@
         <span class="k">if</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="n">amax</span> <span class="p">:</span> <span class="n">amax</span> <span class="o">=</span> <span class="n">a</span>
     <span class="k">return</span> <span class="n">amax</span></div>
 
-<div class="viewcode-block" id="compute_minmax_coord"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_trianglesmesh.compute_minmax_coord">[docs]</a><span class="k">def</span> <span class="nf">compute_minmax_coord</span><span class="p">(</span><span class="n">cscene</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="compute_minmax_coord"><a class="viewcode-back" href="../../reference.html# LightVegeManager_trianglesmesh.compute_minmax_coord">[docs]</a><span class="k">def</span> <span class="nf">compute_minmax_coord</span><span class="p">(</span><span class="n">cscene</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Maximum and minimum point in all triangulation mesh</span>
 
 <span class="sd">    :param cscene: LightVegeManager triangulations mesh</span>
@@ -293,7 +292,7 @@
     
     <span class="k">return</span> <span class="p">[</span><span class="n">xmin</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">zmin</span><span class="p">],</span> <span class="p">[</span><span class="n">xmax</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">zmax</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="compute_trilenght_max"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_trianglesmesh.compute_trilenght_max">[docs]</a><span class="k">def</span> <span class="nf">compute_trilenght_max</span><span class="p">(</span><span class="n">cscene</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="compute_trilenght_max"><a class="viewcode-back" href="../../reference.html# LightVegeManager_trianglesmesh.compute_trilenght_max">[docs]</a><span class="k">def</span> <span class="nf">compute_trilenght_max</span><span class="p">(</span><span class="n">cscene</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Search for maximum side of an axis oriented voxel where all triangles could fit in</span>
 
 <span class="sd">    :param cscene: LightVegeManager triangulations mesh</span>
@@ -324,7 +323,7 @@
     
     <span class="k">return</span> <span class="n">lenmax</span></div>
 
-<div class="viewcode-block" id="chain_triangulations"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_trianglesmesh.chain_triangulations">[docs]</a><span class="k">def</span> <span class="nf">chain_triangulations</span><span class="p">(</span><span class="n">scenes</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="chain_triangulations"><a class="viewcode-back" href="../../reference.html# LightVegeManager_trianglesmesh.chain_triangulations">[docs]</a><span class="k">def</span> <span class="nf">chain_triangulations</span><span class="p">(</span><span class="n">scenes</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Aggregates all input geometric scenes in one global triangulation</span>
 <span class="sd">        </span>
 <span class="sd">        Current known formats:</span>
@@ -390,7 +389,7 @@
 
     <span class="k">return</span> <span class="n">complete_trimesh</span><span class="p">,</span> <span class="n">matching_ids</span><span class="p">,</span> <span class="n">legume_grid</span><span class="p">,</span> <span class="n">id_legume_scene</span></div>
 
-<div class="viewcode-block" id="vgx_to_caribu"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_trianglesmesh.vgx_to_caribu">[docs]</a><span class="k">def</span> <span class="nf">vgx_to_caribu</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">id_element</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="vgx_to_caribu"><a class="viewcode-back" href="../../reference.html# LightVegeManager_trianglesmesh.vgx_to_caribu">[docs]</a><span class="k">def</span> <span class="nf">vgx_to_caribu</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">id_element</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Reads VGX file and converts them in CARIBU scene format</span>
 
 <span class="sd">    :param file: path name of the file</span>
@@ -421,7 +420,7 @@
     <span class="n">scene</span><span class="p">[</span><span class="n">id_element</span><span class="p">]</span> <span class="o">=</span> <span class="n">triangles</span>
     <span class="k">return</span> <span class="n">scene</span></div>
 
-<div class="viewcode-block" id="apply_transformations"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_trianglesmesh.apply_transformations">[docs]</a><span class="k">def</span> <span class="nf">apply_transformations</span><span class="p">(</span><span class="n">cscene</span><span class="p">,</span> <span class="n">matching_ids</span><span class="p">,</span> <span class="n">transformations</span><span class="p">,</span> <span class="n">cscene_unit</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="apply_transformations"><a class="viewcode-back" href="../../reference.html# LightVegeManager_trianglesmesh.apply_transformations">[docs]</a><span class="k">def</span> <span class="nf">apply_transformations</span><span class="p">(</span><span class="n">cscene</span><span class="p">,</span> <span class="n">matching_ids</span><span class="p">,</span> <span class="n">transformations</span><span class="p">,</span> <span class="n">cscene_unit</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Applies geometric transformations on some part of the triangulation set in input datas</span>
 <span class="sd">    Each transformation applies on all triangles from the same input scene.</span>
 
@@ -471,8 +470,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown final scene unit: select one in this </span><span class="se">\</span>
 <span class="s2">                                    list [&#39;mm&#39;,&#39;cm&#39;,&#39;dm&#39;,&#39;m&#39;,&#39;dam&#39;,&#39;hm&#39;,&#39;km&#39;]&quot;</span><span class="p">)</span>
         
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">transformations</span><span class="p">[</span><span class="s2">&quot;scenes unit&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">:</span>
-            <span class="n">scene_unit</span> <span class="o">=</span> <span class="n">transformations</span><span class="p">[</span><span class="s2">&quot;scenes unit&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">scene_unit</span> <span class="ow">in</span> <span class="n">transformations</span><span class="p">[</span><span class="s2">&quot;scenes unit&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">:</span>
             <span class="k">if</span> <span class="n">scene_unit</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">units</span> <span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown scene </span><span class="si">%i</span><span class="s2"> unit: select one in this </span><span class="se">\</span>
 <span class="s2">                            list [&#39;mm&#39;,&#39;cm&#39;,&#39;dm&#39;,&#39;m&#39;,&#39;dam&#39;,&#39;hm&#39;,&#39;km&#39;]&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">))</span>

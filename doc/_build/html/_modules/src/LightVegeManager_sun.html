@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>src.LightVegeManager_sun &mdash; LightVegeManager 0.0.0 documentation</title>
+  <title> LightVegeManager_sun &mdash; LightVegeManager 0.0.0 documentation</title>
   
 
   
@@ -22,9 +22,8 @@
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -86,7 +85,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../architecture.html">Architecture of the tool</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../inputs.html">Inputs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../others.html">Additionnal Functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../others.html">Additionnal Functionalities</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
 <ul>
@@ -138,7 +137,7 @@
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
-      <li>src.LightVegeManager_sun</li>
+      <li> LightVegeManager_sun</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -153,7 +152,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for src.LightVegeManager_sun</h1><div class="highlight"><pre>
+  <h1>Source code for  LightVegeManager_sun</h1><div class="highlight"><pre>
 <span></span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    LightVegeManager_sun</span>
 <span class="sd">    ********************</span>
@@ -170,7 +169,7 @@
 <span class="kn">from</span> <span class="nn">alinea.caribu.sky_tools</span> <span class="kn">import</span> <span class="n">GetLightsSun</span>
 <span class="kn">from</span> <span class="nn">alinea.caribu.sky_tools</span> <span class="kn">import</span> <span class="n">Sun</span>
 
-<div class="viewcode-block" id="ratp_sun"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_sun.ratp_sun">[docs]</a><span class="k">def</span> <span class="nf">ratp_sun</span><span class="p">(</span><span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">truesolartime</span><span class="p">)</span> <span class="p">:</span>  
+<div class="viewcode-block" id="ratp_sun"><a class="viewcode-back" href="../../reference.html# LightVegeManager_sun.ratp_sun">[docs]</a><span class="k">def</span> <span class="nf">ratp_sun</span><span class="p">(</span><span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">truesolartime</span><span class="p">)</span> <span class="p">:</span>  
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts output RATP sundirection routine to CARIBU light format</span>
 
 <span class="sd">    :param day: input day</span>
@@ -217,7 +216,7 @@
     
     <span class="k">return</span> <span class="p">(</span><span class="n">sunx</span><span class="p">,</span> <span class="n">suny</span><span class="p">,</span> <span class="n">sunz</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="caribu_sun"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_sun.caribu_sun">[docs]</a><span class="k">def</span> <span class="nf">caribu_sun</span><span class="p">(</span><span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">truesolartime</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="caribu_sun"><a class="viewcode-back" href="../../reference.html# LightVegeManager_sun.caribu_sun">[docs]</a><span class="k">def</span> <span class="nf">caribu_sun</span><span class="p">(</span><span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">truesolartime</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute sun direction from CARIBU algorithm</span>
 
 <span class="sd">    :param day: input day</span>
@@ -251,7 +250,7 @@
             <span class="nb">float</span><span class="p">(</span><span class="n">sun_str_split</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> 
             <span class="nb">float</span><span class="p">(</span><span class="n">sun_str_split</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span></div>
 
-<div class="viewcode-block" id="print_sun"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_sun.print_sun">[docs]</a><span class="k">def</span> <span class="nf">print_sun</span><span class="p">(</span><span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">truesolartime</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="print_sun"><a class="viewcode-back" href="../../reference.html# LightVegeManager_sun.print_sun">[docs]</a><span class="k">def</span> <span class="nf">print_sun</span><span class="p">(</span><span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">,</span> <span class="n">truesolartime</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints sun position ouputs from RATP and CARIBU algorithm with the same inputs</span>
 
 <span class="sd">    :param day: input day</span>

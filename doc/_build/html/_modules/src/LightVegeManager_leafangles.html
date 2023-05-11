@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>src.LightVegeManager_leafangles &mdash; LightVegeManager 0.0.0 documentation</title>
+  <title> LightVegeManager_leafangles &mdash; LightVegeManager 0.0.0 documentation</title>
   
 
   
@@ -22,9 +22,8 @@
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -86,7 +85,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../architecture.html">Architecture of the tool</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../inputs.html">Inputs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../others.html">Additionnal Functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../others.html">Additionnal Functionalities</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
 <ul>
@@ -138,7 +137,7 @@
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
-      <li>src.LightVegeManager_leafangles</li>
+      <li> LightVegeManager_leafangles</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -153,7 +152,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for src.LightVegeManager_leafangles</h1><div class="highlight"><pre>
+  <h1>Source code for  LightVegeManager_leafangles</h1><div class="highlight"><pre>
 <span></span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    LightVegeManager_leafangles</span>
 <span class="sd">    ****************************</span>
@@ -169,10 +168,10 @@
 <span class="kn">import</span> <span class="nn">numpy</span>
 <span class="kn">import</span> <span class="nn">bisect</span>
 
-<span class="kn">from</span> <span class="nn">src.LightVegeManager_trianglesmesh</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn"> LightVegeManager_trianglesmesh</span> <span class="kn">import</span> <span class="o">*</span>
 
 
-<div class="viewcode-block" id="read_distrib_file"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_leafangles.read_distrib_file">[docs]</a><span class="k">def</span> <span class="nf">read_distrib_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">numberofentities</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="read_distrib_file"><a class="viewcode-back" href="../../reference.html# LightVegeManager_leafangles.read_distrib_file">[docs]</a><span class="k">def</span> <span class="nf">read_distrib_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">numberofentities</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Reads global leaf angle distribution in a file</span>
 <span class="sd">    the file must matches the format : one specy distribution per line</span>
 <span class="sd">    each percentage separated by a coma &#39;,&#39;</span>
@@ -200,7 +199,7 @@
 
     <span class="k">return</span> <span class="n">distrib</span></div>
 
-<div class="viewcode-block" id="compute_distrib_globale"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_leafangles.compute_distrib_globale">[docs]</a><span class="k">def</span> <span class="nf">compute_distrib_globale</span><span class="p">(</span><span class="n">trimesh</span><span class="p">,</span> <span class="n">matching_ids</span><span class="p">,</span> <span class="n">numberofclasses</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="compute_distrib_globale"><a class="viewcode-back" href="../../reference.html# LightVegeManager_leafangles.compute_distrib_globale">[docs]</a><span class="k">def</span> <span class="nf">compute_distrib_globale</span><span class="p">(</span><span class="n">trimesh</span><span class="p">,</span> <span class="n">matching_ids</span><span class="p">,</span> <span class="n">numberofclasses</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculation of a global leaf angle distribution from a triangle mesh</span>
 
 <span class="sd">    :param trimesh: triangles mesh aggregated by indice elements :code:`{ id : [triangle1, triangle2, ...]}`</span>
@@ -242,7 +241,7 @@
 
     <span class="k">return</span> <span class="n">distrib</span></div>
 
-<div class="viewcode-block" id="compute_distrib_voxel"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager_leafangles.compute_distrib_voxel">[docs]</a><span class="k">def</span> <span class="nf">compute_distrib_voxel</span><span class="p">(</span><span class="n">trimesh</span><span class="p">,</span> 
+<div class="viewcode-block" id="compute_distrib_voxel"><a class="viewcode-back" href="../../reference.html# LightVegeManager_leafangles.compute_distrib_voxel">[docs]</a><span class="k">def</span> <span class="nf">compute_distrib_voxel</span><span class="p">(</span><span class="n">trimesh</span><span class="p">,</span> 
                             <span class="n">matching_ids</span><span class="p">,</span> 
                             <span class="n">numberofclasses</span><span class="p">,</span> 
                             <span class="n">numberofvoxels</span><span class="p">,</span> 

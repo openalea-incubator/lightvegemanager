@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>src.LightVegeManager &mdash; LightVegeManager 0.0.0 documentation</title>
+  <title> LightVegeManager &mdash; LightVegeManager 0.0.0 documentation</title>
   
 
   
@@ -138,7 +138,7 @@
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
-      <li>src.LightVegeManager</li>
+      <li> LightVegeManager</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -153,7 +153,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for src.LightVegeManager</h1><div class="highlight"><pre>
+  <h1>Source code for  LightVegeManager</h1><div class="highlight"><pre>
 <span></span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    LightVegeManager</span>
 <span class="sd">    ****************</span>
@@ -248,22 +248,22 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
 
-<span class="kn">from</span> <span class="nn">src.LightVegeManager_trianglesmesh</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">src.LightVegeManager_stems</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">src.LightVegeManager_leafangles</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">src.LightVegeManager_tesselator</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">src.LightVegeManager_sun</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">src.LightVegeManager_sky</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">src.LightVegeManager_RATPinputs</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">src.LightVegeManager_CARIBUinputs</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">src.LightVegeManager_outputs</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">src.LightVegeManager_buildRATPscene</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">src.LightVegeManager_transfer</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">src.LightVegeManager_VTK</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">src.LightVegeManager_plantGL</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">src.LightVegeManager_defaultvalues</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn"> LightVegeManager_trianglesmesh</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn"> LightVegeManager_stems</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn"> LightVegeManager_leafangles</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn"> LightVegeManager_tesselator</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn"> LightVegeManager_sun</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn"> LightVegeManager_sky</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn"> LightVegeManager_RATPinputs</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn"> LightVegeManager_CARIBUinputs</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn"> LightVegeManager_outputs</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn"> LightVegeManager_buildRATPscene</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn"> LightVegeManager_transfer</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn"> LightVegeManager_VTK</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn"> LightVegeManager_plantGL</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn"> LightVegeManager_defaultvalues</span> <span class="kn">import</span> <span class="o">*</span>
 
-<div class="viewcode-block" id="LightVegeManager"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager.LightVegeManager">[docs]</a><span class="k">class</span> <span class="nc">LightVegeManager</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="LightVegeManager"><a class="viewcode-back" href="../../reference.html# LightVegeManager.LightVegeManager">[docs]</a><span class="k">class</span> <span class="nc">LightVegeManager</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Main class for the tool LightVegeManager</span>
 <span class="sd">    </span>
 <span class="sd">    Common simulation order: </span>
@@ -358,7 +358,7 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;diffus&quot;</span><span class="p">]</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sky</span> <span class="o">=</span> <span class="n">CARIBUsky</span><span class="p">(</span><span class="n">skytype</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">lightmodel</span> <span class="o">==</span> <span class="s2">&quot;ratp&quot;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sky</span> <span class="o">=</span> <span class="n">RATPsky</span><span class="p">(</span><span class="n">skytype</span><span class="p">)</span>     
 
-<div class="viewcode-block" id="LightVegeManager.build"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager.LightVegeManager.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geometry</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">global_scene_tesselate_level</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="LightVegeManager.build"><a class="viewcode-back" href="../../reference.html# LightVegeManager.LightVegeManager.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geometry</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">global_scene_tesselate_level</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Builds a mesh of the simulation scene in the right light model format</span>
 
 <span class="sd">        :param geometry: geometric parameters, contains geometric scenes, defaults to {}</span>
@@ -455,7 +455,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">__angle_distrib</span><span class="p">,</span> \
                 <span class="bp">self</span><span class="o">.</span><span class="n">__nb0</span> <span class="o">=</span>  <span class="n">legumescene_to_RATPscene</span><span class="p">(</span><span class="o">*</span><span class="n">arg</span><span class="p">)</span></div>
                     
-<div class="viewcode-block" id="LightVegeManager.run"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager.LightVegeManager.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+<div class="viewcode-block" id="LightVegeManager.run"><a class="viewcode-back" href="../../reference.html# LightVegeManager.LightVegeManager.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
             <span class="n">energy</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> 
             <span class="n">day</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> 
             <span class="n">hour</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> 
@@ -678,7 +678,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">__time_runmodel</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span></div>
     
     <span class="c1">## TRANSFER METHODS ##</span>
-<div class="viewcode-block" id="LightVegeManager.to_MTG"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager.LightVegeManager.to_MTG">[docs]</a>    <span class="k">def</span> <span class="nf">to_MTG</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">energy</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">mtg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="LightVegeManager.to_MTG"><a class="viewcode-back" href="../../reference.html# LightVegeManager.LightVegeManager.to_MTG">[docs]</a>    <span class="k">def</span> <span class="nf">to_MTG</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">energy</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">mtg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Transfers lighting results to a MTG table.</span>
 <span class="sd">        </span>
 <span class="sd">        .. warning:: The :meth:`run` must have been called before to have results dataframes.</span>
@@ -723,7 +723,7 @@
             <span class="c1"># update the MTG</span>
             <span class="n">mtg</span><span class="o">.</span><span class="n">property</span><span class="p">(</span><span class="n">param</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dico_par</span><span class="p">[</span><span class="n">param</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="LightVegeManager.to_l_egume"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager.LightVegeManager.to_l_egume">[docs]</a>    <span class="k">def</span> <span class="nf">to_l_egume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+<div class="viewcode-block" id="LightVegeManager.to_l_egume"><a class="viewcode-back" href="../../reference.html# LightVegeManager.LightVegeManager.to_l_egume">[docs]</a>    <span class="k">def</span> <span class="nf">to_l_egume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
                     <span class="n">energy</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> 
                     <span class="n">m_lais</span> <span class="o">=</span> <span class="p">[],</span> 
                     <span class="n">list_lstring</span> <span class="o">=</span> <span class="p">[],</span> 
@@ -812,7 +812,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown light model (ratp or caribu)&quot;</span><span class="p">)</span></div>
 
     <span class="c1">## EXTERN TOOLS ##</span>
-<div class="viewcode-block" id="LightVegeManager.s5"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager.LightVegeManager.s5">[docs]</a>    <span class="k">def</span> <span class="nf">s5</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="LightVegeManager.s5"><a class="viewcode-back" href="../../reference.html# LightVegeManager.LightVegeManager.s5">[docs]</a>    <span class="k">def</span> <span class="nf">s5</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates inputs files for s5 and runs it</span>
 <span class="sd">        s5 is an external tool made to analyse a set of triangles in order to use a grid of voxels.</span>
 <span class="sd">        It also computes leaf angle distribution from the triangulation</span>
@@ -904,7 +904,7 @@
         
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">+</span><span class="s2">&quot;--- Fin de s5.f&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="LightVegeManager.s2v"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager.LightVegeManager.s2v">[docs]</a>    <span class="k">def</span> <span class="nf">s2v</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="LightVegeManager.s2v"><a class="viewcode-back" href="../../reference.html# LightVegeManager.LightVegeManager.s2v">[docs]</a>    <span class="k">def</span> <span class="nf">s2v</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates inputs files for s2v and runs it</span>
 <span class="sd">        s5 is an external tool made to analyse a set of triangles in order to use a grid of voxels.</span>
 <span class="sd">        It also computes leaf angle distribution from the triangulation</span>
@@ -1017,7 +1017,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- Fin de s2v.cpp&quot;</span><span class="p">)</span></div>
 
     <span class="c1">## VTK FILES ##</span>
-<div class="viewcode-block" id="LightVegeManager.VTK_nolight"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager.LightVegeManager.VTK_nolight">[docs]</a>    <span class="k">def</span> <span class="nf">VTK_nolight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">printtriangles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">printvoxels</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="LightVegeManager.VTK_nolight"><a class="viewcode-back" href="../../reference.html# LightVegeManager.LightVegeManager.VTK_nolight">[docs]</a>    <span class="k">def</span> <span class="nf">VTK_nolight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">printtriangles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">printvoxels</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Writes a VTK from mesh(es) in ``self``, with only geometric informations</span>
 
 <span class="sd">        :param path: file and path name</span>
@@ -1039,7 +1039,7 @@
             <span class="k">else</span> <span class="p">:</span> <span class="n">filepath</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;_triangles_nolight&quot;</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;.vtk&quot;</span>
             <span class="n">VTKtriangles</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__complete_trimesh</span><span class="p">,</span> <span class="p">[],</span> <span class="p">[],</span> <span class="n">filepath</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="LightVegeManager.VTK_light"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager.LightVegeManager.VTK_light">[docs]</a>    <span class="k">def</span> <span class="nf">VTK_light</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">printtriangles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">printvoxels</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="LightVegeManager.VTK_light"><a class="viewcode-back" href="../../reference.html# LightVegeManager.LightVegeManager.VTK_light">[docs]</a>    <span class="k">def</span> <span class="nf">VTK_light</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">printtriangles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">printvoxels</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Writes a VTK from mesh(es) in ``self``, with geometric informations and lighting results</span>
 
 <span class="sd">        .. warning:: The :meth:`run` must have been called before to have results dataframes.</span>
@@ -1105,7 +1105,7 @@
                 <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__triangles_outputs</span><span class="p">[</span><span class="n">name</span><span class="p">])</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">datanames</span><span class="p">]</span>
                 <span class="n">VTKtriangles</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__complete_trimesh</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">datanames</span><span class="p">,</span> <span class="n">filepath</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="LightVegeManager.VTK_sun"><a class="viewcode-back" href="../../reference.html#src.LightVegeManager.LightVegeManager.VTK_sun">[docs]</a>    <span class="k">def</span> <span class="nf">VTK_sun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">orig</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">center</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="LightVegeManager.VTK_sun"><a class="viewcode-back" href="../../reference.html# LightVegeManager.LightVegeManager.VTK_sun">[docs]</a>    <span class="k">def</span> <span class="nf">VTK_sun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">orig</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">center</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Write a VTK file representing the sun by a simple line</span>
 
 <span class="sd">        .. warning:: The :meth:`run` must have been called before to have results dataframes.    </span>
@@ -1169,7 +1169,7 @@
     <span class="k">def</span> <span class="nf">triangles_outputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Lighting results aggregate by triangle, if it has a triangulation in its inputs</span>
 
-<span class="sd">        :return: .. seealso:: :mod:`src.LightVegeManager_outputs` for column names</span>
+<span class="sd">        :return: .. seealso:: :mod:` LightVegeManager_outputs` for column names</span>
 <span class="sd">        :rtype: pandas.Dataframe</span>
 <span class="sd">        &quot;&quot;&quot;</span>        
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__triangles_outputs</span> 
@@ -1178,7 +1178,7 @@
     <span class="k">def</span> <span class="nf">voxels_outputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Lighting results aggregate by voxels, only with RATP as the selected light model</span>
 
-<span class="sd">        :return: .. seealso:: :mod:`src.LightVegeManager_outputs` for column names</span>
+<span class="sd">        :return: .. seealso:: :mod:` LightVegeManager_outputs` for column names</span>
 <span class="sd">        :rtype: pandas.Dataframe</span>
 <span class="sd">        &quot;&quot;&quot;</span>         
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__voxels_outputs</span> 

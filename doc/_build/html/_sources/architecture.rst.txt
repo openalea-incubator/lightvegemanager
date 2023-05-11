@@ -46,39 +46,39 @@ parts depending on the inputs.
 
 Modules are:
 
-    * :mod:`src.LightVegeManager` Main class of the tool. Calls all the other modules in ``src``.
+    * :mod:` LightVegeManager` Main class of the tool. Calls all the other modules in ``src``.
 
-    * :mod:`src.LightVegeManager_CARIBUinputs` Manages and prepares input information for CARIBU.
+    * :mod:` LightVegeManager_CARIBUinputs` Manages and prepares input information for CARIBU.
 
-    * :mod:`src.LightVegeManager_RATPinputs` Manage vegetation and meteo input informations for RATP
+    * :mod:` LightVegeManager_RATPinputs` Manage vegetation and meteo input informations for RATP
 
-    * :mod:`src.LightVegeManager_VTK` Writes VTK files from LightVegeManager geometry and lighting data. Used for visualisation
+    * :mod:` LightVegeManager_VTK` Writes VTK files from LightVegeManager geometry and lighting data. Used for visualisation
 
-    * :mod:`src.LightVegeManager_basicgeometry` Provides basic geometric operations in 3D used by LightVegeManager. 
+    * :mod:` LightVegeManager_basicgeometry` Provides basic geometric operations in 3D used by LightVegeManager. 
 
-    * :mod:`src.LightVegeManager_buildRATPscene` Build a PyRATP.grid from inputs.
+    * :mod:` LightVegeManager_buildRATPscene` Build a PyRATP.grid from inputs.
 
-    * :mod:`src.LightVegeManager_defaultvalues` Default for simulation fixed parameters
+    * :mod:` LightVegeManager_defaultvalues` Default for simulation fixed parameters
 
-    * :mod:`src.LightVegeManager_leafangles` Handles leaf angle distribution, both in its dynamic computing or reading a file
+    * :mod:` LightVegeManager_leafangles` Handles leaf angle distribution, both in its dynamic computing or reading a file
 
-    * :mod:`src.LightVegeManager_outputs` Manages and reformats output results from the light models in pandas.Dataframe with similar columns names
+    * :mod:` LightVegeManager_outputs` Manages and reformats output results from the light models in pandas.Dataframe with similar columns names
 
-    * :mod:`src.LightVegeManager_plantGL` Visualisation with plantGL
+    * :mod:` LightVegeManager_plantGL` Visualisation with plantGL
 
-    * :mod:`src.LightVegeManager_sky` Build a sky from LightVegeManager input informations
+    * :mod:` LightVegeManager_sky` Build a sky from LightVegeManager input informations
 
-    * :mod:`src.LightVegeManager_stems` Manages stems element
+    * :mod:` LightVegeManager_stems` Manages stems element
 
-    * :mod:`src.LightVegeManager_sun` Build a sun respecting each light model format
+    * :mod:` LightVegeManager_sun` Build a sun respecting each light model format
 
-    * :mod:`src.LightVegeManager_tesselator` Manages subdivision of a triangulation
+    * :mod:` LightVegeManager_tesselator` Manages subdivision of a triangulation
 
-    * :mod:`src.LightVegeManager_transfer` Manages transfer of LightVegeManager results to plant Models
+    * :mod:` LightVegeManager_transfer` Manages transfer of LightVegeManager results to plant Models
 
-    * :mod:`src.LightVegeManager_trianglesmesh` Builds and handles triangulation mesh.
+    * :mod:` LightVegeManager_trianglesmesh` Builds and handles triangulation mesh.
 
-    * :mod:`src.LightVegeManager_voxelsmesh` Builds and handles axis oriented voxels mesh
+    * :mod:` LightVegeManager_voxelsmesh` Builds and handles axis oriented voxels mesh
 
 
 .. _frontend:

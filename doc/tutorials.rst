@@ -146,7 +146,7 @@ between ``"ratp"``, ``"caribu"`` or ``"riri"``.
 
 .. code-block:: python
 
-    from src.LightVegeManager import *
+    from LightVegeManager import *
 
     # one triangle as a geometric element
     # we write our triangle in a CaribuScene format
@@ -170,7 +170,7 @@ between ``"ratp"``, ``"caribu"`` or ``"riri"``.
     # output
     print(lighting.elements_outputs)
 
-.. seealso:: For more details on default values, see :mod:`src.LightVegeManager\_defaultvalues`
+.. seealso:: For more details on default values, see :mod:`LightVegeManager\_defaultvalues`
 
 
 Tutorials with jupyter
