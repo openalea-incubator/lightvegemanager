@@ -1,6 +1,6 @@
 '''
-    LightVegeManager_sky
-    ********************
+    sky
+    ***
 
     Build a sky from LightVegeManager input informations
 
@@ -23,7 +23,35 @@ from alinea.caribu.sky_tools import GetLight
 import math
 import numpy as np
 
+def ratpformat_to_caribuformat(az, h, pc, rad=True):
+    """Converts sky informations from RATP format to CARIBU format
 
+    :param az: azimuts of each sky direction (degree)
+    :type az: list
+    :param h: elevation of each sky direction (degree)
+    :type h: list
+    :param pc: perez weight of each sky direction
+    :type pc: list
+    :return: direction vectors and weights for each sky direction
+        list of (weight, (x, y, z))
+        vector is from sky to ground        
+    :rtype: list of tuple
+    """    
+    # converts in CARIBU format (azimut, zenit) -> (x, y, z)
+    if not rad : 
+        degreetorad = math.pi/180
+        angle_90 = 90
+    else:
+        degreetorad = 1.
+        angle_90 = math.pi/2
+
+    output_sky = []
+    for i, p in enumerate(pc) :
+        theta = (angle_90 - h[i]) * degreetorad
+        phi = az[i] * degreetorad
+        x,y,z = math.sin(theta) * math.cos(phi),math.sin(theta) * math.sin(phi), -math.cos(theta)
+        output_sky.append((float(p), (x,y,z) ))
+    return output_sky
 
 def RATPsky(skytype) :
     """Creates a pyratp.skyvault
@@ -31,7 +59,7 @@ def RATPsky(skytype) :
     :param skytype: the environment["sky"] from the LightVegeManager inputs. It is either:
         * ``"turtle46"``
         * a filepath
-        * [nb_azimut, nb_zenith, "soc" or "uoc"], nb_azimut is the number of azimut directions and nb_zenith the number of zenital directions for cutting out the sky
+        * [nb_azimut, nb_elevation, "soc" or "uoc"], nb_azimut is the number of azimut directions and nb_elevation the number of zenital directions for cutting out the sky
     :type skytype: string or list
     :raises ValueError: if skytype is not one of the curretn 3 possibilities
     :return: a sky in RATP format
@@ -69,7 +97,7 @@ def CARIBUsky(skytype) :
     :param skytype: the environment["sky"] from the LightVegeManager inputs. It is either:
         * ``"turtle46"``
         * a filepath
-        * [nb_azimut, nb_zenith, "soc" or "uoc"], nb_azimut is the number of azimut directions and nb_zenith the number of zenital directions for cutting out the sky
+        * [nb_azimut, nb_elevation, "soc" or "uoc"], nb_azimut is the number of azimut directions and nb_zenith the number of zenital directions for cutting out the sky
     :type skytype: string or list
     :raises ValueError: if skytype is not one of the curretn 3 possibilities
     :return: a list of the directions representing the sky.
@@ -83,11 +111,7 @@ def CARIBUsky(skytype) :
     # first option turtle of 46 directions
     if input_sky == "turtle46":
         turtle_list = turtle.turtle()
-        output_sky = []
-        for i,e in enumerate(turtle_list[0]):
-            dir = turtle_list[2][i]
-            t = tuple((e, tuple((dir[0], dir[1], dir[2]))))
-            output_sky.append(t)
+        output_sky = [(e, dir) for e, dir in zip(turtle_list[0], turtle_list[2]) ]
 
     # read a sky file
     elif isinstance(input_sky, str) and \
@@ -110,16 +134,7 @@ def CARIBUsky(skytype) :
         pc=np.transpose(tabGene)[3]
         f.close()
         
-        # converts in CARIBU format (azimut, zenit) -> (x, y, z)
-        output_sky = []
-        for i, p in enumerate(pc) :
-            dir=[0,0,0]
-            dir[0] = dir[1] = math.sin(hmoy[i])
-            dir[0] *= math.cos(azmoy[i])
-            dir[1] *= math.sin(azmoy[i])
-            dir[2] = -math.cos(hmoy[i])
-            t = tuple((float(p), tuple((dir[0], dir[1], dir[2]))))
-            output_sky.append(t)
+        output_sky = ratpformat_to_caribuformat(azmoy, hmoy, pc)
 
     elif isinstance(input_sky, list) and \
         len(input_sky) == 3 :
@@ -145,22 +160,22 @@ def CARIBUsky(skytype) :
     return output_sky
 
 
-def writeskyfile(h, az, omega, weights, filepath) :
-    """Writes a file with sky information, readable by LightVegeManager
+# def writeskyfile(h, az, omega, weights, filepath) :
+#     """Writes a file with sky information, readable by LightVegeManager
 
-    :param h: Elevation angle (degrees) pointing to the center of a sky fraction
-    :type h: list of float
-    :param az: Azimuth angle (degrees) pointing to the center of a sky fraction
-    :type az: list of float
-    :param omega: Solid angle associated to the direction of incidence
-    :type omega: list of float
-    :param weights: Relative contribution of the sky fraction to the sky illumination)
-    :type weights: list of float
-    :param filepath: name of the file to write
-    :type filepath: list of float
-    """    
-    # TODO: write it
-    return
+#     :param h: Elevation angle (degrees) pointing to the center of a sky fraction
+#     :type h: list of float
+#     :param az: Azimuth angle (degrees) pointing to the center of a sky fraction
+#     :type az: list of float
+#     :param omega: Solid angle associated to the direction of incidence
+#     :type omega: list of float
+#     :param weights: Relative contribution of the sky fraction to the sky illumination)
+#     :type weights: list of float
+#     :param filepath: name of the file to write
+#     :type filepath: list of float
+#     """    
+#     # TODO: write it
+#     return
 
 
 def discrete_sky(n_azimuts, n_zeniths, sky_type) :
@@ -168,7 +183,7 @@ def discrete_sky(n_azimuts, n_zeniths, sky_type) :
 
     :param n_azimuts: number of azimut directions of the sky
     :type n_azimuts: int
-    :param n_zeniths: number of zenital directions of the sky
+    :param n_zeniths: number of elevations directions of the sky
     :type n_zeniths: int
     :param sky_type: ``"soc"`` or ``"uoc"`` 
     :type sky_type: string
@@ -180,7 +195,6 @@ def discrete_sky(n_azimuts, n_zeniths, sky_type) :
     :rtype: list, list, list, list
     """    
 
-    # TODO: doesn't work properly
     ele=[]
     azi=[]
     da = 2 * math.pi / n_azimuts
@@ -216,5 +230,6 @@ def discrete_sky(n_azimuts, n_zeniths, sky_type) :
             if(sky_type=='soc'):
                 I = soc(elv, dz, da)
             elif (sky_type=='uoc'):
-                I = soc(elv, dz, da)
+                I = uoc(elv, dz, da)
+            pc.append(I)
     return ele, azi, omega, pc

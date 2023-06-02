@@ -1,5 +1,5 @@
 '''
-    LightVegeManager_plantGL
+    plantGL
     ******************************
 
     visualisation plantGL

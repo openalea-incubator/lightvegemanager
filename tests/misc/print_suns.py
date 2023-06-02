@@ -1,4 +1,4 @@
-from LightVegeManager_sun import print_sun
+from lightvegemanager.sun import print_sun
 
 """
     A call of print_sun will create sun positions depending on time and location. 

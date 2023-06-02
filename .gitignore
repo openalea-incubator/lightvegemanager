@@ -15,7 +15,7 @@ WheatFspm
 l-egume
 outputs
 *.mod
-PyRATP/f90/src.win-amd64-3.7/*
+PyRATP/f90/ win-amd64-3.7/*
 PyRATP/pyratp/interface/*
 PyRATP/pyratp/mtg_test.txt
 PyRATP/f90/pyratp.cp37-win_amd64.pyd

@@ -1,6 +1,6 @@
 '''
-    LightVegeManager_sun
-    ********************
+    sun
+    ****
 
     Build a sun respecting each light model format
     

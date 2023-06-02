@@ -1,6 +1,6 @@
 '''
-    LightVegeManager_buildRATPscene
-    ********************************
+    buildRATPscene
+    **************
 
     Creation of a PyRATP.grid from inputs. The following functions create and initialize a grid from
     either a triangles mesh, a l-egume grid or an empty geometric input
@@ -42,9 +42,9 @@
 
 from alinea.pyratp import grid
 
-from LightVegeManager_trianglesmesh import *
-from LightVegeManager_voxelsmesh import *
-from LightVegeManager_leafangles import *
+from lightvegemanager.trianglesmesh import *
+from lightvegemanager.voxelsmesh import *
+from lightvegemanager.leafangles import *
 
 def extract_grid_origin(parameters, minmax) :
     """_summary_

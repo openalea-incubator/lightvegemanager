@@ -1,7 +1,7 @@
 '''
     
-    LightVegeManager_RATPinputs
-    ****************************
+    RATPinputs
+    **********
 
     Manage vegetation and meteo input informations for RATP
 

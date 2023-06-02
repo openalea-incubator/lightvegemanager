@@ -1,6 +1,6 @@
 '''
-    LightVegeManager_CARIBUinputs
-    ******************************
+    CARIBUinputs
+    *************
 
     Manages and prepares input information for CARIBU.
 
@@ -46,8 +46,8 @@
 
 import openalea.plantgl.all as pgl
 
-from LightVegeManager_trianglesmesh import *
-from LightVegeManager_voxelsmesh import *
+from lightvegemanager.trianglesmesh import *
+from lightvegemanager.voxelsmesh import *
 
 def Prepare_CARIBU(trimesh, 
                     geometry, 

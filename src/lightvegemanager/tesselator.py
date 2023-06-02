@@ -1,5 +1,5 @@
 '''
-    LightVegeManager_tesselator
+    tesselator
     ****************************
 
     Handles tesselation of a triangulation, the subdivision of triangulation.
@@ -11,7 +11,7 @@
 
 from alinea.pyratp import grid
 
-from LightVegeManager_basicgeometry import *
+from lightvegemanager.basicgeometry import *
 
 ## NOT USED, PyRATP.pyratp.grid.grid_index is preferred
 def whichvoxel(p, mygrid):

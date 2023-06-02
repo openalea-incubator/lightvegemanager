@@ -1,6 +1,6 @@
 '''
-    LightVegeManager_leafangles
-    ****************************
+    leafangles
+    **********
 
     Handles leaf angle distribution, both in its dynamic computing or reading a file
 
@@ -13,7 +13,7 @@
 import numpy
 import bisect
 
-from LightVegeManager_trianglesmesh import *
+from lightvegemanager.trianglesmesh import *
 
 
 def read_distrib_file(path, numberofentities) :

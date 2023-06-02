@@ -86,26 +86,27 @@
 
 from alinea.pyratp.runratp import runRATP
 from alinea.caribu.CaribuScene import CaribuScene
-import legume.RIRI5 as riri
+# import riri5
 
 import time
 import os
 import subprocess
 
-from  LightVegeManager_trianglesmesh import *
-from  LightVegeManager_stems import *
-from  LightVegeManager_leafangles import *
-from  LightVegeManager_tesselator import *
-from  LightVegeManager_sun import *
-from  LightVegeManager_sky import *
-from  LightVegeManager_RATPinputs import *
-from  LightVegeManager_CARIBUinputs import *
-from  LightVegeManager_outputs import *
-from  LightVegeManager_buildRATPscene import *
-from  LightVegeManager_transfer import *
-from  LightVegeManager_VTK import *
-from  LightVegeManager_plantGL import *
-from  LightVegeManager_defaultvalues import *
+from lightvegemanager.outputs import *
+from lightvegemanager.trianglesmesh import *
+from lightvegemanager.voxelsmesh import *
+from lightvegemanager.stems import *
+from lightvegemanager.leafangles import *
+from lightvegemanager.tesselator import *
+from lightvegemanager.sun import *
+from lightvegemanager.sky import *
+from lightvegemanager.RATPinputs import *
+from lightvegemanager.CARIBUinputs import *
+from lightvegemanager.buildRATPscene import *
+from lightvegemanager.transfer import *
+from lightvegemanager.VTK import *
+from lightvegemanager.plantGL import *
+from lightvegemanager.defaultvalues import *
 
 class LightVegeManager(object) :
     """Main class for the tool LightVegeManager
@@ -537,7 +538,7 @@ class LightVegeManager(object) :
         :type id: list or tuple, optional
         :raises AttributeError: you need to call :func:run first
         """        
-        if (not self.__elements_outputs) :
+        if not hasattr(self, '_LightVegeManager__elements_outputs') :
             raise AttributeError("No results yet, run a light modeling first")
         
         # crée un tableau comme dans caribu_facade de fspm-wheat
@@ -617,7 +618,7 @@ class LightVegeManager(object) :
         
         :rtype: numpy.array
         """                   
-        if (not self.__complete_voxmesh) or (not self.__elements_outputs) :
+        if not hasattr(self, '_LightVegeManager__elements_outputs') :
             raise AttributeError("No results yet, run a light modeling first")
 
         epsilon = 1e-14
@@ -897,8 +898,8 @@ class LightVegeManager(object) :
         :param printvoxels: write grid of voxels if one has been created in :meth:`build`, defaults to True
         :type printvoxels: bool, optional
         :raises AttributeError: you need to call :meth:`run` first
-        """        
-        if (not self.__complete_voxmesh) or (not self.__elements_outputs) :
+        """
+        if not hasattr(self, '_LightVegeManager__elements_outputs') :
             raise AttributeError("No results yet, run a light modeling first")
 
         if (self.__lightmodel == "ratp" and \
@@ -968,7 +969,11 @@ class LightVegeManager(object) :
         :type center: bool, optional
         :param i: associate the created file with an indice in its filename, defaults to None
         :type i: int, optional
+        :raises AttributeError: you need to call :meth:`run` first
         """        
+        if not hasattr(self, '_LightVegeManager__sun') : 
+            raise AttributeError("No results yet, run a light modeling first")
+
         if i is None : filepath = path + "_sun.vtk"
         else : filepath = path + "_sun" + "_" + str(i) + ".vtk"
 

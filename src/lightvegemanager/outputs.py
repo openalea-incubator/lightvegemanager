@@ -1,7 +1,7 @@
 """
    
-    LightVegeManager_outputs
-    *************************
+    outputs
+    *******
 
     Manages and reformat output results from the light models in pandas.Dataframe with similar columns
     names. 
@@ -93,7 +93,7 @@
 import pandas
 import itertools
 
-from LightVegeManager_trianglesmesh import *
+from lightvegemanager.trianglesmesh import *
 
 def out_ratp_empty_grid(day, hour) :
     """Returns an empty dataframe results for RATP

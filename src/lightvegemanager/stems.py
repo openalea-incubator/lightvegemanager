@@ -1,6 +1,6 @@
 '''
-    LightVegeManager_stems
-    **********************
+    stems
+    *****
     
     Manages stems element (opaque)
 '''

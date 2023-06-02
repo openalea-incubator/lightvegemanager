@@ -1,14 +1,5 @@
-import os
-import sys
+from lightvegemanager.tool import *
 
-try :
-    from  LightVegeManager import *
-
-except ModuleNotFoundError:
-    # ajoute le dossier lightvegemanager dans le sys.path
-    sys.path.insert(1, os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
-    from  LightVegeManager import *
-    
 import openalea.plantgl.all as pgl_all
 
 """
@@ -33,17 +24,21 @@ import openalea.plantgl.all as pgl_all
             triangles area are divided by 2
 """
 
-def run_print(lghtcaribu, lghtratp, PARi, day, hour):
+def run_print(lghtcaribu, lghtratp, PARi, day, hour, i):
     # calcul
     lghtcaribu.run(energy=PARi, day=day, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
     lghtratp.run(energy=PARi, day=day, hour=hour, parunit="micromol.m-2.s-1", truesolartime=True)
 
-    # résultats
+    # print résultats
     print("=== CARIBU ===")
     print(lghtcaribu.elements_outputs)
     print("=== RATP ===")
     print(lghtratp.elements_outputs)
     print("\n")
+
+    # ecriture des résultats en VTK
+    lghtratp.VTK_light("outputs/stems/teststemsratp", i=i)
+    lghtcaribu.VTK_light("outputs/stems/teststemscaribu", i=i)
 
 if __name__ == "__main__":
     # scène géométrique
@@ -108,18 +103,16 @@ if __name__ == "__main__":
     lghtratp.build(geometry)
 
     # imprime la grille de voxels de RATP
-    lghtratp.VTK_light("outputs/stems/teststemsratp")
+    lghtratp.VTK_nolight("outputs/stems/teststemsratp")
 
     ## situation 1
     PARi=500
     day=100.
     hour=12
-    run_print(lghtcaribu, lghtratp, PARi, day, hour)
+    run_print(lghtcaribu, lghtratp, PARi, day, hour, 1)
 
     ## situation 2
     hour=17.5
-    run_print(lghtcaribu, lghtratp, PARi, day, hour)
+    run_print(lghtcaribu, lghtratp, PARi, day, hour, 2)
 
-    # résultats au format VTK de CARIBU
-    lghtratp.VTK_light("outputs/stems/teststemsratp", i=2)
-    lghtcaribu.VTK_light("outputs/stems/teststemscaribu", i=1)
+    print("=== END ===")

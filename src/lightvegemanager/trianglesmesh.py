@@ -1,5 +1,6 @@
 '''
-    LightVegeManager_trianglesmesh
+    trianglesmesh
+    **************
 
     It builds and handles triangulation mesh.
 
@@ -33,7 +34,7 @@ import openalea.plantgl.all as pgl
 from alinea.caribu import plantgl_adaptor
 from openalea.mtg.mtg import MTG
 
-from LightVegeManager_basicgeometry import *
+from lightvegemanager.basicgeometry import *
 
 def triangles_entity(cscene, entity_id, matching_ids) :
     """Return a list of triangles belonging to the specy ``entity_id``

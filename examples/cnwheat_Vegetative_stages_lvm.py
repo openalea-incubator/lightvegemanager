@@ -7,14 +7,14 @@ import getopt
 import random
 
 try :
-    from src.LightVegeManager import *
-    from src.FSPMWheat_template import *
+    from  LightVegeManager import *
+    from  FSPMWheat_template import *
 
 except ModuleNotFoundError:
     # ajoute le dossier lightvegemanager dans le sys.path
     sys.path.insert(1, os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
-    from src.LightVegeManager import *
-    from src.FSPMWheat_template import *
+    from  LightVegeManager import *
+    from  FSPMWheat_template import *
 
 '''
 Comparaison sur un temps avec un couvert dense entre CARIBU et RATP

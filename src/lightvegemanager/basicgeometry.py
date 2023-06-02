@@ -1,6 +1,6 @@
 """
-    LightVegeManager_basicgeometry
-    ******************************
+    basicgeometry
+    *************
 
     Provides basic geometric operations in 3D used by LightVegeManager. 
     Vectors are represented by their cartesian coordinates in a 3-tuple of floats such as v = (x, y, z)

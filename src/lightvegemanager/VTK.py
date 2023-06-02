@@ -1,6 +1,6 @@
 '''
-    LightVegeManager_VTK
-    ********************
+    VTK
+    ***
 
     Writes VTK files from LightVegeManager geometry and lighting data. Used for visualisation
     We recommend the software Paraview for visualisation
@@ -150,13 +150,17 @@ def ratp_prepareVTK(ratpgrid, filename, columns=[], df_values=None) :
     datafields = [numpy.array(kxyz), numpy.array(entities), numpy.array(lad)]
 
     # other variables
-    if columns  and df_values is not None:
+    if columns and df_values is not None:
         for name in columns :
             v = []
             for i in range(ratpgrid.nveg)  :
                 for j in range(ratpgrid.nje[i]):
                     filter = (df_values.Voxel == i+1) & (df_values.VegetationType == j+1)
-                    v.append(df_values[filter][name].values[0])
+                    if not df_values[filter].empty :
+                        v.append(df_values[filter][name].values[0])
+                    else:
+                        v.append(0.)
+                        
             datafields.append(numpy.array(v))
     
     columns.insert(0, "LAD")

@@ -1,6 +1,6 @@
 '''
-    LightVegeManager_voxelsmesh
-    ****************************
+    voxelsmesh
+    **********
 
     Builds and handles axis oriented voxels mesh
 '''
@@ -9,9 +9,9 @@ import itertools
 
 from alinea.pyratp import grid
 
-from LightVegeManager_basicgeometry import *
-from LightVegeManager_tesselator import *
-from LightVegeManager_trianglesmesh import *
+from lightvegemanager.basicgeometry import *
+from lightvegemanager.tesselator import *
+from lightvegemanager.trianglesmesh import *
 
 def compute_grid_size_from_trimesh(pmin, pmax, dv, grid_slicing=None) :
     """Dynamically compute number of voxels for each axis in the grid

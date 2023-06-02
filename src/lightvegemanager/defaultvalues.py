@@ -1,6 +1,6 @@
 '''
-    LightVegeManager_defaultvalues
-    ******************************
+    defaultvalues
+    *************
 
     Default for simulation fixed parameters
     These parameters are sets in LightVegeManager if the user did not precise thoses inputs
@@ -20,7 +20,7 @@ def default_LightVegeManager_inputs() :
     default_environnement["diffus"] = True
     default_environnement["direct"] = True
     default_environnement["reflected"] = False
-    default_environnement["infinite"] = True
+    default_environnement["infinite"] = False
     
     default_ratp_parameters = {}
     default_ratp_parameters["voxel size"] = [0.1, 0.1, 0.1]
@@ -31,6 +31,7 @@ def default_LightVegeManager_inputs() :
     default_ratp_parameters["nb angle class"] = 9
     
     default_caribu_parameters = {}
+    default_caribu_parameters["caribu opt"] = { "par" : (0.10, 0.05) }
     default_caribu_parameters["sun algo"] = "caribu"
     default_caribu_parameters["soil mesh"] = -1
     default_caribu_parameters["debug"] = False
