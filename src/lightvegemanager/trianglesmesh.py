@@ -213,7 +213,7 @@ def chain_triangulations(scenes) :
             cscene = vgx_to_caribu(scene, element_count)
 
         # scene already in format CARIBU
-        elif isinstance(scene, list) and isinstance(scene[0], tuple) : 
+        elif isinstance(scene, dict) and isinstance(list(scene.values())[0], list) : 
             cscene = scene
 
         # MTG table with "geometry" identifier

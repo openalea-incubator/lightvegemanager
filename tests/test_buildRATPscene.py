@@ -51,4 +51,76 @@ def test_legumescene_to_RATPscene():
                                     0,
                                     32.)
 
-def build_RATPscene_from_trimesh()
+
+parameters_1 = {"voxel size" : (1., 1., 1.) ,
+                "angle distrib algo" : "compute global",
+                "nb angle classes" : 9,
+                }
+n_vox_filled = 3
+n_vox = 4     
+n_class_angles = 9                   
+parameters_2 = {"voxel size" : (1., 1., 1.) ,
+                "angle distrib algo" : "compute voxel", 
+                "nb angle classes" : 9,
+                }
+n_vox_filled = 3
+n_vox = 4      
+n_class_angles = 9          
+parameters_3 = {"voxel size" : (1., 1., 1.) ,
+                "origin" : (0., 0., 0.),
+                "angle distrib algo" : "file", 
+                }
+n_vox_filled = 3
+n_vox = 4      
+n_class_angles = 5       
+parameters_4 = {"voxel size" : "dynamic" ,
+                "angle distrib algo" : "compute global",
+                "nb angle classes" : 9,
+                }    
+          
+@pytest.mark.parametrize("test_input,expected", [
+                                            (parameters_empty, (1,1,1)), 
+                                            (parameters_nvox, (5, 5, 5))])
+def test_build_RATPscene_from_trimesh():
+    """On vérifie que les options ont bien fonctionné
+    """    
+    triangles = {
+        123 : [(0.2, 0.1, 0.), (0.7, 0.1, 0.), (0.7,0.7, 0.5)], 
+        222 : [(1.3, 0.1, 0.), (1.7, 0.1, 0.), (1.7,0.7, 0.5)],
+        111 : [(3.4, 0.1, 0.), (3.7, 0.1, 0.), (3.7,0.7, 0.5)],
+    }
+    minmax = [(0.2, 0.1, 0.), (3.7, 0.7, 0.5)]
+    matching_ids = {
+        0 : (123, 0),
+        1 : (222, 0),
+        2 : (111, 1),
+    }
+    parameters = {"voxel size" : (1., 1., 1.) ,
+                    "angle distrib algo" : "compute global"}
+    reflected = False
+    infinite = True
+
+    build_RATPscene_from_trimesh(triangles, 
+                                    minmax, 
+                                    0,
+                                    matching_ids, 
+                                    parameters,
+                                    coordinates,
+                                    reflected,
+                                    infinite,
+                                    stems_id=None,
+                                    nb_input_scenes=1)
+
+    # vérifie nb vox créé
+
+    # vérifie nb vox plein
+
+    # vérifie grid origin
+
+    # vérifie nb de class
+
+    # vérifie si distrib voxel a rempli tous les vox
+
+    # vérifie si premier tri est bien dans premier vox
+
+    # vérifie si dans dernier vox il y a espèce 2

@@ -23,7 +23,7 @@ From: miniconda3_py37_4.11.0.sif
 	conda clean -y --all
     apt autoremove --purge
     apt clean
-	mamba install -v openalea.mtg openalea.lpy openalea.deploy openalea.sconsx xlrd coverage nose sphinx pytest statsmodels numpy scipy=1.7.3 pandas sphinx_rtd_theme scons -c conda-forge -c openalea3 -y
+	mamba install -v openalea.mtg openalea.plantgl openalea.lpy openalea.deploy openalea.sconsx xlrd coverage nose sphinx pytest statsmodels numpy scipy=1.7.3 pandas sphinx_rtd_theme scons -c conda-forge -c openalea3 -y
 
 	# CARIBU
 	git clone -b namespace https://github.com/pradal/caribu

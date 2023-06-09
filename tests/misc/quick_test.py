@@ -1,4 +1,6 @@
-from LightVegeManager import *
+from lightvegemanager.tool import LightVegeManager
+
+print("--- START")
 
 # one triangle as a geometric element
 # we write our triangle in a CaribuScene format
@@ -21,3 +23,4 @@ lighting.run(energy, hour, day)
 
 # output
 print(lighting.elements_outputs)
+print("--- END")

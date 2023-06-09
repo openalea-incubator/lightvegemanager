@@ -177,8 +177,7 @@ class LightVegeManager(object) :
 
         # check if choosen light model is known by the tool
         if lightmodel != "ratp" and lightmodel != "caribu" :
-            raise ValueError("Unknown lightmodel: can be either 'ratp' \
-                                or 'caribu' ")
+            raise ValueError("Unknown lightmodel: can be either 'ratp' or 'caribu' ")
 
         # save inputs in the instance
         self.__environment = environment
@@ -880,6 +879,7 @@ class LightVegeManager(object) :
             ratp_prepareVTK(self.__complete_voxmesh, filepath)
             
         if self.__matching_ids and printtriangles:
+            print("coucou")
             if i is None : filepath = path + "_triangles_nolight.vtk"
             else : filepath = path + "_triangles_nolight" + "_" + str(i)+".vtk"
             VTKtriangles(self.__complete_trimesh, [], [], filepath)
