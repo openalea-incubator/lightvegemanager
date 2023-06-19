@@ -366,7 +366,7 @@ def run_caribu(c_scene, direct_active, infinite, sensors) :
     
     :rtype: dict of dict, dict of dict
     """    
-    if "sensors" is None :
+    if sensors is None :
         raw, aggregated = c_scene.run(direct=direct_active, infinite=infinite)
     else :
         raw, aggregated = c_scene.run(direct=direct_active, infinite=infinite, 

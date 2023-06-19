@@ -1,14 +1,6 @@
-import sys
-import os
+from lightvegemanager.tool import LightVegeManager
 
-# si le package est déjà installé
-try :
-    from  LightVegeManager import *
-
-except ModuleNotFoundError:
-    # ajoute le dossier lightvegemanager dans le sys.path
-    sys.path.insert(1, os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
-    from  LightVegeManager import *
+import openalea.plantgl.all as pgl
 
 # Test des sensors dans caribu sur une grille vide
 def testsensors(pgl_scene, folder_vtk_outputs):

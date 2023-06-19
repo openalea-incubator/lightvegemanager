@@ -1,14 +1,4 @@
-import os
-import sys
-
-# si le package est déjà installé
-try :
-    from  LightVegeManager import *
-
-except ModuleNotFoundError:
-    # ajoute le dossier lightvegemanager dans le sys.path
-    sys.path.insert(1, os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
-    from  LightVegeManager import *
+from lightvegemanager.tool import LightVegeManager
     
 import openalea.plantgl.all as pgl_all
 
@@ -84,6 +74,7 @@ def simulation(geom, hour, situation, direct, diffus, ratp_mu, dv, folderout):
     print("\n")
 
 if __name__ == "__main__":
+    print("--- START")
     folderout = "outputs/debug_plaque_ratp-caribu/"
     
     # plaque horizontale
@@ -115,3 +106,5 @@ if __name__ == "__main__":
     situation = "plaque_incli_zenith_directdiffus"
     ratp_mu = [1.]
     simulation(geom, hour, situation, True, True, ratp_mu, dv, folderout)
+
+    print("--- END")

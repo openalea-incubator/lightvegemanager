@@ -341,13 +341,14 @@ class LightVegeManager(object) :
 
             if self.__complete_voxmesh.nveg > 0 :
                 # Run of RATP
+                print("debut ratp")
                 start=time.time()
                 res = runRATP.DoIrradiation(self.__complete_voxmesh, 
                                             vegetation, 
                                             self.__sky, 
                                             meteo)
                 self.__time_runmodel = time.time() - start
-                
+                print("fin ratp")
                 # output management
                 self.__voxels_outputs = out_ratp_voxels(
                                                     self.__complete_voxmesh,
@@ -499,6 +500,16 @@ class LightVegeManager(object) :
             self.__elements_outputs = out_caribu_elements(*arg)
             arg[4] = raw
             self.__triangles_outputs = out_caribu_triangles(*arg)
+
+            if "sensors" in self.__lightmodel_parameters and self.__lightmodel_parameters["sensors"][-1] == "vtk":
+                # create list with radiative value for each sensor triangle (2 triangles per sensor)
+                var=[]
+                for id, triangles in sensors_caribu.items():
+                    for t in triangles :
+                        var.append(self.__sensors_outputs["par"][id])
+
+                sensor_path = self.__lightmodel_parameters["sensors"][-2] + "sensors_h"+str(int(hour))+"_d"+str(int(day)) + ".vtk"
+                VTKtriangles(sensors_caribu, [var], ["intercepted"], sensor_path)
             
         ## RiRi (l-egume) ##
         elif self.__lightmodel == "riri" :
@@ -879,7 +890,6 @@ class LightVegeManager(object) :
             ratp_prepareVTK(self.__complete_voxmesh, filepath)
             
         if self.__matching_ids and printtriangles:
-            print("coucou")
             if i is None : filepath = path + "_triangles_nolight.vtk"
             else : filepath = path + "_triangles_nolight" + "_" + str(i)+".vtk"
             VTKtriangles(self.__complete_trimesh, [], [], filepath)

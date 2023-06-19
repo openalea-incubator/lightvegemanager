@@ -64,6 +64,7 @@ def RATP_vegetation(parameters, angle_distrib, reflected) :
                 reflectance_coef = parameters["reflectance coefficients"][id]
             else :
                 reflectance_coef = [0., 0.]
+                parameters["reflectance coefficients"].append(reflectance_coef)
 
             entities_param.append({
                                     'mu' : mu_ent,

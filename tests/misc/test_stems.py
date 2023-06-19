@@ -1,4 +1,4 @@
-from lightvegemanager.tool import *
+from lightvegemanager.tool import LightVegeManager
 
 import openalea.plantgl.all as pgl_all
 

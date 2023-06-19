@@ -28,6 +28,7 @@
 '''
 import itertools
 import numpy
+import pandas
 import bisect
 
 import openalea.plantgl.all as pgl
@@ -351,3 +352,113 @@ def apply_transformations(cscene, matching_ids, transformations, cscene_unit) :
                 raise ValueError("Unknown xyz orientation in scene %i" % (key))
             for id in [k for k,v in matching_ids.items() if v[1] == key ] :
                 cscene[id] = zrotate(cscene[id], rot)
+
+def create_heterogeneous_canopy(geometrical_model, mtg=None, nplants=50, var_plant_position=0.03, var_leaf_inclination=0.157, var_leaf_azimut=1.57, var_stem_azimut=0.157,
+                                     plant_density=250, inter_row=0.15, id_type=None):
+    """
+    Duplicate a plant in order to obtain a heterogeneous canopy.
+
+    :param int nplants: the desired number of duplicated plants
+    :param float var_plant_position: variability for plant position (m)
+    :param float var_leaf_inclination: variability for leaf inclination (rad)
+    :param float var_leaf_azimut: variability for leaf azimut (rad)
+    :param float var_stem_azimut: variability for stem azimut (rad)
+    :param string id_type: precise how to set the shape id of the elements : None, plant or organ
+
+    :return: duplicated heterogenous scene and its domain
+    :rtype: openalea.plantgl.all.Scene, (float)
+    """
+    from alinea.adel.Stand import AgronomicStand
+    import openalea.plantgl.all as plantgl
+    import random
+
+    # Load scene
+    if not isinstance(geometrical_model, pgl.Scene) : initial_scene = geometrical_model.scene(mtg)
+    else : initial_scene = geometrical_model
+
+    alea_canopy = pandas.DataFrame()
+
+    # Planter
+    stand = AgronomicStand(sowing_density=plant_density, plant_density=plant_density, inter_row=inter_row, noise=var_plant_position)
+    _, domain, positions, _ = stand.smart_stand(nplants=nplants, at=inter_row, convunit=1)
+
+    random.seed(1234)
+
+    # Built alea table if does not exist yet
+    if alea_canopy.empty and mtg is not None:
+        elements_vid_list = []
+        for mtg_plant_vid in mtg.components_iter(mtg.root):
+            for mtg_axis_vid in mtg.components_iter(mtg_plant_vid):
+                for mtg_metamer_vid in mtg.components_iter(mtg_axis_vid):
+                    for mtg_organ_vid in mtg.components_iter(mtg_metamer_vid):
+                        for mtg_element_vid in mtg.components_iter(mtg_organ_vid):
+                            if mtg.label(mtg_element_vid) == 'LeafElement1':
+                                elements_vid_list.append(mtg_element_vid)
+                
+        elements_vid_df = pandas.DataFrame({'vid': elements_vid_list, 'tmp': 1})
+        positions_df = pandas.DataFrame({'pos': range(len(positions)),
+                                        'tmp': 1,
+                                        'azimut_leaf': 0,
+                                        'inclination_leaf': 0})
+        alea = pandas.merge(elements_vid_df, positions_df, on=['tmp'])
+        alea = alea.drop('tmp', axis=1)
+        for vid in elements_vid_list:
+            numpy.random.seed(vid)
+            alea.loc[alea['vid'] == vid, 'azimut_leaf'] = numpy.random.uniform(-var_leaf_azimut, var_leaf_azimut, size=len(positions))
+            alea.loc[alea['vid'] == vid, 'inclination_leaf'] = numpy.random.uniform(-var_leaf_inclination, var_leaf_inclination, size=len(positions))
+        alea_canopy = alea
+
+    # Duplication and heterogeneity
+    duplicated_scene = plantgl.Scene()
+    position_number = 0
+    new_id = 0
+    if id_type == "organ" :
+        new_id = max([sh.id for sh in initial_scene]) + 1
+    
+    for pos in positions:
+        azimut_stem = random.uniform(-var_stem_azimut, var_stem_azimut)
+        for shp in initial_scene:
+            if mtg is not None :
+                if mtg.label(shp.id) == 'StemElement':
+                    rotated_geometry = plantgl.EulerRotated(azimut_stem, 0, 0, shp.geometry)
+                    translated_geometry = plantgl.Translated(plantgl.Vector3(pos), rotated_geometry)
+                    if id_type == "organ" : new_shape = plantgl.Shape(translated_geometry, appearance=shp.appearance, id=new_id)
+                    elif id_type == "plant" : new_shape = plantgl.Shape(translated_geometry, appearance=shp.appearance, id=position_number)
+                    else : new_shape = plantgl.Shape(translated_geometry, appearance=shp.appearance, id=shp.id)
+                    duplicated_scene += new_shape
+                elif mtg.label(shp.id) == 'LeafElement1':
+                    # Add shp.id in alea_canopy if not in yet:
+                    if shp.id not in list(alea_canopy['vid']):
+                        new_vid_df = pandas.DataFrame({'vid': shp.id, 'pos': range(len(positions))})
+                        numpy.random.seed(shp.id)
+                        new_vid_df['azimut_leaf'] = numpy.random.uniform(-var_leaf_azimut, var_leaf_azimut, size=len(positions))
+                        new_vid_df['inclination_leaf'] = numpy.random.uniform(-var_leaf_inclination, var_leaf_inclination, size=len(positions))
+                        alea_canopy = alea_canopy.copy().append(new_vid_df, sort=False)
+                    # Translation to origin
+                    anchor_point = mtg.get_vertex_property(shp.id)['anchor_point']
+                    trans_to_origin = plantgl.Translated(-anchor_point, shp.geometry)
+                    # Rotation variability
+                    azimut = alea_canopy.loc[(alea_canopy.pos == position_number) & (alea_canopy.vid == shp.id), 'azimut_leaf'].values[0]
+                    inclination = alea_canopy.loc[(alea_canopy.pos == position_number) & (alea_canopy.vid == shp.id), 'inclination_leaf'].values[0]
+                    rotated_geometry = plantgl.EulerRotated(azimut, inclination, 0, trans_to_origin)
+                    # Restore leaf base at initial anchor point
+                    translated_geometry = plantgl.Translated(anchor_point, rotated_geometry)
+                    # Translate leaf to new plant position
+                    translated_geometry = plantgl.Translated(pos, translated_geometry)
+                    
+                    if id_type == "organ" : new_shape = plantgl.Shape(translated_geometry, appearance=shp.appearance, id=new_id)
+                    elif id_type == "plant" : new_shape = plantgl.Shape(translated_geometry, appearance=shp.appearance, id=position_number)
+                    else : new_shape = plantgl.Shape(translated_geometry, appearance=shp.appearance, id=shp.id)
+                    duplicated_scene += new_shape
+
+            else :
+                rotated_geometry = plantgl.EulerRotated(azimut_stem, 0, 0, shp.geometry)
+                translated_geometry = plantgl.Translated(plantgl.Vector3(pos), rotated_geometry)
+                if id_type == "organ" : new_shape = plantgl.Shape(translated_geometry, appearance=shp.appearance, id=new_id)
+                elif id_type == "plant" : new_shape = plantgl.Shape(translated_geometry, appearance=shp.appearance, id=position_number)
+                else : new_shape = plantgl.Shape(translated_geometry, appearance=shp.appearance, id=shp.id)
+                duplicated_scene += new_shape
+            new_id += 1
+        position_number += 1
+
+    return duplicated_scene, domain
