@@ -86,10 +86,16 @@ def caribu_sun(day, hour, coordinates, truesolartime) :
         eqntime=dphi*229.2
         hour =hour+coordinates[2]+coordinates[1]/15.-eqntime/60. % 24.
 
+    ## bugged
     # Converts latitude in radian
-    sun = Gensun.Gensun()(1., day, hour, coordinates[0]*math.pi/180)
-    sun = GetLightsSun.GetLightsSun(sun)
-    sun_str_split = sun.split(' ')
+    # sun = Gensun.Gensun()(1., day, hour, coordinates[0]*math.pi/180)
+    # sun = GetLightsSun.GetLightsSun(sun)
+    # sun_str_split = sun.split(' ')
+
+    # correction
+    suncaribu = Sun.Sun()
+    suncaribu._set_pos_astro(day, hour, coordinates[0]*math.pi/180)
+    sun_str_split = suncaribu.toLight().split(' ')
     
     return (float(sun_str_split[1]), 
             float(sun_str_split[2]), 
@@ -154,7 +160,7 @@ def print_sun(day, hour, coordinates, truesolartime) :
 
     print("\t azimut: %0.3f \t zenith: %0.3f" % \
                         (-azrad*180/math.pi, pyratp.shortwave_balance.hdeg))
-    print("\t x: %0.3f \t y: %0.3f \t z: %0.3f" % (sunx, suny, sunz))
+    print("\t x: %0.6f \t y: %0.6f \t z: %0.6f" % (sunx, suny, sunz))
     
     print("--- CARIBU ---")
     suncaribu = Sun.Sun()
@@ -163,7 +169,7 @@ def print_sun(day, hour, coordinates, truesolartime) :
 
     print("\t azimut: %0.3f \t zenith: %0.3f" % 
                 (-suncaribu.azim*180/math.pi, 90-(suncaribu.elev*180/math.pi)))
-    print("\t x: %0.3f \t y: %0.3f \t z: %0.3f" % 
+    print("\t x: %0.6f \t y: %0.6f \t z: %0.6f" % 
                                                     (float(sun_str_split[1]),
                                                     float(sun_str_split[2]),
                                                     float(sun_str_split[3])))
