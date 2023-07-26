@@ -56,7 +56,7 @@ def RATP_vegetation(parameters, angle_distrib, reflected) :
     :type reflected: bool
     :return: Vegetation types contains clumoing effect ratio, leaf angle distribution and reflectance/transmittance of leaves for each specy
     :rtype: PyRATP.pyratp.vegetation.Vegetation
-    """    
+    """        
     entities_param = []
     if parameters["angle distrib algo"] != "compute voxel":
         for id, mu_ent in enumerate(parameters["mu"]):

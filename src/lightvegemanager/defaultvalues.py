@@ -23,13 +23,13 @@ def default_LightVegeManager_inputs() :
     default_environnement["infinite"] = False
     
     default_ratp_parameters = {}
-    default_ratp_parameters["voxel size"] = [0.1, 0.1, 0.1]
+    default_ratp_parameters["voxel size"] = "dynamic"
     default_ratp_parameters["soil reflectance"] = [0., 0.]
     default_ratp_parameters["reflectance coefficients"] = []
-    default_ratp_parameters["mu"] = [1.]
+    default_ratp_parameters["mu"] = []
     default_ratp_parameters["tesselation level"] = 0
     default_ratp_parameters["angle distrib algo"] = "compute global"
-    default_ratp_parameters["nb angle class"] = 9
+    default_ratp_parameters["nb angle classes"] = 9
     
     default_caribu_parameters = {}
     default_caribu_parameters["caribu opt"] = { "par" : (0.10, 0.05) }

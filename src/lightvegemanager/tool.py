@@ -252,6 +252,10 @@ class LightVegeManager(object) :
         
         # Builds voxels grid from input geometry
         elif self.__lightmodel == "ratp":
+            # number of input species
+            numberofentities = 0
+            if legume_grid : numberofentities = self.__geometry["scenes"][id_legume_scene]["LA"].shape[0]
+
             # triangles in the inputs
             if self.__matching_ids :
                 # separates stem elements in a new specy
@@ -261,6 +265,13 @@ class LightVegeManager(object) :
                                             self.__lightmodel_parameters)
                 else : self.__geometry["stems id"] = None
 
+                # search for number of species after stems processing (it adds one separate specy)
+                numberofentities += max([v[1] for v in self.__matching_ids.values()]) + 1
+
+                # init mu and reflectance  values if not precised
+                self.__lightmodel_parameters["mu"] = [1. for x in range(numberofentities)]
+                self.__lightmodel_parameters["reflectance coefficients"] = [ [0., 0.] for x in range(numberofentities)]
+                
                 arg = (self.__complete_trimesh,        
                         [self.__pmin, self.__pmax],     
                         self.__triangleLmax,             
@@ -449,7 +460,8 @@ class LightVegeManager(object) :
                 arg = [c_scene, \
                         not self.__environment["reflected"], \
                         self.__environment["infinite"], \
-                        sensors_caribu]
+                        sensors_caribu ,\
+                        self.__energy]
                 if sun_sky_option == "mix":
                     start = time.time()
                     raw_sun, aggregated_sun = run_caribu(*arg)
