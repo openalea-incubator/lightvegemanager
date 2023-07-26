@@ -354,7 +354,7 @@ def apply_transformations(cscene, matching_ids, transformations, cscene_unit) :
                 cscene[id] = zrotate(cscene[id], rot)
 
 def create_heterogeneous_canopy(geometrical_model, mtg=None, nplants=50, var_plant_position=0.03, var_leaf_inclination=0.157, var_leaf_azimut=1.57, var_stem_azimut=0.157,
-                                     plant_density=250, inter_row=0.15, id_type=None):
+                                     plant_density=250, inter_row=0.15, id_type=None, seed=None):
     """
     Duplicate a plant in order to obtain a heterogeneous canopy.
 
@@ -371,6 +371,10 @@ def create_heterogeneous_canopy(geometrical_model, mtg=None, nplants=50, var_pla
     from alinea.adel.Stand import AgronomicStand
     import openalea.plantgl.all as plantgl
     import random
+
+    if seed is not None :
+        random.seed(seed)
+        numpy.random.seed(seed)
 
     # Load scene
     if not isinstance(geometrical_model, pgl.Scene) : initial_scene = geometrical_model.scene(mtg)

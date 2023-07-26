@@ -327,7 +327,7 @@ def create_caribu_legume_sensors(dxyz,
     
     return caribu_sensors, s_capt, sensors_maxcenter
 
-def run_caribu(c_scene, direct_active, infinite, sensors) :
+def run_caribu(c_scene, direct_active, infinite, sensors, energy=1.) :
     """runs caribu depending on input options
 
     :param c_scene: instance of CaribuScene containing geometry, light source(s), opt etc...
@@ -341,6 +341,8 @@ def run_caribu(c_scene, direct_active, infinite, sensors) :
         are horizontal square made of two triangles
         .. code:: sensors_caribu = { sensor_id : [triangle1, triangle2], ...}
     :type sensors: dict
+    :param energy: input energy value
+    :type energy: float, optional default is 1.
     :return: results are stored in two dict
 
         - raw (dict of dict) a {band_name: {result_name: property}} dict of dict.
@@ -372,4 +374,10 @@ def run_caribu(c_scene, direct_active, infinite, sensors) :
         raw, aggregated = c_scene.run(direct=direct_active, infinite=infinite, 
                                                             sensors=sensors)
 
+    # adjust relative results with energy input value
+    for band in raw :
+        for radtype in ("Eabs", "Ei") :
+            for k in raw[band][radtype].keys(): raw[band][radtype][k] = [x * energy for x in raw[band][radtype][k]]
+            for k in aggregated[band][radtype].keys(): aggregated[band][radtype][k] *= energy
+                
     return raw, aggregated

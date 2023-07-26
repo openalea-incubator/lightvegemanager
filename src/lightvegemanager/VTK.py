@@ -237,7 +237,7 @@ def VTKvoxels(grid, datafields, varnames, nomfich):
                             kidDummy = numpy.where(numpy.array(datafields[0])==k)
                             kid = kidDummy[0]
                             entity = numpy.array(datafields[1])[kid]
-                            ent_in_vox =numpy.where(entity == ent)
+                            ent_in_vox =numpy.where(entity == ent+1)
                             # pas dans le voxel
                             if numpy.alen(ent_in_vox[0])<1:
                                 f.write(str(-9999.0)+'\n')
@@ -246,7 +246,7 @@ def VTKvoxels(grid, datafields, varnames, nomfich):
                                 if ik == grid.njz:
                                     f.write(str(-9999.0)+'\n')
                                 else:
-                                    where = (kid[numpy.where(entity==ent)])
+                                    where = (kid[numpy.where(entity==ent+1)])
                                     value = datafields[2+nvar][where[0]]
                                     f.write(str(value)+'\n')
                         # voxel vide
