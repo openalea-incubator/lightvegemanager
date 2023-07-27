@@ -8,6 +8,8 @@ coordinates = [60.2, 25., 3.6] # Helsinki Finland, UTC+3h
 truesolartime = True
 localsolartime = False
 
+# for reference:
+# https://www.suncalc.org/#/60.1712,24.9327,11/2003.09.07/10:00/1/3
 expected_localtime = [0.506493, -0.755064, -0.416345]
 expected_globaltime = [0.692525, 0.496989, -0.522886]
 @pytest.mark.parametrize("test_input, expected", [
