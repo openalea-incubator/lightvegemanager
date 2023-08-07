@@ -60,9 +60,9 @@ def transfer_ratp_legume(m_lais, energy, ratp_grid, voxels_outputs, nb0, epsilon
 
                 condition_x = voxels_outputs.Nx == m_lais.shape[2] - iy
                 vox_data = voxels_outputs[condition_x & (voxels_outputs.Ny == ix + 1) & (voxels_outputs.Nz == iz + 1)]
-
-                a = min(sum(vox_data["Transmitted"]), dS)
-                res_trans[legume_iz, iy, ix] = energy * a
+                if not vox_data.empty :
+                    a = min(sum(vox_data["Transmitted"]), dS)
+                    res_trans[legume_iz, iy, ix] = energy * a
 
                 s_entity = 0
                 for k in range(m_lais.shape[0]):
@@ -195,15 +195,16 @@ def transfer_caribu_legume(
     res_trans = numpy.ones((m_lais.shape[1], m_lais.shape[2], m_lais.shape[3]))
 
     # if non empty scene
-    if elements_outputs:
+    if not elements_outputs.empty:
         # different treatment if scene is infinite, (issues with virtual sensors and finite scene with CARIBU)
         if infinite:
+            nb0 = min(m_lais.shape[1] - sensors_nxyz[2], m_lais.shape[1])
             ID_capt = 0
             for ix in range(sensors_nxyz[0]):
                 for iy in range(sensors_nxyz[1]):
                     for iz in range(sensors_nxyz[2] - skylayer):
-                        a = min(sensors_outputs["par"][ID_capt], 1)
-                        res_trans[(sensors_nxyz[2] - 1) - iz][iy][ix] = a
+                        a = min(sensors_outputs["par"][ID_capt], 1.)
+                        res_trans[nb0 + ((sensors_nxyz[2] - 1)) - iz][iy][ix] = a
                         ID_capt += 1
 
         else:
