@@ -139,6 +139,30 @@ def test_isatriangle():
     assert not isatriangle(tr4)
     assert not isatriangle(tr5)
 
+# single triangle
+tr = [(0., 0., 0.), (0., 1., 0.), (1., 1., 1.)]
+expected1 = (
+    {0 : [tr] },
+    {0 : [0, 0]}
+)
+
+# list of triangles
+triangles = [
+    [(0., 0., 0.), (0., 1., 0.), (1., 1., 1.)],
+    [(0., 0., 10.), (0., 1., 10.), (1., 1., 11.)],
+    [(0., 0., 20.), (0., 1., 20.), (1., 1., 21.)],
+]
+expected2 = (
+    {0 : triangles },
+    {0 : [0, 0]}
+)
+
+@pytest.mark.parametrize("test_input, expected", [(tr, expected1), (triangles, expected2)])
+def test_chain_triangulations_simple(test_input, expected):
+    complete_trimesh, matching_ids, legume_grid, id_legume_scene = chain_triangulations(test_input)
+    assert complete_trimesh == expected[0]
+    assert matching_ids == expected[1]
+
 
 def test_chain_triangulations():
     # single triangle
@@ -217,9 +241,6 @@ def test_chain_triangulations():
     assert numpy.cumsum([len(v) for v in complete_trimesh.values()])[-1] == 5568
     for t in itertools.chain(*complete_trimesh.values()):
         assert isatriangle(t)
-
-test_chain_triangulations()
-
 
 transformation_1 = {"scenes unit": {0: "m", 1: "dm"}}
 expected_1 = {

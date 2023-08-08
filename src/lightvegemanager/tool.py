@@ -212,6 +212,10 @@ class LightVegeManager(object):
         :type global_scene_tesselate_level: int, optional
         :raises ValueError: Currently, converting voxels mesh to triangles mesh is not possible
         """
+        # pre-check of scenes input, if it has only one triangle or one list of triangles
+        if isatriangle(geometry) or all(isatriangle(s) for s in geometry):
+            geometry = {"scenes" : geometry}
+ 
         self.__geometry = geometry
 
         # First process of the scenes list, it gathers all triangulations
