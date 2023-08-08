@@ -1,4 +1,3 @@
-from math import e
 from lightvegemanager.tesselator import (
     tesselate,
     tesselate2,

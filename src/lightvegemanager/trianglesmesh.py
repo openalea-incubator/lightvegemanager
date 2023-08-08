@@ -175,6 +175,18 @@ def compute_trilenght_max(cscene):
 
     return lenmax
 
+def isatriangle(t):
+    if not isinstance(t, list) or len(t) != 3:
+        return False
+    
+    for item in t:
+        if not isinstance(item, (list, tuple)) or len(item) != 3:
+            return False
+        
+        if not all(isinstance(val, float) for val in item):
+            return False
+    
+    return True
 
 def chain_triangulations(scenes):
     """Aggregates all input geometric scenes in one global triangulation
@@ -200,6 +212,13 @@ def chain_triangulations(scenes):
 
     :rtype: dict of list, dict of list, bool, int
     """
+
+    # pre-check of scenes input, if it has only one triangle or one list of triangles
+    if isatriangle(scenes) :
+        scenes = [scenes]
+    elif all(isatriangle(s) for s in scenes) :
+        scenes = [scenes]
+    
     complete_trimesh = {}
     matching_ids = {}
     legume_grid = False
@@ -209,8 +228,15 @@ def chain_triangulations(scenes):
     for entity, scene in enumerate(scenes):
         cscene = {}
 
+        # single triangle such as: scene = [(x1, y1, z1), (x2, y2, z2), (x3, y3, z3)]
+        if isinstance(scene, list) :
+            if isatriangle(scene) :
+                cscene = { 0 : [ scene ] }
+            elif isatriangle(scene[0]) :
+                cscene = {0 : scene}
+
         # scene planteGL
-        if isinstance(scene, pgl.Scene):
+        elif isinstance(scene, pgl.Scene):
             # keys/element indice are shape.id
             cscene = plantgl_adaptor.scene_to_cscene(scene)
 
