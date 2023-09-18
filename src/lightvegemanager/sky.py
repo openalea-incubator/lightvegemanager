@@ -15,11 +15,6 @@
 
     Sky file is in RATP format
 """
-from alinea.pyratp.skyvault import Skyvault
-from alinea.caribu.sky_tools import turtle
-from alinea.caribu.sky_tools import GenSky
-from alinea.caribu.sky_tools import GetLight
-
 import math
 import numpy as np
 
@@ -98,6 +93,8 @@ def RATPsky(skytype):
     :return: a sky in RATP format
     :rtype: pyratp.skyvault
     """
+    from alinea.pyratp.skyvault import Skyvault
+
     input_sky = skytype
     output_sky = []
 
@@ -139,6 +136,8 @@ def CARIBUsky(skytype):
 
     # first option turtle of 46 directions
     if input_sky == "turtle46":
+        from alinea.caribu.sky_tools import turtle
+
         turtle_list = turtle.turtle()
         output_sky = [(e, dir) for e, dir in zip(turtle_list[0], turtle_list[2])]
 
@@ -164,6 +163,9 @@ def CARIBUsky(skytype):
         output_sky = ratpformat_to_caribuformat(azmoy, hmoy, pc)
 
     elif isinstance(input_sky, list) and len(input_sky) == 3:
+        from alinea.caribu.sky_tools import GenSky
+        from alinea.caribu.sky_tools import GetLight
+
         #: (Energy, soc/uoc, azimuts, zenits)
         sky_string = GetLight.GetLight(GenSky.GenSky()(1.0, input_sky[2], input_sky[0], input_sky[1]))
 

@@ -33,12 +33,7 @@ import bisect
 import random
 import math
 
-import openalea.plantgl.all as pgl
-from alinea.caribu import plantgl_adaptor
-from openalea.mtg.mtg import MTG
-
-from lightvegemanager.basicgeometry import *
-
+from lightvegemanager.basicgeometry import triangle_area, rescale, translate, zrotate
 
 def triangles_entity(cscene, entity_id, matching_ids):
     """Return a list of triangles belonging to the specy ``entity_id``
@@ -214,6 +209,18 @@ def chain_triangulations(scenes):
 
     :rtype: dict of list, dict of list, bool, int
     """
+    try:
+        import openalea.plantgl.all as pgl
+    except ImportError:
+        pass
+    try:
+        from alinea.caribu import plantgl_adaptor
+    except ImportError:
+        pass
+    try:
+        from openalea.mtg.mtg import MTG
+    except ImportError:
+        pass
 
     # pre-check of scenes input, if it has only one triangle or one list of triangles
     if isatriangle(scenes) :
@@ -426,7 +433,7 @@ def create_heterogeneous_canopy(
         numpy.random.seed(seed)
 
     # Load scene
-    if not isinstance(geometrical_model, pgl.Scene):
+    if not isinstance(geometrical_model, plantgl.Scene):
         initial_scene = geometrical_model.scene(mtg)
     else:
         initial_scene = geometrical_model

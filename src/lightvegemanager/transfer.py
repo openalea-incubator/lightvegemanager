@@ -10,10 +10,8 @@
     l-egume expects the absorb PAR either per plant or locally following a grid of voxels, and the transmitted PAR
     locally following a grid of voxels. Here, we will convert and transform results for CARIBU and RATP to those l-egume format.
 """
-
 import numpy
 import scipy
-
 
 def transfer_ratp_legume(m_lais, energy, ratp_grid, voxels_outputs, nb0, epsilon=1e-8):
     """Transfers LightVegeManager outputs from RATP to l-egume

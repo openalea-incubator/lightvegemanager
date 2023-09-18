@@ -93,7 +93,9 @@
 import pandas
 import itertools
 
-from lightvegemanager.trianglesmesh import *
+from lightvegemanager.basicgeometry import triangle_area
+
+# from lightvegemanager.trianglesmesh import *
 
 def out_ratp_empty_grid(day, hour) :
     """Returns an empty dataframe results for RATP
@@ -228,7 +230,9 @@ def out_ratp_triangles(trimesh,
     :type voxels_outputs: pandas.Dataframe
     :return: output of :func:out_ratp_voxels merged with associated triangles
     :rtype: pandas.Dataframe
-    """                        
+    """   
+    from lightvegemanager.trianglesmesh import globalid_to_elementid
+
     # creation of triangle table
     entity = {}
     for id, match in matching_ele_ent.items():

@@ -39,13 +39,7 @@
     .. seealso:: For more details :ref:`Inputs description <inputs>`
 
 """
-
-from alinea.pyratp import grid
-
-from lightvegemanager.trianglesmesh import *
-from lightvegemanager.voxelsmesh import *
-from lightvegemanager.leafangles import *
-
+import numpy
 
 def extract_grid_origin(parameters, minmax):
     """_summary_
@@ -135,6 +129,9 @@ def build_RATPscene_from_trimesh(
 
     :rtype: pyratp.grid, dict, dict
     """
+    from alinea.pyratp import grid
+    from lightvegemanager.voxelsmesh import fill_ratpgrid_from_trimesh
+
     # computes number of species from matching_ids
     # indices in fortran starts from 1
     numberofentities = max([v[1] for v in matching_ids.values()]) + 1
@@ -145,9 +142,11 @@ def build_RATPscene_from_trimesh(
 
     # computes global distribution
     if distrib_algo == "compute global" or distrib_algo == "compute voxel":
+        from lightvegemanager.leafangles import compute_distrib_globale
         distrib["global"] = compute_distrib_globale(trimesh, matching_ids, parameters["nb angle classes"])
     # read a file with leaf angle distribution
     elif distrib_algo == "file":
+        from lightvegemanager.leafangles import read_distrib_file
         distrib["global"] = read_distrib_file(parameters["angle distrib file"], numberofentities)
 
     ## Initialize Grid ##
@@ -165,6 +164,7 @@ def build_RATPscene_from_trimesh(
         [nx, ny, nz] = parameters["number voxels"]
 
     else:
+        from lightvegemanager.voxelsmesh import compute_grid_size_from_trimesh
         grid_slicing = None
         if "grid slicing" in parameters:
             grid_slicing = parameters["grid slicing"]
@@ -196,6 +196,8 @@ def build_RATPscene_from_trimesh(
     ## Filling the Grid ##
     # tesselation of triangles on the grid
     if parameters["tesselation level"] > 0:
+        from lightvegemanager.voxelsmesh import tesselate_trimesh_on_grid
+
         trimesh = tesselate_trimesh_on_grid(trimesh, ratpgrid, parameters["tesselation level"])
 
     # filling
@@ -203,6 +205,8 @@ def build_RATPscene_from_trimesh(
 
     # leaf anfle distribution locally by voxels
     if distrib_algo == "compute voxel":
+        from lightvegemanager.leafangles import compute_distrib_voxel
+
         distrib["voxel"] = compute_distrib_voxel(
             trimesh, matching_ids, parameters["nb angle classes"], int(ratpgrid.nveg), matching_tri_vox
         )
@@ -262,6 +266,8 @@ def build_RATPscene_empty(parameters, minmax, coordinates, infinite):
 
     :rtype: pyratp.grid, dict
     """
+    from alinea.pyratp import grid
+
     if "number voxels" in parameters:
         [nx, ny, nz] = parameters["number voxels"]
     else:
@@ -336,6 +342,8 @@ def legumescene_to_RATPscene(legumescene, parameters, coordinates, reflected, in
 
     :rtype: pyratp.grid, dict, int
     """
+    from alinea.pyratp import grid
+    from lightvegemanager.voxelsmesh import fill_ratpgrid_from_legumescene
 
     distrib = {"global": legumescene["distrib"]}
 

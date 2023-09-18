@@ -83,31 +83,22 @@
 
     .. seealso:: For more details :ref:`Inputs description <inputs>`
 """
-
-from alinea.pyratp.runratp import runRATP
-from alinea.caribu.CaribuScene import CaribuScene
-
-# import riri5
-
 import time
 import os
 import subprocess
+import numpy
+import math
 
-from lightvegemanager.outputs import *
-from lightvegemanager.trianglesmesh import *
-from lightvegemanager.voxelsmesh import *
-from lightvegemanager.stems import *
-from lightvegemanager.leafangles import *
-from lightvegemanager.tesselator import *
-from lightvegemanager.sun import *
-from lightvegemanager.sky import *
-from lightvegemanager.RATPinputs import *
-from lightvegemanager.CARIBUinputs import *
-from lightvegemanager.buildRATPscene import *
-from lightvegemanager.transfer import *
-from lightvegemanager.VTK import *
-from lightvegemanager.plantGL import *
-from lightvegemanager.defaultvalues import *
+from lightvegemanager.trianglesmesh import (
+    isatriangle,
+    chain_triangulations,
+    apply_transformations,
+    compute_area_max,
+    compute_minmax_coord,
+    compute_trilenght_max,
+)
+from lightvegemanager.VTK import VTKtriangles
+from lightvegemanager.defaultvalues import default_LightVegeManager_inputs
 
 
 class LightVegeManager(object):
@@ -199,8 +190,13 @@ class LightVegeManager(object):
         skytype = self.__environment["sky"]
         if lightmodel == "caribu":
             if self.__environment["diffus"]:
+                from lightvegemanager.sky import CARIBUsky
+
                 self.__sky = CARIBUsky(skytype)
+
         elif lightmodel == "ratp":
+            from lightvegemanager.sky import RATPsky
+
             self.__sky = RATPsky(skytype)
 
     def build(self, geometry={}, global_scene_tesselate_level=0):
@@ -233,6 +229,8 @@ class LightVegeManager(object):
 
         # global tesselation of triangulation
         if self.__matching_ids and global_scene_tesselate_level > 0:
+            from lightvegemanager.tesselator import iterate_triangles
+
             new_trimesh = {}
             for id_ele, triangles in self.__complete_trimesh.items():
                 new_tr_scene = []
@@ -257,6 +255,8 @@ class LightVegeManager(object):
 
             # build sensors
             if "sensors" in self.__lightmodel_parameters and self.__lightmodel_parameters["sensors"][0] == "grid":
+                from lightvegemanager.CARIBUinputs import create_caribu_legume_sensors
+
                 dxyz = self.__lightmodel_parameters["sensors"][1]
                 nxyz = self.__lightmodel_parameters["sensors"][2]
                 orig = self.__lightmodel_parameters["sensors"][3]
@@ -278,8 +278,12 @@ class LightVegeManager(object):
 
             # triangles in the inputs
             if self.__matching_ids:
+                from lightvegemanager.buildRATPscene import build_RATPscene_from_trimesh
+
                 # separates stem elements in a new specy
                 if "stems id" in self.__geometry:
+                    from lightvegemanager.stems import manage_stems_for_ratp
+
                     manage_stems_for_ratp(
                         self.__geometry["stems id"], self.__matching_ids, self.__lightmodel_parameters
                     )
@@ -304,7 +308,7 @@ class LightVegeManager(object):
                     self.__environment["infinite"],
                     self.__geometry["stems id"],
                     len(self.__geometry["scenes"]),
-                    self.__lightmodel_parameters["full grid"]
+                    self.__lightmodel_parameters["full grid"],
                 )
 
                 (
@@ -316,6 +320,8 @@ class LightVegeManager(object):
 
             # creates an empty RATP grid of voxels if geometric inputs are empty
             else:
+                from lightvegemanager.buildRATPscene import build_RATPscene_empty
+
                 arg = (
                     self.__lightmodel_parameters,
                     [self.__pmin, self.__pmax],
@@ -328,6 +334,8 @@ class LightVegeManager(object):
 
             # if there is a grid of voxels in the inputs, we converts it in a RATP grid
             if legume_grid and not self.__matching_ids:
+                from lightvegemanager.buildRATPscene import legumescene_to_RATPscene
+
                 arg = (
                     self.__geometry["scenes"][0],
                     self.__lightmodel_parameters,
@@ -360,6 +368,8 @@ class LightVegeManager(object):
 
         ## RATP ##
         if self.__lightmodel == "ratp":
+            from lightvegemanager.RATPinputs import RATP_vegetation, RATP_meteo
+
             vegetation = RATP_vegetation(
                 self.__lightmodel_parameters, self.__angle_distrib, self.__environment["reflected"]
             )
@@ -375,6 +385,9 @@ class LightVegeManager(object):
             )
 
             if self.__complete_voxmesh.nveg > 0:
+                from alinea.pyratp.runratp import runRATP
+                from lightvegemanager.outputs import out_ratp_voxels
+
                 # Run of RATP
                 start = time.time()
                 res = runRATP.DoIrradiation(self.__complete_voxmesh, vegetation, self.__sky, meteo)
@@ -385,6 +398,8 @@ class LightVegeManager(object):
 
                 # if there are triangulations in the inputs
                 if self.__matching_ids:
+                    from lightvegemanager.outputs import out_ratp_triangles, out_ratp_elements
+
                     arg = (self.__complete_trimesh, self.__matching_ids, self.__matching_tri_vox, self.__voxels_outputs)
                     self.__triangles_outputs = out_ratp_triangles(*arg)
 
@@ -397,18 +412,26 @@ class LightVegeManager(object):
                     self.__elements_outputs = out_ratp_elements(*arg)
 
             else:
+                from lightvegemanager.outputs import out_ratp_empty_grid
+
                 print("--- Empty RATP grid")
                 self.__voxels_outputs = out_ratp_empty_grid(day, hour)
 
         ## CARIBU ##
         elif self.__lightmodel == "caribu":
+            from lightvegemanager.outputs import out_caribu_elements, out_caribu_triangles
+
             sun_up = False
             if self.__environment["direct"]:
                 # computes sun position
                 arg = (day, hour, self.__environment["coordinates"], truesolartime)
                 if self.__lightmodel_parameters["sun algo"] == "ratp":
+                    from lightvegemanager.sun import ratp_sun
+
                     self.__sun = ratp_sun(*arg)
                 elif self.__lightmodel_parameters["sun algo"] == "caribu":
+                    from lightvegemanager.sun import caribu_sun
+
                     self.__sun = caribu_sun(*arg)
                 else:
                     raise ValueError("sun algo not recognize")
@@ -419,6 +442,11 @@ class LightVegeManager(object):
 
             compute = (sun_up and self.__environment["direct"]) or self.__environment["diffus"]
             if compute:
+                from lightvegemanager.CARIBUinputs import Prepare_CARIBU, run_caribu
+                from alinea.caribu.CaribuScene import CaribuScene
+                from alinea.caribu.sky_tools.spitters_horaire import RdRsH
+                from lightvegemanager.outputs import out_caribu_mix, out_caribu_nomix
+
                 # CARIBU preparations
                 arg = (
                     self.__complete_trimesh,
@@ -488,9 +516,7 @@ class LightVegeManager(object):
                     # % de sky dans la valeur d'énergie finale
                     Rg = energy / 2.02  #: Global Radiation (W.m-2)
                     #: Diffuse fraction of the global irradiance
-                    rdrs = spitters_horaire.RdRsH(
-                        Rg=Rg, DOY=day, heureTU=hour, latitude=self.__environment["coordinates"][0]
-                    )
+                    rdrs = RdRsH(Rg=Rg, DOY=day, heureTU=hour, latitude=self.__environment["coordinates"][0])
 
                     raw, aggregated, self.__sensors_outputs, self.__soilenergy = out_caribu_mix(
                         rdrs,
@@ -583,7 +609,7 @@ class LightVegeManager(object):
                 if self.__lightmodel == "caribu":
                     para_dic[s] = d["par Eabs"].values[0] * energy
                     erel_dic[s] = d["par Eabs"].values[0] / self.__energy
-                
+
                 elif self.__lightmodel == "ratp":
                     para_dic[s] = d["PARa"].values[0]
                     erel_dic[s] = d["Intercepted"].values[0]
@@ -601,7 +627,7 @@ class LightVegeManager(object):
                     elif self.__lightmodel == "ratp":
                         para_dic[s] = d["PARa"].values[0]
                         erel_dic[s] = d["Intercepted"].values[0]
-                        
+
         dico_par["PARa"] = para_dic
         dico_par["Erel"] = erel_dic
 
@@ -661,11 +687,16 @@ class LightVegeManager(object):
         epsilon = 1e-14
 
         if self.__lightmodel == "ratp":
+            from lightvegemanager.transfer import transfer_ratp_legume
+
             return transfer_ratp_legume(
                 m_lais, energy, self.__complete_voxmesh, self.__voxels_outputs, self.__nb0, epsilon
             )
 
         elif self.__lightmodel == "caribu":
+            from lightvegemanager.voxelsmesh import reduce_layers_from_trimesh
+            from lightvegemanager.transfer import transfer_caribu_legume
+
             skylayer = reduce_layers_from_trimesh(
                 self.__complete_trimesh,
                 self.__pmax,
@@ -749,8 +780,8 @@ class LightVegeManager(object):
         c_tr = 1
         for id, triangles in self.__complete_trimesh.items():
             for t in triangles:
-                if (self.__geometry["stems id"] is not None) :
-                    if (tuple(self.__matching_ids[id]) in self.__geometry["stems id"]) :
+                if self.__geometry["stems id"] is not None:
+                    if tuple(self.__matching_ids[id]) in self.__geometry["stems id"]:
                         stem = "000"
                 else:
                     stem = "001"
@@ -846,7 +877,7 @@ class LightVegeManager(object):
         for id, triangles in self.__complete_trimesh.items():
             for t in triangles:
                 if self.__geometry["stems id"] is not None:
-                    if tuple(self.__matching_ids[id]) in self.__geometry["stems id"] :
+                    if tuple(self.__matching_ids[id]) in self.__geometry["stems id"]:
                         stem = "000"
                 else:
                     stem = "001"
@@ -903,6 +934,8 @@ class LightVegeManager(object):
         :type printvoxels: bool, optional
         """
         if self.__lightmodel == "ratp" and printvoxels:
+            from lightvegemanager.VTK import ratp_prepareVTK
+
             if i is None:
                 filepath = path + "_voxels_nolight.vtk"
             else:
@@ -942,6 +975,8 @@ class LightVegeManager(object):
             self.VTK_nolight(path, i, printtriangles, printvoxels)
         else:
             if self.__lightmodel == "ratp" and printvoxels:
+                from lightvegemanager.VTK import ratp_prepareVTK
+
                 if i is None:
                     filepath = path + "_voxels_light.vtk"
                 else:
@@ -998,6 +1033,8 @@ class LightVegeManager(object):
         :type i: int, optional
         :raises AttributeError: you need to call :meth:`run` first
         """
+        from lightvegemanager.VTK import VTKline
+
         if not hasattr(self, "_LightVegeManager__sun"):
             raise AttributeError("No results yet, run a light modeling first")
 
@@ -1016,6 +1053,8 @@ class LightVegeManager(object):
         VTKline(start, end, filepath)
 
     def plantGL_sensors(self, light=False):
+        import openalea.plantgl.all as pgl
+
         plantGL_sensors = self.__sensors_plantgl
 
         if light:
@@ -1032,9 +1071,13 @@ class LightVegeManager(object):
         return plantGL_sensors
 
     def plantGL_nolight(self, printtriangles=True, printvoxels=False):
+        import openalea.plantgl.all as pgl
+
         plantgl_voxscene = pgl.Scene()
         plantgl_triscene = pgl.Scene()
         if self.__lightmodel == "ratp" and printvoxels:
+            from lightvegemanager.plantGL import ratpgrid_to_plantGLScene
+
             transparency = 0.0
             if printtriangles:
                 transparency = 0.35
@@ -1043,6 +1086,8 @@ class LightVegeManager(object):
             )
 
         if self.__matching_ids and printtriangles:
+            from lightvegemanager.plantGL import cscene_to_plantGLScene_stems
+
             plantgl_triscene = cscene_to_plantGLScene_stems(
                 self.__complete_trimesh, stems_id=self.__geometry["stems id"], matching_ids=self.__matching_ids
             )
@@ -1054,9 +1099,14 @@ class LightVegeManager(object):
         return plantgl_scene
 
     def plantGL_light(self, printtriangles=True, printvoxels=False):
+        import openalea.plantgl.all as pgl
+
         plantgl_voxscene = pgl.Scene()
         plantgl_triscene = pgl.Scene()
+
         if self.__lightmodel == "ratp" and printvoxels:
+            from lightvegemanager.plantGL import ratpgrid_to_plantGLScene
+
             if printtriangles:
                 transparency = 0.35
                 plantgl_voxscene = ratpgrid_to_plantGLScene(
@@ -1072,6 +1122,8 @@ class LightVegeManager(object):
                 )
 
         if self.__matching_ids and printtriangles:
+            from lightvegemanager.plantGL import cscene_to_plantGLScene_light
+
             if self.__lightmodel == "caribu":
                 column_name = "par Ei"
             elif self.__lightmodel == "ratp":

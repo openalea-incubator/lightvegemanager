@@ -39,11 +39,7 @@
     .. seealso:: inputs.rst
 
 """
-from alinea.caribu.sky_tools import spitters_horaire
-
-from alinea.pyratp.vegetation import Vegetation
-from alinea.pyratp.micrometeo import MicroMeteo
-
+from math import *
 
 def RATP_vegetation(parameters, angle_distrib, reflected):
     """Initialise a RATP Vegetation object from LightVegeManager input datas
@@ -57,6 +53,8 @@ def RATP_vegetation(parameters, angle_distrib, reflected):
     :return: Vegetation types contains clumoing effect ratio, leaf angle distribution and reflectance/transmittance of leaves for each specy
     :rtype: PyRATP.pyratp.vegetation.Vegetation
     """
+    from alinea.pyratp.vegetation import Vegetation
+
     entities_param = []
     if parameters["angle distrib algo"] != "compute voxel":
         for id, mu_ent in enumerate(parameters["mu"]):
@@ -102,16 +100,18 @@ def RATP_meteo(energy, day, hour, coordinates, parunit, truesolartime, direct, d
     :return: input meteorological data at current time step
     :rtype: PyRATP.pyratp.micrometeo.MicroMeteo
     """
+    from alinea.pyratp.micrometeo import MicroMeteo
+
     # RATP expects W.m-2 for input energy
     if parunit == "micromol.m-2.s-1":
         #: Spitters's model estimating for the diffuse:direct ratio
         # coefficient 2.02 : 4.6 (conversion en W.m-2) x 0.439 (PAR -> global)
-        RdRs = spitters_horaire.RdRsH(Rg=energy / 2.02, DOY=day, heureTU=hour, latitude=coordinates[0])
+        RdRs = RdRsH(Rg=energy / 2.02, DOY=day, heureTU=hour, latitude=coordinates[0])
 
         # coeff 4.6 : https://www.researchgate.net/post/Can-I-convert-PAR-photo-active-radiation-value-of-micro-mole-M2-S-to-Solar-radiation-in-Watt-m2
         energy = energy / 4.6  # W.m-2
     else:
-        RdRs = spitters_horaire.RdRsH(Rg=energy / 0.439, DOY=day, heureTU=hour, latitude=coordinates[0])
+        RdRs = RdRsH(Rg=energy / 0.439, DOY=day, heureTU=hour, latitude=coordinates[0])
 
     # PAR et Dif en W.m^-2
     if diffus:
@@ -126,3 +126,31 @@ def RATP_meteo(energy, day, hour, coordinates, parunit, truesolartime, direct, d
         rdif = 0.0
 
     return MicroMeteo.initialise(doy=day, hour=hour, Rglob=energy, Rdif=rdif, truesolartime=truesolartime)
+
+############ G Louarn - adaptation de spitters.c EGC grignon
+def RdRsH(Rg, DOY, heureTU, latitude):
+    """ fraction diffus/Global en fonction du rapport Global(Sgd)/Extraterrestre(Sod)- pas de temps horaire """
+    
+    def DecliSun(DOY):
+        """ Declinaison (rad) du soleil en fonction du jour de l'annee """
+        alpha = 2 * pi * (DOY - 1) / 365
+        return (0.006918 - 0.399912 * cos(alpha) + 0.070257 * sin(alpha))
+    
+    hrad = 2 * pi / 24 * (heureTU - 12)
+    lat = radians(latitude)
+    dec = DecliSun(DOY)
+    costheta = sin(lat) * sin(dec) + cos(lat) * cos(dec) * cos(hrad)
+    Io = 1370 * (1 + 0.033 * cos(2 * pi * (DOY - 4) / 366))#eclairement (w/m2) a la limitte de l'atmosphere dans un plan perpendiculaire aux rayons du soleil, fonction du jour
+    So = Io * costheta #eclairement dans un plan parallele a la surface du sol
+    RsRso = Rg / So
+    R = 0.847 - 1.61 * costheta + 1.04 * costheta * costheta
+    K = (1.47 - R) / 1.66
+    
+    if (RsRso <= 0.22) :
+        return(1)
+    elif (RsRso <= 0.35) :
+        return(1 - 6.4 * (RsRso - 0.22)**2)
+    elif (RsRso <= K) :
+        return(1.47 - 1.66 * RsRso)
+    else:
+        return(R)

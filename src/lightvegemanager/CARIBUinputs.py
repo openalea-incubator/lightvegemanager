@@ -44,11 +44,6 @@
 
 '''
 
-import openalea.plantgl.all as pgl
-
-from lightvegemanager.trianglesmesh import *
-from lightvegemanager.voxelsmesh import *
-
 def Prepare_CARIBU(trimesh, 
                     geometry, 
                     matching_ids, 
@@ -244,6 +239,9 @@ def create_caribu_legume_sensors(dxyz,
 
     :rtype: dict, PlantGL scene, list
     """
+    import openalea.plantgl.all as pgl
+    from lightvegemanager.voxelsmesh import reduce_layers_from_trimesh
+
     # if number of filled layers is less than number of expected layers (nxyz[2])
     skylayer = reduce_layers_from_trimesh(trimesh, 
                                             pmax,

@@ -8,11 +8,7 @@
 
     Tesselation operates as a recursive function until a certain level is reached
 """
-
-from alinea.pyratp import grid
-
 from lightvegemanager.basicgeometry import middle
-
 
 ## NOT USED, PyRATP.pyratp.grid.grid_index is preferred
 def whichvoxel(p, mygrid):
@@ -43,7 +39,6 @@ def whichvoxel(p, mygrid):
         jz = mygrid.njz - 1
     vox.append(jz)
     return vox
-
 
 ## NOT USED, using impleted python functions is faster
 def samevoxel(voxels):
@@ -78,6 +73,8 @@ def tesselate(mygrid, triangle):
         - else if the triangle is between several voxels, it cuts out triangle in four smaller triangles from its vertices and barycenter
     :rtype: list of triangle
     """
+    from alinea.pyratp import grid
+
     # Get voxels indices where the triangle vertices are located
     wh = []
     for i in range(3):

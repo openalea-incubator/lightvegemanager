@@ -9,11 +9,6 @@
 '''
 import math
 
-from alinea.pyratp import pyratp
-from alinea.caribu.sky_tools import Gensun
-from alinea.caribu.sky_tools import GetLightsSun
-from alinea.caribu.sky_tools import Sun
-
 def ratp_sun(day, hour, coordinates, truesolartime) :  
     """Converts output RATP sundirection routine to CARIBU light format
 
@@ -27,7 +22,9 @@ def ratp_sun(day, hour, coordinates, truesolartime) :
     :type truesolartime: bool
     :return: sun direction in a tuple with cartesian coordinates (x,y,z), vector is oriented from sky to ground
     :rtype: tuple
-    """            
+    """         
+    from alinea.pyratp import pyratp
+
      # ghost variables (not used)
     az, ele = 5.,9.
     pyratp.shortwave_balance.sundirection(ele, az, 
@@ -75,6 +72,8 @@ def caribu_sun(day, hour, coordinates, truesolartime) :
     :return: sun direction in a tuple with cartesian coordinates (x,y,z), vector is oriented from sky to ground
     :rtype: tuple
     """    
+    from alinea.caribu.sky_tools import Sun
+
     # if hour is local, we compute the solar hour
     # algorithm from RATP, sundirection: shortwave_balance.f90
     if not truesolartime:
@@ -112,7 +111,10 @@ def print_sun(day, hour, coordinates, truesolartime) :
     :type coordinates: list
     :param truesolartime: activates true solar time or local time to compute sun position
     :type truesolartime: bool
-    """    
+    """  
+    from alinea.pyratp import pyratp
+    from alinea.caribu.sky_tools import Sun
+
     print("---\t SUN COORDONATES\t ---")
     print("--- Convention x+ = North, vector from sky to floor")
     print("--- azimut: south clockwise E = -90° W = 90°\t zenith: \

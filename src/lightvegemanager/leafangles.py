@@ -9,12 +9,10 @@
     The sum of all the list entries must equal 1.
 
 """
-
 import numpy
 import bisect
 
-from lightvegemanager.trianglesmesh import *
-
+from lightvegemanager.basicgeometry import triangle_area, triangle_elevation
 
 def read_distrib_file(path, numberofentities):
     """Reads global leaf angle distribution in a file
@@ -63,6 +61,8 @@ def compute_distrib_globale(trimesh, matching_ids, numberofclasses):
     :return: a leaf angle distribution for each specy. Each distribution is a length numberofclasses the distribution is computed on all trimesh
     :rtype: list of list
     """
+    from lightvegemanager.trianglesmesh import triangles_entity
+
     # dimensions [specy][angle class]
     distrib = []
 
@@ -110,6 +110,8 @@ def compute_distrib_voxel(trimesh, matching_ids, numberofclasses, numberofvoxels
         i.e. it returns for each voxel a leaf angle distribution for each specy
     :rtype: numpy.array
     """
+    from lightvegemanager.trianglesmesh import globalid_to_elementid, globalid_to_triangle
+
     angles = list(numpy.linspace(90 / numberofclasses, 90, numberofclasses))
 
     numberofentities = max([v[1] for v in matching_ids.values()]) + 1

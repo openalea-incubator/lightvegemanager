@@ -5,9 +5,9 @@
     visualisation plantGL
 '''
 import itertools
-import openalea.plantgl.all as pgl
-from alinea.pyratp import grid
 import numpy
+
+import openalea.plantgl.all as pgl
 
 def cscene_to_plantGLScene_stems(cscene, stems_id=None, matching_ids={}):
     pglscene = pgl.Scene()

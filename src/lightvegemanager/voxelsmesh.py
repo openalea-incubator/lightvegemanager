@@ -7,12 +7,7 @@
 
 import itertools
 
-from alinea.pyratp import grid
-
-from lightvegemanager.basicgeometry import *
-from lightvegemanager.tesselator import *
-from lightvegemanager.trianglesmesh import *
-
+from lightvegemanager.basicgeometry import triangle_barycenter, triangle_area
 
 def compute_grid_size_from_trimesh(pmin, pmax, dv, grid_slicing=None):
     """Dynamically compute number of voxels for each axis in the grid
@@ -73,6 +68,8 @@ def tesselate_trimesh_on_grid(trimesh, ratpgrid, levelmax):
     :return: a copy of trimesh with subdivided triangles
     :rtype: dict of list
     """
+    from lightvegemanager.tesselator import iterate_trianglesingrid
+
     new_trimesh = {}
     for id_ele, triangles in trimesh.items():
         new_tr_scene = []
@@ -117,6 +114,8 @@ def fill_ratpgrid_from_trimesh(trimesh, matching_ids, ratpgrid, stems_id=None, n
     :return: copy of ``ratpgrid`` with leaf area density values from barycenters and areas of the input triangles
     :rtype: pyratp.grid
     """
+    from alinea.pyratp import grid
+
     entity, barx, bary, barz, a, n = [], [], [], [], [], []
     for id, ts in trimesh.items():
         for t in ts:
@@ -244,6 +243,8 @@ def reduce_layers_from_trimesh(trimesh, pmax, dxyz, nxyz, matching_ids, ids=None
     :return: number of empty layers between top of the canopy (represented by ``trimesh``) and ``nxyz[2]``
     :rtype: int
     """
+    from lightvegemanager.trianglesmesh import triangles_entity
+
     # reduction si number of filled layers < expected number of layers
     if ids is None:
         skylayer = (pmax[2]) // dxyz[2]

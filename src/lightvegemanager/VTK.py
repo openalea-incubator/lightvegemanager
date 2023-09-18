@@ -5,11 +5,8 @@
     Writes VTK files from LightVegeManager geometry and lighting data. Used for visualisation
     We recommend the software Paraview for visualisation
 '''
-
 import itertools
 import numpy
-
-from alinea.caribu import plantgl_adaptor
 
 def VTKtriangles(trimesh, var, varname, filename):
     """Writes VTK files from a triangulation mesh. Possibility to associate physical values to the
@@ -283,7 +280,8 @@ def PlantGL_to_VTK(scenes, path, i=0, in_unit="m", out_unit="m"):
     :type out_unit: str, optional
     :raises ValueError: in_unit or out_unit not a valid entry upon the listed measure units
     """  
-
+    from alinea.caribu import plantgl_adaptor
+    
     # rescale the scenes 
     units = {'mm': 0.001, 
                 'cm': 0.01, 
