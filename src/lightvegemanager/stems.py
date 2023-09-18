@@ -38,6 +38,9 @@ def manage_stems_for_ratp(stems_id, matching_ids, ratp_parameters) :
     :raises ValueError: if too many stems elements are identified comparing to the total number of elements
     cumulated over all species
     """    
+    if stems_id is None:
+        return
+    
     if len(stems_id) > len(matching_ids) :
         raise ValueError("Too many stems elements ")
     

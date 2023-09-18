@@ -177,7 +177,7 @@ def CARIBU_opticals(matching_ids, parameters, stems_id=None) :
         for band, coef in parameters["caribu opt"].items() :
             # id is element, stems_id is a list of (element id, specy id)
             # if stem then no transmittance, the object is opaque
-            if (val[0], val[1]) in stems_id:
+            if stems_id is not None and (val[0], val[1]) in stems_id:
                 #: (reflectance,) of the stems ou organe opaque
                 opt[band][id] = (coef[0],)  
             else:
@@ -263,16 +263,16 @@ def create_caribu_legume_sensors(dxyz,
     # orientation changes depending if the scene is infinite or not
     if infinite : 
         # square looks upward
-        points = [(0, 0, 0), 
-                    (dxyz[0], 0, 0), 
-                    (dxyz[0], dxyz[1], 0), 
-                    (0, dxyz[1], 0)]
+        points = [orig, 
+                    (dxyz[0], orig[1],  orig[2]), 
+                    (dxyz[0], dxyz[1],  orig[2]), 
+                    (orig[0], dxyz[1],  orig[2])]
     else :
         # square looks downwards
-        points = [(0, 0, 0),  
-                    (0, dxyz[1], 0), 
-                    (dxyz[0], dxyz[1], 0), 
-                    (dxyz[0], 0, 0)]  
+        points = [orig,  
+                    (orig[0], dxyz[1],  orig[2]), 
+                    (dxyz[0], dxyz[1],  orig[2]), 
+                    (dxyz[0], orig[1],  orig[2])]  
     normals = [(0, 0, 1) for i in range(4)]
     indices = [(0, 1, 2, 3)]
 

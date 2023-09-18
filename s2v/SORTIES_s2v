@@ -1,0 +1,24 @@
+SORTIES_s2v
+	
+	** s2v.log
+* informations sur le déroulement du programme
+* statistiques globales pour chaque espèce de la scène : 
+	- LA totale par espèce 
+	- LA totale 
+	- LAI
+	- distribution zenith globale de l'espèce 
+
+	** s2v.can
+copie le triangle en entrée mais avec un attribut en plus : couche en z max auquel appartient le triangle
+
+	** s2v.area
+	- chaque ligne : "id du triangle" "couche max en z" "aire du triangle"
+	
+	** out.dang
+fichier pour SAIL
+	- ligne 1 : lai globale pour l'espèce 1
+	- ligne 2 : distrib zenith globale pour l'espèce 1
+
+	** leafarea
+fichier pour SAIL
+	- chaque ligne : 0 idz "LAI par classe d'inclinaisons dans la couche" 0 0 "LAD sur l'épaisseur"

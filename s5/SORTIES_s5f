@@ -1,0 +1,18 @@
+SORTIE_s5f
+
+	** fort.60
+* dimensions xy de la maquette
+* stat par espèce :
+	- LA totale
+	- lai
+	- distribution en zenith globale
+	- distribution en azimuth globale
+* stat par voxel
+	- nespèce ix iy iz LAD
+	- distribution zenith
+	- distribution azimuth
+
+	** leafarea
+pour chaque espèce
+	pour chaque voxel
+		ix iy iz nespèce LAD distribution_zenith distribution_azimuth

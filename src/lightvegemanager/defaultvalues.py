@@ -30,6 +30,7 @@ def default_LightVegeManager_inputs():
     default_ratp_parameters["tesselation level"] = 0
     default_ratp_parameters["angle distrib algo"] = "compute global"
     default_ratp_parameters["nb angle classes"] = 9
+    default_ratp_parameters["full grid"] = False
 
     default_caribu_parameters = {}
     default_caribu_parameters["caribu opt"] = {"par": (0.10, 0.05)}

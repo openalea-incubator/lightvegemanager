@@ -34,7 +34,7 @@ def simulation(geom, hour, situation, direct, diffus, ratp_mu, dv, folderout):
     ratp_parameters["soil reflectance"] = [0., 0.]
     ratp_parameters["reflectance coefficients"] = [[0.1, 0.05]]
     ratp_parameters["mu"] = ratp_mu
-    ratp_parameters["tesselation level"] = 7
+    ratp_parameters["tesselation level"] = 5
     ratp_parameters["angle distrib algo"] = "compute global"
     ratp_parameters["nb angle classes"] = 45
 
@@ -53,7 +53,7 @@ def simulation(geom, hour, situation, direct, diffus, ratp_mu, dv, folderout):
 
     # VTK de la scène avec x+ = North
     path_out = folderout+"caribu_"+str(day)+"_"+str(hour)+"h"+"_"+situation
-    lghtcaribu.VTK_light(path_out)
+    # lghtcaribu.VTK_light(path_out)
 
     #  RATP
     print("\n\t R A T P")
@@ -66,11 +66,11 @@ def simulation(geom, hour, situation, direct, diffus, ratp_mu, dv, folderout):
 
     # VTK de la scène avec x+ = North
     path_out = folderout+"ratp_"+str(day)+"_"+str(hour)+"h"+"_"+situation
-    lghtratp.VTK_light(path_out)
+    # lghtratp.VTK_light(path_out)
 
 
     # ligne du soleil (rotation de 180° autour de z pour se mettre dans l'espace x+ = North)
-    lghtcaribu.VTK_sun(folderout+"sun_day"+str(day)+"_"+str(hour))
+    # lghtcaribu.VTK_sun(folderout+"sun_day"+str(day)+"_"+str(hour))
     print("\n")
 
 if __name__ == "__main__":

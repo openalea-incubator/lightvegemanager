@@ -30,6 +30,8 @@ import itertools
 import numpy
 import pandas
 import bisect
+import random
+import math
 
 import openalea.plantgl.all as pgl
 from alinea.caribu import plantgl_adaptor
@@ -537,3 +539,32 @@ def create_heterogeneous_canopy(
         position_number += 1
 
     return duplicated_scene, domain
+
+def random_triangle_generator(worldsize=(0,100), 
+                                spheresize=(1.,1.), 
+                                sigma_angle=(math.pi, math.pi), 
+                                theta_angle=(math.pi/4, math.pi/5)):
+    """Generate a random based on parameters
+    
+    Vertices are generated on a surface of a sphere
+
+    Args:
+        worldsize (tuple, optional): min and max where sphere center can be generated. Defaults to (0,100).
+        spheresize (tuple, optional): mean and std of the sphere size. Defaults to (1.,1.).
+        sigma_angle (tuple, optional): mean and std of the spherical angle on xy plane. Defaults to (math.pi, math.pi).
+        theta_angle (tuple, optional): mean and std of the zenithal angle. Defaults to (math.pi/4, math.pi/5).
+
+    Returns:
+        list of 3 3-tuples: triangles defined by 3 xyz points
+    """    
+    r = random.gauss(spheresize[0], spheresize[1])
+    x0, y0, z0 = [random.uniform(worldsize[0], worldsize[1]) for i in range(3)]
+    triangle = []
+    for i in range(3) :
+        s = random.gauss(sigma_angle[0], sigma_angle[1])
+        t = random.gauss(theta_angle[0], theta_angle[1])
+        x = x0 + r * math.cos(s) * math.sin(t)
+        y = y0 + r * math.sin(s) * math.sin(t)
+        z = z0 + r * math.cos(t)
+        triangle.append((x,y,z))
+    return triangle

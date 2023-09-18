@@ -83,6 +83,7 @@ def build_RATPscene_from_trimesh(
     infinite,
     stems_id=None,
     nb_input_scenes=0,
+    fullgrid=False
 ):
     """Build a RATP grid from a triangles mesh.
 
@@ -152,7 +153,7 @@ def build_RATPscene_from_trimesh(
     ## Initialize Grid ##
     # voxels size
     if parameters["voxel size"] == "dynamic":
-        dv = [5 * triLmax for i in range(3)]
+        dv = [3 * triLmax for i in range(3)]
     else:
         dv = parameters["voxel size"]
 
@@ -206,7 +207,40 @@ def build_RATPscene_from_trimesh(
             trimesh, matching_ids, parameters["nb angle classes"], int(ratpgrid.nveg), matching_tri_vox
         )
 
-    return ratpgrid, matching_tri_vox, distrib
+    # if you want to activate all voxels in the grid
+    if fullgrid:
+        dvolume = ratpgrid.dx * ratpgrid.dy * ratpgrid.dz[0]
+        k = ratpgrid.nveg
+        n_vox_per_nent = []
+        for ne in range(ratpgrid.nent):
+            k = ratpgrid.nveg
+            for ix in range(ratpgrid.njx):
+                for iy in range(ratpgrid.njy):
+                    for iz in range(ratpgrid.njz):                        
+                        if ratpgrid.kxyz[ix, iy, iz] == 0 :
+                            S_voxel = 1e-14
+
+                            # ajouter 1 pour utilisation f90
+                            ratpgrid.kxyz[ix, iy, iz] = k + 1
+                            ratpgrid.numx[k] = ix + 1
+                            ratpgrid.numy[k] = iy + 1
+                            ratpgrid.numz[k] = iz + 1
+                            ratpgrid.nume[ne, k] = ne + 1
+                            ratpgrid.nje[k] = max(ne + 1, ratpgrid.nje[k])
+                            ratpgrid.nemax = max(ratpgrid.nemax, ratpgrid.nje[k])
+
+                            ratpgrid.leafareadensity[ne, k] += S_voxel / dvolume
+                            ratpgrid.s_vt_vx[ne, k] += S_voxel
+                            ratpgrid.s_vx[k] += S_voxel
+                            ratpgrid.s_vt[ne] += S_voxel
+                            ratpgrid.s_canopy += S_voxel
+
+                            k += 1
+            n_vox_per_nent.append(k)
+        ratpgrid.nveg = max(n_vox_per_nent)
+
+
+    return ratpgrid, matching_tri_vox, distrib, trimesh
 
 
 def build_RATPscene_empty(parameters, minmax, coordinates, infinite):

@@ -7,6 +7,7 @@ from lightvegemanager.buildRATPscene import (
 import pytest
 import numpy
 import os
+import itertools
 
 
 parameters_empty = {}
@@ -135,7 +136,7 @@ parameters_4 = {
 }
 more_inputs_4 = (None, 2)
 expected_4 = {}
-expected_4["nxyz"] = (2, 1, 1)
+expected_4["nxyz"] = (3, 1, 1)
 expected_4["nveg"] = 2
 expected_4["nent"] = 2
 expected_4["area"] = 0.47874045
@@ -179,7 +180,7 @@ def test_build_RATPscene_from_trimesh(test_input_1, test_input_2, test_input_3, 
     infinite = True
     triLmax = 0.5
 
-    ratpgrid, matching_tri_vox, distrib = build_RATPscene_from_trimesh(
+    ratpgrid, matching_tri_vox, distrib, trimesh = build_RATPscene_from_trimesh(
         triangles,
         minmax,
         triLmax,
@@ -190,6 +191,7 @@ def test_build_RATPscene_from_trimesh(test_input_1, test_input_2, test_input_3, 
         infinite,
         stems_id=test_input_3[0],
         nb_input_scenes=test_input_3[1],
+        fullgrid=False
     )
 
     # vérifie nb vox créé
@@ -218,6 +220,7 @@ def test_build_RATPscene_from_trimesh(test_input_1, test_input_2, test_input_3, 
 
     # vérifie si la tesselation a eu lieu
     assert len(matching_tri_vox) == expected["nb triangles"]
+    assert len(list(itertools.chain(*[v for v in trimesh.values()]))) == expected["nb triangles"]
 
     # prise en charge du réfléchi
     numpy.testing.assert_array_equal(ratpgrid.rs, expected["rs"])

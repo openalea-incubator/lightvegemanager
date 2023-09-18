@@ -214,8 +214,8 @@ class LightVegeManager(object):
         """
         # pre-check of scenes input, if it has only one triangle or one list of triangles
         if isatriangle(geometry) or all(isatriangle(s) for s in geometry):
-            geometry = {"scenes" : geometry}
- 
+            geometry = {"scenes": geometry}
+
         self.__geometry = geometry
 
         # First process of the scenes list, it gathers all triangulations
@@ -252,11 +252,27 @@ class LightVegeManager(object):
                     "Conversion from voxels grid to triangles \
                                 is not possible yet"
                 )
+            if "stems id" not in self.__geometry:
+                self.__geometry["stems id"] = None
+
+            # build sensors
+            if "sensors" in self.__lightmodel_parameters and self.__lightmodel_parameters["sensors"][0] == "grid":
+                dxyz = self.__lightmodel_parameters["sensors"][1]
+                nxyz = self.__lightmodel_parameters["sensors"][2]
+                orig = self.__lightmodel_parameters["sensors"][3]
+                arg = (dxyz, nxyz, orig, self.__pmax, self.__complete_trimesh, self.__matching_ids, None, True)
+                sensors_caribu, sensors_plantgl, Pmax_capt = create_caribu_legume_sensors(*arg)
+
+                self.__sensors_plantgl = sensors_plantgl
 
         # Builds voxels grid from input geometry
         elif self.__lightmodel == "ratp":
             # number of input species
             numberofentities = 0
+
+            # initialize number of empty layers
+            self.__nb0 = 0
+
             if legume_grid:
                 numberofentities = self.__geometry["scenes"][id_legume_scene]["LA"].shape[0]
 
@@ -288,11 +304,15 @@ class LightVegeManager(object):
                     self.__environment["infinite"],
                     self.__geometry["stems id"],
                     len(self.__geometry["scenes"]),
+                    self.__lightmodel_parameters["full grid"]
                 )
 
-                self.__complete_voxmesh, self.__matching_tri_vox, self.__angle_distrib = build_RATPscene_from_trimesh(
-                    *arg
-                )
+                (
+                    self.__complete_voxmesh,
+                    self.__matching_tri_vox,
+                    self.__angle_distrib,
+                    self.__complete_trimesh,
+                ) = build_RATPscene_from_trimesh(*arg)
 
             # creates an empty RATP grid of voxels if geometric inputs are empty
             else:
@@ -356,11 +376,10 @@ class LightVegeManager(object):
 
             if self.__complete_voxmesh.nveg > 0:
                 # Run of RATP
-                print("debut ratp")
                 start = time.time()
                 res = runRATP.DoIrradiation(self.__complete_voxmesh, vegetation, self.__sky, meteo)
                 self.__time_runmodel = time.time() - start
-                print("fin ratp")
+
                 # output management
                 self.__voxels_outputs = out_ratp_voxels(self.__complete_voxmesh, res, parunit)
 
@@ -560,16 +579,29 @@ class LightVegeManager(object):
         if id is None:
             for s in self.__elements_outputs["Organ"]:
                 d = self.__elements_outputs[self.__elements_outputs.Organ == s]
-                para_dic[s] = d["par Eabs"].values[0] * energy
-                erel_dic[s] = d["par Eabs"].values[0] / self.__energy
+
+                if self.__lightmodel == "caribu":
+                    para_dic[s] = d["par Eabs"].values[0] * energy
+                    erel_dic[s] = d["par Eabs"].values[0] / self.__energy
+                
+                elif self.__lightmodel == "ratp":
+                    para_dic[s] = d["PARa"].values[0]
+                    erel_dic[s] = d["Intercepted"].values[0]
 
         elif type(id) == list or type(id) == tuple:
             for esp in id:
                 df_outputs_esp = self.__elements_outputs[self.__elements_outputs.VegetationType == esp]
                 for s in df_outputs_esp["Organ"]:
                     d = df_outputs_esp[df_outputs_esp.Organ == s]
-                    para_dic[s] = d["par Eabs"].values[0] * energy
-                    erel_dic[s] = d["par Eabs"].values[0] / self.__energy
+
+                    if self.__lightmodel == "caribu":
+                        para_dic[s] = d["par Eabs"].values[0] * energy
+                        erel_dic[s] = d["par Eabs"].values[0] / self.__energy
+
+                    elif self.__lightmodel == "ratp":
+                        para_dic[s] = d["PARa"].values[0]
+                        erel_dic[s] = d["Intercepted"].values[0]
+                        
         dico_par["PARa"] = para_dic
         dico_par["Erel"] = erel_dic
 
@@ -646,6 +678,7 @@ class LightVegeManager(object):
             return transfer_caribu_legume(
                 energy,
                 skylayer,
+                id,
                 self.__elements_outputs,
                 self.__sensors_outputs,
                 self.__lightmodel_parameters["sensors"][1],
@@ -706,7 +739,7 @@ class LightVegeManager(object):
         >>> testofs5.s5() # run of s5, creates input and output files
 
         """
-        currentfolder = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+        currentfolder = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
         s5folder = os.path.join(currentfolder, os.path.normpath("s5"))
         fort51 = os.path.join(s5folder, os.path.normpath("fort.51"))
         s5par = os.path.join(s5folder, os.path.normpath("s5.par"))
@@ -716,8 +749,9 @@ class LightVegeManager(object):
         c_tr = 1
         for id, triangles in self.__complete_trimesh.items():
             for t in triangles:
-                if tuple(self.__matching_ids[id]) in self.__geometry["stems id"]:
-                    stem = "000"
+                if (self.__geometry["stems id"] is not None) :
+                    if (tuple(self.__matching_ids[id]) in self.__geometry["stems id"]) :
+                        stem = "000"
                 else:
                     stem = "001"
                 label = (
@@ -801,7 +835,7 @@ class LightVegeManager(object):
         >>> testofs2v.s2v() # run of s2v, creates input and output files
 
         """
-        currentfolder = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+        currentfolder = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
         s2vfolder = os.path.join(currentfolder, os.path.normpath("s2v"))
         fort51 = os.path.join(s2vfolder, os.path.normpath("fort.51"))
         s2vpar = os.path.join(s2vfolder, os.path.normpath("s2v.par"))
@@ -811,8 +845,9 @@ class LightVegeManager(object):
         c_tr = 1
         for id, triangles in self.__complete_trimesh.items():
             for t in triangles:
-                if tuple(self.__matching_ids[id]) in self.__geometry["stems id"]:
-                    stem = "000"
+                if self.__geometry["stems id"] is not None:
+                    if tuple(self.__matching_ids[id]) in self.__geometry["stems id"] :
+                        stem = "000"
                 else:
                     stem = "001"
                 label = (
@@ -849,8 +884,8 @@ class LightVegeManager(object):
 
         f.close()
 
-        # exécution de s5 dans un sous process
-        subprocess.call(".\s2v.exe", shell=True, cwd=s2vfolder)
+        # exécution de s2v dans un sous process
+        subprocess.call(".\s2v++.exe", shell=True, cwd=s2vfolder)
 
         print("--- Fin de s2v.cpp")
 
@@ -980,6 +1015,78 @@ class LightVegeManager(object):
 
         VTKline(start, end, filepath)
 
+    def plantGL_sensors(self, light=False):
+        plantGL_sensors = self.__sensors_plantgl
+
+        if light:
+            var = [v for v in self.__sensors_outputs["par"].values()]
+
+            plt_cmap = "seismic"
+            minvalue = numpy.min(var)
+            maxvalue = numpy.max(var)
+            colormap = pgl.PglMaterialMap(minvalue, maxvalue, plt_cmap)
+
+            for i, s in enumerate(plantGL_sensors):
+                s.appearance = colormap(var[i])
+
+        return plantGL_sensors
+
+    def plantGL_nolight(self, printtriangles=True, printvoxels=False):
+        plantgl_voxscene = pgl.Scene()
+        plantgl_triscene = pgl.Scene()
+        if self.__lightmodel == "ratp" and printvoxels:
+            transparency = 0.0
+            if printtriangles:
+                transparency = 0.35
+            plantgl_voxscene = ratpgrid_to_plantGLScene(
+                self.__complete_voxmesh, transparency=transparency, plt_cmap="Greens"
+            )
+
+        if self.__matching_ids and printtriangles:
+            plantgl_triscene = cscene_to_plantGLScene_stems(
+                self.__complete_trimesh, stems_id=self.__geometry["stems id"], matching_ids=self.__matching_ids
+            )
+        plantgl_scene = pgl.Scene()
+        for s in plantgl_triscene:
+            plantgl_scene.add(s)
+        for s in plantgl_voxscene:
+            plantgl_scene.add(s)
+        return plantgl_scene
+
+    def plantGL_light(self, printtriangles=True, printvoxels=False):
+        plantgl_voxscene = pgl.Scene()
+        plantgl_triscene = pgl.Scene()
+        if self.__lightmodel == "ratp" and printvoxels:
+            if printtriangles:
+                transparency = 0.35
+                plantgl_voxscene = ratpgrid_to_plantGLScene(
+                    self.__complete_voxmesh, transparency=transparency, plt_cmap="Greens"
+                )
+            else:
+                transparency = 0.0
+                plantgl_voxscene = ratpgrid_to_plantGLScene(
+                    self.__complete_voxmesh,
+                    outputs=self.__voxels_outputs,
+                    plt_cmap="seismic",
+                    transparency=transparency,
+                )
+
+        if self.__matching_ids and printtriangles:
+            if self.__lightmodel == "caribu":
+                column_name = "par Ei"
+            elif self.__lightmodel == "ratp":
+                column_name = "PARa"
+            plantgl_triscene = cscene_to_plantGLScene_light(
+                self.__complete_trimesh, outputs=self.__triangles_outputs, column_name=column_name
+            )
+
+        plantgl_scene = pgl.Scene()
+        for s in plantgl_triscene:
+            plantgl_scene.add(s)
+        for s in plantgl_voxscene:
+            plantgl_scene.add(s)
+        return plantgl_scene
+
     ## GETTERS ##
     @property
     def legume_transmitted_light(self):
@@ -1102,3 +1209,10 @@ class LightVegeManager(object):
             return self.__time_runmodel
         except AttributeError:
             return 0.0
+
+    @property
+    def leafangledistribution(self):
+        try:
+            return self.__angle_distrib
+        except AttributeError:
+            return {}
