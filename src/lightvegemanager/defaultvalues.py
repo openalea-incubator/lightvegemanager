@@ -38,4 +38,7 @@ def default_LightVegeManager_inputs():
     default_caribu_parameters["soil mesh"] = -1
     default_caribu_parameters["debug"] = False
 
-    return default_environnement, default_ratp_parameters, default_caribu_parameters
+    default_riri5_parameters = {}
+    default_riri5_parameters["voxel size"] = [1., 1., 1.]
+
+    return default_environnement, default_ratp_parameters, default_caribu_parameters, default_riri5_parameters

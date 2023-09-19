@@ -161,11 +161,11 @@ class LightVegeManager(object):
     ## MAIN METHODS ##
     def __init__(self, environment={}, lightmodel="", lightmodel_parameters={}, main_unit="m"):
         # gets default variables from LightVegeManager_defaultvalues.py
-        default_environnement, default_ratp_parameters, default_caribu_parameters = default_LightVegeManager_inputs()
+        default_environnement, default_ratp_parameters, default_caribu_parameters, default_riri5_parameters = default_LightVegeManager_inputs()
 
         # check if choosen light model is known by the tool
-        if lightmodel != "ratp" and lightmodel != "caribu":
-            raise ValueError("Unknown lightmodel: can be either 'ratp' or 'caribu' ")
+        if lightmodel != "ratp" and lightmodel != "caribu" and lightmodel != "riri5":
+            raise ValueError("Unknown lightmodel: can be either 'ratp' or 'caribu' or 'riri5' ")
 
         # save inputs in the instance
         self.__environment = environment
@@ -180,8 +180,11 @@ class LightVegeManager(object):
 
         if lightmodel == "caribu":
             lghtdict = default_caribu_parameters
-        elif lightmodel == "ratp":
+        elif lightmodel == "ratp" or lightmodel == "riri5":
             lghtdict = default_ratp_parameters
+            if lightmodel == "riri5":
+                lghtdict.update(default_riri5_parameters)
+
         for key, value in lghtdict.items():
             if key not in self.__lightmodel_parameters:
                 self.__lightmodel_parameters[key] = value
@@ -198,6 +201,13 @@ class LightVegeManager(object):
             from lightvegemanager.sky import RATPsky
 
             self.__sky = RATPsky(skytype)
+
+        elif lightmodel == "riri5" :
+            if skytype == "turtle46":
+                self.__sky = ["soc", "VXpXmYpYm"]   
+            else :
+                self.__sky = skytype
+
 
     def build(self, geometry={}, global_scene_tesselate_level=0):
         """Builds a mesh of the simulation scene in the right light model format
@@ -266,7 +276,7 @@ class LightVegeManager(object):
                 self.__sensors_plantgl = sensors_plantgl
 
         # Builds voxels grid from input geometry
-        elif self.__lightmodel == "ratp":
+        elif self.__lightmodel == "ratp" or self.__lightmodel == "riri5":
             # number of input species
             numberofentities = 0
 
@@ -274,7 +284,7 @@ class LightVegeManager(object):
             self.__nb0 = 0
 
             if legume_grid:
-                numberofentities = self.__geometry["scenes"][id_legume_scene]["LA"].shape[0]
+                numberofentities = max([self.__geometry["scenes"][i]["LA"].shape[0] for i in id_legume_scene])
 
             # triangles in the inputs
             if self.__matching_ids:
@@ -333,11 +343,11 @@ class LightVegeManager(object):
                 self.__matching_tri_vox = {}
 
             # if there is a grid of voxels in the inputs, we converts it in a RATP grid
-            if legume_grid and not self.__matching_ids:
+            if legume_grid and not self.__matching_ids and self.__lightmodel == "ratp" :
                 from lightvegemanager.buildRATPscene import legumescene_to_RATPscene
 
                 arg = (
-                    self.__geometry["scenes"][0],
+                    self.__geometry["scenes"][id_legume_scene[0]],
                     self.__lightmodel_parameters,
                     self.__environment["coordinates"],
                     self.__environment["reflected"],
@@ -345,6 +355,18 @@ class LightVegeManager(object):
                 )
 
                 self.__complete_voxmesh, self.__angle_distrib, self.__nb0 = legumescene_to_RATPscene(*arg)
+
+        if self.__lightmodel == "riri5":
+            dS = self.__lightmodel_parameters["voxel size"][0] * self.__lightmodel_parameters["voxel size"][1]
+            if legume_grid:
+                self.__LA_riri5 = self.__geometry["scenes"][id_legume_scene[0]]["LA"] / dS
+                self.__distrib_riri5 = self.__geometry["scenes"][id_legume_scene[0]]["distrib"]
+            if not legume_grid :
+                from lightvegemanager.RiRi5_inputs import ratpgrid_to_riri5
+                
+                self.__LA_riri5 = ratpgrid_to_riri5(self.__complete_voxmesh)
+                self.__distrib_riri5 = self.__angle_distrib["global"]
+
 
     def run(self, energy=0.0, day=0, hour=0, parunit="micromol.m-2.s-1", truesolartime=False, id_sensors=None):
         """Calls the light model and formats lighting results
@@ -562,20 +584,22 @@ class LightVegeManager(object):
                 VTKtriangles(sensors_caribu, [var], ["intercepted"], sensor_path)
 
         ## RiRi (l-egume) ##
-        elif self.__lightmodel == "riri":
+        elif self.__lightmodel == "riri5":
+            from riri5.RIRI5 import calc_extinc_allray_multi_reduced
+
             dS = self.__lightmodel_parameters["voxel size"][0] * self.__lightmodel_parameters["voxel size"][1]
 
             tag_light_inputs = [
-                self.__geometry["scenes"][0]["LA"] / dS,
-                self.__geometry["scenes"][0]["triplets"],
-                self.__geometry["scenes"][0]["distrib"],
+                self.__LA_riri5,
+                None,
+                self.__distrib_riri5,
                 energy * dS,
             ]
 
             # mise a jour de res_trans, res_abs_i, res_rfr, ls_epsi
             start = time.time()
-            self.__legume_transmitted_light, self.__legume_intercepted_light = riri.calc_extinc_allray_multi_reduced(
-                *tag_light_inputs, optsky=self.__in_environment["sky"][0], opt=self.__in_environment["sky"][1]
+            self.__riri5_transmitted_light, self.__riri5_intercepted_light = calc_extinc_allray_multi_reduced(
+                *tag_light_inputs, optsky=self.__sky[0], opt=self.__sky[1]
             )
             self.__time_runmodel = time.time() - start
 
@@ -1141,22 +1165,22 @@ class LightVegeManager(object):
 
     ## GETTERS ##
     @property
-    def legume_transmitted_light(self):
+    def riri5_transmitted_light(self):
         """transmitted results if light model is RiRi light
 
         :return: transmitted energy following a grid of voxels
         :rtype: numpy.array
         """
-        return self.__legume_transmitted_light
+        return self.__riri5_transmitted_light
 
     @property
-    def legume_intercepted_light(self):
+    def riri5_intercepted_light(self):
         """Intercepted results if light model is RiRi light,
 
         :return: intercepted energy following a grid of voxels, for each specy
         :rtype: numpy.array
         """
-        return self.__legume_intercepted_light
+        return self.__riri5_intercepted_light
 
     @property
     def elements_outputs(self):

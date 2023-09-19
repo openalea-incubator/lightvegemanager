@@ -205,7 +205,7 @@ def test_chain_triangulations():
     complete_trimesh, matching_ids, legume_grid, id_legume_scene = chain_triangulations(scenes)
 
     assert legume_grid
-    assert id_legume_scene == 6
+    assert id_legume_scene == [6]
 
     expected_matching_ids = {
         # single triangle

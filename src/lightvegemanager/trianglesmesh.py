@@ -231,7 +231,7 @@ def chain_triangulations(scenes):
     complete_trimesh = {}
     matching_ids = {}
     legume_grid = False
-    id_legume_scene = None
+    id_legume_scene = []
 
     element_count = 0
     for entity, scene in enumerate(scenes):
@@ -266,7 +266,7 @@ def chain_triangulations(scenes):
         # voxels grid in l-egume format
         elif isinstance(scene, dict) and len(scene) == 2:
             legume_grid = True
-            id_legume_scene = entity
+            id_legume_scene.append(entity)
 
         # creates a new numerotation for elements id adds them to the final triangulation
         for key, val in cscene.items():
@@ -274,7 +274,10 @@ def chain_triangulations(scenes):
             val = [list(a) for a in val]  # converts triangles in list
             complete_trimesh[element_count] = val
             element_count += 1
-
+    
+    if not id_legume_scene :
+        id_legume_scene = None
+        
     return complete_trimesh, matching_ids, legume_grid, id_legume_scene
 
 
