@@ -483,88 +483,95 @@ class LightVegeManager(object):
                 issensors = "sensors" in self.__lightmodel_parameters
                 issoilmesh = self.__lightmodel_parameters["soil mesh"] != -1
 
-                # Initialize a CaribuScene
-                if self.__environment["diffus"] and self.__environment["direct"]:
-                    c_scene_sky = CaribuScene(
+                if self.__matching_ids :
+                    # Initialize a CaribuScene
+                    if self.__environment["diffus"] and self.__environment["direct"]:
+                        c_scene_sky = CaribuScene(
+                            scene=self.__complete_trimesh,
+                            light=self.__sky,
+                            opt=opt,
+                            scene_unit=self.__main_unit,
+                            pattern=self.__geometry["domain"],
+                            soil_mesh=self.__lightmodel_parameters["soil mesh"],
+                            debug=debug,
+                        )
+                        sun_sky_option = "mix"
+                        light = [tuple((1.0, self.__sun))]
+
+                    else:
+                        if self.__environment["diffus"]:
+                            light = self.__sky
+                            sun_sky_option = "sky"
+
+                        elif self.__environment["direct"]:
+                            light = [tuple((1.0, self.__sun))]
+                            sun_sky_option = "sun"
+
+                        else:
+                            raise ValueError("Error with radiative inputs")
+
+                    c_scene = CaribuScene(
                         scene=self.__complete_trimesh,
-                        light=self.__sky,
+                        light=light,
                         opt=opt,
                         scene_unit=self.__main_unit,
                         pattern=self.__geometry["domain"],
                         soil_mesh=self.__lightmodel_parameters["soil mesh"],
                         debug=debug,
                     )
-                    sun_sky_option = "mix"
-                    light = [tuple((1.0, self.__sun))]
 
-                else:
-                    if self.__environment["diffus"]:
-                        light = self.__sky
-                        sun_sky_option = "sky"
-
-                    elif self.__environment["direct"]:
-                        light = [tuple((1.0, self.__sun))]
-                        sun_sky_option = "sun"
-
-                    else:
-                        raise ValueError("Error with radiative inputs")
-
-                c_scene = CaribuScene(
-                    scene=self.__complete_trimesh,
-                    light=light,
-                    opt=opt,
-                    scene_unit=self.__main_unit,
-                    pattern=self.__geometry["domain"],
-                    soil_mesh=self.__lightmodel_parameters["soil mesh"],
-                    debug=debug,
-                )
-
-                # Runs CARIBU
-                arg = [
-                    c_scene,
-                    not self.__environment["reflected"],
-                    self.__environment["infinite"],
-                    sensors_caribu,
-                    self.__energy,
-                ]
-                if sun_sky_option == "mix":
-                    start = time.time()
-                    raw_sun, aggregated_sun = run_caribu(*arg)
-                    arg[0] = c_scene_sky
-                    raw_sky, aggregated_sky = run_caribu(*arg)
-                    self.__time_runmodel = time.time() - start
-
-                    #: Spitters's model estimating for the diffuse:direct ratio
-                    # % de sky dans la valeur d'énergie finale
-                    Rg = energy / 2.02  #: Global Radiation (W.m-2)
-                    #: Diffuse fraction of the global irradiance
-                    rdrs = RdRsH(Rg=Rg, DOY=day, heureTU=hour, latitude=self.__environment["coordinates"][0])
-
-                    raw, aggregated, self.__sensors_outputs, self.__soilenergy = out_caribu_mix(
-                        rdrs,
+                    # Runs CARIBU
+                    arg = [
                         c_scene,
-                        c_scene_sky,
-                        raw_sun,
-                        aggregated_sun,
-                        raw_sky,
-                        aggregated_sky,
-                        issensors,
-                        issoilmesh,
-                    )
+                        not self.__environment["reflected"],
+                        self.__environment["infinite"],
+                        sensors_caribu,
+                        self.__energy,
+                    ]
+                    if sun_sky_option == "mix":
+                        start = time.time()
+                        raw_sun, aggregated_sun = run_caribu(*arg)
+                        arg[0] = c_scene_sky
+                        raw_sky, aggregated_sky = run_caribu(*arg)
+                        self.__time_runmodel = time.time() - start
+
+                        #: Spitters's model estimating for the diffuse:direct ratio
+                        # % de sky dans la valeur d'énergie finale
+                        Rg = energy / 2.02  #: Global Radiation (W.m-2)
+                        #: Diffuse fraction of the global irradiance
+                        rdrs = RdRsH(Rg=Rg, DOY=day, heureTU=hour, latitude=self.__environment["coordinates"][0])
+
+                        raw, aggregated, self.__sensors_outputs, self.__soilenergy = out_caribu_mix(
+                            rdrs,
+                            c_scene,
+                            c_scene_sky,
+                            raw_sun,
+                            aggregated_sun,
+                            raw_sky,
+                            aggregated_sky,
+                            issensors,
+                            issoilmesh,
+                        )
+                    else:
+                        start = time.time()
+                        raw, aggregated = run_caribu(*arg)
+                        self.__time_runmodel = time.time() - start
+
+                        self.__sensors_outputs, self.__soilenergy = out_caribu_nomix(
+                            c_scene, aggregated, issensors, issoilmesh
+                        )
                 else:
-                    start = time.time()
-                    raw, aggregated = run_caribu(*arg)
-                    self.__time_runmodel = time.time() - start
-
-                    self.__sensors_outputs, self.__soilenergy = out_caribu_nomix(
-                        c_scene, aggregated, issensors, issoilmesh
-                    )
-
+                    aggregated, raw = {}, {}
+                    self.__sensors_outputs = { "par" : { }}
+                    for id, triangles in sensors_caribu.items():
+                        self.__sensors_outputs["par"][id] = 1.
+                            
             # Outputs management
-            arg = [day, hour, self.__complete_trimesh, self.__matching_ids, aggregated, compute]
-            self.__elements_outputs = out_caribu_elements(*arg)
-            arg[4] = raw
+            arg = [day, hour, self.__complete_trimesh, self.__matching_ids, raw, compute]
             self.__triangles_outputs = out_caribu_triangles(*arg)
+            arg[4] = aggregated
+            arg.append(self.__triangles_outputs)
+            self.__elements_outputs = out_caribu_elements(*arg)
 
             if "sensors" in self.__lightmodel_parameters and self.__lightmodel_parameters["sensors"][-1] == "vtk":
                 # create list with radiative value for each sensor triangle (2 triangles per sensor)

@@ -262,9 +262,9 @@ def create_caribu_legume_sensors(dxyz,
     if infinite : 
         # square looks upward
         points = [orig, 
-                    (dxyz[0], orig[1],  orig[2]), 
-                    (dxyz[0], dxyz[1],  orig[2]), 
-                    (orig[0], dxyz[1],  orig[2])]
+                    (orig[0] + dxyz[0], orig[1],  orig[2]), 
+                    (orig[0] + dxyz[0], orig[1] + dxyz[1],  orig[2]), 
+                    (orig[0], orig[1] + dxyz[1],  orig[2])]
     else :
         # square looks downwards
         points = [orig,  

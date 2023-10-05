@@ -10,6 +10,20 @@ import numpy
 import openalea.plantgl.all as pgl
 
 def cscene_to_plantGLScene_stems(cscene, stems_id=None, matching_ids={}):
+    """Transform a triangles mesh to a plantGL scene, whith a color difference between leaves and stems
+
+    :param cscene: LightVegeManager triangulations mesh
+    :type cscene: dict of list
+    :param stems_id: list of tuple (element_id, specy_id), defaults to None
+    :type stems_id: list of tuple, optional
+    :param matching_ids: 
+        dict that matches new element indices in trimesh with specy indice and
+        input element indice, defaults to {}
+        :code:`matching_ids = { new_element_id : (input_element_id, specy_id)}`
+    :type matching_ids: dict, optional
+    :return: cscene in plantGL scene format with leaves in green and stems in brown
+    :rtype: plantGL Scene
+    """    
     pglscene = pgl.Scene()
     for t in itertools.chain(*[v for k,v in cscene.items() if stems_id is None or tuple(matching_ids[k]) not in stems_id]):
         pts = []
@@ -41,6 +55,17 @@ def cscene_to_plantGLScene_stems(cscene, stems_id=None, matching_ids={}):
     return pglscene
 
 def cscene_to_plantGLScene_light(cscene, outputs={}, column_name="par Ei"):
+    """_summary_
+
+    :param cscene: _description_
+    :type cscene: _type_
+    :param outputs: _description_, defaults to {}
+    :type outputs: dict, optional
+    :param column_name: _description_, defaults to "par Ei"
+    :type column_name: str, optional
+    :return: _description_
+    :rtype: _type_
+    """    
     plt_cmap = "seismic"
     minvalue = numpy.min(outputs[column_name].values)
     maxvalue = numpy.max(outputs[column_name].values)
@@ -91,9 +116,9 @@ def ratpgrid_to_plantGLScene(ratpgrid, transparency=0., plt_cmap="Greens", outpu
                     mat = colormap(value)
                     mat.transparency = transparency
 
-                    vectrans = (float(ratpgrid.xorig + (0.5 + x) * ratpgrid.dx ), 
-                                float(ratpgrid.yorig + (0.5 + y) * ratpgrid.dy ), 
-                                float(ratpgrid.dz[z:ratpgrid.njz].sum()-ratpgrid.zorig) - 0.5 * ratpgrid.dz[z] )
+                    vectrans = (float(ratpgrid.xorig + (x) * ratpgrid.dx ), 
+                                float(- ratpgrid.yorig + (ratpgrid.njy - (y + 1)) * ratpgrid.dy ), 
+                                float(ratpgrid.dz[z:ratpgrid.njz].sum()-ratpgrid.zorig)  )
                     shape = pgl.Shape(pgl.Translated(vectrans, pgl.Box(vsize)), mat)
                     scene.add(shape)
     return scene

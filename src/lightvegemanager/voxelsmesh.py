@@ -244,43 +244,48 @@ def reduce_layers_from_trimesh(trimesh, pmax, dxyz, nxyz, matching_ids, ids=None
     :rtype: int
     """
     from lightvegemanager.trianglesmesh import triangles_entity
+    
+    # empty scene
+    if not matching_ids :
+        skylayer = int(nxyz[2] - 2)
 
-    # reduction si number of filled layers < expected number of layers
-    if ids is None:
-        skylayer = (pmax[2]) // dxyz[2]
-        if skylayer < nxyz[2] and pmax[2] > 0:
-            skylayer = int(nxyz[2] - 1 - skylayer)
-
-        # otherwise we keep the initial number of layers
-        else:
-            skylayer = 0
-
-    # we compute the maximum z of trimesh by omitting some species listed in ids
     else:
-        # we firstly check if some input species are not empty
-        i = 0
-        specie_empty = matching_ids[i][1] not in ids
-        while (matching_ids[i][1] not in ids) and (i + 1 < len(matching_ids)):
-            i += 1
-            if matching_ids[i][1] in ids:
-                specie_empty = False
-
-        # geometry is empty
-        if specie_empty:
-            skylayer = nxyz[2] - 1
-
-        # we compute empty layers from the non empty species
-        else:
-            zmax = -999999
-            if trimesh:
-                for i in ids:
-                    triangles = triangles_entity(trimesh, i, matching_ids)
-                    for z in list(itertools.chain(*[[p[2] for p in t] for t in triangles])):
-                        if z > zmax:
-                            zmax = z
-
-            skylayer = zmax // dxyz[2]
-            if skylayer < nxyz[2] and zmax > 0:
+        # reduction si number of filled layers < expected number of layers
+        if ids is None:
+            skylayer = (pmax[2]) // dxyz[2]
+            if skylayer < nxyz[2] and pmax[2] > 0:
                 skylayer = int(nxyz[2] - 1 - skylayer)
 
+            # otherwise we keep the initial number of layers
+            else:
+                skylayer = 0
+
+        # we compute the maximum z of trimesh by omitting some species listed in ids
+        else:
+            # we firstly check if some input species are not empty
+            i = 0
+            specie_empty = matching_ids[i][1] not in ids
+            while (matching_ids[i][1] not in ids) and (i + 1 < len(matching_ids)):
+                i += 1
+                if matching_ids[i][1] in ids:
+                    specie_empty = False
+
+            # geometry is empty
+            if specie_empty:
+                skylayer = nxyz[2] - 1
+
+            # we compute empty layers from the non empty species
+            else:
+                zmax = -999999
+                if trimesh:
+                    for i in ids:
+                        triangles = triangles_entity(trimesh, i, matching_ids)
+                        for z in list(itertools.chain(*[[p[2] for p in t] for t in triangles])):
+                            if z > zmax:
+                                zmax = z
+
+                skylayer = zmax // dxyz[2]
+                if skylayer < nxyz[2] and zmax > 0:
+                    skylayer = int(nxyz[2] - 1 - skylayer)
+    
     return skylayer

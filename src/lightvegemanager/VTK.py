@@ -8,7 +8,7 @@
 import itertools
 import numpy
 
-def VTKtriangles(trimesh, var, varname, filename):
+def VTKtriangles(trimesh, var=[], varname=[], filename=""):
     """Writes VTK files from a triangulation mesh. Possibility to associate physical values to the
     triangles
 

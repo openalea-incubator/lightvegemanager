@@ -225,7 +225,7 @@ def chain_triangulations(scenes):
     # pre-check of scenes input, if it has only one triangle or one list of triangles
     if isatriangle(scenes) :
         scenes = [scenes]
-    elif all(isatriangle(s) for s in scenes) :
+    elif all(isatriangle(s) for s in scenes) and scenes != []:
         scenes = [scenes]
     
     complete_trimesh = {}
@@ -277,7 +277,7 @@ def chain_triangulations(scenes):
     
     if not id_legume_scene :
         id_legume_scene = None
-        
+    
     return complete_trimesh, matching_ids, legume_grid, id_legume_scene
 
 

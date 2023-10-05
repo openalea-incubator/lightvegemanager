@@ -180,9 +180,10 @@ def transfer_caribu_legume(
                 list_invar[k]["parap"][id_plante] = a + p_s
 
         # all non empty plant must have a minimum intercepted energy
-        for p in range(len(list_invar[k]["parip"])):
-            if list_invar[k]["parip"][p] == 0.0 and list_dicFeuilBilanR[k]["surf"][p] > 0.0:
-                list_invar[k]["parip"][p] = epsilon
+        if len(list_invar[k]["parip"]) == len(list_dicFeuilBilanR[k]["surf"]) :
+            for p in range(len(list_invar[k]["parip"])):
+                if list_invar[k]["parip"][p] == 0.0 and list_dicFeuilBilanR[k]["surf"][p] > 0.0:
+                    list_invar[k]["parip"][p] = epsilon
 
         # conversion
         c = (3600 * 24) / 1000000

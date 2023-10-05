@@ -433,7 +433,7 @@ def out_caribu_nomix(c_scene, aggregated, issensors, issoilmesh) :
 
     return sensors, soil_energy
 
-def out_caribu_elements(day, hour, trimesh, matching_ids, aggregated, sun_up) :
+def out_caribu_elements(day, hour, trimesh, matching_ids, aggregated, sun_up, caribu_triangles={}) :
     """Converts aggregated in a pandas.Dataframe following indices in LightVegeManager
 
     :param day: day of simulation
@@ -485,9 +485,19 @@ def out_caribu_elements(day, hour, trimesh, matching_ids, aggregated, sun_up) :
         for key,val in matching_ids.items():
             if sun_up: s_Eabs[band][key] = dict_val['Eabs'][key]
             if sun_up: s_Ei[band][key] = dict_val['Ei'][key]
-    
-        dico_shape[band + " Eabs"] = s_Eabs[band]
-        dico_shape[band + " Ei"] = s_Ei[band]
+
+        if sum(s_Eabs[band]) <= 0. :
+            v,w = [], []
+            for i in range(max(caribu_triangles["Organ"]) + 1):
+                data = caribu_triangles[caribu_triangles.Organ == i]
+                v.append(sum([x*y for x,y in zip(data["Area"], data[band + " Eabs"])]) / dico_shape["Area"][i])
+                w.append(sum([x*y for x,y in zip(data["Area"], data[band + " Ei"])]) / dico_shape["Area"][i])
+            
+            dico_shape[band + " Eabs"] = v
+            dico_shape[band + " Ei"] = w
+        else :
+            dico_shape[band + " Eabs"] = s_Eabs[band]
+            dico_shape[band + " Ei"] = s_Ei[band]
 
     return pandas.DataFrame(dico_shape)
 
