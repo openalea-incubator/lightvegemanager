@@ -108,7 +108,7 @@ def out_ratp_empty_grid(day, hour) :
         used if input geometry is empty 
     :rtype: pandas.DataFrame
     """    
-    return  pandas.DataFrame({'VegetationType':[0],
+    df_voxels =  pandas.DataFrame({'VegetationType':[0],
                                 'Iteration':[1],
                                 'Day':day,
                                 'Hour':hour,
@@ -125,6 +125,43 @@ def out_ratp_empty_grid(day, hour) :
                                 'Intercepted': [0],
                                 'Transmitted': [0]
                             })
+    
+    df_triangles =  pandas.DataFrame({'VegetationType':[0],
+                            'Iteration':[1],
+                            'Day':day,
+                            'Hour':hour,
+                            'Voxel':[0],
+                            'Nx':[0],
+                            'Ny':[0],
+                            'Nz':[0],
+                            'Triangle': [0],
+                            'Organ': [0], 
+                            'primitive_area': [0],
+                            'ShadedPAR':[0],
+                            'SunlitPAR':[0],
+                            'ShadedArea':[0],
+                            'SunlitArea': [0],
+                            'Area': [0],
+                            'PARa': [0],
+                            'Intercepted': [0],
+                            'Transmitted': [0]
+                        })
+    df_organs =  pandas.DataFrame({'VegetationType':[0],
+                        'Day':day,
+                        'Hour':hour,
+                        'Organ': [0], 
+                        'ShadedPAR':[0],
+                        'SunlitPAR':[0],
+                        'ShadedArea':[0],
+                        'SunlitArea': [0],
+                        'Area': [0],
+                        'PARa': [0],
+                        'Intercepted': [0],
+                        'Transmitted': [0]
+                    })
+    
+    return df_voxels, df_triangles, df_organs
+
 
 def out_ratp_voxels(ratpgrid, res, parunit) :
     """Converts RATP results to pandas dataframe compared to the voxels

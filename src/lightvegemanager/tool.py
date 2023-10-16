@@ -437,7 +437,7 @@ class LightVegeManager(object):
                 from lightvegemanager.outputs import out_ratp_empty_grid
 
                 print("--- Empty RATP grid")
-                self.__voxels_outputs = out_ratp_empty_grid(day, hour)
+                self.__voxels_outputs, self.__triangles_outputs, self.__elements_outputs = out_ratp_empty_grid(day, hour)
 
         ## CARIBU ##
         elif self.__lightmodel == "caribu":

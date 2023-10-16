@@ -20,10 +20,12 @@ def cscene_to_plantGLScene_stems(cscene, stems_id=None, matching_ids={}):
         dict that matches new element indices in trimesh with specy indice and
         input element indice, defaults to {}
         :code:`matching_ids = { new_element_id : (input_element_id, specy_id)}`
-    :type matching_ids: dict, optional
+    :type matching_ids: dict of tuple, optional
     :return: cscene in plantGL scene format with leaves in green and stems in brown
     :rtype: plantGL Scene
-    """    
+    """   
+
+    # leaves parts
     pglscene = pgl.Scene()
     for t in itertools.chain(*[v for k,v in cscene.items() if stems_id is None or tuple(matching_ids[k]) not in stems_id]):
         pts = []
@@ -38,6 +40,7 @@ def cscene_to_plantGLScene_stems(cscene, stems_id=None, matching_ids={}):
         mat = pgl.Material(ambient=(50, 205, 50), shininess=0.1, diffuse=1)
         pglscene.add(pgl.Shape(ts, mat))
 
+    # stems parts
     if stems_id is not None :
         for t in itertools.chain(*[v for k,v in cscene.items() if tuple(matching_ids[k]) in stems_id]):
             pts = []
@@ -55,16 +58,17 @@ def cscene_to_plantGLScene_stems(cscene, stems_id=None, matching_ids={}):
     return pglscene
 
 def cscene_to_plantGLScene_light(cscene, outputs={}, column_name="par Ei"):
-    """_summary_
+    """Transform a triangles mesh to a plantGL scene, colors represent lightint results 
+    from blue to red
 
-    :param cscene: _description_
-    :type cscene: _type_
-    :param outputs: _description_, defaults to {}
-    :type outputs: dict, optional
-    :param column_name: _description_, defaults to "par Ei"
+    :param cscene: LightVegeManager triangulations mesh
+    :type cscene: dict of list
+    :param outputs: outputs results from LightVegeManager, defaults to {}
+    :type outputs: Pandas.Dataframe, optional
+    :param column_name: name of the value to plot, defaults to "par Ei"
     :type column_name: str, optional
-    :return: _description_
-    :rtype: _type_
+    :return: cscene in plantGL scene format with a color from blue to red
+    :rtype: plantGL Scene
     """    
     plt_cmap = "seismic"
     minvalue = numpy.min(outputs[column_name].values)
@@ -92,10 +96,25 @@ def cscene_to_plantGLScene_light(cscene, outputs={}, column_name="par Ei"):
     return pglscene
 
 def ratpgrid_to_plantGLScene(ratpgrid, transparency=0., plt_cmap="Greens", outputs={}):
+    """Transform a RATP grid mesh to a plantGL scene
+    Colors can either follows leaf area or lighting values 
+
+    :param ratpgrid: grid of voxels in RATP format
+    :type ratpgrid: pyratp.grid
+    :param transparency: transparency value of the voxels from 0 to 1, defaults to 0.
+    :type transparency: float, optional
+    :param plt_cmap: name of the colormap to color the voxels, defaults to "Greens"
+    :type plt_cmap: str, optional
+    :param outputs: lighting results from LightVegeManager, defaults to {}
+    :type outputs: pandas.Dataframe, optional
+    :return: ratpgrid in plantGL scene
+    :rtype: plantGL Scene
+    """    
+    # leaf area value
     if plt_cmap == "Greens" :
-        # minvalue = numpy.min(ratpgrid.s_vx)
         minvalue = 0.
         maxvalue = numpy.max(ratpgrid.s_vx)
+    # lighting values
     elif plt_cmap == "seismic" :
         minvalue = numpy.min(outputs["PARa"])
         maxvalue = numpy.max(outputs["PARa"])
