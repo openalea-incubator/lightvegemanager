@@ -59,6 +59,4 @@ sphinx:
 
 python:
   install:
-    - method: pip
-      extra_requirements:
-        - sphinx-rtd-theme
+    - requirements: "requirements.txt"
