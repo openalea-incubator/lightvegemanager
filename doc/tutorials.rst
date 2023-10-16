@@ -17,7 +17,7 @@ We propose a way to install an openalea environment with conda.
 
     .. code-block:: bash
         
-        conda create -n myenvname python=3 openalea.mtg openalea.plantgl alinea.caribu alinea.astk numpy=1.20.3 pandas pytest sphinx sphinx_rtd_theme -c conda-forge -c openalea3
+        conda create -n myenvname python=3 openalea.mtg openalea.plantgl alinea.caribu alinea.astk numpy=1.20.3 pandas pytest sphinx sphinx-rtd-theme -c conda-forge -c openalea3
 
 #. Place yourself in the created environment: ``conda activate myenvname``
 

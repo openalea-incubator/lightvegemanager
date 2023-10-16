@@ -78,14 +78,14 @@ LightVegeManager is a Python package made for plant modeling and managing enligh
     
     Development tools
     ```bash
-        conda install pytest sphinx sphinx_rtd_theme -c conda-forge
+        conda install pytest sphinx sphinx-rtd-theme -c conda-forge
     ```
     
 ### Complete installation
 
 1) Create a conda environment with miniconda3
     ```bash
-        conda create -n myenvname python=3 openalea.mtg openalea.plantgl alinea.caribu alinea.astk numpy=1.20.3 pandas pytest sphinx sphinx_rtd_theme -c conda-forge -c openalea3
+        conda create -n myenvname python=3 openalea.mtg openalea.plantgl alinea.caribu alinea.astk numpy=1.20.3 pandas pytest sphinx sphinx-rtd-theme -c conda-forge -c openalea3
     ```
 
 2) Place yourself in your conda environment
