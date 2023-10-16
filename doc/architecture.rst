@@ -25,6 +25,8 @@ The package has 8 folders and 4 files in its root:
 - tests: unit testing files written in pytest format
   
 - .gitignore: files and folders to ignore by git
+
+- .readthedocs.yaml: config file for read-the-docs
   
 - README.md: Read Me file
 
