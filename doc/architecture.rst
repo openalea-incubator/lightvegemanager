@@ -27,6 +27,8 @@ The package has 8 folders and 4 files in its root:
 - .gitignore: files and folders to ignore by git
 
 - .readthedocs.yaml: config file for read-the-docs
+
+- requirements.txt: packages needed for read-the-docs in order to compile
   
 - README.md: Read Me file
 
