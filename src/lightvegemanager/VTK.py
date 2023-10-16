@@ -9,8 +9,7 @@ import itertools
 import numpy
 
 def VTKtriangles(trimesh, var=[], varname=[], filename=""):
-    """Writes VTK files from a triangulation mesh. Possibility to associate physical values to the
-    triangles
+    """Writes VTK files from a triangulation mesh. Possibility to associate physical values to the triangles
 
     :param trimesh: triangles mesh aggregated by indice elements
         
@@ -20,11 +19,11 @@ def VTKtriangles(trimesh, var=[], varname=[], filename=""):
 
     :type trimesh: dict of list
     :param var: list of physical values associated to each triangle. Each element of var is a physical value for each triangle.
-    Then, for n triangles and m values, var looks like:
+        Then, for n triangles and m values, var looks like:
 
-    .. code-block:: python
+        .. code-block:: python
 
-        var = [[var1_1, ..., var1_n], ..., [varm_1, ..., varm_n]]
+            var = [[var1_1, ..., var1_n], ..., [varm_1, ..., varm_n]]
 
     :type var: list of list
     :param varname: list of variable names
@@ -121,6 +120,7 @@ def VTKline(start, end, filename):
 
 def ratp_prepareVTK(ratpgrid, filename, columns=[], df_values=None) :
     """Sets and prepare data to write a voxel grid in VTK format from a RATP grid
+    
     Possibility to sets physical values to each voxel. Otherwise, it will assign leaf area density
     for each voxel.
 
@@ -132,9 +132,7 @@ def ratp_prepareVTK(ratpgrid, filename, columns=[], df_values=None) :
     :type filename: string
     :param columns: list of columns name of ``df_values`` to associate to each voxel, defaults to []
     :type columns: list, optional
-    :param df_values: dataframe with a ``"Voxel"`` and a ``"VegetationType"`` columns, matching ratpgrid. 
-    It stores physical values associated to each voxel that you want to print, 
-    defaults to None
+    :param df_values: dataframe with a ``"Voxel"`` and a ``"VegetationType"`` columns, matching ratpgrid. It stores physical values associated to each voxel that you want to print, defaults to None
     :type df_values: pandas.Dataframe, optional
     """    
     # default prints LAD
@@ -168,13 +166,14 @@ def ratp_prepareVTK(ratpgrid, filename, columns=[], df_values=None) :
 
 def VTKvoxels(grid, datafields, varnames, nomfich):
     """Writes a VTK file with a grid of voxels and associated physical values.
+    
     Display Voxels colored by variable with Paraview
+    
     RATP Grid is written in VTK Format as a structured grid
 
     :param grid: the RATP grid
     :type grid: pyratp.grid
-    :param datafields: a list of 3 arrays composed of the a 
-    RATP variable to be plotted, corresponding entities, and Voxel ID
+    :param datafields: a list of 3 arrays composed of the a RATP variable to be plotted, corresponding entities, and Voxel ID
 
         * [0] : kxyz (numpy.array)
         * [1] : entities (numpy.array)

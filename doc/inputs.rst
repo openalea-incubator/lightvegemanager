@@ -240,6 +240,8 @@ RATP: volumic approach
                     # Grid specifications
                     "voxel size" : [dx, dy, dz],
                     "voxel size" : "dynamic",
+
+                    "full grid" : bool,
                     
                     "origin" : [xorigin, yorigin, zorigin],
                     "origin" : [xorigin, yorigin],
@@ -283,6 +285,8 @@ Grid specifications
 * ``"grid slicing"``: if ``"grid slicing" : "ground = 0."`` and ``"number voxels"`` is not specified and there are triangles in the input geometries, it rescales the grid to avoid the soil layer < 0
 
 * ``"tesselation level"``: if there are triangles in the input geometries, you can tesselate them a certain number of times to match the voxel grid.
+
+* ``"full grid"``: option to fill all empty voxels with a ``1e-10``.
 
 Leaf angle distribution
 ########################

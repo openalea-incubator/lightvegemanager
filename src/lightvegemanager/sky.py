@@ -55,13 +55,14 @@ def ratpformat_to_caribuformat(az, h, pc, rad=True):
 def caribuformat_to_ratpformat(directions):
     """Converts CARIBU format to RATP sky format
 
-    :param directions: list of all each sky directions, such as one direction is
-        (perez coeff, (x, y, z)) where vector looks from sky to floor
+    :param directions: list of all each sky directions, such as one direction is (perez coeff, (x, y, z)) where vector looks from sky to floor
     :type directions: list of tuples
     :return:
-        pc : perez coefficients for each direction
-        az : azimut of each direction, x+ = 0.
-        h : elevation of each direction
+
+        * pc : perez coefficients for each direction
+        * az : azimut of each direction, x+ = 0.
+        * h : elevation of each direction
+    
     :rtype:list, list, list
     """
     # Perez coefficients
@@ -121,14 +122,16 @@ def CARIBUsky(skytype):
     """Build a sky in CARIBU format
 
     :param skytype: the environment["sky"] from the LightVegeManager inputs. It is either:
+
         * ``"turtle46"``
         * a filepath
         * [nb_azimut, nb_elevation, "soc" or "uoc"], nb_azimut is the number of azimut directions and nb_zenith the number of zenital directions for cutting out the sky
+
     :type skytype: string or list
     :raises ValueError: if skytype is not one of the curretn 3 possibilities
     :return: a list of the directions representing the sky.
-    each entry of the list is a tuple (weight, vector), where weight is a float for the weight the direction and vector, a tuple (x, y, z),
-    representing the position of the sky direction, from sky to the ground
+        each entry of the list is a tuple (weight, vector), where weight is a float for the weight the direction and vector, a tuple (x, y, z),
+        representing the position of the sky direction, from sky to the ground
     :rtype: list of tuple
     """
     input_sky = skytype

@@ -51,6 +51,11 @@ For any question, please submit to https://github.com/mwoussen/lightvegemanager/
 Authors
 **************
 
+Maurane Woussen
+Romain Barillot
+Didier Combes
+Gaëtan Louarn
+
 License
 **************
 

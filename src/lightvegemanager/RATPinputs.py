@@ -19,8 +19,10 @@
                 "origin" : [xorigin, yorigin],
 
                 "number voxels" : [nx, ny, nz],
-                "grid slicing" : "ground = 0."
-                "tesselation level" : int
+                "grid slicing" : "ground = 0.",
+                "tesselation level" : int,
+
+                "full grid" : bool,
 
                 # Leaf angle distribution
                 "angle distrib algo" : "compute global",
@@ -36,7 +38,7 @@
                 "mu" : [mu_scene0, mu_scene1, ...]
             }
 
-    .. seealso:: inputs.rst
+    .. seealso:: :ref:`Inputs description <inputs>`
 
 """
 from math import *

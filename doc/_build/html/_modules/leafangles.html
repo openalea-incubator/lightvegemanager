@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>leafangles &mdash; LightVegeManager 0.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            LightVegeManager
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../presentation.html">Presentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Architecture of the tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inputs.html">Inputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../others.html">Additionnal Functionalities</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">Reference Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LightVegeManager</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">leafangles</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for leafangles</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    leafangles</span>
+<span class="sd">    **********</span>
+
+<span class="sd">    Handles leaf angle distribution, both in its dynamic computing or reading a file</span>
+
+<span class="sd">    An angle distribution is a list of n elements, where n is the number of angle class between 0 and</span>
+<span class="sd">    90°. Each element of this list is a percentage for leaves to be oriented from 0 to 90/n degree.</span>
+<span class="sd">    The sum of all the list entries must equal 1.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">bisect</span>
+
+<span class="kn">from</span> <span class="nn">lightvegemanager.basicgeometry</span> <span class="kn">import</span> <span class="n">triangle_area</span><span class="p">,</span> <span class="n">triangle_elevation</span>
+
+<div class="viewcode-block" id="read_distrib_file"><a class="viewcode-back" href="../reference.html#leafangles.read_distrib_file">[docs]</a><span class="k">def</span> <span class="nf">read_distrib_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">numberofentities</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reads global leaf angle distribution in a file</span>
+<span class="sd">    the file must matches the format : one specy distribution per line</span>
+<span class="sd">    each percentage separated by a coma &#39;,&#39;</span>
+
+<span class="sd">    **example**</span>
+
+<span class="sd">    .. code-block:: bash</span>
+
+<span class="sd">        0.1382,0.1664,0.1972,0.1925,0.1507,0.0903,0.0425,0.0172,0.005</span>
+<span class="sd">        0.3,0.1,0.15,0.2,0.05,0.2</span>
+
+<span class="sd">    :param path: path to the file</span>
+<span class="sd">    :type path: string</span>
+<span class="sd">    :param numberofentities: number of species, aka numbre of lines in the file</span>
+<span class="sd">    :type numberofentities: int</span>
+<span class="sd">    :return: distribution for each specy, number of entries on one line</span>
+<span class="sd">    :rtype: list of list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">f_angle</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">distrib</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numberofentities</span><span class="p">):</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">f_angle</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+        <span class="n">distrib</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)[:]])</span>
+    <span class="n">f_angle</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">distrib</span></div>
+
+
+<div class="viewcode-block" id="compute_distrib_globale"><a class="viewcode-back" href="../reference.html#leafangles.compute_distrib_globale">[docs]</a><span class="k">def</span> <span class="nf">compute_distrib_globale</span><span class="p">(</span><span class="n">trimesh</span><span class="p">,</span> <span class="n">matching_ids</span><span class="p">,</span> <span class="n">numberofclasses</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculation of a global leaf angle distribution from a triangle mesh</span>
+
+<span class="sd">    :param trimesh: triangles mesh aggregated by indice elements :code:`{ id : [triangle1, triangle2, ...]}`</span>
+<span class="sd">    :type trimesh: dict</span>
+<span class="sd">    :param matching_ids:</span>
+<span class="sd">        dict that matches new element indices in trimesh with specy indice and</span>
+<span class="sd">        input element indice, :code:`matching_ids = { new_element_id : (input_element_id, specy_id)}`</span>
+
+<span class="sd">        this dict allows us to look how species there is the inputs geometric data</span>
+
+<span class="sd">    :type matching_ids: dict</span>
+<span class="sd">    :param numberofclasses: number angle class wanted between 0 and 90 degree</span>
+<span class="sd">    :type numberofclasses: int</span>
+
+<span class="sd">    :return: a leaf angle distribution for each specy. Each distribution is a length numberofclasses the distribution is computed on all trimesh</span>
+<span class="sd">    :rtype: list of list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">lightvegemanager.trianglesmesh</span> <span class="kn">import</span> <span class="n">triangles_entity</span>
+
+    <span class="c1"># dimensions [specy][angle class]</span>
+    <span class="n">distrib</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">angles</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">90</span> <span class="o">/</span> <span class="n">numberofclasses</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="n">numberofclasses</span><span class="p">))</span>
+
+    <span class="c1"># number of species</span>
+    <span class="n">numberofentities</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">matching_ids</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numberofentities</span><span class="p">):</span>
+        <span class="n">tri_entity</span> <span class="o">=</span> <span class="n">triangles_entity</span><span class="p">(</span><span class="n">trimesh</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">matching_ids</span><span class="p">)</span>
+        <span class="n">area_entity</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">triangle_area</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tri_entity</span><span class="p">])</span>
+
+        <span class="n">classes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">numberofclasses</span>
+        <span class="k">if</span> <span class="n">area_entity</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tri_entity</span><span class="p">:</span>
+                <span class="c1"># id as angles[id-1] &lt; triangle_elevation(t) &lt;= angles[id]</span>
+                <span class="n">id_classe</span> <span class="o">=</span> <span class="n">bisect</span><span class="o">.</span><span class="n">bisect_left</span><span class="p">(</span><span class="n">angles</span><span class="p">,</span> <span class="n">triangle_elevation</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+                <span class="n">classes</span><span class="p">[</span><span class="n">id_classe</span><span class="p">]</span> <span class="o">+=</span> <span class="n">triangle_area</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+            <span class="n">classes</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span> <span class="o">/</span> <span class="n">area_entity</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">classes</span><span class="p">]</span>
+        <span class="n">distrib</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">distrib</span></div>
+
+
+<div class="viewcode-block" id="compute_distrib_voxel"><a class="viewcode-back" href="../reference.html#leafangles.compute_distrib_voxel">[docs]</a><span class="k">def</span> <span class="nf">compute_distrib_voxel</span><span class="p">(</span><span class="n">trimesh</span><span class="p">,</span> <span class="n">matching_ids</span><span class="p">,</span> <span class="n">numberofclasses</span><span class="p">,</span> <span class="n">numberofvoxels</span><span class="p">,</span> <span class="n">matching_tri_vox</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculation of a local leaf angle distribution from a triangle mesh on each voxel of a grid</span>
+
+<span class="sd">    :param trimesh: triangles mesh aggregated by indice elements :code:`{ id : [triangle1, triangle2, ...]}`</span>
+<span class="sd">    :type trimesh: dict</span>
+<span class="sd">    :param matching_ids:</span>
+<span class="sd">        dict that matches new element indices in trimesh with specy indice and</span>
+<span class="sd">        input element indice, :code:`matching_ids = { new_element_id : (input_element_id, specy_id)}`</span>
+<span class="sd">        this dict allows us to look how species there is the inputs geometric data</span>
+
+<span class="sd">    :type matching_ids: dict</span>
+<span class="sd">    :param numberofclasses: number angle class wanted between 0 and 90 degree</span>
+<span class="sd">    :type numberofclasses: int</span>
+<span class="sd">    :param numberofclasses: number of non empty voxels in the grid</span>
+<span class="sd">    :type numberofclasses: int</span>
+<span class="sd">    :param matching_tri_vox: dict where key is a triangle indice and value the matching voxel indice where the</span>
+<span class="sd">        barycenter of the triangle is located</span>
+<span class="sd">    :type matching_tri_vox: dict</span>
+<span class="sd">    :return: array of dimension [number of voxels][number of species][number of angle classes]</span>
+<span class="sd">        i.e. it returns for each voxel a leaf angle distribution for each specy</span>
+<span class="sd">    :rtype: numpy.array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">lightvegemanager.trianglesmesh</span> <span class="kn">import</span> <span class="n">globalid_to_elementid</span><span class="p">,</span> <span class="n">globalid_to_triangle</span>
+
+    <span class="n">angles</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">90</span> <span class="o">/</span> <span class="n">numberofclasses</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="n">numberofclasses</span><span class="p">))</span>
+
+    <span class="n">numberofentities</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">matching_ids</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="c1"># dimensions [#voxel][#specy][#angle class]</span>
+    <span class="n">distrib</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">numberofvoxels</span><span class="p">,</span> <span class="n">numberofentities</span><span class="p">,</span> <span class="n">numberofclasses</span><span class="p">])</span>
+
+    <span class="c1"># loops follow distrib dimensions</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numberofvoxels</span><span class="p">):</span>
+        <span class="c1"># triangles list in the current voxel</span>
+        <span class="n">tri_in_vox</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="k">for</span> <span class="nb">id</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">matching_tri_vox</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="n">k</span><span class="p">]</span>
+        <span class="c1"># sorting by specy</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numberofentities</span><span class="p">):</span>
+            <span class="n">shape_ent</span> <span class="o">=</span> <span class="p">[</span><span class="n">ke</span> <span class="k">for</span> <span class="n">ke</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">matching_ids</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">n</span><span class="p">]</span>
+            <span class="c1"># select triangles belonging to specy n</span>
+            <span class="n">tri_in_vox_in_ent</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tri_in_vox</span> <span class="k">if</span> <span class="n">globalid_to_elementid</span><span class="p">(</span><span class="n">trimesh</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="ow">in</span> <span class="n">shape_ent</span><span class="p">]</span>
+
+            <span class="c1"># if current specy is present in the current voxel</span>
+            <span class="k">if</span> <span class="n">tri_in_vox_in_ent</span><span class="p">:</span>
+                <span class="n">area_vox_ent</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">tri_in_vox_in_ent</span><span class="p">:</span>
+                    <span class="n">t</span> <span class="o">=</span> <span class="n">globalid_to_triangle</span><span class="p">(</span><span class="n">trimesh</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span>
+                    <span class="n">id_classe</span> <span class="o">=</span> <span class="n">bisect</span><span class="o">.</span><span class="n">bisect_left</span><span class="p">(</span><span class="n">angles</span><span class="p">,</span> <span class="n">triangle_elevation</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+
+                    <span class="n">at</span> <span class="o">=</span> <span class="n">triangle_area</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+                    <span class="n">distrib</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">n</span><span class="p">][</span><span class="n">id_classe</span><span class="p">]</span> <span class="o">+=</span> <span class="n">at</span>
+                    <span class="n">area_vox_ent</span> <span class="o">+=</span> <span class="n">at</span>
+
+                <span class="n">distrib</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">distrib</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">n</span><span class="p">]</span> <span class="o">/</span> <span class="n">area_vox_ent</span>
+    <span class="k">return</span> <span class="n">distrib</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, INRAE P3F.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

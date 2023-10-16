@@ -26,7 +26,9 @@ LightVegeManager is a Python package made for plant modeling and managing enligh
 - [RiRi5](https://github.com/glouarn/riri5)
 
 ## Installing the tool
+
 ### Targeted installation
+
 1) Create a conda environment with miniconda3 and required dependencies
     ```bash
         conda create -n myenvname python=3 numpy=1.20.3 pandas -c conda-forge

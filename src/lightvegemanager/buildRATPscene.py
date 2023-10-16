@@ -42,7 +42,7 @@
 import numpy
 
 def extract_grid_origin(parameters, minmax):
-    """_summary_
+    """Create grid origin from either input parameters or from the scene
 
     :param parameters: RATP parameters from inputs of LightVegeManager
     :type parameters: dict
@@ -306,11 +306,9 @@ def legumescene_to_RATPscene(legumescene, parameters, coordinates, reflected, in
 
         l-egume grid represented by a dict with two entries:
 
-        *  ``"LA"``: equivalent to m_lais in l-egume, a numpy.array of dimension ``(nent, nz, ny, nx)``
-        which represents leaf area in each voxel for each specy
+        *  ``"LA"``: equivalent to m_lais in l-egume, a numpy.array of dimension ``(nent, nz, ny, nx)`` which represents leaf area in each voxel for each specy
 
-        *  ``"distrib"``: equivalent to ls_dif in l-egume, a numpy.array of dimension ``(nent, nclasses)``
-        which represents the global leaf angle distribution for each input specy
+        *  ``"distrib"``: equivalent to ls_dif in l-egume, a numpy.array of dimension ``(nent, nclasses)`` which represents the global leaf angle distribution for each input specy
 
         .. note:: legumescene is the only input geometric scene which can handle several species
 
@@ -328,17 +326,11 @@ def legumescene_to_RATPscene(legumescene, parameters, coordinates, reflected, in
 
         It returns 3 objects
 
-        * ``ratpgrid``
-            pyratp.grid filled with areas of triangles in trimesh and input parameters
+        * ``ratpgrid`` : pyratp.grid filled with areas of triangles in trimesh and input parameters
 
-        * ``distrib``
-            dict with only a ``"global"`` key
+        * ``distrib`` : dict with only a ``"global"`` key, value for ``"global"`` is a list of ``numberofentities`` list of ``numberofclasses`` elements
 
-            value for ``"global"`` is a list of ``numberofentities`` list of ``numberofclasses``
-            elements
-
-        * ``nb0``
-            number of empty layers between top canopy and maximum layer in legumescene
+        * ``nb0`` : number of empty layers between top canopy and maximum layer in legumescene
 
     :rtype: pyratp.grid, dict, int
     """

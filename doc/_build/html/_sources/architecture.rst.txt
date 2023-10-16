@@ -8,25 +8,27 @@ Architecture of the tool
 Package Content
 -----------------
 
-The package has 5 folders and 3 files in its root:
+The package has 8 folders and 4 files in its root:
 
-- container: contains recipe to build a singularity environment for using LightVegeManager
-  
+- data: data files used in some the use examples in the package
+ 
 - doc: user and reference documentations
   
-- examples: proposes 3 complete simulations with example datas from plant models CN-WHeat and l-egume
-  
-    - ``cnwheat_lightvegemanager.py`` is a test comparing CN-wheat with CARIBU and RATP
-    - ``legume_lightvegemanager.py`` is a test comparing l-egume with CARIBU, RATP and RiRi
-    - ``couplage_CARIBU.py`` is a fictive simulation with CN-Wheat and l-egume with common computation with CARIBU for lighting
+- examples: small python scripts with examples of LightVegeManager use
+
+- notebooks: jupyter notebooks with documented tutorials exploring the tool features
+
+- s2v and s5: sources of analysis tools
   
 - src: sources of LightVegeManager
   
-- tests: scripts for unit tests
+- tests: unit testing files written in pytest format
   
 - .gitignore: files and folders to ignore by git
   
 - README.md: Read Me file
+
+- pytest.ini: config file for pytest
   
 - setup.py: setup script used for installation
 
@@ -46,39 +48,41 @@ parts depending on the inputs.
 
 Modules are:
 
-    * :mod:` LightVegeManager` Main class of the tool. Calls all the other modules in ``src``.
+    * :mod:`LightVegeManager_tool` Main class of the tool. Calls all the other modules in ``src``.
 
-    * :mod:` LightVegeManager_CARIBUinputs` Manages and prepares input information for CARIBU.
+    * :mod:`LightVegeManager_CARIBUinputs` Manages and prepares input information for CARIBU.
 
-    * :mod:` LightVegeManager_RATPinputs` Manage vegetation and meteo input informations for RATP
+    * :mod:`LightVegeManager_RATPinputs` Manage vegetation and meteo input informations for RATP
+    
+    * :mod:`LightVegeManager_RiRi5inputs` Manage grid of voxels for RiRi5
 
-    * :mod:` LightVegeManager_VTK` Writes VTK files from LightVegeManager geometry and lighting data. Used for visualisation
+    * :mod:`LightVegeManager_VTK` Writes VTK files from LightVegeManager geometry and lighting data. Used for visualisation
 
-    * :mod:` LightVegeManager_basicgeometry` Provides basic geometric operations in 3D used by LightVegeManager. 
+    * :mod:`LightVegeManager_basicgeometry` Provides basic geometric operations in 3D used by LightVegeManager. 
 
-    * :mod:` LightVegeManager_buildRATPscene` Build a PyRATP.grid from inputs.
+    * :mod:`LightVegeManager_buildRATPscene` Build a PyRATP.grid from inputs.
 
-    * :mod:` LightVegeManager_defaultvalues` Default for simulation fixed parameters
+    * :mod:`LightVegeManager_defaultvalues` Default for simulation fixed parameters
 
-    * :mod:` LightVegeManager_leafangles` Handles leaf angle distribution, both in its dynamic computing or reading a file
+    * :mod:`LightVegeManager_leafangles` Handles leaf angle distribution, both in its dynamic computing or reading a file
 
-    * :mod:` LightVegeManager_outputs` Manages and reformats output results from the light models in pandas.Dataframe with similar columns names
+    * :mod:`LightVegeManager_outputs` Manages and reformats output results from the light models in pandas.Dataframe with similar columns names
 
-    * :mod:` LightVegeManager_plantGL` Visualisation with plantGL
+    * :mod:`LightVegeManager_plantGL` Visualisation with plantGL
 
-    * :mod:` LightVegeManager_sky` Build a sky from LightVegeManager input informations
+    * :mod:`LightVegeManager_sky` Build a sky from LightVegeManager input informations
 
-    * :mod:` LightVegeManager_stems` Manages stems element
+    * :mod:`LightVegeManager_stems` Manages stems element
 
-    * :mod:` LightVegeManager_sun` Build a sun respecting each light model format
+    * :mod:`LightVegeManager_sun` Build a sun respecting each light model format
 
-    * :mod:` LightVegeManager_tesselator` Manages subdivision of a triangulation
+    * :mod:`LightVegeManager_tesselator` Manages subdivision of a triangulation
 
-    * :mod:` LightVegeManager_transfer` Manages transfer of LightVegeManager results to plant Models
+    * :mod:`LightVegeManager_transfer` Manages transfer of LightVegeManager results to plant Models
 
-    * :mod:` LightVegeManager_trianglesmesh` Builds and handles triangulation mesh.
+    * :mod:`LightVegeManager_trianglesmesh` Builds and handles triangulation mesh.
 
-    * :mod:` LightVegeManager_voxelsmesh` Builds and handles axis oriented voxels mesh
+    * :mod:`LightVegeManager_voxelsmesh` Builds and handles axis oriented voxels mesh
 
 
 .. _frontend:

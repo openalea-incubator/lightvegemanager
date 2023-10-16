@@ -105,12 +105,12 @@ def transfer_caribu_legume(
     :type energy: float
     :param skylayer: number of empty layers from top of the canopy and maximum z layers in m_lais
     :type skylayer: int
-    :param id: _description_
-    :type id: _type_
-    :param elements_outputs: Dataframe results of elements formatted by :func:LightVegeManager_outputs.out_caribu_elements
+    :param id: list of indices of input scenes associated with l-egume
+    :type id: list of int
+    :param elements_outputs: Dataframe results of elements formatted by :func:outputs.out_caribu_elements
     :type elements_outputs: pandas.Dataframe
-    :param sensors_outputs: lighting results of virtual sensors form CARIBU in the format
-    for each bandwidth computed,
+    :param sensors_outputs: lighting results of virtual sensors form CARIBU in the format for each bandwidth computed,
+        
         .. code-block::
 
             sensors_outputs[band+" Eabs"] = {sensor_id : energy}
@@ -124,14 +124,11 @@ def transfer_caribu_legume(
     :param m_lais: leaf area represented in a numpy.array of dimension
         [number of species, number of z layers, number of y layers, number of x layers]
     :type m_lais: numpy.array
-    :param list_invar: from l-egume, each element corresponds to an input specy of l-egume. Each element is a dict
-    invar stores instant intern variables of l-egume.
+    :param list_invar: from l-egume, each element corresponds to an input specy of l-egume. Each element is a dict invar stores instant intern variables of l-egume.
     :type list_invar: list of dict
-    :param list_lstring: from l-egume, each element corresponds to an input specy of l-egume. Each element is a dict
-    lstring stores the l-system of each plant
+    :param list_lstring: from l-egume, each element corresponds to an input specy of l-egume. Each element is a dict lstring stores the l-system of each plant
     :type list_lstring: list of dict
-    :param list_dicFeuilBilanR: from l-egume, each element corresponds to an input specy of l-egume. Each element is a dict
-    dicFeuiBilanR stores correspondances between voxels grid and each plant
+    :param list_dicFeuilBilanR: from l-egume, each element corresponds to an input specy of l-egume. Each element is a dict dicFeuiBilanR stores correspondances between voxels grid and each plant
     :type list_dicFeuilBilanR: list of dict
     :param infinite: if the user wishes to activate infinitisation of the grid
     :type infinite: bool
@@ -140,8 +137,7 @@ def transfer_caribu_legume(
     :raises ValueError: Virtual sensors and finite scene doesn't work yet with CARIBU
     :return:
 
-        * it updates ``list_invar`` and its key entries ``"parap"`` and ``"parip"``, each element if the scipy.array is the sum of
-        all intercepted energy for each plant. This process is a rewrite of ``calc_paraF`` in ShootMorpho.py module of l-egume, adapted to LightVegeManager numerotation of triangles
+        * it updates ``list_invar`` and its key entries ``"parap"`` and ``"parip"``, each element if the scipy.array is the sum of all intercepted energy for each plant. This process is a rewrite of ``calc_paraF`` in ShootMorpho.py module of l-egume, adapted to LightVegeManager numerotation of triangles
 
         * ``res_trans`` an array of transmitted energy for each voxel in a grid of dimensions ``sensors_dxyz * sensors_nxyz``
 

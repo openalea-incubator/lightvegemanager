@@ -171,11 +171,12 @@ def out_ratp_voxels(ratpgrid, res, parunit) :
     :param res: output table of RATP
     :type res: pyratp.ratp.out_rayt
     :param parunit: energy unit of input
+
         RATP expects W.m-2 in input and return results in µmol.s-1.m-2.
-        if ``parunit="W.m-2"` the outputs is converted to W.m-2, otherwise results are in µmol.s-1.m-2
+        if ``parunit="W.m-2"`` the outputs is converted to W.m-2, otherwise results are in µmol.s-1.m-2
+
     :type parunit: string
-    :return: res.T converted in a pandas Dataframe with voxels relative columns. The soil is not part
-    of the results
+    :return: res.T converted in a pandas Dataframe with voxels relative columns. The soil is not part of the results
     :rtype: pandas.DataFrame
     """    
     # decompress all outputs of RATP

@@ -108,8 +108,7 @@ def fill_ratpgrid_from_trimesh(trimesh, matching_ids, ratpgrid, stems_id=None, n
     :type ratpgrid: pyratp.grid
     :param stems_id: list of potential stems element in the input scenes, defaults to None
     :type stems_id: list of 2-tuple, optional
-    :param nb_input_scenes: number of input geometrical scenes. It can be different with number of
-    species if there is a l-egume grid in the input with several species in it, defaults to 0
+    :param nb_input_scenes: number of input geometrical scenes. It can be different with number of species if there is a l-egume grid in the input with several species in it, defaults to 0
     :type nb_input_scenes: int, optional
     :return: copy of ``ratpgrid`` with leaf area density values from barycenters and areas of the input triangles
     :rtype: pyratp.grid
@@ -145,11 +144,9 @@ def fill_ratpgrid_from_legumescene(legumescene, ratpgrid, nb0):
     :param legumescene:
         l-egume grid represented by a dict with two entries:
 
-        *  ``"LA"``: equivalent to m_lais in l-egume, a numpy.array of dimension ``(nent, nz, ny, nx)``
-        which represents leaf area in each voxel for each specy. nz=0 is the top layer
+        *  ``"LA"``: equivalent to m_lais in l-egume, a numpy.array of dimension ``(nent, nz, ny, nx)`` which represents leaf area in each voxel for each specy. nz=0 is the top layer
 
-        *  ``"distrib"``: equivalent to ls_dif in l-egume, a numpy.array of dimension ``(nent, nclasses)``
-        which represents the global leaf angle distribution for each input specy
+        *  ``"distrib"``: equivalent to ls_dif in l-egume, a numpy.array of dimension ``(nent, nclasses)`` which represents the global leaf angle distribution for each input specy
 
         .. note:: legumescene is the only input geometric scene which can handle several species
     :type legumescene: dict

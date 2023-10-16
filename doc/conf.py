@@ -6,7 +6,7 @@
 # -- Path setup --------------------------------------------------------------
 import os
 import sys
-sys.path.append( os.path.abspath("../src/") )
+sys.path.append( os.path.abspath("../src/lightvegemanager/") )
 sys.path.insert( 0, os.path.abspath("..") )
 
 
@@ -24,7 +24,7 @@ release = '0.0.0'
 extensions = ["sphinx.ext.todo", "sphinx.ext.viewcode", "sphinx.ext.autodoc"]
 
 templates_path = ['_templates']
-exclude_patterns = ['doc/_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['doc/_build', 'Thumbs.db', '.DS_Store', 'README.rst']
 
 autodoc_member_order = 'bysource'
 

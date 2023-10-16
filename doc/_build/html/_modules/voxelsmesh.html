@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>voxelsmesh &mdash; LightVegeManager 0.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            LightVegeManager
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../presentation.html">Presentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Architecture of the tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inputs.html">Inputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../others.html">Additionnal Functionalities</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">Reference Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LightVegeManager</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">voxelsmesh</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for voxelsmesh</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    voxelsmesh</span>
+<span class="sd">    **********</span>
+
+<span class="sd">    Builds and handles axis oriented voxels mesh</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="kn">from</span> <span class="nn">lightvegemanager.basicgeometry</span> <span class="kn">import</span> <span class="n">triangle_barycenter</span><span class="p">,</span> <span class="n">triangle_area</span>
+
+<div class="viewcode-block" id="compute_grid_size_from_trimesh"><a class="viewcode-back" href="../reference.html#voxelsmesh.compute_grid_size_from_trimesh">[docs]</a><span class="k">def</span> <span class="nf">compute_grid_size_from_trimesh</span><span class="p">(</span><span class="n">pmin</span><span class="p">,</span> <span class="n">pmax</span><span class="p">,</span> <span class="n">dv</span><span class="p">,</span> <span class="n">grid_slicing</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dynamically compute number of voxels for each axis in the grid</span>
+<span class="sd">    The grid is ajusted to be the smallest box containing another mesh</span>
+
+<span class="sd">    :param pmin: Minimum point of a mesh ``[x, y, z]``</span>
+<span class="sd">    :type pmin: list</span>
+<span class="sd">    :param pmax: Maximum point of a mesh ``[x, y, z]``</span>
+<span class="sd">    :type pmax: list</span>
+<span class="sd">    :param dv: size a voxel in each direction ``[dx, dy, dz]``</span>
+<span class="sd">    :type dv: list</span>
+<span class="sd">    :param grid_slicing: possibility to force the ground to be at z=0, defaults to None</span>
+<span class="sd">    :type grid_slicing: string, optional</span>
+<span class="sd">    :return: number of voxels in each direction x, y and z</span>
+<span class="sd">    :rtype: int, int, int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="p">[</span><span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dz</span><span class="p">]</span> <span class="o">=</span> <span class="n">dv</span>
+
+    <span class="c1"># if pmax == pmin we ajust to have one layer of voxels</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">pmin</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">pmax</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+            <span class="n">pmax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">dv</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">pmin</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-=</span> <span class="n">dv</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="n">nx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">pmax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">pmin</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">//</span> <span class="n">dx</span><span class="p">)</span>
+    <span class="n">ny</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">pmax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">pmin</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">//</span> <span class="n">dy</span><span class="p">)</span>
+    <span class="n">nz</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">grid_slicing</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">grid_slicing</span> <span class="o">==</span> <span class="s2">&quot;ground = 0.&quot;</span><span class="p">:</span>
+            <span class="n">nz</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">pmax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">//</span> <span class="n">dz</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">nz</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">pmax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">pmin</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">//</span> <span class="n">dz</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">pmax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">pmin</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">%</span> <span class="n">dx</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">nx</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">pmax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">pmin</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">%</span> <span class="n">dy</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">ny</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">pmax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">pmin</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">%</span> <span class="n">dz</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">nz</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span></div>
+
+
+<div class="viewcode-block" id="tesselate_trimesh_on_grid"><a class="viewcode-back" href="../reference.html#voxelsmesh.tesselate_trimesh_on_grid">[docs]</a><span class="k">def</span> <span class="nf">tesselate_trimesh_on_grid</span><span class="p">(</span><span class="n">trimesh</span><span class="p">,</span> <span class="n">ratpgrid</span><span class="p">,</span> <span class="n">levelmax</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Loop on all triangles of a triangulation to tesselate them for better matching a grid of voxels</span>
+<span class="sd">    Triangles will subdivide on sides of voxels respecting a certain maximum level</span>
+
+<span class="sd">    :param trimesh: triangles mesh aggregated by indice elements</span>
+
+<span class="sd">        .. code-block::</span>
+
+<span class="sd">            { id : [triangle1, triangle2, ...]}</span>
+
+<span class="sd">    :type trimesh: dict of list</span>
+<span class="sd">    :param ratpgrid: RATP grid of voxels</span>
+<span class="sd">    :type ratpgrid: pyratp.grid</span>
+<span class="sd">    :param levelmax: maximum level for subdividing triangles</span>
+<span class="sd">    :type levelmax: int</span>
+<span class="sd">    :return: a copy of trimesh with subdivided triangles</span>
+<span class="sd">    :rtype: dict of list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">lightvegemanager.tesselator</span> <span class="kn">import</span> <span class="n">iterate_trianglesingrid</span>
+
+    <span class="n">new_trimesh</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">id_ele</span><span class="p">,</span> <span class="n">triangles</span> <span class="ow">in</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">new_tr_scene</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">triangles</span><span class="p">:</span>
+            <span class="n">level</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">iterate_trianglesingrid</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">ratpgrid</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">levelmax</span><span class="p">,</span> <span class="n">new_tr_scene</span><span class="p">)</span>
+        <span class="n">new_trimesh</span><span class="p">[</span><span class="n">id_ele</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_tr_scene</span>
+
+    <span class="k">return</span> <span class="n">new_trimesh</span></div>
+
+
+<div class="viewcode-block" id="fill_ratpgrid_from_trimesh"><a class="viewcode-back" href="../reference.html#voxelsmesh.fill_ratpgrid_from_trimesh">[docs]</a><span class="k">def</span> <span class="nf">fill_ratpgrid_from_trimesh</span><span class="p">(</span><span class="n">trimesh</span><span class="p">,</span> <span class="n">matching_ids</span><span class="p">,</span> <span class="n">ratpgrid</span><span class="p">,</span> <span class="n">stems_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nb_input_scenes</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fills a RATP grid from a triangulation.</span>
+<span class="sd">    It gives barycenters and areas of triangles to update the leaf area density in the corresponding</span>
+<span class="sd">    voxel.</span>
+
+<span class="sd">    :param trimesh: triangles mesh aggregated by indice elements</span>
+
+<span class="sd">        .. code-block::</span>
+
+<span class="sd">            { id : [triangle1, triangle2, ...]}</span>
+
+<span class="sd">    :type trimesh: dict of list</span>
+<span class="sd">    :param matching_ids:</span>
+<span class="sd">        dict that matches new element indices in cscene with specy indice and</span>
+<span class="sd">        input element indice,</span>
+
+<span class="sd">        .. code-block::</span>
+
+<span class="sd">            matching_ids = { new_element_id : (input_element_id, specy_id)}</span>
+
+<span class="sd">        this dict allows us to look how species there is the inputs geometric data</span>
+
+<span class="sd">    :type matching_ids: dict</span>
+<span class="sd">    :param ratpgrid: RATP grid of voxels</span>
+<span class="sd">    :type ratpgrid: pyratp.grid</span>
+<span class="sd">    :param stems_id: list of potential stems element in the input scenes, defaults to None</span>
+<span class="sd">    :type stems_id: list of 2-tuple, optional</span>
+<span class="sd">    :param nb_input_scenes: number of input geometrical scenes. It can be different with number of species if there is a l-egume grid in the input with several species in it, defaults to 0</span>
+<span class="sd">    :type nb_input_scenes: int, optional</span>
+<span class="sd">    :return: copy of ``ratpgrid`` with leaf area density values from barycenters and areas of the input triangles</span>
+<span class="sd">    :rtype: pyratp.grid</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">alinea.pyratp</span> <span class="kn">import</span> <span class="n">grid</span>
+
+    <span class="n">entity</span><span class="p">,</span> <span class="n">barx</span><span class="p">,</span> <span class="n">bary</span><span class="p">,</span> <span class="n">barz</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="nb">id</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">ts</span><span class="p">:</span>
+            <span class="n">bar</span> <span class="o">=</span> <span class="n">triangle_barycenter</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+            <span class="n">barx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bar</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">bary</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bar</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">barz</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bar</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+            <span class="c1"># if element is a stem, i.e. an opaque organ, we divide its area by 2 (only one face receive lighting)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">stems_id</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stems_id</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">and</span> \
+            <span class="p">((</span><span class="n">matching_ids</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">matching_ids</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">nb_input_scenes</span><span class="p">)</span> <span class="ow">in</span> <span class="n">stems_id</span> <span class="ow">or</span> \
+            <span class="p">(</span><span class="n">matching_ids</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">matching_ids</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="ow">in</span> <span class="n">stems_id</span><span class="p">):</span>
+                <span class="n">a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">triangle_area</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">triangle_area</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+
+            <span class="n">n</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+            <span class="n">entity</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">matching_ids</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">grid</span><span class="o">.</span><span class="n">Grid</span><span class="o">.</span><span class="n">fill_1</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">barx</span><span class="p">,</span> <span class="n">bary</span><span class="p">,</span> <span class="n">barz</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">ratpgrid</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="fill_ratpgrid_from_legumescene"><a class="viewcode-back" href="../reference.html#voxelsmesh.fill_ratpgrid_from_legumescene">[docs]</a><span class="k">def</span> <span class="nf">fill_ratpgrid_from_legumescene</span><span class="p">(</span><span class="n">legumescene</span><span class="p">,</span> <span class="n">ratpgrid</span><span class="p">,</span> <span class="n">nb0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fills a RATP grid from a l-egume grid</span>
+<span class="sd">    It updates ``ratpgrid``.</span>
+
+<span class="sd">    :param legumescene:</span>
+<span class="sd">        l-egume grid represented by a dict with two entries:</span>
+
+<span class="sd">        *  ``&quot;LA&quot;``: equivalent to m_lais in l-egume, a numpy.array of dimension ``(nent, nz, ny, nx)`` which represents leaf area in each voxel for each specy. nz=0 is the top layer</span>
+
+<span class="sd">        *  ``&quot;distrib&quot;``: equivalent to ls_dif in l-egume, a numpy.array of dimension ``(nent, nclasses)`` which represents the global leaf angle distribution for each input specy</span>
+
+<span class="sd">        .. note:: legumescene is the only input geometric scene which can handle several species</span>
+<span class="sd">    :type legumescene: dict</span>
+<span class="sd">    :param ratpgrid: RATP grid of voxels. nz=0 is the top layer</span>
+<span class="sd">    :type ratpgrid: pyratp.grid</span>
+<span class="sd">    :param nb0: number of empty layers from top of the canopy and maximum z layers in m_lais</span>
+<span class="sd">    :type nb0: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dvolume</span> <span class="o">=</span> <span class="n">ratpgrid</span><span class="o">.</span><span class="n">dx</span> <span class="o">*</span> <span class="n">ratpgrid</span><span class="o">.</span><span class="n">dy</span> <span class="o">*</span> <span class="n">ratpgrid</span><span class="o">.</span><span class="n">dz</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="c1"># remplissage des voxels avec la grille</span>
+    <span class="n">n_vox_per_nent</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">ne</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ratpgrid</span><span class="o">.</span><span class="n">nent</span><span class="p">):</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ratpgrid</span><span class="o">.</span><span class="n">njx</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">iy</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ratpgrid</span><span class="o">.</span><span class="n">njy</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">iz</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ratpgrid</span><span class="o">.</span><span class="n">njz</span><span class="p">):</span>
+                    <span class="n">legume_iz</span> <span class="o">=</span> <span class="n">iz</span> <span class="o">+</span> <span class="n">nb0</span>
+
+                    <span class="c1"># on force les voxels vides dans les couches non vides à</span>
+                    <span class="c1"># être interprétés par RATP</span>
+                    <span class="n">S_voxel</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">1e-14</span><span class="p">,</span> <span class="n">legumescene</span><span class="p">[</span><span class="s2">&quot;LA&quot;</span><span class="p">][</span><span class="n">ne</span><span class="p">][</span><span class="n">legume_iz</span><span class="p">][</span><span class="n">iy</span><span class="p">][</span><span class="n">ix</span><span class="p">])</span>
+
+                    <span class="c1"># ajouter 1 pour utilisation f90</span>
+                    <span class="c1"># sens xy sont inversés entre l-egume et RATP</span>
+                    <span class="n">ratpgrid</span><span class="o">.</span><span class="n">kxyz</span><span class="p">[</span><span class="n">ratpgrid</span><span class="o">.</span><span class="n">njy</span> <span class="o">-</span> <span class="p">(</span><span class="n">iy</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">ix</span><span class="p">,</span> <span class="n">iz</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="n">ratpgrid</span><span class="o">.</span><span class="n">numx</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">ratpgrid</span><span class="o">.</span><span class="n">njy</span> <span class="o">-</span> <span class="p">(</span><span class="n">iy</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="n">ratpgrid</span><span class="o">.</span><span class="n">numy</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">ix</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="n">ratpgrid</span><span class="o">.</span><span class="n">numz</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">iz</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="n">ratpgrid</span><span class="o">.</span><span class="n">nume</span><span class="p">[</span><span class="n">ne</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">ne</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="n">ratpgrid</span><span class="o">.</span><span class="n">nje</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ne</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ratpgrid</span><span class="o">.</span><span class="n">nje</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+                    <span class="n">ratpgrid</span><span class="o">.</span><span class="n">nemax</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ratpgrid</span><span class="o">.</span><span class="n">nemax</span><span class="p">,</span> <span class="n">ratpgrid</span><span class="o">.</span><span class="n">nje</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+
+                    <span class="n">ratpgrid</span><span class="o">.</span><span class="n">leafareadensity</span><span class="p">[</span><span class="n">ne</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">+=</span> <span class="n">S_voxel</span> <span class="o">/</span> <span class="n">dvolume</span>
+                    <span class="n">ratpgrid</span><span class="o">.</span><span class="n">s_vt_vx</span><span class="p">[</span><span class="n">ne</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">+=</span> <span class="n">S_voxel</span>
+                    <span class="n">ratpgrid</span><span class="o">.</span><span class="n">s_vx</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">+=</span> <span class="n">S_voxel</span>
+                    <span class="n">ratpgrid</span><span class="o">.</span><span class="n">s_vt</span><span class="p">[</span><span class="n">ne</span><span class="p">]</span> <span class="o">+=</span> <span class="n">S_voxel</span>
+                    <span class="n">ratpgrid</span><span class="o">.</span><span class="n">s_canopy</span> <span class="o">+=</span> <span class="n">S_voxel</span>
+
+                    <span class="n">k</span> <span class="o">=</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">n_vox_per_nent</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+
+    <span class="n">ratpgrid</span><span class="o">.</span><span class="n">nveg</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">n_vox_per_nent</span><span class="p">)</span>
+    <span class="n">ratpgrid</span><span class="o">.</span><span class="n">nsol</span> <span class="o">=</span> <span class="n">ratpgrid</span><span class="o">.</span><span class="n">njx</span> <span class="o">*</span> <span class="n">ratpgrid</span><span class="o">.</span><span class="n">njy</span>  <span class="c1"># Numbering soil surface areas</span>
+    <span class="k">for</span> <span class="n">jx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ratpgrid</span><span class="o">.</span><span class="n">njx</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">jy</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ratpgrid</span><span class="o">.</span><span class="n">njy</span><span class="p">):</span>
+            <span class="n">ratpgrid</span><span class="o">.</span><span class="n">kxyz</span><span class="p">[</span><span class="n">jx</span><span class="p">,</span> <span class="n">jy</span><span class="p">,</span> <span class="n">ratpgrid</span><span class="o">.</span><span class="n">njz</span><span class="p">]</span> <span class="o">=</span> <span class="n">ratpgrid</span><span class="o">.</span><span class="n">njy</span> <span class="o">*</span> <span class="n">jx</span> <span class="o">+</span> <span class="n">jy</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ratpgrid</span><span class="o">.</span><span class="n">nveg</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">je</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ratpgrid</span><span class="o">.</span><span class="n">nje</span><span class="p">[</span><span class="n">k</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="n">je</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># !!! on considère l-egume avec une hauteur fixe de voxel</span>
+                <span class="c1"># Incrementing total canopy volume</span>
+                <span class="n">ratpgrid</span><span class="o">.</span><span class="n">volume_canopy</span><span class="p">[</span><span class="n">ratpgrid</span><span class="o">.</span><span class="n">nent</span><span class="p">]</span> <span class="o">=</span> <span class="n">ratpgrid</span><span class="o">.</span><span class="n">volume_canopy</span><span class="p">[</span><span class="n">ratpgrid</span><span class="o">.</span><span class="n">nent</span><span class="p">]</span> <span class="o">+</span> <span class="n">dvolume</span>
+            <span class="k">if</span> <span class="n">ratpgrid</span><span class="o">.</span><span class="n">s_vt_vx</span><span class="p">[</span><span class="n">je</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="n">ratpgrid</span><span class="o">.</span><span class="n">volume_canopy</span><span class="p">[</span><span class="n">ratpgrid</span><span class="o">.</span><span class="n">nume</span><span class="p">[</span><span class="n">je</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">ratpgrid</span><span class="o">.</span><span class="n">volume_canopy</span><span class="p">[</span><span class="n">ratpgrid</span><span class="o">.</span><span class="n">nume</span><span class="p">[</span><span class="n">je</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">dvolume</span>
+                <span class="p">)</span>
+                <span class="n">ratpgrid</span><span class="o">.</span><span class="n">voxel_canopy</span><span class="p">[</span><span class="n">ratpgrid</span><span class="o">.</span><span class="n">nume</span><span class="p">[</span><span class="n">je</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">ratpgrid</span><span class="o">.</span><span class="n">voxel_canopy</span><span class="p">[</span><span class="n">ratpgrid</span><span class="o">.</span><span class="n">nume</span><span class="p">[</span><span class="n">je</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="reduce_layers_from_trimesh"><a class="viewcode-back" href="../reference.html#voxelsmesh.reduce_layers_from_trimesh">[docs]</a><span class="k">def</span> <span class="nf">reduce_layers_from_trimesh</span><span class="p">(</span><span class="n">trimesh</span><span class="p">,</span> <span class="n">pmax</span><span class="p">,</span> <span class="n">dxyz</span><span class="p">,</span> <span class="n">nxyz</span><span class="p">,</span> <span class="n">matching_ids</span><span class="p">,</span> <span class="n">ids</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Number of empty layers in a grid of voxels, from the top of the canopy to the last expected layer.</span>
+<span class="sd">    It computes this number from a triangles mesh</span>
+
+<span class="sd">    :param trimesh: triangles mesh aggregated by indice elements</span>
+
+<span class="sd">        .. code-block::</span>
+
+<span class="sd">            { id : [triangle1, triangle2, ...]}</span>
+
+<span class="sd">    :type trimesh: dict of list</span>
+<span class="sd">    :param pmax: Maximum point of a mesh ``[x, y, z]``</span>
+<span class="sd">    :type pmax: list</span>
+<span class="sd">    :param dxyz: size of sides of a voxel ``[dx, dy, dz]``</span>
+<span class="sd">    :type dxyz: list</span>
+<span class="sd">    :param nxyz: number of voxels in each direction ``[nx, ny, nz]``, nz is the expected number of layers</span>
+<span class="sd">    :type nxyz: list</span>
+<span class="sd">    :param matching_ids:</span>
+<span class="sd">        dict that matches new element indices in cscene with specy indice and</span>
+<span class="sd">        input element indice,</span>
+
+<span class="sd">        .. code-block::</span>
+
+<span class="sd">            matching_ids = { new_element_id : (input_element_id, specy_id)}</span>
+
+<span class="sd">        this dict allows us to look how species there is the inputs geometric data</span>
+
+<span class="sd">    :type matching_ids: dict</span>
+<span class="sd">    :param ids: list of specy indices considered not empty, defaults to None</span>
+<span class="sd">    :type ids: list of int, optional</span>
+<span class="sd">    :return: number of empty layers between top of the canopy (represented by ``trimesh``) and ``nxyz[2]``</span>
+<span class="sd">    :rtype: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">lightvegemanager.trianglesmesh</span> <span class="kn">import</span> <span class="n">triangles_entity</span>
+    
+    <span class="c1"># empty scene</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">matching_ids</span> <span class="p">:</span>
+        <span class="n">skylayer</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nxyz</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># reduction si number of filled layers &lt; expected number of layers</span>
+        <span class="k">if</span> <span class="n">ids</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">skylayer</span> <span class="o">=</span> <span class="p">(</span><span class="n">pmax</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">//</span> <span class="n">dxyz</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">skylayer</span> <span class="o">&lt;</span> <span class="n">nxyz</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">and</span> <span class="n">pmax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">skylayer</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nxyz</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">skylayer</span><span class="p">)</span>
+
+            <span class="c1"># otherwise we keep the initial number of layers</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">skylayer</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># we compute the maximum z of trimesh by omitting some species listed in ids</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># we firstly check if some input species are not empty</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">specie_empty</span> <span class="o">=</span> <span class="n">matching_ids</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ids</span>
+            <span class="k">while</span> <span class="p">(</span><span class="n">matching_ids</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">matching_ids</span><span class="p">)):</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">matching_ids</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">:</span>
+                    <span class="n">specie_empty</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="c1"># geometry is empty</span>
+            <span class="k">if</span> <span class="n">specie_empty</span><span class="p">:</span>
+                <span class="n">skylayer</span> <span class="o">=</span> <span class="n">nxyz</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+
+            <span class="c1"># we compute empty layers from the non empty species</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">zmax</span> <span class="o">=</span> <span class="o">-</span><span class="mi">999999</span>
+                <span class="k">if</span> <span class="n">trimesh</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">:</span>
+                        <span class="n">triangles</span> <span class="o">=</span> <span class="n">triangles_entity</span><span class="p">(</span><span class="n">trimesh</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">matching_ids</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="p">[[</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">t</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">triangles</span><span class="p">])):</span>
+                            <span class="k">if</span> <span class="n">z</span> <span class="o">&gt;</span> <span class="n">zmax</span><span class="p">:</span>
+                                <span class="n">zmax</span> <span class="o">=</span> <span class="n">z</span>
+
+                <span class="n">skylayer</span> <span class="o">=</span> <span class="n">zmax</span> <span class="o">//</span> <span class="n">dxyz</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">skylayer</span> <span class="o">&lt;</span> <span class="n">nxyz</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">and</span> <span class="n">zmax</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">skylayer</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nxyz</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">skylayer</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">skylayer</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, INRAE P3F.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

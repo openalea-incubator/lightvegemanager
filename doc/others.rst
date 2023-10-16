@@ -31,4 +31,10 @@ You can create VTK files from the geometric information you have in the inputs. 
 PlantGL visualizer
 ******************
 
-Currently in development.
+You can export a plantGL scene from geometric scene inside an isntance. Available methods
+    
+    * :meth:`plantGL_nolight`: write only geometric informations from the common scene
+    
+    * :meth:`plantGL_light`: write geometric informations associated with radiation values for each element
+    
+    * :meth:`plantGL_sensors`: write virtual sensors stock in the instance

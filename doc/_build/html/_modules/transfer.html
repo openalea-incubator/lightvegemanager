@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>transfer &mdash; LightVegeManager 0.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            LightVegeManager
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../presentation.html">Presentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Architecture of the tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inputs.html">Inputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../others.html">Additionnal Functionalities</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">Reference Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LightVegeManager</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">transfer</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for transfer</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    transfer</span>
+<span class="sd">    ********</span>
+
+<span class="sd">    Handles transfer of LightVegeManager results to plant Models.</span>
+
+<span class="sd">    Currently, it manages CN-Wheat and l-egume. Only l-egume needs additionnal processes to</span>
+<span class="sd">    converts Dataframe results in a compatible format.</span>
+
+<span class="sd">    l-egume expects the absorb PAR either per plant or locally following a grid of voxels, and the transmitted PAR</span>
+<span class="sd">    locally following a grid of voxels. Here, we will convert and transform results for CARIBU and RATP to those l-egume format.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">scipy</span>
+
+<div class="viewcode-block" id="transfer_ratp_legume"><a class="viewcode-back" href="../reference.html#transfer.transfer_ratp_legume">[docs]</a><span class="k">def</span> <span class="nf">transfer_ratp_legume</span><span class="p">(</span><span class="n">m_lais</span><span class="p">,</span> <span class="n">energy</span><span class="p">,</span> <span class="n">ratp_grid</span><span class="p">,</span> <span class="n">voxels_outputs</span><span class="p">,</span> <span class="n">nb0</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Transfers LightVegeManager outputs from RATP to l-egume</span>
+<span class="sd">    Absorb and transmitted PAR will follow a RATP grid of voxels, matching the dimensions of intern l-egume grid of voxels.</span>
+
+<span class="sd">    :param m_lais: leaf area represented in a numpy.array of dimension</span>
+<span class="sd">        [number of species, number of z layers, number of y layers, number of x layers]</span>
+<span class="sd">    :type m_lais: numpy.array</span>
+<span class="sd">    :param energy: input energy</span>
+<span class="sd">    :type energy: float</span>
+<span class="sd">    :param ratp_grid: RATP grid of voxels</span>
+<span class="sd">    :type ratp_grid: pyratp.grid</span>
+<span class="sd">    :param voxels_outputs: results from LightVegeManager</span>
+<span class="sd">    :type voxels_outputs: pandas.Dataframe</span>
+<span class="sd">    :param nb0: number of empty layers from top of the canopy and maximum z layers in m_lais</span>
+<span class="sd">    :type nb0: int</span>
+<span class="sd">    :param epsilon: criteria of minimum intercepted portion of PAR in a non empty voxel</span>
+<span class="sd">    :type epsilon: float</span>
+<span class="sd">    :return:</span>
+
+<span class="sd">        two array with lighting informations</span>
+
+<span class="sd">            * ``res_abs_i``: absorb PAR in each voxel for RATP grid of voxels. It has the same dimensions as ``m_lais``</span>
+
+<span class="sd">            * ``res_trans``: transmitted PAR in each voxel, i.e. the energy leaving the voxels from input rays. This value is not dependent on specy</span>
+
+<span class="sd">        dimensions are (number of z layers, number of y layers, number of x layers)</span>
+
+<span class="sd">    :rtype: numpy.array, numpy.array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># initialize absorb energy array</span>
+    <span class="n">res_abs_i</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">m_lais</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">m_lais</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">m_lais</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">m_lais</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span>
+
+    <span class="c1"># voxel top side area</span>
+    <span class="n">dS</span> <span class="o">=</span> <span class="n">ratp_grid</span><span class="o">.</span><span class="n">dx</span> <span class="o">*</span> <span class="n">ratp_grid</span><span class="o">.</span><span class="n">dy</span>
+    <span class="n">res_trans</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">m_lais</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">m_lais</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">m_lais</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span>
+    <span class="c1"># maximum transmitted energy is total incoming energy per area</span>
+    <span class="n">res_trans</span> <span class="o">=</span> <span class="n">res_trans</span> <span class="o">*</span> <span class="p">(</span><span class="n">energy</span> <span class="o">*</span> <span class="n">dS</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m_lais</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]):</span>
+        <span class="k">for</span> <span class="n">iy</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m_lais</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="n">iz</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ratp_grid</span><span class="o">.</span><span class="n">njz</span><span class="p">):</span>
+                <span class="n">legume_iz</span> <span class="o">=</span> <span class="n">iz</span> <span class="o">+</span> <span class="n">nb0</span>
+
+                <span class="n">condition_x</span> <span class="o">=</span> <span class="n">voxels_outputs</span><span class="o">.</span><span class="n">Nx</span> <span class="o">==</span> <span class="n">m_lais</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">iy</span>
+                <span class="n">vox_data</span> <span class="o">=</span> <span class="n">voxels_outputs</span><span class="p">[</span><span class="n">condition_x</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">voxels_outputs</span><span class="o">.</span><span class="n">Ny</span> <span class="o">==</span> <span class="n">ix</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">voxels_outputs</span><span class="o">.</span><span class="n">Nz</span> <span class="o">==</span> <span class="n">iz</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">vox_data</span><span class="o">.</span><span class="n">empty</span> <span class="p">:</span>
+                    <span class="n">a</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">vox_data</span><span class="p">[</span><span class="s2">&quot;Transmitted&quot;</span><span class="p">]),</span> <span class="n">dS</span><span class="p">)</span>
+                    <span class="n">res_trans</span><span class="p">[</span><span class="n">legume_iz</span><span class="p">,</span> <span class="n">iy</span><span class="p">,</span> <span class="n">ix</span><span class="p">]</span> <span class="o">=</span> <span class="n">energy</span> <span class="o">*</span> <span class="n">a</span>
+
+                <span class="n">s_entity</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m_lais</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                    <span class="n">s_entity</span> <span class="o">+=</span> <span class="n">m_lais</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">legume_iz</span><span class="p">][</span><span class="n">iy</span><span class="p">][</span><span class="n">ix</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="n">s_entity</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">ie</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m_lais</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vox_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">v_dat</span> <span class="o">=</span> <span class="n">vox_data</span><span class="p">[</span><span class="n">vox_data</span><span class="o">.</span><span class="n">VegetationType</span> <span class="o">==</span> <span class="n">ie</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                            <span class="n">v</span> <span class="o">=</span> <span class="n">v_dat</span><span class="p">[</span><span class="s2">&quot;Intercepted&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                            <span class="k">if</span> <span class="n">v</span> <span class="o">&gt;</span> <span class="n">epsilon</span><span class="p">:</span>
+                                <span class="n">res_abs_i</span><span class="p">[</span><span class="n">ie</span><span class="p">,</span> <span class="n">legume_iz</span><span class="p">,</span> <span class="n">iy</span><span class="p">,</span> <span class="n">ix</span><span class="p">]</span> <span class="o">=</span> <span class="n">energy</span> <span class="o">*</span> <span class="n">v</span>
+
+                            <span class="c1"># if a voxel has leaf area &gt; 0, it must have a minimum intercepted energy value</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">res_abs_i</span><span class="p">[</span><span class="n">ie</span><span class="p">,</span> <span class="n">legume_iz</span><span class="p">,</span> <span class="n">iy</span><span class="p">,</span> <span class="n">ix</span><span class="p">]</span> <span class="o">=</span> <span class="n">epsilon</span>
+
+    <span class="k">return</span> <span class="n">res_abs_i</span><span class="p">,</span> <span class="n">res_trans</span></div>
+
+
+<div class="viewcode-block" id="transfer_caribu_legume"><a class="viewcode-back" href="../reference.html#transfer.transfer_caribu_legume">[docs]</a><span class="k">def</span> <span class="nf">transfer_caribu_legume</span><span class="p">(</span>
+    <span class="n">energy</span><span class="p">,</span>
+    <span class="n">skylayer</span><span class="p">,</span>
+    <span class="nb">id</span><span class="p">,</span>
+    <span class="n">elements_outputs</span><span class="p">,</span>
+    <span class="n">sensors_outputs</span><span class="p">,</span>
+    <span class="n">sensors_dxyz</span><span class="p">,</span>
+    <span class="n">sensors_nxyz</span><span class="p">,</span>
+    <span class="n">m_lais</span><span class="p">,</span>
+    <span class="n">list_invar</span><span class="p">,</span>
+    <span class="n">list_lstring</span><span class="p">,</span>
+    <span class="n">list_dicFeuilBilanR</span><span class="p">,</span>
+    <span class="n">infinite</span><span class="p">,</span>
+    <span class="n">epsilon</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Transfers LightVegeManager outputs from CARIBU to l-egume</span>
+<span class="sd">    We will update list_invar which stores the total intercepted energy for each plant, and return</span>
+<span class="sd">    an array storing transmitted energy following the intern grid of voxels in l-egume. To do so, we</span>
+<span class="sd">    used virtual sensors in CARIBU to get incoming radiations in selected locations.</span>
+
+<span class="sd">    :param energy: input energy</span>
+<span class="sd">    :type energy: float</span>
+<span class="sd">    :param skylayer: number of empty layers from top of the canopy and maximum z layers in m_lais</span>
+<span class="sd">    :type skylayer: int</span>
+<span class="sd">    :param id: list of indices of input scenes associated with l-egume</span>
+<span class="sd">    :type id: list of int</span>
+<span class="sd">    :param elements_outputs: Dataframe results of elements formatted by :func:outputs.out_caribu_elements</span>
+<span class="sd">    :type elements_outputs: pandas.Dataframe</span>
+<span class="sd">    :param sensors_outputs: lighting results of virtual sensors form CARIBU in the format for each bandwidth computed,</span>
+<span class="sd">        </span>
+<span class="sd">        .. code-block::</span>
+
+<span class="sd">            sensors_outputs[band+&quot; Eabs&quot;] = {sensor_id : energy}</span>
+<span class="sd">            sensors_outputs[band+&quot; Ei&quot;] = {sensor_id : energy}</span>
+
+<span class="sd">    :type sensors_outputs: dict of list</span>
+<span class="sd">    :param sensors_dxyz: size of sides of a voxel in the grid of virtual sensors [dx, dy, dz]</span>
+<span class="sd">    :type sensors_dxyz: list</span>
+<span class="sd">    :param sensors_nxyz: number of sensors in each direction in the grid [nx, ny, nz]</span>
+<span class="sd">    :type sensors_nxyz: list</span>
+<span class="sd">    :param m_lais: leaf area represented in a numpy.array of dimension</span>
+<span class="sd">        [number of species, number of z layers, number of y layers, number of x layers]</span>
+<span class="sd">    :type m_lais: numpy.array</span>
+<span class="sd">    :param list_invar: from l-egume, each element corresponds to an input specy of l-egume. Each element is a dict invar stores instant intern variables of l-egume.</span>
+<span class="sd">    :type list_invar: list of dict</span>
+<span class="sd">    :param list_lstring: from l-egume, each element corresponds to an input specy of l-egume. Each element is a dict lstring stores the l-system of each plant</span>
+<span class="sd">    :type list_lstring: list of dict</span>
+<span class="sd">    :param list_dicFeuilBilanR: from l-egume, each element corresponds to an input specy of l-egume. Each element is a dict dicFeuiBilanR stores correspondances between voxels grid and each plant</span>
+<span class="sd">    :type list_dicFeuilBilanR: list of dict</span>
+<span class="sd">    :param infinite: if the user wishes to activate infinitisation of the grid</span>
+<span class="sd">    :type infinite: bool</span>
+<span class="sd">    :param epsilon: criteria of minimum intercepted portion of PAR in a voxel (if res_abs_i is zero, l-egume will crash)</span>
+<span class="sd">    :type epsilon: float</span>
+<span class="sd">    :raises ValueError: Virtual sensors and finite scene doesn&#39;t work yet with CARIBU</span>
+<span class="sd">    :return:</span>
+
+<span class="sd">        * it updates ``list_invar`` and its key entries ``&quot;parap&quot;`` and ``&quot;parip&quot;``, each element if the scipy.array is the sum of all intercepted energy for each plant. This process is a rewrite of ``calc_paraF`` in ShootMorpho.py module of l-egume, adapted to LightVegeManager numerotation of triangles</span>
+
+<span class="sd">        * ``res_trans`` an array of transmitted energy for each voxel in a grid of dimensions ``sensors_dxyz * sensors_nxyz``</span>
+
+<span class="sd">    :rtype: numpy.array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">## Absorb radiations for each plant of each specy</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">list_invar</span><span class="p">)):</span>
+        <span class="c1"># initialize absorb energy</span>
+        <span class="n">nplantes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_invar</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s2">&quot;Hplante&quot;</span><span class="p">])</span>
+        <span class="n">list_invar</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s2">&quot;parap&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="n">nplantes</span><span class="p">)</span>
+        <span class="n">list_invar</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s2">&quot;parip&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="n">nplantes</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">id</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">filter</span> <span class="o">=</span> <span class="n">elements_outputs</span><span class="o">.</span><span class="n">VegetationType</span> <span class="o">==</span> <span class="n">k</span>
+            <span class="n">ent_organs_outputs</span> <span class="o">=</span> <span class="n">elements_outputs</span><span class="p">[</span><span class="nb">filter</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">==</span> <span class="nb">tuple</span><span class="p">:</span>
+            <span class="nb">filter</span> <span class="o">=</span> <span class="n">elements_outputs</span><span class="o">.</span><span class="n">VegetationType</span> <span class="o">==</span> <span class="nb">id</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="n">ent_organs_outputs</span> <span class="o">=</span> <span class="n">elements_outputs</span><span class="p">[</span><span class="nb">filter</span><span class="p">]</span>
+
+        <span class="c1"># non empty scene</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ent_organs_outputs</span><span class="p">)):</span>
+            <span class="n">organe_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ent_organs_outputs</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;Organ&quot;</span><span class="p">])</span>
+
+            <span class="c1"># PAR in W/m²</span>
+            <span class="n">par_intercept</span> <span class="o">=</span> <span class="n">ent_organs_outputs</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;par Ei&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">energy</span>
+            <span class="n">S_leaf</span> <span class="o">=</span> <span class="n">ent_organs_outputs</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;Area&quot;</span><span class="p">]</span>
+
+            <span class="n">id_plante</span> <span class="o">=</span> <span class="n">list_lstring</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">organe_id</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">p_s</span> <span class="o">=</span> <span class="n">par_intercept</span> <span class="o">*</span> <span class="n">S_leaf</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">list_invar</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s2">&quot;parip&quot;</span><span class="p">][</span><span class="n">id_plante</span><span class="p">])</span>
+            <span class="n">list_invar</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s2">&quot;parip&quot;</span><span class="p">][</span><span class="n">id_plante</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">p_s</span>
+
+            <span class="c1"># we remove senescent leaves</span>
+            <span class="k">if</span> <span class="n">list_lstring</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">organe_id</span><span class="p">][</span><span class="mi">9</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;sen&quot;</span><span class="p">:</span>
+                <span class="n">a</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">list_invar</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s2">&quot;parap&quot;</span><span class="p">][</span><span class="n">id_plante</span><span class="p">])</span>
+                <span class="n">list_invar</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s2">&quot;parap&quot;</span><span class="p">][</span><span class="n">id_plante</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">p_s</span>
+
+        <span class="c1"># all non empty plant must have a minimum intercepted energy</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_invar</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s2">&quot;parip&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_dicFeuilBilanR</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s2">&quot;surf&quot;</span><span class="p">])</span> <span class="p">:</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">list_invar</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s2">&quot;parip&quot;</span><span class="p">])):</span>
+                <span class="k">if</span> <span class="n">list_invar</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s2">&quot;parip&quot;</span><span class="p">][</span><span class="n">p</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.0</span> <span class="ow">and</span> <span class="n">list_dicFeuilBilanR</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s2">&quot;surf&quot;</span><span class="p">][</span><span class="n">p</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                    <span class="n">list_invar</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s2">&quot;parip&quot;</span><span class="p">][</span><span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="n">epsilon</span>
+
+        <span class="c1"># conversion</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3600</span> <span class="o">*</span> <span class="mi">24</span><span class="p">)</span> <span class="o">/</span> <span class="mi">1000000</span>
+        <span class="n">list_invar</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s2">&quot;parap&quot;</span><span class="p">]</span> <span class="o">*=</span> <span class="n">c</span>
+        <span class="n">list_invar</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s2">&quot;parip&quot;</span><span class="p">]</span> <span class="o">*=</span> <span class="n">c</span>
+
+    <span class="c1">## Transmitted radiations throughout a grid of voxels</span>
+    <span class="n">res_trans</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">m_lais</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">m_lais</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">m_lais</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span>
+
+    <span class="c1"># if non empty scene</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">elements_outputs</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+        <span class="c1"># different treatment if scene is infinite, (issues with virtual sensors and finite scene with CARIBU)</span>
+        <span class="k">if</span> <span class="n">infinite</span><span class="p">:</span>
+            <span class="n">nb0</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">m_lais</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">sensors_nxyz</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">m_lais</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">ID_capt</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sensors_nxyz</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="k">for</span> <span class="n">iy</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sensors_nxyz</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                    <span class="k">for</span> <span class="n">iz</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sensors_nxyz</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">skylayer</span><span class="p">):</span>
+                        <span class="n">a</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">sensors_outputs</span><span class="p">[</span><span class="s2">&quot;par&quot;</span><span class="p">][</span><span class="n">ID_capt</span><span class="p">],</span> <span class="mf">1.</span><span class="p">)</span>
+                        <span class="n">res_trans</span><span class="p">[</span><span class="n">nb0</span> <span class="o">+</span> <span class="p">((</span><span class="n">sensors_nxyz</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">-</span> <span class="n">iz</span><span class="p">][</span><span class="n">iy</span><span class="p">][</span><span class="n">ix</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span>
+                        <span class="n">ID_capt</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;CARIBU Sensor + no infinite -&gt; Doesn&#39;t work yet&quot;</span><span class="p">)</span>
+
+    <span class="c1"># gives maximum transmitted energy</span>
+    <span class="n">dS</span> <span class="o">=</span> <span class="n">sensors_dxyz</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">sensors_dxyz</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">res_trans</span> <span class="o">=</span> <span class="n">res_trans</span> <span class="o">*</span> <span class="n">energy</span> <span class="o">*</span> <span class="n">dS</span>
+
+    <span class="k">return</span> <span class="n">res_trans</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, INRAE P3F.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

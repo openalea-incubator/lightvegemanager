@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>trianglesmesh &mdash; LightVegeManager 0.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            LightVegeManager
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../presentation.html">Presentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Architecture of the tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inputs.html">Inputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../others.html">Additionnal Functionalities</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">Reference Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LightVegeManager</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">trianglesmesh</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for trianglesmesh</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    trianglesmesh</span>
+<span class="sd">    **************</span>
+
+<span class="sd">    It builds and handles triangulation mesh.</span>
+
+<span class="sd">    The main triangulation format in LightVegeManager is the CARIBU format:</span>
+<span class="sd">    scene (dict): a `{primitive_id: [triangle,]}` dict. A triangle is a list of 3-tuples points coordinates.</span>
+<span class="sd">    example:</span>
+<span class="sd">    </span>
+<span class="sd">    .. code-block:: python</span>
+<span class="sd">    </span>
+<span class="sd">        scene = {   # element 0</span>
+<span class="sd">                    0 : [ </span>
+<span class="sd">                            [(1,1,1), (0,0,0), (1,2,2)],  # triangle 0 of element 0</span>
+<span class="sd">                            [(10,10,10), (0,0,0), (10,20,20)] # triangle 1 of element 0</span>
+<span class="sd">                        ] ,</span>
+<span class="sd">                    </span>
+<span class="sd">                    # element 1</span>
+<span class="sd">                    1 : [</span>
+<span class="sd">                            [(12,12,12), (10,20,30), (21,22,22)], </span>
+<span class="sd">                            [(10,10,10), (10,20,30), (20,20,20)]</span>
+<span class="sd">                        ]</span>
+<span class="sd">                }</span>
+
+<span class="sd">    .. seealso:: For more details :ref:`Inputs description &lt;inputs&gt;`</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">pandas</span>
+<span class="kn">import</span> <span class="nn">bisect</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="kn">from</span> <span class="nn">lightvegemanager.basicgeometry</span> <span class="kn">import</span> <span class="n">triangle_area</span><span class="p">,</span> <span class="n">rescale</span><span class="p">,</span> <span class="n">translate</span><span class="p">,</span> <span class="n">zrotate</span>
+
+<div class="viewcode-block" id="triangles_entity"><a class="viewcode-back" href="../reference.html#trianglesmesh.triangles_entity">[docs]</a><span class="k">def</span> <span class="nf">triangles_entity</span><span class="p">(</span><span class="n">cscene</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">matching_ids</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a list of triangles belonging to the specy ``entity_id``</span>
+
+<span class="sd">    :param cscene: LightVegeManager triangulations mesh</span>
+<span class="sd">    :type cscene: dict of list</span>
+<span class="sd">    :param entity_id: specy indice in matching_ids</span>
+<span class="sd">    :type entity_id: int</span>
+<span class="sd">    :param matching_ids:</span>
+<span class="sd">        dict that matches new element indices in cscene with specy indice and</span>
+<span class="sd">        input element indice,</span>
+<span class="sd">        .. code:: matching_ids = { new_element_id : (input_element_id, specy_id)}</span>
+
+<span class="sd">        this dict allows us to look how species there is the inputs geometric data</span>
+
+<span class="sd">    :type matching_ids: dict</span>
+<span class="sd">    :return: list of triangles belonging to ``entity_id`` in ``cscene``, a triangle is ``[(x1, y1, z1), (x2, y2, z2), (x3, y3, z3)]``</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">select_triangles</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">cscene</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">matching_ids</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">entity_id</span><span class="p">]</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="n">select_triangles</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="globalid_to_elementid"><a class="viewcode-back" href="../reference.html#trianglesmesh.globalid_to_elementid">[docs]</a><span class="k">def</span> <span class="nf">globalid_to_elementid</span><span class="p">(</span><span class="n">cscene</span><span class="p">,</span> <span class="n">triangleid</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the element index in cscene from a global triangle indice,</span>
+<span class="sd">    as if triangles were in a list without a sorting by element.</span>
+
+<span class="sd">    :param cscene: LightVegeManager triangulations mesh</span>
+<span class="sd">    :type cscene: dict of list</span>
+<span class="sd">    :param triangleid: indice from 0 to total number of triangles in cscene</span>
+<span class="sd">    :type triangleid: int</span>
+<span class="sd">    :raises IndexError: if triangleid &gt; total number of triangles in cscene</span>
+<span class="sd">    :return: element indice where triangleid belongs in cscene</span>
+<span class="sd">    :rtype: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cumul_triangles_per_ele</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">cumsum</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">cscene</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
+    <span class="k">if</span> <span class="n">triangleid</span> <span class="o">&gt;=</span> <span class="n">cumul_triangles_per_ele</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;id </span><span class="si">%i</span><span class="s2"> &gt; number of triangles: </span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">triangleid</span><span class="p">,</span> <span class="n">cumul_triangles_per_ele</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+
+    <span class="c1"># returns i as if cumul_triangles_per_ele[i-1] &lt;= triangleid &lt; cumul_triangles_per_ele[i]</span>
+    <span class="k">return</span> <span class="n">bisect</span><span class="o">.</span><span class="n">bisect</span><span class="p">(</span><span class="n">cumul_triangles_per_ele</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">triangleid</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="globalid_to_triangle"><a class="viewcode-back" href="../reference.html#trianglesmesh.globalid_to_triangle">[docs]</a><span class="k">def</span> <span class="nf">globalid_to_triangle</span><span class="p">(</span><span class="n">cscene</span><span class="p">,</span> <span class="n">triangleid</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the corresponding triangle in cscene from a global triangle indice,</span>
+<span class="sd">    as if triangles were in a list without a sorting by element.</span>
+
+<span class="sd">    :param cscene: LightVegeManager triangulations mesh</span>
+<span class="sd">    :type cscene: dict of list</span>
+<span class="sd">    :param triangleid: indice from 0 to total number of triangles in cscene</span>
+<span class="sd">    :type triangleid: int</span>
+<span class="sd">    :raises IndexError: if triangleid &gt; total number of triangles in cscene</span>
+<span class="sd">    :return: Corresponding triangle in cscene</span>
+<span class="sd">    :rtype: list of tuple</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cumul_triangles_per_ele</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">cumsum</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">cscene</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
+    <span class="k">if</span> <span class="n">triangleid</span> <span class="o">&gt;=</span> <span class="n">cumul_triangles_per_ele</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;id </span><span class="si">%i</span><span class="s2"> &gt; number of triangles: </span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">triangleid</span><span class="p">,</span> <span class="n">cumul_triangles_per_ele</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">ele</span> <span class="o">=</span> <span class="n">globalid_to_elementid</span><span class="p">(</span><span class="n">cscene</span><span class="p">,</span> <span class="n">triangleid</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cscene</span><span class="p">[</span><span class="n">ele</span><span class="p">][</span><span class="n">triangleid</span> <span class="o">-</span> <span class="nb">sum</span><span class="p">(</span><span class="n">cumul_triangles_per_ele</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">ele</span><span class="p">])]</span></div>
+
+
+<div class="viewcode-block" id="compute_area_max"><a class="viewcode-back" href="../reference.html#trianglesmesh.compute_area_max">[docs]</a><span class="k">def</span> <span class="nf">compute_area_max</span><span class="p">(</span><span class="n">cscene</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Maximum triangle area in a triangulation</span>
+
+<span class="sd">    :param cscene: LightVegeManager triangulations mesh</span>
+<span class="sd">    :type cscene: dict of list</span>
+<span class="sd">    :return: maximum triangle area in ``cscene``</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">amax</span> <span class="o">=</span> <span class="o">-</span><span class="mi">999999</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">cscene</span><span class="o">.</span><span class="n">values</span><span class="p">()]):</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">triangle_area</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="n">amax</span><span class="p">:</span>
+            <span class="n">amax</span> <span class="o">=</span> <span class="n">a</span>
+    <span class="k">return</span> <span class="n">amax</span></div>
+
+
+<div class="viewcode-block" id="compute_minmax_coord"><a class="viewcode-back" href="../reference.html#trianglesmesh.compute_minmax_coord">[docs]</a><span class="k">def</span> <span class="nf">compute_minmax_coord</span><span class="p">(</span><span class="n">cscene</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Maximum and minimum point in all triangulation mesh</span>
+
+<span class="sd">    :param cscene: LightVegeManager triangulations mesh</span>
+<span class="sd">    :type cscene: dict of list</span>
+<span class="sd">    :return: minimum point, maximum point</span>
+<span class="sd">    :rtype: list, list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="p">(</span><span class="n">xmax</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">zmax</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">999999</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+    <span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">zmin</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="mi">999999</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">cscene</span><span class="o">.</span><span class="n">values</span><span class="p">()]):</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">t</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">xmax</span><span class="p">:</span>
+                <span class="n">xmax</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">xmin</span><span class="p">:</span>
+                <span class="n">xmin</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">ymax</span><span class="p">:</span>
+                <span class="n">ymax</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">ymin</span><span class="p">:</span>
+                <span class="n">ymin</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">zmax</span><span class="p">:</span>
+                <span class="n">zmax</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">zmin</span><span class="p">:</span>
+                <span class="n">zmin</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="n">xmin</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">zmin</span><span class="p">],</span> <span class="p">[</span><span class="n">xmax</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">zmax</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="compute_trilenght_max"><a class="viewcode-back" href="../reference.html#trianglesmesh.compute_trilenght_max">[docs]</a><span class="k">def</span> <span class="nf">compute_trilenght_max</span><span class="p">(</span><span class="n">cscene</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Search for maximum side of an axis oriented voxel where all triangles could fit in</span>
+
+<span class="sd">    :param cscene: LightVegeManager triangulations mesh</span>
+<span class="sd">    :type cscene: dict of list</span>
+<span class="sd">    :return: maximum side of an axis oriented voxel where all triangles in cscene could fit in</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">lenmax</span> <span class="o">=</span> <span class="o">-</span><span class="mi">999999</span>
+    <span class="c1"># iterate on all triangles</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">cscene</span><span class="o">.</span><span class="n">values</span><span class="p">()]):</span>
+        <span class="p">(</span><span class="n">xmax</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">zmax</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">999999</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+        <span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">zmin</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="mi">999999</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">t</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">xmax</span><span class="p">:</span>
+                <span class="n">xmax</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">xmin</span><span class="p">:</span>
+                <span class="n">xmin</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">ymax</span><span class="p">:</span>
+                <span class="n">ymax</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">ymin</span><span class="p">:</span>
+                <span class="n">ymin</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">zmax</span><span class="p">:</span>
+                <span class="n">zmax</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">zmin</span><span class="p">:</span>
+                <span class="n">zmin</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">xmax</span> <span class="o">-</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">-</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">zmax</span> <span class="o">-</span> <span class="n">zmin</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">m</span> <span class="o">&gt;</span> <span class="n">lenmax</span><span class="p">:</span>
+            <span class="n">lenmax</span> <span class="o">=</span> <span class="n">m</span>
+
+    <span class="k">return</span> <span class="n">lenmax</span></div>
+
+<div class="viewcode-block" id="isatriangle"><a class="viewcode-back" href="../reference.html#trianglesmesh.isatriangle">[docs]</a><span class="k">def</span> <span class="nf">isatriangle</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">t</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">item</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+    
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="chain_triangulations"><a class="viewcode-back" href="../reference.html#trianglesmesh.chain_triangulations">[docs]</a><span class="k">def</span> <span class="nf">chain_triangulations</span><span class="p">(</span><span class="n">scenes</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Aggregates all input geometric scenes in one global triangulation</span>
+
+<span class="sd">        Current known formats:</span>
+
+<span class="sd">            * plantGL scene</span>
+<span class="sd">            * VGX file</span>
+<span class="sd">            * CARIBU triangulation format (which is used in LightVegeManager for the global scene)</span>
+<span class="sd">            * MTG table with ``&quot;geometry&quot;`` identifier</span>
+<span class="sd">            * l-egume grid: dict of two entries, leaf area through a voxels grid and leaf angle distribution, for each specy</span>
+
+<span class="sd">        Only l-egume grid can stores multiple species, otherwise each entry scene must represent one specy</span>
+
+<span class="sd">    :param scenes: ``geometric[&quot;scenes&quot;]`` from LightVegeManager inputs, list of geometric scenes. Scenes can be in different format in the list.</span>
+<span class="sd">    :type scenes: list</span>
+<span class="sd">    :return:</span>
+<span class="sd">        it returns 4 objects</span>
+
+<span class="sd">            * ``complete_trimesh``: global triangulation which aggregates all input scenes. It is in CARIBU format</span>
+<span class="sd">            * ``matching_ids``: dict which stores correspondances between new element indice, element indice in the input and specy indice</span>
+<span class="sd">            * ``legume_grid``: boolean specifing if at least one l-egume grid is among the input scenes</span>
+<span class="sd">            * ``id_legume_scene``: indice in the input scenes of a l-egume grid</span>
+
+<span class="sd">    :rtype: dict of list, dict of list, bool, int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">openalea.plantgl.all</span> <span class="k">as</span> <span class="nn">pgl</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">alinea.caribu</span> <span class="kn">import</span> <span class="n">plantgl_adaptor</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">openalea.mtg.mtg</span> <span class="kn">import</span> <span class="n">MTG</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="c1"># pre-check of scenes input, if it has only one triangle or one list of triangles</span>
+    <span class="k">if</span> <span class="n">isatriangle</span><span class="p">(</span><span class="n">scenes</span><span class="p">)</span> <span class="p">:</span>
+        <span class="n">scenes</span> <span class="o">=</span> <span class="p">[</span><span class="n">scenes</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">all</span><span class="p">(</span><span class="n">isatriangle</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">scenes</span><span class="p">)</span> <span class="ow">and</span> <span class="n">scenes</span> <span class="o">!=</span> <span class="p">[]:</span>
+        <span class="n">scenes</span> <span class="o">=</span> <span class="p">[</span><span class="n">scenes</span><span class="p">]</span>
+    
+    <span class="n">complete_trimesh</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">matching_ids</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">legume_grid</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">id_legume_scene</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">element_count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">entity</span><span class="p">,</span> <span class="n">scene</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">scenes</span><span class="p">):</span>
+        <span class="n">cscene</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># single triangle such as: scene = [(x1, y1, z1), (x2, y2, z2), (x3, y3, z3)]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scene</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="p">:</span>
+            <span class="k">if</span> <span class="n">isatriangle</span><span class="p">(</span><span class="n">scene</span><span class="p">)</span> <span class="p">:</span>
+                <span class="n">cscene</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">0</span> <span class="p">:</span> <span class="p">[</span> <span class="n">scene</span> <span class="p">]</span> <span class="p">}</span>
+            <span class="k">elif</span> <span class="n">isatriangle</span><span class="p">(</span><span class="n">scene</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">:</span>
+                <span class="n">cscene</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span> <span class="p">:</span> <span class="n">scene</span><span class="p">}</span>
+
+        <span class="c1"># scene planteGL</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scene</span><span class="p">,</span> <span class="n">pgl</span><span class="o">.</span><span class="n">Scene</span><span class="p">):</span>
+            <span class="c1"># keys/element indice are shape.id</span>
+            <span class="n">cscene</span> <span class="o">=</span> <span class="n">plantgl_adaptor</span><span class="o">.</span><span class="n">scene_to_cscene</span><span class="p">(</span><span class="n">scene</span><span class="p">)</span>
+
+        <span class="c1"># fichier VGX</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scene</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">scene</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;vgx&quot;</span><span class="p">:</span>
+            <span class="c1"># only one element id equal to element_count</span>
+            <span class="n">cscene</span> <span class="o">=</span> <span class="n">vgx_to_caribu</span><span class="p">(</span><span class="n">scene</span><span class="p">,</span> <span class="n">element_count</span><span class="p">)</span>
+
+        <span class="c1"># scene already in format CARIBU</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scene</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">scene</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">cscene</span> <span class="o">=</span> <span class="n">scene</span>
+
+        <span class="c1"># MTG table with &quot;geometry&quot; identifier</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scene</span><span class="p">,</span> <span class="n">MTG</span><span class="p">):</span>
+            <span class="c1"># mtg[&quot;geometry&quot;] is plantGL scene</span>
+            <span class="n">cscene</span> <span class="o">=</span> <span class="n">plantgl_adaptor</span><span class="o">.</span><span class="n">mtg_to_cscene</span><span class="p">(</span><span class="n">scene</span><span class="p">)</span>
+
+        <span class="c1"># voxels grid in l-egume format</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scene</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">scene</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">legume_grid</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">id_legume_scene</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
+
+        <span class="c1"># creates a new numerotation for elements id adds them to the final triangulation</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">cscene</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">matching_ids</span><span class="p">[</span><span class="n">element_count</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span><span class="p">,</span> <span class="n">entity</span><span class="p">]</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">val</span><span class="p">]</span>  <span class="c1"># converts triangles in list</span>
+            <span class="n">complete_trimesh</span><span class="p">[</span><span class="n">element_count</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+            <span class="n">element_count</span> <span class="o">+=</span> <span class="mi">1</span>
+    
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">id_legume_scene</span> <span class="p">:</span>
+        <span class="n">id_legume_scene</span> <span class="o">=</span> <span class="kc">None</span>
+    
+    <span class="k">return</span> <span class="n">complete_trimesh</span><span class="p">,</span> <span class="n">matching_ids</span><span class="p">,</span> <span class="n">legume_grid</span><span class="p">,</span> <span class="n">id_legume_scene</span></div>
+
+
+<div class="viewcode-block" id="vgx_to_caribu"><a class="viewcode-back" href="../reference.html#trianglesmesh.vgx_to_caribu">[docs]</a><span class="k">def</span> <span class="nf">vgx_to_caribu</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">id_element</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reads VGX file and converts them in CARIBU scene format</span>
+<span class="sd">    line is a leaf triangle if R column != 42</span>
+<span class="sd">    :param file: path name of the file</span>
+<span class="sd">    :type file: string</span>
+<span class="sd">    :param id_element: element indice where the triangulation will be stored</span>
+<span class="sd">    :type id_element: int</span>
+<span class="sd">    :return: triangulation in CARIBU format ``{id_element : [triangle,]}``</span>
+<span class="sd">    :rtype: dict of list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+    <span class="n">scene</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">triangles</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="n">l_list</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># we consider as leaf elements line with R (RGB) != 42</span>
+        <span class="k">if</span> <span class="n">l_list</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;42&quot;</span><span class="p">:</span>
+            <span class="n">tr</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">l_list</span><span class="p">[</span><span class="mi">13</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">l_list</span><span class="p">[</span><span class="mi">14</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">l_list</span><span class="p">[</span><span class="mi">15</span><span class="p">])),</span>
+                <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">l_list</span><span class="p">[</span><span class="mi">16</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">l_list</span><span class="p">[</span><span class="mi">17</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">l_list</span><span class="p">[</span><span class="mi">18</span><span class="p">])),</span>
+                <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">l_list</span><span class="p">[</span><span class="mi">19</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">l_list</span><span class="p">[</span><span class="mi">20</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">l_list</span><span class="p">[</span><span class="mi">21</span><span class="p">])),</span>
+            <span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">triangle_area</span><span class="p">(</span><span class="n">tr</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">triangles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tr</span><span class="p">)</span>
+
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="n">scene</span><span class="p">[</span><span class="n">id_element</span><span class="p">]</span> <span class="o">=</span> <span class="n">triangles</span>
+    <span class="k">return</span> <span class="n">scene</span></div>
+
+
+<div class="viewcode-block" id="apply_transformations"><a class="viewcode-back" href="../reference.html#trianglesmesh.apply_transformations">[docs]</a><span class="k">def</span> <span class="nf">apply_transformations</span><span class="p">(</span><span class="n">cscene</span><span class="p">,</span> <span class="n">matching_ids</span><span class="p">,</span> <span class="n">transformations</span><span class="p">,</span> <span class="n">cscene_unit</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Applies geometric transformations on some part of the triangulation set in input datas</span>
+<span class="sd">    Each transformation applies on all triangles from the same input scene.</span>
+
+<span class="sd">    :param cscene: LightVegeManager triangulations mesh</span>
+<span class="sd">    :type cscene: dict of list</span>
+<span class="sd">    :param matching_ids:</span>
+<span class="sd">        dict that matches new element indices in cscene with specy indice and</span>
+<span class="sd">        input element indice,</span>
+
+<span class="sd">        .. code-block::</span>
+
+<span class="sd">            matching_ids = { new_element_id : (input_element_id, specy_id)}</span>
+
+<span class="sd">        this dict allows us to look how species there is the inputs geometric data</span>
+
+<span class="sd">    :type matching_ids: dict</span>
+<span class="sd">    :param transformations: dict containing which geometric to apply on which element</span>
+
+<span class="sd">        Possible transformations:</span>
+
+<span class="sd">        * ``[&quot;scenes unit] = {id_scene: unit}``</span>
+<span class="sd">        * ``[&quot;rescale&quot;] = {id_scene: h}``</span>
+<span class="sd">        * ``[&quot;translate&quot;] = {id_scene: vector}``</span>
+<span class="sd">        * ``[&quot;xyz orientation&quot;] = {id_scene: orientation}``</span>
+
+<span class="sd">    ``id_scene`` is the index in the input geometric scenes list</span>
+
+<span class="sd">    :type transformations: dict of dict</span>
+<span class="sd">    :param cscene_unit: measure unit of cscene</span>
+<span class="sd">    :type cscene_unit: string</span>
+<span class="sd">    :raises ValueError: unit is not in the list ``[&#39;mm&#39;,&#39;cm&#39;,&#39;dm&#39;,&#39;m&#39;,&#39;dam&#39;,&#39;hm&#39;,&#39;km&#39;]``</span>
+<span class="sd">    :raises ValueError: unit is not in the list ``[&#39;mm&#39;,&#39;cm&#39;,&#39;dm&#39;,&#39;m&#39;,&#39;dam&#39;,&#39;hm&#39;,&#39;km&#39;]``</span>
+<span class="sd">    :raises ValueError: xyz orientation is not one of ``&quot;x+ = S&quot;, &quot;x+ = E&quot;, &quot;x+ = W&quot;, &quot;x+ = N&quot;``</span>
+<span class="sd">    :return: ``cscene`` with transformations applied to inputs scene parts in the global mesh</span>
+<span class="sd">    :rtype: dict of list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Rescale based on measure unit</span>
+    <span class="k">if</span> <span class="s2">&quot;scenes unit&quot;</span> <span class="ow">in</span> <span class="n">transformations</span><span class="p">:</span>
+        <span class="n">units</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;mm&quot;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span> <span class="s2">&quot;cm&quot;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span> <span class="s2">&quot;dm&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;dam&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;hm&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;km&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">cscene_unit</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">units</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Unknown final scene unit: select one in this </span><span class="se">\</span>
+<span class="s2">                                    list [&#39;mm&#39;,&#39;cm&#39;,&#39;dm&#39;,&#39;m&#39;,&#39;dam&#39;,&#39;hm&#39;,&#39;km&#39;]&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">scene_unit</span> <span class="ow">in</span> <span class="n">transformations</span><span class="p">[</span><span class="s2">&quot;scenes unit&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">scene_unit</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">units</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Unknown scene </span><span class="si">%i</span><span class="s2"> unit: select one in this </span><span class="se">\</span>
+<span class="s2">                            list [&#39;mm&#39;,&#39;cm&#39;,&#39;dm&#39;,&#39;m&#39;,&#39;dam&#39;,&#39;hm&#39;,&#39;km&#39;]&quot;</span>
+                    <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">scene_unit</span> <span class="o">!=</span> <span class="n">cscene_unit</span><span class="p">:</span>
+                <span class="n">h</span> <span class="o">=</span> <span class="n">units</span><span class="p">[</span><span class="n">scene_unit</span><span class="p">]</span> <span class="o">/</span> <span class="n">units</span><span class="p">[</span><span class="n">cscene_unit</span><span class="p">]</span>
+                <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">matching_ids</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">key</span><span class="p">]:</span>
+                    <span class="n">cscene</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">rescale</span><span class="p">(</span><span class="n">cscene</span><span class="p">[</span><span class="nb">id</span><span class="p">],</span> <span class="n">h</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;rescale&quot;</span> <span class="ow">in</span> <span class="n">transformations</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">transformations</span><span class="p">[</span><span class="s2">&quot;rescale&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">matching_ids</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">key</span><span class="p">]:</span>
+                <span class="n">cscene</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">rescale</span><span class="p">(</span><span class="n">cscene</span><span class="p">[</span><span class="nb">id</span><span class="p">],</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;translate&quot;</span> <span class="ow">in</span> <span class="n">transformations</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">transformations</span><span class="p">[</span><span class="s2">&quot;translate&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">matching_ids</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">key</span><span class="p">]:</span>
+                <span class="n">cscene</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">translate</span><span class="p">(</span><span class="n">cscene</span><span class="p">[</span><span class="nb">id</span><span class="p">],</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="c1"># on ramène la scène à la convention x+ = N</span>
+    <span class="k">if</span> <span class="s2">&quot;xyz orientation&quot;</span> <span class="ow">in</span> <span class="n">transformations</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">transformations</span><span class="p">[</span><span class="s2">&quot;xyz orientation&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;x+ = S&quot;</span><span class="p">:</span>
+                <span class="n">rot</span> <span class="o">=</span> <span class="mi">180</span>
+            <span class="k">elif</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;x+ = W&quot;</span><span class="p">:</span>
+                <span class="n">rot</span> <span class="o">=</span> <span class="mi">90</span>
+            <span class="k">elif</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;x+ = E&quot;</span><span class="p">:</span>
+                <span class="n">rot</span> <span class="o">=</span> <span class="o">-</span><span class="mi">90</span>
+            <span class="k">elif</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;x+ = N&quot;</span><span class="p">:</span>
+                <span class="n">rot</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown xyz orientation in scene </span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">))</span>
+            <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">matching_ids</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">key</span><span class="p">]:</span>
+                <span class="n">cscene</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">zrotate</span><span class="p">(</span><span class="n">cscene</span><span class="p">[</span><span class="nb">id</span><span class="p">],</span> <span class="n">rot</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="create_heterogeneous_canopy"><a class="viewcode-back" href="../reference.html#trianglesmesh.create_heterogeneous_canopy">[docs]</a><span class="k">def</span> <span class="nf">create_heterogeneous_canopy</span><span class="p">(</span>
+    <span class="n">geometrical_model</span><span class="p">,</span>
+    <span class="n">mtg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">nplants</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="n">var_plant_position</span><span class="o">=</span><span class="mf">0.03</span><span class="p">,</span>
+    <span class="n">var_leaf_inclination</span><span class="o">=</span><span class="mf">0.157</span><span class="p">,</span>
+    <span class="n">var_leaf_azimut</span><span class="o">=</span><span class="mf">1.57</span><span class="p">,</span>
+    <span class="n">var_stem_azimut</span><span class="o">=</span><span class="mf">0.157</span><span class="p">,</span>
+    <span class="n">plant_density</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
+    <span class="n">inter_row</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span>
+    <span class="n">id_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Duplicate a plant in order to obtain a heterogeneous canopy.</span>
+
+<span class="sd">    :param int nplants: the desired number of duplicated plants</span>
+<span class="sd">    :param float var_plant_position: variability for plant position (m)</span>
+<span class="sd">    :param float var_leaf_inclination: variability for leaf inclination (rad)</span>
+<span class="sd">    :param float var_leaf_azimut: variability for leaf azimut (rad)</span>
+<span class="sd">    :param float var_stem_azimut: variability for stem azimut (rad)</span>
+<span class="sd">    :param string id_type: precise how to set the shape id of the elements : None, plant or organ</span>
+
+<span class="sd">    :return: duplicated heterogenous scene and its domain</span>
+<span class="sd">    :rtype: openalea.plantgl.all.Scene, (float)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">alinea.adel.Stand</span> <span class="kn">import</span> <span class="n">AgronomicStand</span>
+    <span class="kn">import</span> <span class="nn">openalea.plantgl.all</span> <span class="k">as</span> <span class="nn">plantgl</span>
+    <span class="kn">import</span> <span class="nn">random</span>
+
+    <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+
+    <span class="c1"># Load scene</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">geometrical_model</span><span class="p">,</span> <span class="n">plantgl</span><span class="o">.</span><span class="n">Scene</span><span class="p">):</span>
+        <span class="n">initial_scene</span> <span class="o">=</span> <span class="n">geometrical_model</span><span class="o">.</span><span class="n">scene</span><span class="p">(</span><span class="n">mtg</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">initial_scene</span> <span class="o">=</span> <span class="n">geometrical_model</span>
+
+    <span class="n">alea_canopy</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+
+    <span class="c1"># Planter</span>
+    <span class="n">stand</span> <span class="o">=</span> <span class="n">AgronomicStand</span><span class="p">(</span>
+        <span class="n">sowing_density</span><span class="o">=</span><span class="n">plant_density</span><span class="p">,</span> <span class="n">plant_density</span><span class="o">=</span><span class="n">plant_density</span><span class="p">,</span> <span class="n">inter_row</span><span class="o">=</span><span class="n">inter_row</span><span class="p">,</span> <span class="n">noise</span><span class="o">=</span><span class="n">var_plant_position</span>
+    <span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">positions</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">stand</span><span class="o">.</span><span class="n">smart_stand</span><span class="p">(</span><span class="n">nplants</span><span class="o">=</span><span class="n">nplants</span><span class="p">,</span> <span class="n">at</span><span class="o">=</span><span class="n">inter_row</span><span class="p">,</span> <span class="n">convunit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1234</span><span class="p">)</span>
+
+    <span class="c1"># Built alea table if does not exist yet</span>
+    <span class="k">if</span> <span class="n">alea_canopy</span><span class="o">.</span><span class="n">empty</span> <span class="ow">and</span> <span class="n">mtg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">elements_vid_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">mtg_plant_vid</span> <span class="ow">in</span> <span class="n">mtg</span><span class="o">.</span><span class="n">components_iter</span><span class="p">(</span><span class="n">mtg</span><span class="o">.</span><span class="n">root</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">mtg_axis_vid</span> <span class="ow">in</span> <span class="n">mtg</span><span class="o">.</span><span class="n">components_iter</span><span class="p">(</span><span class="n">mtg_plant_vid</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">mtg_metamer_vid</span> <span class="ow">in</span> <span class="n">mtg</span><span class="o">.</span><span class="n">components_iter</span><span class="p">(</span><span class="n">mtg_axis_vid</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">mtg_organ_vid</span> <span class="ow">in</span> <span class="n">mtg</span><span class="o">.</span><span class="n">components_iter</span><span class="p">(</span><span class="n">mtg_metamer_vid</span><span class="p">):</span>
+                        <span class="k">for</span> <span class="n">mtg_element_vid</span> <span class="ow">in</span> <span class="n">mtg</span><span class="o">.</span><span class="n">components_iter</span><span class="p">(</span><span class="n">mtg_organ_vid</span><span class="p">):</span>
+                            <span class="k">if</span> <span class="n">mtg</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">mtg_element_vid</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;LeafElement1&quot;</span><span class="p">:</span>
+                                <span class="n">elements_vid_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mtg_element_vid</span><span class="p">)</span>
+
+        <span class="n">elements_vid_df</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;vid&quot;</span><span class="p">:</span> <span class="n">elements_vid_list</span><span class="p">,</span> <span class="s2">&quot;tmp&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+        <span class="n">positions_df</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;pos&quot;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">positions</span><span class="p">)),</span> <span class="s2">&quot;tmp&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;azimut_leaf&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;inclination_leaf&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">alea</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">elements_vid_df</span><span class="p">,</span> <span class="n">positions_df</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;tmp&quot;</span><span class="p">])</span>
+        <span class="n">alea</span> <span class="o">=</span> <span class="n">alea</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s2">&quot;tmp&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">vid</span> <span class="ow">in</span> <span class="n">elements_vid_list</span><span class="p">:</span>
+            <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">vid</span><span class="p">)</span>
+            <span class="n">alea</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">alea</span><span class="p">[</span><span class="s2">&quot;vid&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">vid</span><span class="p">,</span> <span class="s2">&quot;azimut_leaf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span>
+                <span class="o">-</span><span class="n">var_leaf_azimut</span><span class="p">,</span> <span class="n">var_leaf_azimut</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">positions</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">alea</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">alea</span><span class="p">[</span><span class="s2">&quot;vid&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">vid</span><span class="p">,</span> <span class="s2">&quot;inclination_leaf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span>
+                <span class="o">-</span><span class="n">var_leaf_inclination</span><span class="p">,</span> <span class="n">var_leaf_inclination</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">positions</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="n">alea_canopy</span> <span class="o">=</span> <span class="n">alea</span>
+
+    <span class="c1"># Duplication and heterogeneity</span>
+    <span class="n">duplicated_scene</span> <span class="o">=</span> <span class="n">plantgl</span><span class="o">.</span><span class="n">Scene</span><span class="p">()</span>
+    <span class="n">position_number</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">new_id</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">id_type</span> <span class="o">==</span> <span class="s2">&quot;organ&quot;</span><span class="p">:</span>
+        <span class="n">new_id</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">sh</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">sh</span> <span class="ow">in</span> <span class="n">initial_scene</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">positions</span><span class="p">:</span>
+        <span class="n">azimut_stem</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="n">var_stem_azimut</span><span class="p">,</span> <span class="n">var_stem_azimut</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">shp</span> <span class="ow">in</span> <span class="n">initial_scene</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">mtg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">mtg</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">shp</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;StemElement&quot;</span><span class="p">:</span>
+                    <span class="n">rotated_geometry</span> <span class="o">=</span> <span class="n">plantgl</span><span class="o">.</span><span class="n">EulerRotated</span><span class="p">(</span><span class="n">azimut_stem</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">shp</span><span class="o">.</span><span class="n">geometry</span><span class="p">)</span>
+                    <span class="n">translated_geometry</span> <span class="o">=</span> <span class="n">plantgl</span><span class="o">.</span><span class="n">Translated</span><span class="p">(</span><span class="n">plantgl</span><span class="o">.</span><span class="n">Vector3</span><span class="p">(</span><span class="n">pos</span><span class="p">),</span> <span class="n">rotated_geometry</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">id_type</span> <span class="o">==</span> <span class="s2">&quot;organ&quot;</span><span class="p">:</span>
+                        <span class="n">new_shape</span> <span class="o">=</span> <span class="n">plantgl</span><span class="o">.</span><span class="n">Shape</span><span class="p">(</span><span class="n">translated_geometry</span><span class="p">,</span> <span class="n">appearance</span><span class="o">=</span><span class="n">shp</span><span class="o">.</span><span class="n">appearance</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">new_id</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">id_type</span> <span class="o">==</span> <span class="s2">&quot;plant&quot;</span><span class="p">:</span>
+                        <span class="n">new_shape</span> <span class="o">=</span> <span class="n">plantgl</span><span class="o">.</span><span class="n">Shape</span><span class="p">(</span><span class="n">translated_geometry</span><span class="p">,</span> <span class="n">appearance</span><span class="o">=</span><span class="n">shp</span><span class="o">.</span><span class="n">appearance</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">position_number</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">new_shape</span> <span class="o">=</span> <span class="n">plantgl</span><span class="o">.</span><span class="n">Shape</span><span class="p">(</span><span class="n">translated_geometry</span><span class="p">,</span> <span class="n">appearance</span><span class="o">=</span><span class="n">shp</span><span class="o">.</span><span class="n">appearance</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">shp</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                    <span class="n">duplicated_scene</span> <span class="o">+=</span> <span class="n">new_shape</span>
+                <span class="k">elif</span> <span class="n">mtg</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">shp</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;LeafElement1&quot;</span><span class="p">:</span>
+                    <span class="c1"># Add shp.id in alea_canopy if not in yet:</span>
+                    <span class="k">if</span> <span class="n">shp</span><span class="o">.</span><span class="n">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">alea_canopy</span><span class="p">[</span><span class="s2">&quot;vid&quot;</span><span class="p">]):</span>
+                        <span class="n">new_vid_df</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;vid&quot;</span><span class="p">:</span> <span class="n">shp</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;pos&quot;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">positions</span><span class="p">))})</span>
+                        <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">shp</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                        <span class="n">new_vid_df</span><span class="p">[</span><span class="s2">&quot;azimut_leaf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span>
+                            <span class="o">-</span><span class="n">var_leaf_azimut</span><span class="p">,</span> <span class="n">var_leaf_azimut</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">positions</span><span class="p">)</span>
+                        <span class="p">)</span>
+                        <span class="n">new_vid_df</span><span class="p">[</span><span class="s2">&quot;inclination_leaf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span>
+                            <span class="o">-</span><span class="n">var_leaf_inclination</span><span class="p">,</span> <span class="n">var_leaf_inclination</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">positions</span><span class="p">)</span>
+                        <span class="p">)</span>
+                        <span class="n">alea_canopy</span> <span class="o">=</span> <span class="n">alea_canopy</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_vid_df</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                    <span class="c1"># Translation to origin</span>
+                    <span class="n">anchor_point</span> <span class="o">=</span> <span class="n">mtg</span><span class="o">.</span><span class="n">get_vertex_property</span><span class="p">(</span><span class="n">shp</span><span class="o">.</span><span class="n">id</span><span class="p">)[</span><span class="s2">&quot;anchor_point&quot;</span><span class="p">]</span>
+                    <span class="n">trans_to_origin</span> <span class="o">=</span> <span class="n">plantgl</span><span class="o">.</span><span class="n">Translated</span><span class="p">(</span><span class="o">-</span><span class="n">anchor_point</span><span class="p">,</span> <span class="n">shp</span><span class="o">.</span><span class="n">geometry</span><span class="p">)</span>
+                    <span class="c1"># Rotation variability</span>
+                    <span class="n">azimut</span> <span class="o">=</span> <span class="n">alea_canopy</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                        <span class="p">(</span><span class="n">alea_canopy</span><span class="o">.</span><span class="n">pos</span> <span class="o">==</span> <span class="n">position_number</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">alea_canopy</span><span class="o">.</span><span class="n">vid</span> <span class="o">==</span> <span class="n">shp</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="s2">&quot;azimut_leaf&quot;</span>
+                    <span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">inclination</span> <span class="o">=</span> <span class="n">alea_canopy</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                        <span class="p">(</span><span class="n">alea_canopy</span><span class="o">.</span><span class="n">pos</span> <span class="o">==</span> <span class="n">position_number</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">alea_canopy</span><span class="o">.</span><span class="n">vid</span> <span class="o">==</span> <span class="n">shp</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="s2">&quot;inclination_leaf&quot;</span>
+                    <span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">rotated_geometry</span> <span class="o">=</span> <span class="n">plantgl</span><span class="o">.</span><span class="n">EulerRotated</span><span class="p">(</span><span class="n">azimut</span><span class="p">,</span> <span class="n">inclination</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">trans_to_origin</span><span class="p">)</span>
+                    <span class="c1"># Restore leaf base at initial anchor point</span>
+                    <span class="n">translated_geometry</span> <span class="o">=</span> <span class="n">plantgl</span><span class="o">.</span><span class="n">Translated</span><span class="p">(</span><span class="n">anchor_point</span><span class="p">,</span> <span class="n">rotated_geometry</span><span class="p">)</span>
+                    <span class="c1"># Translate leaf to new plant position</span>
+                    <span class="n">translated_geometry</span> <span class="o">=</span> <span class="n">plantgl</span><span class="o">.</span><span class="n">Translated</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">translated_geometry</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">id_type</span> <span class="o">==</span> <span class="s2">&quot;organ&quot;</span><span class="p">:</span>
+                        <span class="n">new_shape</span> <span class="o">=</span> <span class="n">plantgl</span><span class="o">.</span><span class="n">Shape</span><span class="p">(</span><span class="n">translated_geometry</span><span class="p">,</span> <span class="n">appearance</span><span class="o">=</span><span class="n">shp</span><span class="o">.</span><span class="n">appearance</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">new_id</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">id_type</span> <span class="o">==</span> <span class="s2">&quot;plant&quot;</span><span class="p">:</span>
+                        <span class="n">new_shape</span> <span class="o">=</span> <span class="n">plantgl</span><span class="o">.</span><span class="n">Shape</span><span class="p">(</span><span class="n">translated_geometry</span><span class="p">,</span> <span class="n">appearance</span><span class="o">=</span><span class="n">shp</span><span class="o">.</span><span class="n">appearance</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">position_number</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">new_shape</span> <span class="o">=</span> <span class="n">plantgl</span><span class="o">.</span><span class="n">Shape</span><span class="p">(</span><span class="n">translated_geometry</span><span class="p">,</span> <span class="n">appearance</span><span class="o">=</span><span class="n">shp</span><span class="o">.</span><span class="n">appearance</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">shp</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                    <span class="n">duplicated_scene</span> <span class="o">+=</span> <span class="n">new_shape</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rotated_geometry</span> <span class="o">=</span> <span class="n">plantgl</span><span class="o">.</span><span class="n">EulerRotated</span><span class="p">(</span><span class="n">azimut_stem</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">shp</span><span class="o">.</span><span class="n">geometry</span><span class="p">)</span>
+                <span class="n">translated_geometry</span> <span class="o">=</span> <span class="n">plantgl</span><span class="o">.</span><span class="n">Translated</span><span class="p">(</span><span class="n">plantgl</span><span class="o">.</span><span class="n">Vector3</span><span class="p">(</span><span class="n">pos</span><span class="p">),</span> <span class="n">rotated_geometry</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">id_type</span> <span class="o">==</span> <span class="s2">&quot;organ&quot;</span><span class="p">:</span>
+                    <span class="n">new_shape</span> <span class="o">=</span> <span class="n">plantgl</span><span class="o">.</span><span class="n">Shape</span><span class="p">(</span><span class="n">translated_geometry</span><span class="p">,</span> <span class="n">appearance</span><span class="o">=</span><span class="n">shp</span><span class="o">.</span><span class="n">appearance</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">new_id</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">id_type</span> <span class="o">==</span> <span class="s2">&quot;plant&quot;</span><span class="p">:</span>
+                    <span class="n">new_shape</span> <span class="o">=</span> <span class="n">plantgl</span><span class="o">.</span><span class="n">Shape</span><span class="p">(</span><span class="n">translated_geometry</span><span class="p">,</span> <span class="n">appearance</span><span class="o">=</span><span class="n">shp</span><span class="o">.</span><span class="n">appearance</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">position_number</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">new_shape</span> <span class="o">=</span> <span class="n">plantgl</span><span class="o">.</span><span class="n">Shape</span><span class="p">(</span><span class="n">translated_geometry</span><span class="p">,</span> <span class="n">appearance</span><span class="o">=</span><span class="n">shp</span><span class="o">.</span><span class="n">appearance</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">shp</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="n">duplicated_scene</span> <span class="o">+=</span> <span class="n">new_shape</span>
+            <span class="n">new_id</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">position_number</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">duplicated_scene</span><span class="p">,</span> <span class="n">domain</span></div>
+
+<div class="viewcode-block" id="random_triangle_generator"><a class="viewcode-back" href="../reference.html#trianglesmesh.random_triangle_generator">[docs]</a><span class="k">def</span> <span class="nf">random_triangle_generator</span><span class="p">(</span><span class="n">worldsize</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">100</span><span class="p">),</span> 
+                                <span class="n">spheresize</span><span class="o">=</span><span class="p">(</span><span class="mf">1.</span><span class="p">,</span><span class="mf">1.</span><span class="p">),</span> 
+                                <span class="n">sigma_angle</span><span class="o">=</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span> 
+                                <span class="n">theta_angle</span><span class="o">=</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">5</span><span class="p">)):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a random based on parameters</span>
+<span class="sd">    </span>
+<span class="sd">    Vertices are generated on a surface of a sphere</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        worldsize (tuple, optional): min and max where sphere center can be generated. Defaults to (0,100).</span>
+<span class="sd">        spheresize (tuple, optional): mean and std of the sphere size. Defaults to (1.,1.).</span>
+<span class="sd">        sigma_angle (tuple, optional): mean and std of the spherical angle on xy plane. Defaults to (math.pi, math.pi).</span>
+<span class="sd">        theta_angle (tuple, optional): mean and std of the zenithal angle. Defaults to (math.pi/4, math.pi/5).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list of 3 3-tuples: triangles defined by 3 xyz points</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="n">r</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">gauss</span><span class="p">(</span><span class="n">spheresize</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">spheresize</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">z0</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">worldsize</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">worldsize</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+    <span class="n">triangle</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">gauss</span><span class="p">(</span><span class="n">sigma_angle</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sigma_angle</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">gauss</span><span class="p">(</span><span class="n">theta_angle</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">theta_angle</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">+</span> <span class="n">r</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">y0</span> <span class="o">+</span> <span class="n">r</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">z0</span> <span class="o">+</span> <span class="n">r</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="n">triangle</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">triangle</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, INRAE P3F.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

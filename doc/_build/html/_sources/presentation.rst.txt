@@ -34,22 +34,23 @@ It reads the following input formats:
  
     * Caribu scene, dict storing a triangulation
 
-    * l-egume grid, dict storing a grid of voxels
+    * Dict storing a grid of voxels with leaf area and leaf angle distribution
 
 More details about the input formats here :ref:`Scenes format <scenes>`.
 
 And it can return the outputs in the following formats:
 
+    * Pandas Dataframe, in multiple scales (triangles, voxels, elements) depending on the light model.
+
     * updates a MTG table
  
     * returns two tables compatible with l-egume
-  
-    * Pandas Dataframe, in multiple scales (triangles, voxels, elements) depending on the light model.
+
     
 Lighting
 --------
 
-At the moment, LightVegeManager can handle three lighting models, CARIBU (https://github.com/openalea-incubator/caribu), PyRATP (https://github.com/openalea-incubator/PyRATP), and RiRi modified in l-egume (https://github.com/glouarn/l-egume).
+At the moment, LightVegeManager can handle three lighting models, CARIBU (https://github.com/openalea-incubator/caribu), PyRATP (https://github.com/openalea-incubator/PyRATP), and RiRi modified in l-egume (https://github.com/glouarn/riri5).
 Those models are ajusted for virtual plant canopies with considerations, like infinitisation of the scene, which are preferred for simulating large crop fields.
 
 They offers two different approach for light modelling:

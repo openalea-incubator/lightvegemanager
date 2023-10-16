@@ -35,8 +35,7 @@ def manage_stems_for_ratp(stems_id, matching_ids, ratp_parameters) :
     :type matching_ids: dict
     :param ratp_parameters: RATP parameters from inputs of LightVegeManager
     :type ratp_parameters: dict
-    :raises ValueError: if too many stems elements are identified comparing to the total number of elements
-    cumulated over all species
+    :raises ValueError: if too many stems elements are identified comparing to the total number of elements cumulated over all species
     """    
     if stems_id is None:
         return

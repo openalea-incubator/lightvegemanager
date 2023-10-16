@@ -112,7 +112,7 @@ class LightVegeManager(object):
 
         Main methods:
 
-        * ``__init__``: initializes and builds static object for the rest of simulation
+        * :meth:``__init__``: initializes and builds static object for the rest of simulation
         * :meth:`build`: builds and prepare all geometric meshes
         * :meth:`run`: calls a light model and manages its inputs and outputs
 
@@ -128,14 +128,18 @@ class LightVegeManager(object):
 
         Visualisation tools:
 
+        * :meth:`plantGL_nolight`: return a plantGL scene from the geometry
+        * :meth:`plantGL_light`: return a plantGL scene from the geometry with lighting results
+        * :meth:`plantGL_sensors`: return a plantGL scene from virtual sensors if created
+
         * :meth:`VTK_nolight`: write VTK file with only geometric informations
         * :meth:`VTK_light`: write VTK file with geometric informations and associated light results
-        * :meth:`VTK_sun`: : write VTK file representing the sun as a line
+        * :meth:`VTK_sun`: write VTK file representing the sun as a line
 
         Getters: to use light results with external routines
 
-        * :meth:`legume_transmitted_light`
-        * :meth:`legume_intercepted_light`
+        * :meth:`riri5_transmitted_light`
+        * :meth:`riri5_intercepted_light`
         * :meth:`elements_outputs`
         * :meth:`triangles_outputs`
         * :meth:`voxels_outputs`
@@ -146,6 +150,7 @@ class LightVegeManager(object):
         * :meth:`legume_empty_layers`
         * :meth:`tesselationtime`
         * :meth:`modelruntime`
+        * :meth:`leafangledistribution`
 
     :param environment: Environment parameters, defaults to {}
     :type environment: dict, optional
@@ -362,7 +367,7 @@ class LightVegeManager(object):
                 self.__LA_riri5 = self.__geometry["scenes"][id_legume_scene[0]]["LA"] / dS
                 self.__distrib_riri5 = self.__geometry["scenes"][id_legume_scene[0]]["distrib"]
             if not legume_grid :
-                from lightvegemanager.RiRi5_inputs import ratpgrid_to_riri5
+                from lightvegemanager.RiRi5inputs import ratpgrid_to_riri5
                 
                 self.__LA_riri5 = ratpgrid_to_riri5(self.__complete_voxmesh)
                 self.__distrib_riri5 = self.__angle_distrib["global"]
@@ -1102,6 +1107,13 @@ class LightVegeManager(object):
         return plantGL_sensors
 
     def plantGL_nolight(self, printtriangles=True, printvoxels=False):
+        """Return a plantGL Scene from mesh(es) in ``self``, with geometric informations
+
+        :param printtriangles: write triangulation if one has been created in :meth:`build`, defaults to True
+        :type printtriangles: bool, optional
+        :param printvoxels: write grid of voxels if one has been created in :meth:`build`, defaults to True
+        :type printvoxels: bool, optional
+        """
         import openalea.plantgl.all as pgl
 
         plantgl_voxscene = pgl.Scene()
@@ -1130,6 +1142,19 @@ class LightVegeManager(object):
         return plantgl_scene
 
     def plantGL_light(self, printtriangles=True, printvoxels=False):
+        """Return a plantGL Scene from mesh(es) in ``self``, with geometric informations and lighting results
+
+        .. warning:: The :meth:`run` must have been called before to have results dataframes.
+
+        :param printtriangles: write triangulation if one has been created in :meth:`build`, defaults to True
+        :type printtriangles: bool, optional
+        :param printvoxels: write grid of voxels if one has been created in :meth:`build`, defaults to True
+        :type printvoxels: bool, optional
+        :raises AttributeError: you need to call :meth:`run` first
+        """
+        if not hasattr(self, "_LightVegeManager__elements_outputs"):
+            raise AttributeError("No results yet, run a light modeling first")
+        
         import openalea.plantgl.all as pgl
 
         plantgl_voxscene = pgl.Scene()
@@ -1202,7 +1227,7 @@ class LightVegeManager(object):
     def triangles_outputs(self):
         """Lighting results aggregate by triangle, if it has a triangulation in its inputs
 
-        :return: .. seealso:: :mod:` LightVegeManager_outputs` for column names
+        :return: .. seealso:: :mod:`outputs` for column names
         :rtype: pandas.Dataframe
         """
         return self.__triangles_outputs
@@ -1211,7 +1236,7 @@ class LightVegeManager(object):
     def voxels_outputs(self):
         """Lighting results aggregate by voxels, only with RATP as the selected light model
 
-        :return: .. seealso:: :mod:` LightVegeManager_outputs` for column names
+        :return: .. seealso:: :mod:`outputs` for column names
         :rtype: pandas.Dataframe
         """
         return self.__voxels_outputs

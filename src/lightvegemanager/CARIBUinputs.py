@@ -27,7 +27,7 @@
     * ``geometry`` corresponding to the geometric information with the scenes inputs
 
         .. code-block:: python
-            
+
             geometry = {
                         "scenes" : [scene0, scene1, scene2, ...] ,
                         "domain" : ((xmin, ymin), (xmax, ymax)),
@@ -330,14 +330,16 @@ def run_caribu(c_scene, direct_active, infinite, sensors, energy=1.) :
 
     :param c_scene: instance of CaribuScene containing geometry, light source(s), opt etc...
     :type c_scene: CaribuScene
-    :param direct_active: Whether only first order interception is to be computed
-        Default is True (no rediffusions)
+    :param direct_active: Whether only first order interception is to be computed, default is True (no rediffusions)
     :type direct_active: bool
     :param infinite: if the user wishes to activate infinitisation of the grid
     :type infinite: bool
-    :param sensors: geometric data of the virtual sensors in CARIBU scene format. Sensors
-        are horizontal square made of two triangles
-        .. code:: sensors_caribu = { sensor_id : [triangle1, triangle2], ...}
+    :param sensors: geometric data of the virtual sensors in CARIBU scene format. Sensors are horizontal square made of two triangles
+        
+        .. code:: python
+        
+            sensors_caribu = { sensor_id : [triangle1, triangle2], ...}
+    
     :type sensors: dict
     :param energy: input energy value
     :type energy: float, optional default is 1.
@@ -354,15 +356,10 @@ def run_caribu(c_scene, direct_active, infinite, sensors, energy=1.) :
 
                     - area (float): the individual areas (m2)
                     - Eabs (float): the surfacic density of energy absorbed (m-2)
-                    - Ei (float): the surfacic density of energy incoming  (m-2)
-                    additionally, if split_face is True:
-                    - Ei_inf (float): the surfacic density of energy incoming
-                    on the inferior face (m-2)
-                    - Ei_sup (float): the surfacic density of energy incoming
-                    on the superior face (m-2)
-                    - sensors (dict of dict): area, surfacic density of incoming
-                    direct energy and surfacic density of incoming total energy
-                    of sensors grouped by id, if any
+                    - Ei (float): the surfacic density of energy incoming  (m-2) additionally, if split_face is True
+                    - Ei_inf (float): the surfacic density of energy incoming on the inferior face (m-2)
+                    - Ei_sup (float): the surfacic density of energy incoming on the superior face (m-2)
+                    - sensors (dict of dict): area, surfacic density of incoming direct energy and surfacic density of incoming total energy of sensors grouped by id, if any
     
     :rtype: dict of dict, dict of dict
     """    

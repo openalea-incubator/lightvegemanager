@@ -85,11 +85,11 @@ const Documentation = {
     const toggler = (el) => {
       const idNumber = el.id.substr(7);
       const toggledRows = document.querySelectorAll(`tr.cg-${idNumber}`);
-      if (el. substr(-9) === "minus.png") {
-        el.src = `${el. substr(0, el. length - 9)}plus.png`;
+      if (el.src.substr(-9) === "minus.png") {
+        el.src = `${el.src.substr(0, el.src.length - 9)}plus.png`;
         toggledRows.forEach((el) => (el.style.display = "none"));
       } else {
-        el.src = `${el. substr(0, el. length - 8)}minus.png`;
+        el.src = `${el.src.substr(0, el.src.length - 8)}minus.png`;
         toggledRows.forEach((el) => (el.style.display = ""));
       }
     };

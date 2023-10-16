@@ -5,7 +5,7 @@
     It builds and handles triangulation mesh.
 
     The main triangulation format in LightVegeManager is the CARIBU format:
-    scene (dict): a {primitive_id: [triangle,]} dict. A triangle is a list of 3-tuples points coordinates.
+    scene (dict): a `{primitive_id: [triangle,]}` dict. A triangle is a list of 3-tuples points coordinates.
     example:
     
     .. code-block:: python
@@ -196,7 +196,8 @@ def chain_triangulations(scenes):
             * MTG table with ``"geometry"`` identifier
             * l-egume grid: dict of two entries, leaf area through a voxels grid and leaf angle distribution, for each specy
 
-    Only l-egume grid can stores multiple species, otherwise each entry scene must represent one specy
+        Only l-egume grid can stores multiple species, otherwise each entry scene must represent one specy
+
     :param scenes: ``geometric["scenes"]`` from LightVegeManager inputs, list of geometric scenes. Scenes can be in different format in the list.
     :type scenes: list
     :return:
@@ -333,7 +334,8 @@ def apply_transformations(cscene, matching_ids, transformations, cscene_unit):
 
     :type matching_ids: dict
     :param transformations: dict containing which geometric to apply on which element
-    Possible transformations:
+
+        Possible transformations:
 
         * ``["scenes unit] = {id_scene: unit}``
         * ``["rescale"] = {id_scene: h}``
