@@ -6,7 +6,7 @@ if sys.version_info < (3, 0):
     sys.exit(1)
 
 setup(
-    name="LightVegeManager",
+    name="lightvegemanager",
     version="1.0.0",
     description="Light management tool for plant modelling with tools from OpenAlea platform",
     url="https://github.com/mwoussen/lightvegemanager",
