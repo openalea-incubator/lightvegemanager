@@ -7,7 +7,11 @@
 import itertools
 import numpy
 
-import openalea.plantgl.all as pgl
+try :
+    import openalea.plantgl.all as pgl
+except ModuleNotFoundError:
+    print("openalea.plantgl not installed")
+    pass
 
 def cscene_to_plantGLScene_stems(cscene, stems_id=None, matching_ids={}):
     """Transform a triangles mesh to a plantGL scene, whith a color difference between leaves and stems
