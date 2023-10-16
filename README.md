@@ -38,6 +38,7 @@ LightVegeManager is a Python package made for plant modeling and managing enligh
     ```
 
 2) Then install your preferred packages
+
     PlantGL
     ```bash
         conda install openalea.plantgl -c openalea3

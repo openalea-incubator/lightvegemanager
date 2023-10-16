@@ -12,5 +12,10 @@ setup(
     url="https://github.com/mwoussen/lightvegemanager",
 
     packages=find_packages('lightvegemanager'),
-    package_dir={'' : 'src'}
+    package_dir={'' : 'src'},
+
+    install_requires=[
+        "numpy",
+        "pandas"
+    ]
 )
