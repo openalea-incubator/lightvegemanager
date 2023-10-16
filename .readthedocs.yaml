@@ -60,5 +60,9 @@ sphinx:
 python:
   install:
     - requirements: doc/requirements.txt
+      system_packages: True
     - method: pip
       path: .
+
+submodules:
+   include: all
