@@ -63,5 +63,3 @@ python:
 
     - method: pip
       path: .
-
-
