@@ -127,3 +127,7 @@ LightVegeManager is a Python package made for plant modeling and managing enligh
 ## Contributing
 
 The documentation is made with `sphinx` and unit testing with `pytest`.
+
+## Licence
+
+This project is licensed under the CeCILL-C License - see file LICENSE for details
