@@ -130,4 +130,4 @@ The documentation is made with `sphinx` and unit testing with `pytest`.
 
 ## Licence
 
-This project is licensed under the CeCILL-C License - see file LICENSE for details
+This project is licensed under the CeCILL-C License - see file [LICENSE](LICENSE) for details
