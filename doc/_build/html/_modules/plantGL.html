@@ -86,7 +86,11 @@
 <span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
 
-<span class="kn">import</span> <span class="nn">openalea.plantgl.all</span> <span class="k">as</span> <span class="nn">pgl</span>
+<span class="k">try</span> <span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">openalea.plantgl.all</span> <span class="k">as</span> <span class="nn">pgl</span>
+<span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;openalea.plantgl not installed&quot;</span><span class="p">)</span>
+    <span class="k">pass</span>
 
 <div class="viewcode-block" id="cscene_to_plantGLScene_stems"><a class="viewcode-back" href="../reference.html#plantGL.cscene_to_plantGLScene_stems">[docs]</a><span class="k">def</span> <span class="nf">cscene_to_plantGLScene_stems</span><span class="p">(</span><span class="n">cscene</span><span class="p">,</span> <span class="n">stems_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">matching_ids</span><span class="o">=</span><span class="p">{}):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Transform a triangles mesh to a plantGL scene, whith a color difference between leaves and stems</span>

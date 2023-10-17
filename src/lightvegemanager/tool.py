@@ -112,7 +112,7 @@ class LightVegeManager(object):
 
         Main methods:
 
-        * :meth:``__init__``: initializes and builds static object for the rest of simulation
+        * ``__init__``: initializes and builds static object for the rest of simulation
         * :meth:`build`: builds and prepare all geometric meshes
         * :meth:`run`: calls a light model and manages its inputs and outputs
 
