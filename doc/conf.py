@@ -6,15 +6,13 @@
 # -- Path setup --------------------------------------------------------------
 import os
 import sys
-#sys.path.append( os.path.abspath("../src/") )
+sys.path.append( os.path.abspath("../src/") )
 sys.path.insert( 0, os.path.abspath("..") )
 
 print(sys.path)
 for p in sys.path:
     if "." not in p.split("/")[-1]:
         print(os.listdir(p))
-
-print(os.listdir(os.path.join(sys.path[-1], 'LightVegeManager-1.0.0.dist-info')))
 
 
 # -- Project information -----------------------------------------------------
