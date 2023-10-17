@@ -10,7 +10,10 @@ import sys
 sys.path.insert( 0, os.path.abspath("..") )
 
 print(sys.path)
-print(os.listdir(os.path.join(sys.path[-1], "lightvegemanager")))
+for p in sys.path:
+    print(os.listdir(p))
+
+#print(os.listdir(os.path.join(sys.path[-1], "lightvegemanager")))
 
 
 # -- Project information -----------------------------------------------------
