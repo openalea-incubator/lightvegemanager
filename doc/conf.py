@@ -6,10 +6,18 @@
 # -- Path setup --------------------------------------------------------------
 import os
 import sys
-sys.path.append( os.path.abspath("../src/") )
+#sys.path.append( os.path.abspath("../src/") )
 sys.path.insert( 0, os.path.abspath("..") )
 
 print(sys.path)
+
+['/home/docs/checkouts/readthedocs.org/user_builds/lightvegemanager/checkouts/latest', 
+ '/home/docs/checkouts/readthedocs.org/user_builds/lightvegemanager/checkouts/latest/doc', 
+ '/home/docs/.asdf/installs/python/3.11.4/lib/python311.zip', 
+ '/home/docs/.asdf/installs/python/3.11.4/lib/python3.11', 
+ '/home/docs/.asdf/installs/python/3.11.4/lib/python3.11/lib-dynload', 
+ '/home/docs/checkouts/readthedocs.org/user_builds/lightvegemanager/envs/latest/lib/python3.11/site-packages', 
+ '/home/docs/checkouts/readthedocs.org/user_builds/lightvegemanager/checkouts/latest/src']
 
 
 # -- Project information -----------------------------------------------------
