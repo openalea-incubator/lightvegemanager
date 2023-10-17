@@ -58,6 +58,7 @@ Gaëtan Louarn
 
 License
 **************
+|lightvegemanager| is released under CeCILL-C License. See file :download:`LICENSE <../LICENSE>` for details.
 
 Funding
 **************
