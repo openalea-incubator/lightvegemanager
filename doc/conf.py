@@ -14,7 +14,7 @@ for p in sys.path:
     if "." not in p.split("/")[-1]:
         print(os.listdir(p))
 
-#print(os.listdir(os.path.join(sys.path[-1], "lightvegemanager")))
+print(os.listdir(os.path.join(sys.path[-1], 'LightVegeManager-1.0.0.dist-info')))
 
 
 # -- Project information -----------------------------------------------------
