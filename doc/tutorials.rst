@@ -33,7 +33,7 @@ PyRATP
     
     .. code-block:: bash
 
-        git clone https://github.com/mwoussen/PyRATP
+        git clone -b update_mobidiv https://github.com/mwoussen/PyRATP
 
 #. Installation in the conda environment (in folder ``PyRATP``)
     

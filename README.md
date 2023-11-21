@@ -59,7 +59,7 @@ LightVegeManager is a Python package made for plant modeling and managing enligh
     PyRATP
     1) Git console :
         ```bash
-        git clone https://github.com/mwoussen/PyRATP
+        git clone -b update_mobidiv https://github.com/mwoussen/PyRATP
         ```
     2) installation in the conda environment (in folder `PyRATP`)
         ```bash
@@ -96,7 +96,7 @@ LightVegeManager is a Python package made for plant modeling and managing enligh
 3) Install PyRATP
     1) Git console :
         ```bash
-        git clone https://github.com/mwoussen/PyRATP
+        git clone -b update_mobidiv https://github.com/mwoussen/PyRATP
         ```
     2) installation in the conda environment (in folder `PyRATP`)
         ```bash
