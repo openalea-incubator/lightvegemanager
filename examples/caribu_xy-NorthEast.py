@@ -1,5 +1,5 @@
 import openalea.plantgl.all as pgl_all
-from lightvegemanager.tool import LightVegeManager
+from lightvegemanager.LVM import LightVegeManager
 
 
 def run_and_vtk(lightvegemanager, folderout, PARi, day, hour) :

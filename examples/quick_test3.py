@@ -1,5 +1,5 @@
 # import the class tool
-from lightvegemanager.tool import LightVegeManager
+from lightvegemanager.LVM import LightVegeManager
 from lightvegemanager.trianglesmesh import random_triangle_generator
 import openalea.plantgl.all as pgl
 import random

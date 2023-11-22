@@ -1,4 +1,4 @@
-from lightvegemanager.tool import LightVegeManager
+from lightvegemanager.LVM import LightVegeManager
 
 print("--- START")
 

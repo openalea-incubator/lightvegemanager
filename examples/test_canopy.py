@@ -10,7 +10,7 @@ import time
 from openalea.plantgl.all import Scene
 from openalea.mtg.mtg import MTG
 
-from lightvegemanager.tool import LightVegeManager
+from lightvegemanager.LVM import LightVegeManager
 from lightvegemanager.trianglesmesh import create_heterogeneous_canopy
 
 

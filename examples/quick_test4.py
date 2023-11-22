@@ -1,5 +1,5 @@
 import os
-from lightvegemanager.tool import LightVegeManager
+from lightvegemanager.LVM import LightVegeManager
 from openalea.plantgl.all import Scene, Viewer
 
 fet_fgeom = os.path.join(os.path.abspath(""), "data", "Fet-LD-F2.bgeom")

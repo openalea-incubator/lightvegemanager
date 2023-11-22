@@ -1,4 +1,4 @@
-from lightvegemanager.tool import LightVegeManager
+from lightvegemanager.LVM import LightVegeManager
 from lightvegemanager.trianglesmesh import random_triangle_generator
 import numpy
 
