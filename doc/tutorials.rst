@@ -3,7 +3,7 @@
 Tutorials with jupyter notebooks
 ################################
 
-Jupyter notebooks are available with documented tutorials exploring the tool features. The following files provides:jjjjjkkkkj
+Jupyter notebooks are available with documented tutorials exploring the tool features.
 
 
 .. toctree::
