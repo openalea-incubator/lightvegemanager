@@ -15,7 +15,7 @@
 **Documentation** : https://lightvegemanager.readthedocs.io/en/latest/
 
 ## Overview
----
+
 LightVegeManager is a Python package made for plant modeling and managing enlightment. It serves as an interface to merge several plant models and a light model. Applications involved by this tools are part of OpenAlea platform.
 
 ## Required dependencies
