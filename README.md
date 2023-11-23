@@ -2,10 +2,20 @@
 
 ![](doc/_img/illus_lightvegemanager.png)
 
-Documentation: https://lightvegemanager.readthedocs.io/en/latest/
+**Authors** : Maurane Woussen, Romain Barillot, Didier Combes, Gaëtan Louarn
+
+**Institutes** : INRAE
+
+**Status** : Python package 
+
+**License** : [Cecill-C](https://cecill.info/licences/Licence_CeCILL-C_V1-en.html)
+
+**URL** : https://github.com/mwoussen/lightvegemanager
+
+**Documentation** : https://lightvegemanager.readthedocs.io/en/latest/
 
 ## Overview
-
+---
 LightVegeManager is a Python package made for plant modeling and managing enlightment. It serves as an interface to merge several plant models and a light model. Applications involved by this tools are part of OpenAlea platform.
 
 ## Required dependencies
