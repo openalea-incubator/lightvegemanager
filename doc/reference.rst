@@ -10,10 +10,10 @@ describing what they are and what they do.
 
 .. contents:: 
 
-:mod:`tool` module
+:mod:`LVM` module
 -------------------------------------
 
-.. automodule:: tool
+.. automodule:: LVM
    :members:
    :undoc-members:
    :show-inheritance:

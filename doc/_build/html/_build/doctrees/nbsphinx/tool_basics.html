@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LightVegeManager first steps &mdash; LightVegeManager 0.0.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/nbsphinx-code-cells.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            LightVegeManager
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../presentation.html">Presentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architecture.html">Architecture of the tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../inputs.html">Inputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../others.html">Additionnal Functionalities</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference.html">Reference Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">LightVegeManager</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">LightVegeManager first steps</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/_build/doctrees/nbsphinx/tool_basics.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="LightVegeManager-first-steps">
+<h1>LightVegeManager first steps<a class="headerlink" href="#LightVegeManager-first-steps" title="Permalink to this heading"></a></h1>
+<section id="Content:">
+<h2>Content:<a class="headerlink" href="#Content:" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>One triangle</p>
+<ul>
+<li><p>CARIBU</p></li>
+<li><p>RATP</p></li>
+</ul>
+</li>
+<li><p>Set of triangles</p>
+<ul>
+<li><p>CARIBU</p></li>
+<li><p>RATP</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Introduction">
+<h2>Introduction<a class="headerlink" href="#Introduction" title="Permalink to this heading"></a></h2>
+<p>This notebook provides an introduction to the tool and its default parameters. Visualization is provided with PlantGL and and its adapation to jupyter notebook plantgl-jupyter.</p>
+<p>The main methods of a LightVegeManager instance are : - constructor <code class="docutils literal notranslate"><span class="pre">__init__</span></code>: returns an instance and initialize static parameters such as sky and default parameters - <code class="docutils literal notranslate"><span class="pre">build</span></code>: build and arrange the geometric scene following the chosen light model format - <code class="docutils literal notranslate"><span class="pre">run</span></code>: compute lighting - DataFrame outputs are stored in <code class="docutils literal notranslate"><span class="pre">triangles_ouputs</span></code>, <code class="docutils literal notranslate"><span class="pre">voxels_ouputs</span></code> and <code class="docutils literal notranslate"><span class="pre">elements_ouputs</span></code></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># imports the LightVegeManager object and SceneWidget for visual representation</span>
+<span class="kn">from</span> <span class="nn">lightvegemanager.LVM</span> <span class="kn">import</span> <span class="n">LightVegeManager</span>
+<span class="kn">from</span> <span class="nn">pgljupyter</span> <span class="kn">import</span> <span class="n">SceneWidget</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="One-triangle">
+<h2>One triangle<a class="headerlink" href="#One-triangle" title="Permalink to this heading"></a></h2>
+<p>As a first example, we can compute lighting on a single 3D triangle. A triangle is reprented with a list of 3 cartesian points (x, y, z)</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">t</span> <span class="o">=</span> <span class="p">[(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">),</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">),</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+<section id="CARIBU-(surfarcic-modelling)">
+<h3>CARIBU (surfarcic modelling)<a class="headerlink" href="#CARIBU-(surfarcic-modelling)" title="Permalink to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Initialize the instance. The <code class="docutils literal notranslate"><span class="pre">lightmodel</span></code> must be entered, at the moment you can choose between <code class="docutils literal notranslate"><span class="pre">&quot;caribu&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;ratp&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;riri5&quot;</span></code></p></li>
+</ol>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># initialize the instance</span>
+<span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;caribu&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Build the geometry. The triangle will be save inside the instance.</p></li>
+</ol>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># build the scene</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>In order to visualize the scene in the instance, you can give a plantGL Scene in SceneWidget through two methods: - <code class="docutils literal notranslate"><span class="pre">plantGL_nolight</span></code>: plots only geometric elements - <code class="docutils literal notranslate"><span class="pre">plantGL_light</span></code>: plots geometric elements and colors the scene according to PAR values</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">SceneWidget</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">plantGL_nolight</span><span class="p">(),</span> <span class="n">size_display</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span> <span class="n">plane</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">size_world</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">axes_helper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "eb1b9771732141b585cb6b5f72014bea", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Compute the lighting. By default it will compute direct and diffuse lighting.</p></li>
+</ol>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">energy</span> <span class="o">=</span> <span class="mf">500.</span>
+<span class="n">hour</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="n">day</span> <span class="o">=</span> <span class="mi">264</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Then, you can print the Dataframe outputs</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># print the outputs</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">triangles_outputs</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+   Day  Hour  Triangle  Organ  VegetationType      Area    par Eabs  \
+0  264    15         0      0               0  0.707107  397.268686
+
+       par Ei
+0  467.374925
+</pre></div></div>
+</div>
+</section>
+<section id="RATP">
+<h3>RATP<a class="headerlink" href="#RATP" title="Permalink to this heading"></a></h3>
+<p>To use RATP, you need to create a new instance. The others methods can be used in the same way as with CARIBU</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># initialize the instance</span>
+<span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;ratp&quot;</span><span class="p">)</span>
+
+<span class="c1"># build the scene</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>With <code class="docutils literal notranslate"><span class="pre">plantGL_nolight</span></code> you can precise if you want to plot the voxels. By default, if not precised, a voxel side is set as 3 times the longest triangle side.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># visualisation</span>
+<span class="n">SceneWidget</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">plantGL_nolight</span><span class="p">(</span><span class="n">printvoxels</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+            <span class="n">size_display</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+            <span class="n">plane</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">size_world</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+            <span class="n">axes_helper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "721619fcc0764904a80477c648a51dd0", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># compute the lighting</span>
+<span class="n">energy</span> <span class="o">=</span> <span class="mf">500.</span>
+<span class="n">hour</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="n">day</span> <span class="o">=</span> <span class="mi">264</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>You can get the outputs of the voxels or the triangles</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># print the outputs</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">voxels_outputs</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+   VegetationType    Day  Hour  Voxel  Nx  Ny  Nz   ShadedPAR   SunlitPAR  \
+0             1.0  264.0  15.0    1.0   1   1   1  380.635895  473.640411
+
+   ShadedArea  SunlitArea      Area        PARa  Intercepted  Transmitted
+0    0.010761    0.696346  0.707107  472.225067     0.667827     8.742233
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># print the outputs</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">triangles_outputs</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+   Triangle  Organ  Voxel  VegetationType  primitive_area    Day  Hour  Nx  \
+0         0      0    1.0               1        0.707107  264.0  15.0   1
+
+   Ny  Nz   ShadedPAR   SunlitPAR  ShadedArea  SunlitArea      Area  \
+0   1   1  380.635895  473.640411    0.010761    0.696346  0.707107
+
+         PARa  Intercepted  Transmitted
+0  472.225067     0.667827     8.742233
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="Set-of-triangles">
+<h2>Set of triangles<a class="headerlink" href="#Set-of-triangles" title="Permalink to this heading"></a></h2>
+<p>For this second example, we will generate a set of random 3D triangles. A function is already implemented in the package.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightvegemanager.trianglesmesh</span> <span class="kn">import</span> <span class="n">random_triangle_generator</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nb_triangles</span> <span class="o">=</span> <span class="mi">5000</span>
+<span class="n">spheresize</span> <span class="o">=</span> <span class="p">(</span><span class="mf">10.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">)</span> <span class="c1"># vertices of the triangles are on the sphere surface</span>
+<span class="n">triangles</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nb_triangles</span><span class="p">):</span>
+    <span class="n">triangles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">random_triangle_generator</span><span class="p">(</span><span class="n">spheresize</span><span class="o">=</span><span class="n">spheresize</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<section id="CARIBU">
+<h3>CARIBU<a class="headerlink" href="#CARIBU" title="Permalink to this heading"></a></h3>
+<p>We repeat the same steps as with one triangle</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># initialize the instance</span>
+<span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;caribu&quot;</span><span class="p">)</span>
+
+<span class="c1"># build the scene</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">triangles</span><span class="p">)</span>
+
+<span class="c1"># visualisation</span>
+<span class="n">SceneWidget</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">plantGL_nolight</span><span class="p">(),</span>
+            <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">50.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">size_display</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+            <span class="n">plane</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">size_world</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="n">axes_helper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "9566a9d0ad0845b285b43c1bb2e1c90d", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># compute the lighting</span>
+<span class="n">energy</span> <span class="o">=</span> <span class="mf">500.</span>
+<span class="n">hour</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="n">day</span> <span class="o">=</span> <span class="mi">264</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">)</span>
+
+<span class="c1"># print the outputs</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">triangles_outputs</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+      Day  Hour  Triangle  Organ  VegetationType       Area    par Eabs  \
+0     264    15         0      0               0  78.834450  139.160806
+1     264    15         1      0               0  47.966120    0.886467
+2     264    15         2      0               0  13.309912   27.693806
+3     264    15         3      0               0  52.267733    2.489935
+4     264    15         4      0               0  12.524847    0.198283
+...   ...   ...       ...    ...             ...        ...         ...
+4995  264    15      4995      0               0  71.155347   17.388605
+4996  264    15      4996      0               0  15.119594   67.661091
+4997  264    15      4997      0               0  12.947871   57.176758
+4998  264    15      4998      0               0  27.825938   28.413648
+4999  264    15      4999      0               0  25.764540    2.044766
+
+          par Ei
+0     163.718595
+1       1.042902
+2      32.580948
+3       2.929335
+4       0.233274
+...          ...
+4995   20.457182
+4996   79.601283
+4997   67.266774
+4998   33.427821
+4999    2.405607
+
+[5000 rows x 8 columns]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">SceneWidget</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">plantGL_light</span><span class="p">(),</span>
+            <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">50.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">size_display</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+            <span class="n">plane</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">size_world</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="n">axes_helper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "6c4060cbec6840688bd2f0efb340d2bf", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+</section>
+<section id="id1">
+<h3>RATP<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h3>
+<p>Now, we will set the voxels size. It needs to be specified in a dict which stores all RATP parameters. Here, you need to precise the length on each axis of one voxel.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ratp_parameters</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;voxel size&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">20.</span><span class="p">]</span> <span class="o">*</span> <span class="mi">3</span> <span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>Then, the dict is an argument in the instance creation.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># initialize the instance</span>
+<span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;ratp&quot;</span><span class="p">,</span> <span class="n">lightmodel_parameters</span><span class="o">=</span><span class="n">ratp_parameters</span><span class="p">)</span>
+
+<span class="c1"># build the scene</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">triangles</span><span class="p">)</span>
+
+<span class="c1"># visualisation</span>
+<span class="n">SceneWidget</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">plantGL_nolight</span><span class="p">(</span><span class="n">printtriangles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">printvoxels</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+            <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">50.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">size_display</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+            <span class="n">plane</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">size_world</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="n">axes_helper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "ce83d9cc2b154bc885fac5df2d8f78c8", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># compute the lighting</span>
+<span class="n">energy</span> <span class="o">=</span> <span class="mf">500.</span>
+<span class="n">hour</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="n">day</span> <span class="o">=</span> <span class="mi">264</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">)</span>
+
+<span class="c1"># print the outputs</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">voxels_outputs</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+     VegetationType    Day  Hour  Voxel  Nx  Ny  Nz   ShadedPAR   SunlitPAR  \
+0               1.0  264.0  15.0    1.0   3   3   5   40.732689  136.623886
+1               1.0  264.0  15.0    2.0   5   6   6   28.347637  124.238831
+2               1.0  264.0  15.0    3.0   1   4   3  137.707138  233.598343
+3               1.0  264.0  15.0    4.0   3   3   2  183.874008  279.765198
+4               1.0  264.0  15.0    5.0   2   6   5   41.833862  137.725067
+..              ...    ...   ...    ...  ..  ..  ..         ...         ...
+213             1.0  264.0  15.0  214.0   4   2   4   63.669552  159.560745
+214             1.0  264.0  15.0  215.0   1   7   6  146.115402  242.006592
+215             1.0  264.0  15.0  216.0   6   3   7   82.600769  178.491959
+216             1.0  264.0  15.0  217.0   1   7   2  339.311615  435.202850
+217             1.0  264.0  15.0  218.0   4   5   1  375.165588  471.056763
+
+      ShadedArea  SunlitArea         Area        PARa  Intercepted  \
+0    1024.282715   10.943428  1035.226196   41.746357    86.433853
+1    1377.175171  283.350006  1660.525146   44.710396   148.485474
+2     172.634308  291.246674   463.880981  197.912231   183.615433
+3     486.705994  360.075684   846.781677  224.649658   380.458435
+4    1375.770874   41.413651  1417.184570   44.636040   126.515022
+..           ...         ...          ...         ...          ...
+213   626.312683  157.908005   784.220703   82.977875   130.145935
+214    57.020470   86.957054   143.977524  204.030106    58.751499
+215   197.366257  156.226395   353.592651  124.967972    88.375519
+216     4.840422   17.089012    21.929434  414.037079    18.159195
+217     0.815029   39.664459    40.479488  469.126038    37.979965
+
+     Transmitted
+0      31.874031
+1      18.599306
+2     119.887787
+3     101.195755
+4      33.631508
+..           ...
+213    52.329762
+214   128.099014
+215    82.136887
+216   328.422760
+217   385.791229
+
+[218 rows x 15 columns]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># print the outputs</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">triangles_outputs</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+      Triangle  Organ  Voxel  VegetationType  primitive_area    Day  Hour  Nx  \
+0            0      0    1.0               1        6.008933  264.0  15.0   5
+49           1      0    2.0               1       64.911050  264.0  15.0   4
+77           2      0    3.0               1       48.494517  264.0  15.0   3
+84           3      0    4.0               1        5.762879  264.0  15.0   1
+91           4      0    5.0               1       21.321846  264.0  15.0   3
+...        ...    ...    ...             ...             ...    ...   ...  ..
+586       4995      0   21.0               1       21.090689  264.0  15.0   5
+3641      4996      0  136.0               1       32.577000  264.0  15.0   4
+1051      4997      0   37.0               1       76.699258  264.0  15.0   6
+1822      4998      0   63.0               1        1.464895  264.0  15.0   2
+3443      4999      0  129.0               1       51.065793  264.0  15.0   5
+
+      Ny  Nz   ShadedPAR   SunlitPAR   ShadedArea  SunlitArea         Area  \
+0      6   3   48.783260  144.457764  1669.359253  307.066376  1976.425659
+49     2   6   50.222652  145.897171   639.340942  467.153961  1106.494873
+77     7   7   76.529640  172.204147   131.880585   49.266487   181.147064
+84     7   4  162.029709  257.704224   114.480240  108.982895   223.463135
+91     5   5   36.165016  131.839523  1061.264648    3.100358  1064.364990
+...   ..  ..         ...         ...          ...         ...          ...
+586    4   6   28.958939  124.633453   982.723572  278.425110  1261.148682
+3641   4   4   20.419191  116.093712  1379.531006   34.760368  1414.291382
+1051   6   5   68.352638  164.027176  1125.141846    1.110655  1126.252441
+1822   5   5   39.313770  134.988281  1225.665894   14.276536  1239.942383
+3443   2   6   60.735207  156.409714   431.796021  383.754333   815.550354
+
+            PARa  Intercepted  Transmitted
+0      63.647678   251.589828    31.452011
+49     90.615723   200.531677    35.146641
+77    102.550201    37.153339    72.656891
+84    208.690125    93.269104   155.314255
+91     36.443703    77.578804    28.307266
+...          ...          ...          ...
+586    50.081097   126.319427    21.615057
+3641   22.770676    64.408737    13.644242
+1051   68.446991   154.177170    60.248528
+1822   40.415356   100.225418    28.215555
+3443  105.754509   172.496262    47.396954
+
+[5000 rows x 18 columns]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># visualisation</span>
+<span class="n">SceneWidget</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">plantGL_light</span><span class="p">(</span><span class="n">printtriangles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">printvoxels</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+            <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">50.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">size_display</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+            <span class="n">plane</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">size_world</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="n">axes_helper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "601c0f191bf24346a535bc902e7f21dd", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># visualisation</span>
+<span class="n">SceneWidget</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">plantGL_light</span><span class="p">(</span><span class="n">printtriangles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">printvoxels</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+            <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">50.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">size_display</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+            <span class="n">plane</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">size_world</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="n">axes_helper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "19aaa3db6a1c4886a1aca18428e9dadb", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, INRAE P3F.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

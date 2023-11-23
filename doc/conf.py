@@ -22,7 +22,7 @@ release = '0.0.0'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinx.ext.todo", "sphinx.ext.viewcode", "sphinx.ext.autodoc"]
+extensions = ["sphinx.ext.todo", "sphinx.ext.viewcode", "sphinx.ext.autodoc", "nbsphinx", "nbsphinx_link"]
 
 templates_path = ['_templates']
 exclude_patterns = ['doc/_build', 'Thumbs.db', '.DS_Store', 'README.rst']

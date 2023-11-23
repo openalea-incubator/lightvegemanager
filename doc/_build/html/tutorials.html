@@ -16,10 +16,11 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Architecture of the tool" href="architecture.html" />
+    <link rel="next" title="1. LightVegeManager first steps" href="tool_basics.html" />
     <link rel="prev" title="Presentation" href="presentation.html" /> 
 </head>
 
@@ -57,7 +58,16 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#quickstart">Quickstart</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#tutorials-with-jupyter-notebooks">Tutorials with jupyter notebooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tutorials-with-jupyter-notebooks">Tutorials with jupyter notebooks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tool_basics.html">1. LightVegeManager first steps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="environment_parameters.html">2. Environment parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="input_scenes.html">3. Geometric inputs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lightmodels_functionnalities.html">4. Light models options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="outputs_and_plantmodels_transfer.html">5. Output formats and transfer methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="example_canopy.html">6. Example of use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="misc_functionnalities.html">7. Misc functionnalities</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture of the tool</a></li>
@@ -122,7 +132,7 @@
 <ol class="arabic">
 <li><p>Git console:</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/mwoussen/PyRATP
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>-b<span class="w"> </span>update_mobidiv<span class="w"> </span>https://github.com/mwoussen/PyRATP
 </pre></div>
 </div>
 </div></blockquote>
@@ -181,7 +191,7 @@ make<span class="w"> </span>clean
 <span id="id3"></span><h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this heading"></a></h2>
 <p>Small test to quickly test the tool. LightVegeManager needs at least a geometric information and a light model to call
 between <code class="docutils literal notranslate"><span class="pre">&quot;ratp&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;caribu&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;riri5&quot;</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">LightVegeManager</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightvegeamanger.LVM</span> <span class="kn">import</span> <span class="n">LightVegeManager</span>
 
 <span class="c1"># one triangle as a geometric element</span>
 <span class="c1"># we write our triangle in a CaribuScene format</span>
@@ -214,6 +224,17 @@ between <code class="docutils literal notranslate"><span class="pre">&quot;ratp&
 <section id="tutorials-with-jupyter-notebooks">
 <h2>Tutorials with jupyter notebooks<a class="headerlink" href="#tutorials-with-jupyter-notebooks" title="Permalink to this heading"></a></h2>
 <p>Jupyter notebooks are available with documented tutorials exploring the tool features. The following files provides:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tool_basics.html">1. LightVegeManager first steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="environment_parameters.html">2. Environment parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="input_scenes.html">3. Geometric inputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lightmodels_functionnalities.html">4. Light models options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs_and_plantmodels_transfer.html">5. Output formats and transfer methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_canopy.html">6. Example of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="misc_functionnalities.html">7. Misc functionnalities</a></li>
+</ul>
+</div>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">tool_basics</span></code>: Introduction to the tools</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">environment_parameters</span></code>:  Ways to set the environment</p></li>
@@ -231,7 +252,7 @@ between <code class="docutils literal notranslate"><span class="pre">&quot;ratp&
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="presentation.html" class="btn btn-neutral float-left" title="Presentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="architecture.html" class="btn btn-neutral float-right" title="Architecture of the tool" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="tool_basics.html" class="btn btn-neutral float-right" title="1. LightVegeManager first steps" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

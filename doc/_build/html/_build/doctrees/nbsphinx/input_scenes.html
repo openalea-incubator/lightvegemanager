@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Geometric inputs &mdash; LightVegeManager 0.0.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/nbsphinx-code-cells.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            LightVegeManager
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../presentation.html">Presentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architecture.html">Architecture of the tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../inputs.html">Inputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../others.html">Additionnal Functionalities</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference.html">Reference Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">LightVegeManager</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Geometric inputs</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/_build/doctrees/nbsphinx/input_scenes.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Geometric-inputs">
+<h1>Geometric inputs<a class="headerlink" href="#Geometric-inputs" title="Permalink to this heading"></a></h1>
+<section id="Content">
+<h2>Content<a class="headerlink" href="#Content" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>input formats</p>
+<ul>
+<li><p>dict</p></li>
+<li><p>plantGL</p></li>
+<li><p>fichier VGX</p></li>
+<li><p>grille de voxels</p></li>
+<li><p>table MTG de adelwheat</p></li>
+</ul>
+</li>
+<li><p>organization levels: species and organs</p></li>
+<li><p>stems management</p></li>
+<li><p>geometric transformations</p></li>
+</ul>
+</section>
+<section id="Introduction">
+<h2>Introduction<a class="headerlink" href="#Introduction" title="Permalink to this heading"></a></h2>
+<p>The main purpose of this tool was to merge several geometric scenes in various formats and apply a radiative modelling on it. Here, we will precise the different possiblities for manipulating geometry.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightvegemanager.LVM</span> <span class="kn">import</span> <span class="n">LightVegeManager</span>
+<span class="kn">from</span> <span class="nn">pgljupyter</span> <span class="kn">import</span> <span class="n">SceneWidget</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Environment parameters for this notebook</span>
+<span class="n">longitude</span> <span class="o">=</span> <span class="mf">2.</span>
+<span class="n">latitude</span> <span class="o">=</span> <span class="mf">46.</span>
+<span class="n">timezone</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">coordinates</span> <span class="o">=</span> <span class="p">[</span><span class="n">latitude</span><span class="p">,</span> <span class="n">longitude</span><span class="p">,</span> <span class="n">timezone</span><span class="p">]</span>
+<span class="n">infinite</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">reflected</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">direct</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">diffuse</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">sky</span> <span class="o">=</span> <span class="s2">&quot;turtle46&quot;</span>
+
+<span class="n">environment</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;coordinates&quot;</span><span class="p">:</span> <span class="n">coordinates</span> <span class="p">,</span>
+                <span class="s2">&quot;infinite&quot;</span><span class="p">:</span> <span class="n">infinite</span><span class="p">,</span>
+                <span class="s2">&quot;reflected&quot;</span><span class="p">:</span> <span class="n">reflected</span><span class="p">,</span>
+                <span class="s2">&quot;direct&quot;</span><span class="p">:</span> <span class="n">direct</span><span class="p">,</span>
+                <span class="s2">&quot;diffuse&quot;</span><span class="p">:</span> <span class="n">diffuse</span><span class="p">,</span>
+                <span class="s2">&quot;sky&quot;</span><span class="p">:</span> <span class="n">sky</span>
+                <span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Inputs-Formats">
+<h2>Inputs Formats<a class="headerlink" href="#Inputs-Formats" title="Permalink to this heading"></a></h2>
+<p>In this section, we won’t present single triangle and list of triangles as input geometry, as they were present in the <code class="docutils literal notranslate"><span class="pre">tool_basics.ipynb</span></code> notebook. Also, these two formats can be direct inputs of the <code class="docutils literal notranslate"><span class="pre">geometry</span></code> argument of the <code class="docutils literal notranslate"><span class="pre">build</span></code> method, unlike the following formats which needs to be included in a list, such as:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">geometry</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;scenes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">scene1</span><span class="p">,</span> <span class="n">scene2</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="p">}</span>
+</pre></div>
+</div>
+<section id="dict-of-triangles">
+<h3>dict of triangles<a class="headerlink" href="#dict-of-triangles" title="Permalink to this heading"></a></h3>
+<p>A mesh of triangles can be represented as a dict, where each key is an organ ID and its value, a list of triangles belonging to the organ. A triangle is a list of a 3 vertices represented by <code class="docutils literal notranslate"><span class="pre">(x,y,z)</span></code>points.</p>
+<p>In this example, we will generate random 3D triangles for 3 differents organs.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightvegemanager.trianglesmesh</span> <span class="kn">import</span> <span class="n">random_triangle_generator</span>
+
+<span class="n">spheresize</span> <span class="o">=</span> <span class="p">(</span><span class="mf">10.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">)</span>
+<span class="n">organized_triangles</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">111</span><span class="p">:</span> <span class="p">[</span><span class="n">random_triangle_generator</span><span class="p">(</span><span class="n">spheresize</span><span class="o">=</span><span class="n">spheresize</span><span class="p">,</span> <span class="n">worldsize</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">20</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">)],</span>
+    <span class="mi">222</span><span class="p">:</span> <span class="p">[</span><span class="n">random_triangle_generator</span><span class="p">(</span><span class="n">spheresize</span><span class="o">=</span><span class="n">spheresize</span><span class="p">,</span> <span class="n">worldsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">50</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">30</span><span class="p">)],</span>
+    <span class="mi">333</span><span class="p">:</span> <span class="p">[</span><span class="n">random_triangle_generator</span><span class="p">(</span><span class="n">spheresize</span><span class="o">=</span><span class="n">spheresize</span><span class="p">,</span> <span class="n">worldsize</span><span class="o">=</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span><span class="mi">100</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)],</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>Input geometry looks like:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">geometry</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;scenes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">organized_triangles</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>Then, we compute lighting and run a visualization of the scene.</p>
+<p>Note: <code class="docutils literal notranslate"><span class="pre">elements_outputs</span></code> method will return a Dataframe where results are integrated on each organ.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;caribu&quot;</span><span class="p">,</span> <span class="n">environment</span><span class="o">=</span><span class="n">environment</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">geometry</span><span class="p">)</span>
+
+<span class="c1"># compute the lighting</span>
+<span class="n">energy</span> <span class="o">=</span> <span class="mf">500.</span>
+<span class="n">hour</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="n">day</span> <span class="o">=</span> <span class="mi">264</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">elements_outputs</span><span class="p">)</span>
+<span class="n">SceneWidget</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">plantGL_light</span><span class="p">(),</span>
+            <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">50.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">size_display</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+            <span class="n">plane</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">size_world</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="n">axes_helper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+   Day  Hour  Organ  VegetationType        Area    par Eabs      par Ei
+0  264    15    111               0  812.660080  254.783023  299.744733
+1  264    15    222               0  906.791550  326.191765  383.755017
+2  264    15    333               0  456.917637  368.655503  433.712356
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "33bec3443d82488aa08d03e9fa96fe30", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+</section>
+<section id="PlantGL-scene">
+<h3>PlantGL scene<a class="headerlink" href="#PlantGL-scene" title="Permalink to this heading"></a></h3>
+<p>A plantGL Scene is a list of plantGL Shape which can be considered as organ. The ID of the plantGL Shape are stored as organs ID.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openalea.plantgl.all</span> <span class="k">as</span> <span class="nn">pgl</span>
+
+<span class="n">pgl_scene</span> <span class="o">=</span> <span class="n">pgl</span><span class="o">.</span><span class="n">Scene</span><span class="p">([</span><span class="n">pgl</span><span class="o">.</span><span class="n">Shape</span><span class="p">(</span><span class="n">pgl</span><span class="o">.</span><span class="n">Box</span><span class="p">(),</span> <span class="n">pgl</span><span class="o">.</span><span class="n">Material</span><span class="p">(),</span> <span class="mi">888</span><span class="p">),</span>
+                        <span class="n">pgl</span><span class="o">.</span><span class="n">Shape</span><span class="p">(</span><span class="n">pgl</span><span class="o">.</span><span class="n">Translated</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">pgl</span><span class="o">.</span><span class="n">Cylinder</span><span class="p">()),</span> <span class="n">pgl</span><span class="o">.</span><span class="n">Material</span><span class="p">(),</span> <span class="mi">999</span><span class="p">)])</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">geometry</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;scenes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">pgl_scene</span><span class="p">]</span>
+<span class="p">}</span>
+<span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;caribu&quot;</span><span class="p">,</span> <span class="n">environment</span><span class="o">=</span><span class="n">environment</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">geometry</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">elements_outputs</span><span class="p">)</span>
+<span class="n">SceneWidget</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">plantGL_light</span><span class="p">(),</span>
+            <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">size_display</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+            <span class="n">plane</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">size_world</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+            <span class="n">axes_helper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+   Day  Hour  Organ  VegetationType      Area    par Eabs      par Ei
+0  264    15    888               0  6.000000  159.643042  187.815343
+1  264    15    999               0  4.475681  185.076017  217.736490
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "df141e710a8545b7a1bdb5ef74208ad2", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+</section>
+<section id="VGX-file">
+<h3>VGX file<a class="headerlink" href="#VGX-file" title="Permalink to this heading"></a></h3>
+<p>The tool can read a VGX file as an input entry. It extracts triangles which are considered as leaves, following its colors, if Red != 42 . All triangles are stored in the same organ, where its ID is set to 0.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">vgx_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)),</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;NICatObs1P2.vgx&quot;</span><span class="p">)</span>
+<span class="n">vgx_path</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&#39;C:\\Users\\mwoussen\\cdd\\codes\\dev\\lightvegemanager\\data\\NICatObs1P2.vgx&#39;
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">geometry</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;scenes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">vgx_path</span><span class="p">]</span>
+<span class="p">}</span>
+<span class="c1"># compute the lighting</span>
+<span class="n">energy</span> <span class="o">=</span> <span class="mf">500.</span>
+<span class="n">hour</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="n">day</span> <span class="o">=</span> <span class="mi">264</span>
+<span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;caribu&quot;</span><span class="p">,</span> <span class="n">environment</span><span class="o">=</span><span class="n">environment</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">geometry</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">elements_outputs</span><span class="p">)</span>
+<span class="n">SceneWidget</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">plantGL_light</span><span class="p">(),</span>
+            <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">size_display</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+            <span class="n">plane</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">size_world</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="n">axes_helper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+   Day  Hour  Organ  VegetationType         Area    par Eabs      par Ei
+0  264    15      0               0  6062.836763  193.704509  227.887658
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "cd5d09ab6f06491c90fbd35eff15d706", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+</section>
+<section id="Grid-of-voxels">
+<h3>Grid of voxels<a class="headerlink" href="#Grid-of-voxels" title="Permalink to this heading"></a></h3>
+<p>A voxel grid is represented as a dict of two entries: - <code class="docutils literal notranslate"><span class="pre">&quot;LA&quot;</span></code> corresponding to leaf area, is a table (<code class="docutils literal notranslate"><span class="pre">numpy.array</span></code>) of dimension $:nbsphinx-math:<cite>text{number of species}</cite> <span class="math">\times `:nbsphinx-math:</span>text{number of z layers}` <span class="math">\times `:nbsphinx-math:</span>text{number of x layers}` <span class="math">\times `:nbsphinx-math:</span>text{number of y layers}` $ - <code class="docutils literal notranslate"><span class="pre">&quot;distrib&quot;</span></code> corresponding to leaf angle distribution, is a list of list, where is entered a leaf angle distribution
+for each specy</p>
+<p>Grid dimensions and voxel size are set in the input parameters of RATP.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="n">l_scene</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;LA&quot;</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">]),</span> <span class="s2">&quot;distrib&quot;</span><span class="p">:</span> <span class="p">[[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">]]}</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">geometry</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;scenes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">vgx_path</span><span class="p">]</span>
+<span class="p">}</span>
+<span class="n">ratp_parameters</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;voxel size&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="mf">20.</span><span class="p">]</span> <span class="o">*</span> <span class="mi">3</span>
+<span class="p">}</span>
+<span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;ratp&quot;</span><span class="p">,</span> <span class="n">environment</span><span class="o">=</span><span class="n">environment</span><span class="p">,</span> <span class="n">lightmodel_parameters</span><span class="o">=</span><span class="n">ratp_parameters</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">geometry</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">elements_outputs</span><span class="p">)</span>
+<span class="n">SceneWidget</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">plantGL_light</span><span class="p">(</span><span class="n">printtriangles</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">printvoxels</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+            <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">size_display</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+            <span class="n">plane</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">size_world</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="n">axes_helper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+     Day  Hour  Organ  VegetationType         Area        PARa  Intercepted  \
+0  264.0  15.0      0               1  6062.836763  307.604456   215.922903
+
+   Transmitted   SunlitPAR  SunlitArea   ShadedPAR  ShadedArea
+0   215.922903  307.604461  252.377915  307.604461  126.601372
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "92aa1a9361374af78d392edf3b92fce5", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+</section>
+<section id="MTG-object-from-adelwheat">
+<h3>MTG object from adelwheat<a class="headerlink" href="#MTG-object-from-adelwheat" title="Permalink to this heading"></a></h3>
+<p>Finally, you can also give a MTG object with a <code class="docutils literal notranslate"><span class="pre">&quot;scene&quot;</span></code> property. The package adelwheat offers such objects.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">alinea.adel.adel_dynamic</span> <span class="kn">import</span> <span class="n">AdelDyn</span>
+<span class="kn">from</span> <span class="nn">alinea.adel.echap_leaf</span> <span class="kn">import</span> <span class="n">echap_leaves</span>
+<span class="n">INPUTS_DIRPATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)),</span> <span class="s2">&quot;data&quot;</span><span class="p">)</span>
+<span class="n">adel_wheat</span> <span class="o">=</span> <span class="n">AdelDyn</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">scene_unit</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">,</span> <span class="n">leaves</span><span class="o">=</span><span class="n">echap_leaves</span><span class="p">(</span><span class="n">xy_model</span><span class="o">=</span><span class="s2">&quot;Soissons_byleafclass&quot;</span><span class="p">))</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">adel_wheat</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="n">INPUTS_DIRPATH</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">geometry</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;scenes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">g</span><span class="p">]</span>
+<span class="p">}</span>
+<span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;caribu&quot;</span><span class="p">,</span> <span class="n">environment</span><span class="o">=</span><span class="n">environment</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">geometry</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">elements_outputs</span><span class="p">)</span>
+<span class="n">SceneWidget</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">plantGL_light</span><span class="p">(),</span>
+            <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">size_display</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+            <span class="n">plane</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">size_world</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+            <span class="n">axes_helper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+   Day  Hour  Organ  VegetationType      Area    par Eabs      par Ei
+0  264    15     19               0  0.000228  159.208612  187.304249
+1  264    15     34               0  0.000013   80.953500   95.239412
+2  264    15    813               0  0.000194  385.317031  453.314154
+3  264    15    814               0  0.000240  367.646906  432.525772
+4  264    15     51               0  0.000284  347.458387  408.774573
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "0d07f0a7f9c541048677b01ae0081ca0", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+</section>
+<section id="RATP-inputs">
+<h3>RATP inputs<a class="headerlink" href="#RATP-inputs" title="Permalink to this heading"></a></h3>
+<p>All the above scenes can be geometric inputs if the lightmodel argument is set to <code class="docutils literal notranslate"><span class="pre">&quot;ratp&quot;</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">geometry</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;scenes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">g</span><span class="p">]</span>
+<span class="p">}</span>
+<span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;ratp&quot;</span><span class="p">,</span> <span class="n">environment</span><span class="o">=</span><span class="n">environment</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">geometry</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">elements_outputs</span><span class="p">)</span>
+<span class="n">SceneWidget</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">plantGL_light</span><span class="p">(</span><span class="n">printvoxels</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+            <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">size_display</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+            <span class="n">plane</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">size_world</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+            <span class="n">axes_helper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+     Day  Hour  Organ  VegetationType      Area        PARa  Intercepted  \
+0  264.0  15.0     19               1  0.000228  435.713379     0.000693
+1  264.0  15.0     34               1  0.000013  435.713379     0.000693
+2  264.0  15.0    813               1  0.000194  435.713379     0.000693
+3  264.0  15.0    814               1  0.000240  441.368498     0.000288
+4  264.0  15.0     51               1  0.000284  435.713379     0.000693
+
+   Transmitted   SunlitPAR  SunlitArea   ShadedPAR  ShadedArea
+0     0.000693  435.713379    0.000776  435.713379    0.000019
+1     0.000693  435.713379    0.000776  435.713379    0.000019
+2     0.000693  435.713379    0.000776  435.713379    0.000019
+3     0.000288  441.368498    0.000322  441.368498    0.000007
+4     0.000693  435.713379    0.000776  435.713379    0.000019
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "3e6998ef5bbb441a9941d18881a1b19d", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+</section>
+<section id="RiRi5-inputs">
+<h3>RiRi5 inputs<a class="headerlink" href="#RiRi5-inputs" title="Permalink to this heading"></a></h3>
+<p>RiRi5 can have the same inputs as RATP.</p>
+<p>A scene grid of voxels must have exactly 9 angle classes for its leaf angle distribution, and at least one empty layer above the canopy.</p>
+<p>Triangles mesh inputs are processed through the RATP pipeline, then is converted to RiRi5.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="n">l_scene</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;LA&quot;</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">]),</span> <span class="s2">&quot;distrib&quot;</span><span class="p">:</span> <span class="p">[[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+                                                        <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">]]}</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+        <span class="n">l_scene</span><span class="p">[</span><span class="s2">&quot;LA&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="n">l_scene</span><span class="p">[</span><span class="s2">&quot;LA&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">geometry</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;scenes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">l_scene</span><span class="p">]</span>
+<span class="p">}</span>
+<span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;riri5&quot;</span><span class="p">,</span> <span class="n">environment</span><span class="o">=</span><span class="n">environment</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">geometry</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">riri5_intercepted_light</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[[[[  0.           0.           0.           0.        ]
+   [  0.           0.           0.           0.        ]
+   [  0.           0.           0.           0.        ]
+   [  0.           0.           0.           0.        ]]
+
+  [[208.05400092 208.05400092 208.05400092 208.05400092]
+   [208.05400092 208.05400092 208.05400092 208.05400092]
+   [208.05400092 208.05400092 208.05400092 208.05400092]
+   [208.05400092 208.05400092 208.05400092 208.05400092]]
+
+  [[ 33.75896074  33.75896074  33.75896074  33.75896074]
+   [ 33.75896074  33.75896074  33.75896074  33.75896074]
+   [ 33.75896074  33.75896074  33.75896074  33.75896074]
+   [ 33.75896074  33.75896074  33.75896074  33.75896074]]]
+
+
+ [[[  0.           0.           0.           0.        ]
+   [  0.           0.           0.           0.        ]
+   [  0.           0.           0.           0.        ]
+   [  0.           0.           0.           0.        ]]
+
+  [[207.34450322 207.34450322 207.34450322 207.34450322]
+   [207.34450322 207.34450322 207.34450322 207.34450322]
+   [207.34450322 207.34450322 207.34450322 207.34450322]
+   [207.34450322 207.34450322 207.34450322 207.34450322]]
+
+  [[ 33.2079505   33.2079505   33.2079505   33.2079505 ]
+   [ 33.2079505   33.2079505   33.2079505   33.2079505 ]
+   [ 33.2079505   33.2079505   33.2079505   33.2079505 ]
+   [ 33.2079505   33.2079505   33.2079505   33.2079505 ]]]]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">riri5_transmitted_light</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[[[500.         500.         500.         500.        ]
+  [500.         500.         500.         500.        ]
+  [500.         500.         500.         500.        ]
+  [500.         500.         500.         500.        ]]
+
+ [[ 84.60149586  84.60149586  84.60149586  84.60149586]
+  [ 84.60149586  84.60149586  84.60149586  84.60149586]
+  [ 84.60149586  84.60149586  84.60149586  84.60149586]
+  [ 84.60149586  84.60149586  84.60149586  84.60149586]]
+
+ [[ 17.63458462  17.63458462  17.63458462  17.63458462]
+  [ 17.63458462  17.63458462  17.63458462  17.63458462]
+  [ 17.63458462  17.63458462  17.63458462  17.63458462]
+  [ 17.63458462  17.63458462  17.63458462  17.63458462]]]
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">geometry</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;scenes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">organized_triangles</span><span class="p">]</span>
+<span class="p">}</span>
+
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">geometry</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">riri5_intercepted_light</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[[[[0. 0. 0. ... 0. 0. 0.]
+   [0. 0. 0. ... 0. 0. 0.]
+   [0. 0. 0. ... 0. 0. 0.]
+   ...
+   [0. 0. 0. ... 0. 0. 0.]
+   [0. 0. 0. ... 0. 0. 0.]
+   [0. 0. 0. ... 0. 0. 0.]]
+
+  [[0. 0. 0. ... 0. 0. 0.]
+   [0. 0. 0. ... 0. 0. 0.]
+   [0. 0. 0. ... 0. 0. 0.]
+   ...
+   [0. 0. 0. ... 0. 0. 0.]
+   [0. 0. 0. ... 0. 0. 0.]
+   [0. 0. 0. ... 0. 0. 0.]]
+
+  [[0. 0. 0. ... 0. 0. 0.]
+   [0. 0. 0. ... 0. 0. 0.]
+   [0. 0. 0. ... 0. 0. 0.]
+   ...
+   [0. 0. 0. ... 0. 0. 0.]
+   [0. 0. 0. ... 0. 0. 0.]
+   [0. 0. 0. ... 0. 0. 0.]]
+
+  ...
+
+  [[0. 0. 0. ... 0. 0. 0.]
+   [0. 0. 0. ... 0. 0. 0.]
+   [0. 0. 0. ... 0. 0. 0.]
+   ...
+   [0. 0. 0. ... 0. 0. 0.]
+   [0. 0. 0. ... 0. 0. 0.]
+   [0. 0. 0. ... 0. 0. 0.]]
+
+  [[0. 0. 0. ... 0. 0. 0.]
+   [0. 0. 0. ... 0. 0. 0.]
+   [0. 0. 0. ... 0. 0. 0.]
+   ...
+   [0. 0. 0. ... 0. 0. 0.]
+   [0. 0. 0. ... 0. 0. 0.]
+   [0. 0. 0. ... 0. 0. 0.]]
+
+  [[0. 0. 0. ... 0. 0. 0.]
+   [0. 0. 0. ... 0. 0. 0.]
+   [0. 0. 0. ... 0. 0. 0.]
+   ...
+   [0. 0. 0. ... 0. 0. 0.]
+   [0. 0. 0. ... 0. 0. 0.]
+   [0. 0. 0. ... 0. 0. 0.]]]]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">riri5_transmitted_light</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[[[500. 500. 500. ... 500. 500. 500.]
+  [500. 500. 500. ... 500. 500. 500.]
+  [500. 500. 500. ... 500. 500. 500.]
+  ...
+  [500. 500. 500. ... 500. 500. 500.]
+  [500. 500. 500. ... 500. 500. 500.]
+  [500. 500. 500. ... 500. 500. 500.]]
+
+ [[500. 500. 500. ... 500. 500. 500.]
+  [500. 500. 500. ... 500. 500. 500.]
+  [500. 500. 500. ... 500. 500. 500.]
+  ...
+  [500. 500. 500. ... 500. 500. 500.]
+  [500. 500. 500. ... 500. 500. 500.]
+  [500. 500. 500. ... 500. 500. 500.]]
+
+ [[500. 500. 500. ... 500. 500. 500.]
+  [500. 500. 500. ... 500. 500. 500.]
+  [500. 500. 500. ... 500. 500. 500.]
+  ...
+  [500. 500. 500. ... 500. 500. 500.]
+  [500. 500. 500. ... 500. 500. 500.]
+  [500. 500. 500. ... 500. 500. 500.]]
+
+ ...
+
+ [[500. 500. 500. ... 500. 500. 500.]
+  [500. 500. 500. ... 500. 500. 500.]
+  [500. 500. 500. ... 500. 500. 500.]
+  ...
+  [500. 500. 500. ... 500. 500. 500.]
+  [500. 500. 500. ... 500. 500. 500.]
+  [500. 500. 500. ... 500. 500. 500.]]
+
+ [[500. 500. 500. ... 500. 500. 500.]
+  [500. 500. 500. ... 500. 500. 500.]
+  [500. 500. 500. ... 500. 500. 500.]
+  ...
+  [500. 500. 500. ... 500. 500. 500.]
+  [500. 500. 500. ... 500. 500. 500.]
+  [500. 500. 500. ... 500. 500. 500.]]
+
+ [[500. 500. 500. ... 500. 500. 500.]
+  [500. 500. 500. ... 500. 500. 500.]
+  [500. 500. 500. ... 500. 500. 500.]
+  ...
+  [500. 500. 500. ... 500. 500. 500.]
+  [500. 500. 500. ... 500. 500. 500.]
+  [500. 500. 500. ... 500. 500. 500.]]]
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="Organizing-the-inputs">
+<h2>Organizing the inputs<a class="headerlink" href="#Organizing-the-inputs" title="Permalink to this heading"></a></h2>
+<p>They are two levels of possible organization: - species - organs</p>
+<p>Each triangle are bound to a specy ID and a organ ID. Each specy is represented as a input scene. The organs ID are set inside each scene depending on its format.</p>
+<p><img alt="indices.png" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAcMAAAEjCAYAAABOwmpcAAAAAXNSR0IArs4c6QAAB7F0RVh0bXhmaWxlACUzQ214ZmlsZSUyMGhvc3QlM0QlMjJFbGVjdHJvbiUyMiUyMG1vZGlmaWVkJTNEJTIyMjAyMy0wNC0yNFQxNCUzQTU5JTNBMTUuMTg1WiUyMiUyMGFnZW50JTNEJTIyNS4wJTIwKFdpbmRvd3MlMjBOVCUyMDEwLjAlM0IlMjBXaW42NCUzQiUyMHg2NCklMjBBcHBsZVdlYktpdCUyRjUzNy4zNiUyMChLSFRNTCUyQyUyMGxpa2UlMjBHZWNrbyklMjBkcmF3LmlvJTJGMTYuNS4xJTIwQ2hyb21lJTJGOTYuMC40NjY0LjExMCUyMEVsZWN0cm9uJTJGMTYuMC43JTIwU2FmYXJpJTJGNTM3LjM2JTIyJTIwZXRhZyUzRCUyMmtnVU1MWThiSnNYa3NKZnFYTEpJJTIyJTIwdmVyc2lvbiUzRCUyMjE2LjUuMSUyMiUyMHR5cGUlM0QlMjJkZXZpY2UlMjIlM0UlM0NkaWFncmFtJTIwaWQlM0QlMjJqbUJRSUFFanB0aG1KNWVKTklqLSUyMiUyMG5hbWUlM0QlMjJQYWdlLTElMjIlM0U3VnBiazlvMkZQNDFQTkx4SGZ3WUlOMCUyQk5OTk90OU1tZmVsb3JZT3RpYkFjWVJib3I2OXV4dktGY0JsQzJJa2ZsclUlMkIzYzc1emlkekpESHk1NnZkRTBkRjlvRmhvQ1BQd2J1UnZ4aDUzdFQxeGFjRTlob0k0a0FES1NkWVEyNE5QSlAlMkZ3SUNPUVRjRXc3clJzR1NNbHFSb2dnbkxjMGpLQm9ZNFo5dG1zeVdqelZrTGxFSUhlRTRRN2FKJTJGRTF4bXhpMXZVdU8lMkZBRW16YW1ZM2luWE5DbFdOalNmckRHRzJ0U0QlMkYlMkZjaWZjOFpLJTJGYlRhellGSzdpcGVkTCUyQmZqOVFlRE9PUWwlMkJkMDJIdXpiZkgwQmYlMkJHJTJGdmlIajR1bkdjdGdiRVo1UlhSakhCNTVFUlhqelY2NGVFcmxVMEdSbUVFNFVFQ3lGJTJGJTJCZGJwTUtXUmNvbHkzTHZlRXYlMkJyS1IlMkZzMjJHU2xoTEtvVGdiJTJCVGRuT29hNjFoUnA0Zld3TUtkJTJGU1l1Z0ZRV0lFeVpqcWRQb0laY1d6Q1hjJTJGbGxiQ1RqYkp5UlFYZ1NudEt6ajdEbkZIR0JZSmhpVFpxMkNXaHRFSnpsb00yUFNGNUtvQ3dMdjNKQ2dHTVJZQ05DOCUyRmFnOFZXckRtQnNWZmdTNnJFbFJHTUlSY1laNXNjZzR5OW94eFFZUVl1akR1cUglMkZlZ1NyR2FnYTJnNURMZVZZZllDTm1zWkQ4dzVXMjlMdHhxMldiV21vZ01oc3hTVEE5RDEyb1ZEMGF3RjRqWHUwSzg3aU9vWmhEdjl4WnY0SG5mV2J6JTJCRmVMdGFYSiUyRjFRVGhRMWdSUFlRVjB4OTFBWVhPbVclMkYlMkZ5YmRhUU1IUkJZVEphMiUyRjRaV2pHaUpJMDE5R25zQ3g3dzIlMkJwcUlsMXRkYVNoZ1VySzVybzdRMFRXV2FTQ1kzOFMlMkZCNkpCV3lrSiUyQlRVJTJCYjElMkJ0Rmo4QXRseVdkcEJ2VGF2VUk4SmNabXglMkZvTG5HS25yQkVET1MlMkJNWSUyQkM2a1pKNVZWRWdqSlhZVlhmWjQ1akhEMkxHYmNMWG9ObVgxc0JXaEUlMkZaSTN1UHdobkppMDJwc0huMTlwZWxjUEgxYUIxRmJmNSUyQkRHWWRtMDZWYnMyVjZaTEMlMkJjRGltU3k2Tm9zcVd4eFl2SnhGcjFlTDdzRGlSU3o2dlZvY1dMeU14Y0JtVVdieWtrUnZJUEVpRXNNR2lkRkE0alVrUmcwU0p6YUpBNFBuWlklMkJUMjNQMTFjcmJlSEI2NzlIYVVUZjNzbjA3NE9zMjJ6ZllGZnZWN3JZNkU1MTBqNVVPTzJCN1YlMkJ4JTJCczNPbHFHZGIzQ0lVY3Z4T1hvMklVa0xSZWsyU0pvZE53bUZIeW8lMkJtUmo1JTJGa3ZoUG9Ta3RkbGF6eGI0cTVNS1ZqM1pCOSUyRkxDcWx6M1U2V3FvN1lWY09kU3BoVVI0USUyRmI4QVJPWDIyVVlubERlZW9jb1J0aEs0SmhUd0FyakFORkpYbHRtdHNYVkRQRDc0eW9reU1qb0hEYVBwZHM2VUs3YVhyWnR6dXRnU0slMkZyY1RXUUpxSHprQktZd2UzcjVmZDVKRmxkMGZWZVc5QmRiN2JFa3Q4cGVvQ3B5VmYlMkY3NnFtejZ5NmlaM2xKMyUyRkZtVVh0TDhFejVXZEg3WUdtdDVYZHZIUm8lMkJmTWJTYzNTNmF2Y0RwWms2d1lyOVVQSG1UUzVFWjl5YU02Q1Z4YmlaSWVycE0lMkYyZk5lZUNGaHNxRTNmUnZoVldYN05pTHV5N3ZhMzY4M3k3c3FiZDlCRkw5S2YlMkY2Q0ZENmdIS1hBQjNtY1NNdjc1T0VGTjVLSEtOWSUyRjR0RnZtUHFYVVA3NyUyRndFJTNEJTNDJTJGZGlhZ3JhbSUzRSUzQyUyRm14ZmlsZSUzRWmO6GkAACAASURBVHhe7X1/7FdV/f+xpiUqrGBqI4kxm5QuFmPMDWyTGrKcvyB9W2KzkaEgFAgrUUE0mA6NxS9DY86Fm9CizP4AW1QDi01iktVwK8Zg5I9hMzNsM31/9zjfz/PV8324P859ve593XPufdzNqe/Xuec8z+N57n3c5/M8z/N52uDg4KDhRQSIABEgAkSgxQicRjJssfY5dSJABIgAEbAIkAy5EIgAESACRKD1CJAMW78ECAARIAJEgAiQDLkGiAARIAJEoPUIkAxbvwQIABEgAkSACJAMuQaIABEgAkSg9QiQDFu/BAgAESACRIAIkAy5BogAESACRKD1CJAMW78ECAARIAJEgAiQDLkGiAARIAJEoPUIkAxbvwQIABEgAkSACJAMuQaIABEgAkSg9QiQDFu/BAgAESACRIAIkAy5BogAESACRKD1CJAMW78ECAARIAJEgAiQDLkGiAARIAJEoPUIkAxbvwQIABEgAkSACJAMuQaIABEgAkSg9QiQDFu/BAgAESACRIAIkAy5BogAESACRKD1CJAMW78ECAARIAJEgAiQDLkGiAARIAJEoPUIkAxbvwQIABEgAkSACJAMuQaIABEgAkSg9QiQDFu/BAgAESACRIAIJJLhG2+8YW666Saza9cus3fvXjNlypRakXrggQfMtGnTapejVhA4eNcI+K7nl19+2QwMDNhxtm3bZi666CKvMX37l85kPU+cONEsWrTIbN682dx///3m3nvvHTLeO++80/l969at9pns1/XUU0+Z2bNn2+EmTJhwCh6Yw/Lly+3vV1xxhUH7kSNH9ks8jkMESkcgaDLUL4MQSLl09NlhXxDwJauqyTBpPQvpJBFKt/KUAaomQ/SnyVjjSTIsA232EQICQbtJSYYhLJH4ZfAlw25n6tt/0noWwjt48OApXhghpLlz55q1a9eaM888s1sRC9/nkqG2XJ9//nkzderUTp+0DAvDyxsCRMDbMtQP5qxZs8z06dMTXSjiPsHDg0tcKfqBTnt56DHgMpozZ4511colDx3+X9y48hstxwBXVyAi+ZJVmiWmX/5Yg1ib8+fPt7ODO3XUqFFDthV2797dWfdCIq41JRbVli1bDJ4Z11Wa5iJ1Scpd9/o+segOHz5s5dGE5srjEq6Mg+f8tddeM+eff37HFSq/waWM+WsydMeHDHpcjfHGjRvt3OUZd13B+kMh7TnP0424ut2+0rDA3+WdNTg4GMgKphj9QKAwGSYJpR8GvZfgtpUH7uTJk4l7kj5kuH79erNgwYIhJElC7MdSiXeMXsgw6YUsSMhemibDJJTwkp8xY8YpH3Dy3OzcudPuz2lCSiLmtGdLk0jW8ycEkDYn/RzrZ3H48OHmueees8Q3ZswYu4+5b98+M2/ePCuz3Dds2LDOHqeLg8iYhSfuEXJPa6f3L310AzJ0LVmRLel9pHX74osvxrvoKXlhBLoiQ1mwepHJ3+Rh1ItW2iW9PPSXresWwmwkwMB9SPSXqrZG3SCEwojwhsYh0AsZytrSROWucU2GSe3kb0nrGX9LIj73WTh69KgN7tHrXu6Tv504ccK20S5XTRhChiJ/EonK3/T4CPTBHDSpQ+7bb7/dXHvttR0ylPEvvfTSjlvXfTaT5NH6ERllfJEnSYc+uhHyhuUt7xDXXT1+/PjOh0odLunGPXCRTqgwGea5O5OIyXX56K/komTIzftIV1qNYndLhkkv0iTyct2kEn3t83GH/tznY+bMmadEkbruUQ2nfGSCjLCX577Q9TMJa87dYtB9uWSEvm677TZzyy23GJCcbJGgHSK8MV7SnqFrjblWKcbUEbtZH7SutYt3ho7E1e8Q98MC48gHgo/Vzu2WGh/UmoeujAxd/7/+Gu2FDIFXmtuj3+HnNeuOw3si0C0ZppGc9Pfqq68m7hkWJUNMQxOnkI8mjCwyFPfikSNHTnG36r5BSHlkKES6Y8eOTl/33HOP+frXv27RHjt2rN3fBGng0mSI/08j2qJkmPaMy1y1NacJzNVNHhm6mJAMPR+qBjarjAz1BnWZlqGrA+12YVRbA1doCVMqmwxd66NXy9C1NhG0smbNmiEWnk9kaVqbNMsw68Xv9vXwww93AktcS9Td+9RbJGlu0izLcMmSJR3LOC3OII0M0yxDdzy9rHzXRwlLkV0EjEBlZOi7Z5i0J5C0xyLt5ItRE1+d57EC1i1F+z8EfF92WUErvnuGvm5/14uRFIWZ5P7T+4Hus1B0zzDrOXPJUCxFQCr3HThwYIhluGnTpiFRq0l7gWnPah5hZ8UnZOlGu7qTInuBcRqx8gFqFwKVkWESjNpa9Ik6RR8SQIP/BsE++eST5tFHH7WuGvfi5ne7Fq/vbJOONbj34qUIC8/NQJMUsSjHDcTa6MYylPWs9820KzTJy9FNNCmemfPOO89Gg3YbTYozjhLAAzKWflwylqjYrGffhwy1ZZjUV1bEqaubotGkdJP6PlXNa1cZGbrnDN10U+6XMIhMotaSQszxEIq1qb/2RCVJ6ayapy7OqBsEeiFDjKetEh1QUpQMcWhek6ub5iwp0tKdr0uIeRYmXu5y7jHpvB+eK1wu+bqWYdJxqCQvjZYP491www1DomDFehXs5Byg6051dYZ5yJ5oWgKAJN1I/+4eZF4gYDfrjPfEjUDpGWh4zCHuBUHphyIg61mTRRIJhICbJlMhyTrzm1aNSUy6qRoL9t87AiTD3jFkDw1GICuqMTRvRNK+o6gmKdl27GqLSTexY90G+UmGbdAy59gTAkkv3dCIUCaYRIhNJEKZb0y66WkR8ubKESidDCuXmAMQASJABIgAESgZAZJhyYCyOyJABIgAEYgPAZJhfDqjxESACBABIlAyAiTDkgFld0SACBABIhAfAiTD+HRGiYkAESACRKBkBEiGJQPK7ogAESACRCA+BEiG8emMEhMBIkAEiEDJCJAMSwaU3REBIkAEiEB8CJAM49MZJSYCRIAIEIGSESAZlgwouyMCRIAIEIH4ECAZxqczSkwEiAARIAIlI0AyLBlQdkcEiAARIALxIUAyjE9nlJgIEAEiQARKRoBkWDKg7I4IEAEiQATiQ4BkGJ/OKDERIAJEgAiUjADJsGRA2R0RIAJEgAjEhwDJMD6dUWIiQASIABEoGQGSYcmAsjsiQASIABGIDwGSYXw6o8REgAgQASJQMgKnGWMGS+6T3fUJgcFBqq5PUHMYIkAEGo6AJUO+VOPT8mmnnQbFxSc4JSYCRIAIBIgAyTBApfiIRDL0QYltiAARIAJ+CJAM/XAKrhXJMDiVUCAiQAQiRoBkGKnySIaRKo5iEwEiECQCJMMg1ZIvFMkwHyO2IAJEgAj4IlCYDJ9//nnzox/9yKxdu9aceeaZvuN02r388svmvvvuMxs2bDAjR44sfH+/bnjjjTfMTTfdZHbt2mXmzp3b9XyrkpdkWBWy7JcIEIE2IkAyTND6O++8YxYtWmQuu+wyS4gPPPCAbXXvvfcGs0ZIhsGogoIQASLQAAQSyVCst8mTJ5vFixebCRMmmG3btpmLLrrIaMvw5MmTHesJWNx///2WMOT+ESNGmM2bN1uY9u7da8aPH99pf8UVV5innnpqiHWIvqdOnWrby+/Dhg2zxDRx4kSzadMmc/DgQbN161bbDy6MNTAwYP/u9ql/g3W3evVqs2zZMnPzzTebKVOm2PtBdNOmTev8P/4Gq/COO+6wFqzMGe1ceevUP8mwTvQ5NhEgAk1DIJUMQTCzZs2y5AYS2LNnj3UVHjhwwLpJhVjEegLxLFy40Kxbt85ihPuXLl3asayOHz9u7z969Giim9QlIIyJa+bMmZYMjxw5YuU4ceJEZ5xRo0bZ/iEjyA2EJeOAqDWh4bdx48bZPg8fPmzvwZh33323WbVq1RBSdl25em4gxxAukmEIWqAMRIAINAWBVDIUYsPLXxMVyChpz1C3ATj6fm1N+pKhAOy6LMWaA7GNHTvWEqBYbJrEDh06lCgn2mzZssWsXLnSEvvu3btPcX9CXrdfPZ8QlE8yDEELlIEIEIGmIJDpJpUglzQyBJmIWxOAiDsV/62DZHzIEPe4bk1YkrhgGbquTSFDPb6WYf/+/R1rVgf6gFxXrFhh5syZY7Zv336Ki1Tk0PLTMmzKcuc8iAARIALJCHhZhpoMxDKEmxGEIi5K1zLshgy1iLD24M5csmTJkGAWbSnCMkyLbM2KekXfr7/+uiVf10UKGbhnyMeFCBABItAuBDL3DGXPL2nP0CVDtFmzZo0NtOnGMnT36dw9Q/Qpe47isnT3DHEPyNHdW4SrV0eEigUqe6KuyhlN2q6HgLMlAkSACGS6SSUaVEdpaotrx44dZvbs2RZFRI3CbQp3JkgqzTKUCFTc40Zn4v+lPznbJ27S0aNHm+XLl9uxEJkq0aDataqjXtFOR6fqs4JCdtr16i4FnjPkw0EEiAARaA8CXnuGdcLhQ1xF5Yvl4H/WvBhAU1TrbE8EiAARSEegdWQo1qK2LmNcICTDGLVGmYkAEQgVgcIZaEKdSNvkIhm2TeOcLxEgAlUiQDKsEt0K+yYZVgguuyYCRKB1CJAMI1U5yTBSxVFsIkAEgkSAZBikWvKFIhnmY8QWRIAIEAFfBIIlwyqiSH1BkXbu4Xv3fn10Q5KUo43IjuMm7nGPpCw73ZTCIhkW1SbbEwEiQATSESAZZqyOLDLUWXnGjBmTWvJJ5znFUG5icfytm9JQJEM+1kSACBCB8hAIggyTDsdjijonaVqpJkkCMHz4cJsBBwkCQC7z588/pdxT1jj6UD+sPEkDl2TdQTY3mbdkuHHTx7nVPHTCb53Zp6h1SDIs7yFgT0SACBCB2skwycICMQmpIEuM1EFMKtUkycJxbhA1D3W5J1SukOoTuvSTWHJ6HCwFKVEFIkVaOWTS0WWg9HKRDDWQScaVclZu+jqRQWozllE0mGTIh5cIEAEiUB4CtZOhax2JpacL8WK6WaWa9G9StxDuSJ1pZufOnUOqWLjjCEFp12gWGUImnbLNPcQvqeV0Gjh3P1EXKS6qUpJhUcTYnggQASIQ8J6hzkcqYsLViZqDIDZYhrjSSjW59RWzyFDynqaNg3ynvmRINykfKyJABIhAcxAIwjKUyvMaVh1Nir/7lmrKIsO8cYqQoa6CAfmEHFE0GAnF161bZ1AtQ1fAQLs9e/ZYdyz2CHupk0jLsDkPIWdCBIhA/QjUToYuIYBkjh8/brSb1N0z1KWa3Ir2aWSo9wylpJM7ThEyTLIMdX/idpXAn40bN9o9SDeARkpOjRw5stBqIBkWgouNiQARIAKZCNROhmJViRtUykVJsImUWUor1eQW8U0jQ5CNjiZNG0e7SSXQZt++fTagBiSqL+3i1WWu9F4i2uu9QS2DewaxyFolGRZBi22JABEgAtkIBEGGVFJxBECGIP577rmn+M28gwgQASJABIYgQDKMdEGADAcGBsyf//xnS4rXXnttpDOh2ESACBCB+hEgGdavg64kEDfpz372M5tk4JJLLrGkeOGFF3bVX1NuAi68iAARIAJFESAZFkUskPbunuF3v/tdS4ptd51yLzWQBUoxiEBECOC9QTKMSGFa1KSX/l//+ldLiH/6059a6zolGUa6oCk2EagRgaDJMIaqFTqaVFet0NGkbsRoUn7UonlJsWayXvriOr344osNLMY2uU5JhjW+UTg0EYgUAZJhjuKyqlaA1CSHqa5aMXPmTJsfFXlPYaXp84g464igF5w5xJlG9+B+kXXk89Jvo+vUB5ciOLMtESACzUcgGDKMsWoFrEKd0UbOO4IAkWT8vvvuG5KBRtLK6Uw6OndqVYfu2+Y6JRk2/8XFGRKBshEIggxjrVqRRIaw9NavX2/TsblkiIw0Y8eOHZJWrp/p2NriOiUZlv2aYH9EoPkIBEGGsVat0G5SSe+Gv0mCcXGTSuacpUuXmkmTJg1xk2LuqMGYlN0mb/l1+9Jvuuu0W1zy8ObvRIAINBeBYMgwr5oEVBBa1QrIBEsQViAuBNAgNymScB89etSS3sGDB82NN95of0ddROwT6qAbEOSxY8fMhg0bTFVu0qTl22TXKcmwuS8szowIVIVAMGSYV00CAIRWtcJVius2ld/zgnDS5pWn9DJe+k10nZaBSx72/J0IEIFmIRAEGcZctUKI7OTJkwbFhHXVe0kwrt3AsBixlwhL0K16X3RplfnSb5LrtExciuqE7YkAEYgTgSDIEND5VJMIsWqFdpPqyhRaVl3NAnNNO5tYdAmV/dIX1+lLL71kzybGmuu0bFyK6kVXTUm7N61NlWdrsyKX3X37onPOai/PwqxZs+zHIi8iECICwZBhiOCELlNVL/3YXadV4eK7HnohQ98xym5XJRmib1zwnPAiAqEiQDIMVTMeclX90l+1apUtDxVbrtNecMFczz77bLNr1y77D4Kixo0bZxDgpTMJiQW3efNmq6m5c+fawKkdO3bYtrjEU6A9AfK3pHFgNWnLEIWg4VIfMWKEkXH27t1rg7C0hwFyTZ8+3ZxzzjmZlpdrGYo3Ru5/66237BwOHDjQCVZzvRoey/KUJiTDblDjPf1GgGTYb8RLHK+Xl76vGDG6TnvBBSQFksALXLIFiXtPZwvS/y2p90BmklUIBApLSBeexr4yIopBcNu3bz9lHGQlmjhxos1ehP1mkCEikhFxjL4wpo5WXrhwoVm3bp1th98xdpYbUpOhzoQkY2JNuAkj0ohME7yspbRC1SRD36eN7epEgGRYJ/o9jt3LS7/o0Np1ipfyJz/5yaJd9K19L7i4JCfkhXOkadHC7j6fdpOmuUz1OPp+lwyF8DC+JlZYoDoCO002Dbomw0OHDg2Jzk7LntSr0qrcA+1VNt5PBDQCJMOI10MvL/1upx2D67QXXDR5uUdiNOHoACnBUlyY0ofkqEXmIXe/TI+TRYYSeYwzqJoMH374YTusWIJFyXDnzp1mz5491i2KJPG6b31GVty/3SSSx7xWrFhh5syZY9MS8iICISNAMgxZOzmy9fLS72XaobtOe8HFhwyRdxauTCG5bi1DcaV2Q4ZVWYZCjrI+0kjW101Ky7CXJ4339hMBkmE/0S55rF5e+mWIEqrrtBdcuiFDCURxLUNYgzpKU59F3b17tw3MQZtuyBDWWy97htC/ey4Wf7v99tvNgw8+2MmIVMZ+Xxl9lLFe2QcRyEKAZBjx+ujlpV/mtOE6hbsOkZeIPq376gUXHzKUslySHhDzxiXkJlaTjhyVlH36b72QIdyWMg4iPvHP22+/7R1AI25XmQOiVWHxr1y5ckhEbC9uUm1dCvnWvTY4PhFIQ4BkGPHa6OWlX/a0Q3KdhoRL2Tgn9SeWZdLeZD/GzxuDlmEeQvw9BARIhiFooUsZQnzph+A6DRGXLlWcepvO2IRGsE5lL1POJOqb0449lC1XUn/MQNMPlDlGrwiQDHtFsMb7Q37p1+k6DRmXGpcLhyYCRCADAZJhxMsj9Je+dp1iL+66667rC9qh49IXEDgIESAChRAgGRaCK6zGsbz0++06jQWXsFYTpSEC7UaAZBix/mN76ffLdRobLhEvwUTRsUe4ZcsWG5mK5ADTpk3r5FOta65Z5x2x/wrPBQJ9fAtsSyQvom3d4yhlzjGr0ogeRydN0AkS3FSBZcrWj7585oVjSojW1lWDupGNZNgNaoHcE+NLvx+u0xhxCWRJlSKGRI8iA08MGWi6JcOkguSlAKg68SXDtHFjJ0PfeZURsUwyLHv19rG/mF/6VbpOY8alj8un9KGSstJgkKTKF7DE/vWvf5nnnnvOHDx4sFP1A1aNWxEEyQx0zlYkJHcJLK9slmsZ6nR6iMSV5OzaMnTT8WnA3NR8kjYPOV9RuBvX008/3al0MmbMGJu1CPPYtGmTnbNYMknVRFA0HOdZkcoO1VPyqodoCwpjYyxEFcNyPXLkiO1Lqp0kKd7FXGSTfocPH27WrFkzRI4kPckYQsJadsxbztZCBh8C852XT195C75DhnkN+XuYCAwODoYpmKdUVbhOSYae4FfQTOcjRffiLnVzmyZVB0HVDqn6gXslucH8+fPNtm3bzP79+63EOrMPXvogmjwLVJPh+PHjbR+oDCLVQJLIMAueLDJEIgNN4KNHj+4cewExSUUUySCEcdJy0CLTkP4tTSY3b61UN5FyXLr0V1Ifej4gsrvvvtvg2QS5Yz46WYToRiebx/iiJyF+4At9St9wl4PkkfIPV57O0MZ3XqWR4WDsb9QKHmp22T8Eynadkgz7pzt3JPdFiv2cpLJSaVU7hKjEktEkhrHkZYqX87nnnmuz7kyaNCmVdEW+pDqRsOBgCXbjiswiQ73/KO3cfLaQS6xZyF8WGa5evdosW7bMEj2IyDc3bFoOWtcCF6xgTS9YsKBjcWbhKzrQawMlxNI+lPSaEjLMmxfJsL5nniNXgABcp9gI//SnP21fFN2WiSIZVqAcjy6LukmT0tEJGcK9pi+Q34wZM6zFsnjxYmspXnXVVebXv/61mTx5skkj3SQyFCKSgJmyyVAIW1LmYW9RyFBIqioyFNdq0sdElptU5JG0gWJJugEsLhkm6Wns2LGpAUl4rmEhwkIWKz9raenSYnAZp82LZOjxgLJJfAiI6xTRiFnFatNmRjKsT+e+wTNpJaxAhrqGpDsTuNhAoiCYr371q3b/DXuP11xzjdeemBRN1pZYP8nQrXSC/3ctQ53cvaibNM+C8lkZeq8UFpy2dMVSXL9+vf1wBY5uea4sPHH/M888Y8XwKe1Fy9BHY2zTaAR6cZ2SDOtbGvLlD1KTfaek4wppZOjuGUqgi+wngiieffZZaxVivw/kiDb4gMo6FpFUGUSISe9fFjlaIdGkWUWTXTcpNAOZddUR/G1gYMBgjhIopNsV3TNEeS+pVem7Z+gmqHf3DHVFFsiGj1Tt6tZ6cl3dSZVbYD265cKSVq1b0DptXrQM63vmOXKfEMBXJB68JNfp9u3bzW233WZefPFFG0QhF8mwT8pxhvENntEuQreEld7nkhyr+vwYXroSeAKLJG2vy0UgK5r0e9/7XiKhdhtNmuUmRTCN64qErOJiRg7ZefPmGZAYyELKfkmbNLLOirpEJCgs5yyrW0d/YiztJtXRsbqKSVoEKu7X0bpuJGxe5K/Wnc+8JEgH97lFtIs8CTaalAE0RSBj2zoQSHKd/uY3vzFXXnml+fznP29+/vOfkwzrUExLx/QlYYHHN5ClajjxcQlSdF2baeOmHXrvVs6sD4xu+5QPBZJhLwjy3qgQcF2n7733nv2KxovmscceM1/+8pftfGgZRqXW0oR1K3nojhH92M3+c5pwOgONj7uvVzLUlpYrk2/NScgAqxX7pu5Rl36Qocxh6dKlHQuujHnB0iwtAw0tw9KeR3bUBwTEdQrS++Mf/2hHHDVqlI1QO+uss0iGfdABhyACTUOAbtKmabQl8/nBD35gow5hHeL60Ic+ZKMLYSHSMmzJIuA0iUCJCJAMSwSTXVWPAM6XIS0U3Cs4cK0vWIU//elPzfTp0w3zSFSvC45ABJqEAMmwSdpswVwQfv7tb3/bvPvuu+b99983H/7wh+2sTz/9dGslfuADHzBvvvkmybDGtaAP3+elAXPF1FGNOpw/KQJTRzMiChMfShIYoveifPfUIIvsP+n+ytqTqlElHNoDAZKhB0hsEiYCeBniUDBeoPLvV155xSYppmVYj850+i7oRB+D8JHIjTZ0D6Dr/tzcmHI4HOMgxF6yleh2WTLosXC0wU2rJv36zINt4kOAZBifzihxDgLcM6xviegjB2K5yeF2LVXa0QSXDDWR6XJEcjhd+tbnDzGOexZRDmtnRVG6B881oZZxqLs+rXBkHwRIhj4osU1UCJAM61OXe6Da1yoTiV0yzLI00yy5YcOGWe+AzjCD/rOOVrhHH1wiJxnWt6b6NTLJsF9Ic5y+IUAy7BvUQwZKsgR7JUMMIOcHk2r6pZ330/uJPhXQ3SK4JMN61lCdo5IM60SfY1eCAMmwEli9Oi3bMuyXm5SWoZd6G92IZNho9bZzciTD+vTuu2eYJqF2kyKRgt63wz1CjjfccMOQfUFtyaGd3iN085mmjc09w/rWTQgjkwxD0AJlKBUBkmGpcBbqrOxo0iTLEOnEZs6cOWRfUFdNAIm6ATRIQyb1C9MmxGjSQqpuXGOSYeNUygmRDOtdAz7nDH2jSd3KCDrHqFtpQe8N6jyl+sxgXu3CpHOGQFMH0BSpulCvJjh6EQRIhkXQYtsoECAZRqGmRCGrqmqgB3v88cetZelbu9AlQxDqoUOHbFkkXs1BgGTYHF1yJv+HAMkw3qWQlIGmzNmgfxS/vfXWW727dTPQFC2D5D0QG9aKgCVDY8xgrVJw8K4RYKaVU6EjGXa9nHgjEWgtAh0y5Es1vjXAl36yzohLfGuZEhOBuhEgGdatgR7G50ufZNjD8uGtRIAIKARIhhEvB5IhyTDi5UvRiUBQCJAMg1JHMWFIhiTDYiumf627jQp1A2gkIffmzZut8LoklG7rlnDSRytYwql/eo95JJJhxNojGZIMQ1y+QlKvvvrqkBqDPrImVa04fvy4Wbt2rTl69GjnMP2YMWPsofvRo0fbBNzuYf+BgQGD2pdTpkzpZK3JStQN2Xjo3kdDzW3TFRli4SGjAxZoVkmUNNjyDr6GBnfaAeG65SQZkgzrXoPu+JIJZuXKlebpp5829913X6fgrm7rc+heCA8ZZ0BquOTA+4wZM8wdd9zR6V/nFkU7/X7yfd8wHVtoq6m/8pAMc/CWbBo680V/VZQ+GsmQZBjKWnTl6MVNKiSXRoYYa968eYlkiLJNY8eOPYUM84oMM1F3qCupf3KlkqF8TU2ePNksXrzYaJ+8tgxPnjxpk+nu2rXLSi2kIfePGDHCaH//+PHjO+2Tw4SWeQAAHd1JREFUSrJoX7/8LvXJsH+wadMmc/DgQaNTL8nXKP7u9ql/w97B6tWrzbJly4z7tTlt2rTO16fAjy9FuGgw7muvvZZZD61/KvvfSCRDkmEd685nzDLI8KKLLrKWoLhJ5V0DK3HJkiVD3KTynC9dutRMmjTJaDcpPmjXrFmT6bJlCScfrTa7TSYZYkHNmjXLkoDrT4cbQoglrdo07sfiBFnqRQ3fP9wnGzZsGJISyX2AJB+gJOU9cuSIlePEiROdvQM3s7378GhXirhBoNLDhw/beWHMu+++26xatSo1PRPdpHE9BPxIqF9fZZGhDpLBhy6sPv2+wTsGH8E33nijnTSed5Clzo+Kd9CxY8dOed9olGgZ1r9m6pYgkwy1a0EvbpBR0p6hboOJ6fu1NelLhgJOWtHQcePG2YcDJCcZ6fX+APIHJsmJNlu2bDHY1zhw4IDZvXt3ptVHMqx7mRYbn2RYDK8qWpdFhlmEpX/LGs83xoF7hlWshHj6zHWTivWWRoYgk6lTp3ZmLO5U/EFbfz5kiHtctyaCdHAhcixpIx1kqMdHW5Fh//79Q+qaaXJdsWKFmTNnjtm+fbtJcpFqFZIM41nQkJRkWL++yiJDTVA6YlS2TuSdoD1X+mNb2ok1mYUMo0nrXzd1SuBtGeoCmWIZws0IQsG/4ZpwLcNuyDCJhGR/QBa0thTdzXJ9f9YXIRb+66+/bsk3y0WK/kiGdS7R4mOTDItjVvYdeWToE02KPcOss4RZsQLaTaqD3/IiS1nCqeyVEE9/uXuGsueXtGfokqHeqO7GMnQXqrtniD7d80buniHukUKeem9RNuPRB+SWB0n2RPO+GGWPMSTV8qWfrA3iEtIqLSZLHokW6y25NUs4lYFi8/rIdZNKNKiO0tQWF8qhzJ492yKDqFG4TeG6AEmlWYYSFSZWl64rpr/oJHME2skB2+XLl9uxdCYK/YXom4nC3TAnGTZncZMM49UlSzjFq7vYJc8lQzfis44JFyEuX/ny3CW+/dTZji99WoZ1rj+OTQSahEAryVDOMmrrMkalkgxJhjGuW8pMBEJEoKsMNCFOpI0ykQxJhm1c95wzEagCAZJhFaj2qU+SIcmwT0vNexi9f4+bdKYon06S9gwlwhP3a2+ObJ8gVsGNFUg6ouWbR9ndQpHxi87FZ75sEw4CJMNwdFFYEpIhybDwoqnwBpCTnN9F9LY+joX/97mSslDt2bPnlChyNzpcn0HEOMh6JUe+QGa48qpWoI2Q6Pnnn99J5IG/S2Q7+uXVTARIhhHrlWRIMgx5+SZljhJ5fc8ZaiLT+UOlzmFaKkid/UofC8uyDkGo8+fPt5mpUHFDBw+SDENeaeXIFjQZVhFFWhS2vHNPOrG4PtxblQtHy08yJBkWXc/9bO8mv/YZ233e3DqFaSSHI12SltHNOlPEMhTr0M2dTDL00V7cbUiGOfrLIkPtBpJyM/Klqh/Aslw4rqgkQ5JhyK+foiSEuSQ9b/LBmVTlRs4lu9Xs9cdo0b2+pGNXJMOQV1o5sgVDhtrCcg/bS/7BtPRLkgRg+PDhtlQLHhrsD8Dl4ZZ7yhoHVbPlUD+sPEkDl7RBD/g1ySFxgDz8bvo4TZq4rxsXTpK6SYYkw3JeA+X3oqvH+AauJJFhP92kggLJsPz1EEOPQZBhkoUFYhJSARlKHUS9KS51ziRZOCLNZC9Byj2hcoW4T3R6NrHk9DhQGNK9oT8Q6bZt22wmHV0GSis1aw8jLelvry4cuknzHyt+JORjVFULscjwXPkErLhyaMvQTbWItkKON9xww5CPSr0/iXYSdAMiLhrIQzKsanWE3W8QZOhucIulpwvxyoOQVqpJl3HSme71wt65c+eQh8QdR1yc7gOZRobyJSvFjd1D/FW4cEiG+Q8UyTAfo6padOMadT8w3Rqk+F1qj+JZw8ex1Dh1axtu3LjRfsC63hfJV6xTP6ZhQDKsanWE3W8wZCj5TQUuuDpRcxAPFxY/rrRSTW59xSwyzBvHrb6RZRnSTVrP4n7kkUfMN77xDXPOOeckCkAyrEcv+oygliBpz843mlTv/aFPHaTmjqfH0dsh+gyiTxrGPDLU75d6kOaoVSAQDBkmVYXQ0aSYfFKhXvzdLdWURYZ54xQhQ/crWMgRodnYe1y3bp3BeagyXTi0DI2B6+u9994zd955p1m2bNkppEgyrOJV0Z8+86K3y5CCVSvKQLF5fQRBhq5PXzbftZvU3TPUpZrcivZpZJhU0gn7jnqcImSYZBnq/qpw4ZAMjfn+979vvvOd75j333/fFvJFRRNNiiTDeF9UrFoRr+5ilzwIMhTrTtygEkLtVrNOK9Xkaxliv0C7T9LG0V+nEmizb98+G1DjZtLQJad06Hc3Lpyii6nNL33o8h//+IeF7IwzzhhCiogqHhwcLAon2xMBItBiBIIhwxbroOupQ3m8/ofA6aefbq6++mrzk5/8hGTIhUEEiEAhBEiGheAKq3GbLUMENsH6pmUY1pqkNEQgVgRIhrFqzhjrGmyjOxB7hnfddZcNouGeYcQLmKITgYAQIBkGpIyiorSVDBlNWnSl9K+93it3yyr5SOEG0EgSDWSBwqXP8maNlZRpyjcTDks4+WiqeW1IhhHrtK1kyHOG4S5aRHJPmzbNICrbjbb2kdo9WqHTuh09erRzmF5nkMKBfDeh98DAgMEBfMhRJBEASzj5aKmZbYImwxiqVuho0rQDwe4Xci9frXoZtpUM8x5F4pKHUH9+zzoz6HPoXghPchNDajk2NWPGjCFpErPOJPsctEffLOHUn3UR6igkwxzNZD3Q8vDgyIWuWiGpoiQ/Y1lfra6ofOknK4+4hPG66dUyTCNDzG7evHmJZIizvWPHjh2SoIO5ScNYD6FLEQwZxli1wv26lfOOcNsgyThqoukMNJJWTmfS8f1qTVpIfOmTDEN8wfRSPinLTXry5ElbwR6uT0niLx+c4t5cunSpmTRpktFuUjynqGaTdE44Cb+8dGwhYk6ZekcgCDKMtWpFEhnCjbN+/Xqbjs0lwzK+WukmzV/0/EjIx6gfLbIq3aeN75KhDpJBUgtYfW5mJ5Rpu/HGG22XSPINstTbFyDIY8eODalcnzV/kmE/Vkd4YwRBhrFWrdBuUliAIEL8TRKMV/HVSjLMf4hIhvkY9atFkeAVyJS1LZEVQ5C3nZGW15iWYb9WQvjjBEOGedUkAGVoVSsgEx52XRBYaiwi8g2umrK/WkmG+Q8VyTAfoypauGSl633CWvO5ktyk48aNs+5RvQfppmrUH9R49uCV2bBhg3Hrh/rIQMvQB6XmtQmGDPOqSQD60KpWuMvBJ0LOzW3q5lUtssT40k9Gi7gUWUXlts3KyatH8n1Wss4S6lzFOi8wxkmL8vbZo88jQ5ZwKnfNhNJbEGQYc9UKIWjZ3EfwjBwUlpDwMr9aaRnmPzokw3yMQm3BEk6haqb5cgVBhoDZp5pEiFUrtJtUFxft5qu16HLjS5+WYdE1E3p7lnAKXUPNlS8YMmwuxNXNjGRIMqxudbFnItAuBEiGEeubZEgyjHj5UnQiEBQCJMOg1FFMGJIhybDYimFrIkAE0hAgGUa8NkiGJMOQl697fthH1qw9Q7c/vS+Pvt2I0qTxdHYc/D537lyzdu1ac+DAAXt0S/7ft8KFz5zYJg4ESIZx6ClRSpIhyTDU5StEdemll1qy8SWXtGjSpP66OZYEQsWFc4tuhhyMgYQZK1eu9JY3VPwpV3EESIbFMQvmDpIhyTCYxagEAcmsWLHC/uWtt95KJEPfc4boI62/tD6KYOIeeyIZFkGvWW1JhhHrk2RIMgxx+QpJIXPMnj17erYM0/rTx5qAgy7864uLThdHy9AXtWa2IxlGrFeSIckwtOULN+fdd99tVq1aZXbu3NkzGab1h3kvWrSok7TbzRPsg4tbYopk6INac9uQDCPWLcmQZBja8tWV7rsNoEHlCan44ttf0QoZSeRJMgxtNfVXHpJhf/EudTSSIcmw1AXVY2duXlLprkiEpg6gGTVqlA102bVr1xDJkvrLqmjhTgskjTSK+PfIkSM7P5MMe1wAkd9OMoxYgSRDkmHIy7cMy1DPT/eHXMDagnRdnmm4ZLUjGYa8mqqXjWRYPcaVjUAyJBlWtrhK6DiLDItEk4ooWecMJ0yY0Klkn5Xs2w26Qd9iaaL0k0ST6jJQ2nosARZ2ESgCJMNAFeMjFsmQZOizTmJqU1bVimeeecaMHz/euCXTsrBwLcPHH3/czJw5c4grNSYsKWsxBEiGxfAKqjXJkGQY1IIsQZgyqlZg/xB7giih5nvYX6rmiJUIN+yOHTvMrbfeWsKs2EUMCJAMY9BSiowkQ5JhxMuXohOBoBAgGQaljmLCkAxJhsVWDFsTASKQhkCHDAlRnAgMDg7GKXiFUvMjoUJw2TURaCgClgwH+UZtqHrbOS2SYX16d88a6ihPH6mKVK1Afzo6dOvWrfZcYtbFqhU+WmhnG5JhO/Xe6FmTDOtTLyIykT1mw4YNXUVhFqlakXXuMA0BVq2ob22EPjLJMHQNUb7CCJAMC0NW2g2+ZZWKnDNMqloBgVEZY86cOYWOT7gTZdWK0lQffUckw+hVyAm4CJAM61sTIJfZs2d3BPBxXWppkyzDpKoVOPqAhOA4R7h48WLbRdGxxM2Kf997772GGWjqWzchjEwyDEELlKFUBEiGpcJZqDO3JNLAwIDZuHGjmTJlilc/LhmmVa0AGWJ/EP0KkS1cuNCsW7fO21Jk1QovlbSmEcmwNapuz0RJhuHoWpOjj1QuGaZVrXBzk7JqhQ+6bJOFAMmQ66NxCJAMw1EpyAxFfvOiPEVi36oVq1evNsuWLbNZZmAdFiFDVq0IZ32EJAnJMCRtUJZSECAZlgJj4U7cMkrYgyvquszKTeom6tZBOL7FfVm1orBaW3MDybA1qm7PREmG9enaPWe4d+/exP3CItGkMpukKhj6nKGMxaoV9ek/5pFJhjFrj7Kbf/7zn+a1114zr7/+uv3n73//u1mwYIFhHok4FwerVsSptyZITTJsghZbNIcnnnjC7hW9++67lgg/+MEPmtNPP93+GwSIBY2/kwzjXBSsWhGn3pogNcmwCVps0RxQfBXBE7AC33777SEzP+uss8zTTz9trrrqKpJhi9YEp0oEykCAZFgGiuyj7wg88sgjZunSpR3S+9CHPmSuv/56W8eOe4Z9VwcHJALRI0AyjF6F7ZvA7373O5t9BPuDx44ds2H1KOJ65MgRc+6555IM27ckOGMi0DMCJMOeIWQH/ULgP//5j90vhPW3atUqc8EFF9jUX++//7558MEHDaqU46Jl2C+NcBwi0BwESIbN0WWjZ4K8k7AGv/jFL1oi/OhHP2r+8Ic/2LD9iRMnGliLcpEM610KOj/p/fffb9Ol+V6+JZyOHj1qkOrt4MGDQ7rOy0/KEk6+mmhfO5Jh+3Qe1Yz/8pe/WGvwlVdesST4hS98oSP/Cy+8YKZPn25+9atfWUIkGdavWn2ofdiwYWbRokWdLDE+0hUp4aT7yzpMr9uxhJOPFtrZhpXuI9d7k48QwKrAoWpEjyJYxveiZeiLVPntdC7RrN6LHLpPKuGEPWK53Mw3RWbFEk5F0Gp22w4ZNvml2lQVNvWl/4tf/MJagxdffLG1BpHbssjVVFyKYFBHWyGtCy+8sLN/242b9I477rAFglGeCVdSCSdNhr41FJMwcats4OjOypUrbUAWr3YhQDKMWN9Ne+kfP37c7gv+/ve/t9bgrFmzutJO03DpCoQabhILDUOvXbvWSJkl7BmWXcJJyKoXq5AlnGpYJAEPSTIMWDl5ojXppY86dLAGv/nNb1prsJerSbj0gkO/700ipqpKOAkZIhk4rMgNGzaYkSNHek85KbE3i/t6w9fIhiTDiNXahJf+nj17rDWI7DGwBj/72c/2rJEm4NIzCDV14JZs6oUMR40aZUs/7dq1a8hscIQGlicIMW3vMWv6LOFU0+IIfFiSYeAKyhIv5pf+v//9b0uCSJ8GS3DOnDmlaSJmXEoDoaaO9P6dHH/opdK9nkZa1Yoi9RJZwqmmhRHBsF2RYS8b1sCkW9dGv/HU5WGuuOIK+xVaxBVTtbyxvvSffPJJS4TXXHONtQZHjBhRKlSx4lIqCDV2ps8Zpp37KxJNKlNxyTBtv7CMEk4MoKlxAdU0NMkwBXgQ/u7duzsHhou6e/qhz9he+i+99JIlwRMnTlhr8PLLL68EpthwqQSESDsNqYRTpBBS7C4RSCVDsd4mT55sFi9ebCZMmGC2bdtmw521ZSgRY+LXl1BquR9f/Zs3b7biofjm+PHjO/sASdYW+p46daptL7/L4V0crN60aZPNOqG/ODGWZKNw+9S/Ya8BlggCNW6++eZOhJvP2SjfQ71d6qGr22J66a9YscI89NBDlgTvvPPOrubre1NMuPjOqS3tQinhRMuwLSvuf/PMJEMQDMLbERqtXRQHDhyw+SGFWC677DJLcCCehQsXGkQG4sL9OCyN30A4CJ3Hxjf2EpIiwNyvQskWMXPmTJvJAomY8TdYFjKObLJL+LYeB0StzyzJ5j5kO3z4sJ0XxoS1gpd0lgs0ab+i7uUSw0v/mWeesR8fCIwBxp/4xCcqhy0GXCoHgQMQASJQCIFMMhTCgTWoiQpkBDKUiC4ZUbfB3/T97sa6DxlKv7I3IKSLvwuxjR071v637Ofp/chDhw4lyqlDqEHs2h2ahJ4meTkIXAjlihqH/NJHNQmQIPKHggSvu+66ilA4tduQcekbCByICBCBQgjkuknl/E4aGYJMxK2JkcWdiv/WhOdDhrjHdWuCcHG5OQ41GerxtQz79+83CN13SVsyZSCCcfv27WbatGmph4JFniIRcYU00EPjUF/6wBtECK8A3Ob9vkLFpd84cDwiQAT8EfC2DLV1JJYh3IwgFHFRupZhN2SoRZeIsyVLllgyFMtQW4qwDJOsVPSTFfWKvlEtHfNKc5EmHcz1h7b6lqG99H/7299aEvzIRz5iXeif+cxnqgchYYTQcKkFhBoGlQ9H2VqpQQQOSQS6RiB3z1D2/JL2DF0yRJs1a9bYQJtuLEP3yIW7Z4g+Zc8xbc9QH6jVe4twb7p5CPWeqItgqK5RLWcoL/233nrL7rvu2LHDfljccsstXS/IMm4MBZcy5hJbH7578LHNi/I2H4FcN6lEg+ooTW1x4QWIAqu4EDUKtykiNRHYkmYZSgQq7nHP7ukzSpJpAu1gGY4ePdosX77cjoXIVMl3qF2rOupVrENxo+rMFXk5DbUcsgxCO2sYwkv/iSeesNbg9ddfb63Bs88+u/anJgRcagehJgFIhjUBz2F7RiCXDIvm/OtZooQO8oirmzFjOfifNbc6X/ovvviitQZhFcIa/NznPteNGiq5p05cKplQRJ2SDCNSFkUdgkAryVDOMmrrMsZ1UddL/5577rHuapDgt771reCgqwuX4ICoQaAqPlxrmAaHbCECXWWgaSFOQU653y99uMRhDSIRA4jw4x//OHEJEoH6hfJJZFG/lJSACPwPAZJhxKuhX2SIZAfYF0Q6NZDg1VdfHTRq/cIlaBBqEo6WYU3Ac9ieESAZ9gxhfR3046X/8MMPW2sQZIiUajFc/cAlBhzqkJF7hnWgzjHLQIBkWAaKNfVR5UsfWXlAgOedd561Bi+55JKaZll82CpxKS5Nu+4gGbZL302abdBkGILLxTeLvnsuUR/3wIKp4lhGFS/9N99805Lgs88+a49K4JhMbFcVuMSGQV3ykgzrQp7j9ooAyTAHQR8yFNLet29fYmWPqjLgl/3S/+EPf2iJEInVQYRVyd3ros27v2xc8sbj7/8fAWag4UqIGYFgyFCXbnIP20u5pbRSTZIEYPjw4TYDDqwwZMeZP3/+KeWessbRh/qRU1PSwCGZgHuYXysdB/RRVgr/oGIHst2kFS8tc7GU9dJHogSQIEgdJCjJDMqUtZ99lYVLP2XmWESACNSLQBBkqF2MY8aM6WSbETICGUodxKRSTZIsHOcGUfNQl3tC5QqpaqHTsyWNA1Xg/Bz6A5EirRwy6egyUK665PA+2oBAhQwxpmTLwT1VnGns9aU/ODhog2OQWAH7ggsWLKh3NZY0eq+4lCQGuyECRCAiBIIgQ7dWoFh6uhAvMM0q1aR/k4oWUmNR0sLt3LlzSBULdxxJBK5do3lkKOep0E7ypQrRSn9VJfzu5aX/4x//2BIhrEDg/LGPfSyiZZstai+4NAYEToQIEIFCCARDhpLfVKSHq3PLli2WACWII61Uk1tfMYsM88YBOfiSIUhOaiFmJfZOqsdYSEspjbt56f/tb3+zJAiLGdbglVdeWYYoQfXRDS5BTYDCEAEi0HcEgiFDqTyvEdDRpPi7b6mmLDLMG6cIGbquUMiYtLdYVVRs0Zf+Qw89ZIkQljJSqjX1KopLU3HgvIgAEfBHIAgydK0qkMzx48et+w6BHUl7hrpUk1vRPo0Mk0o6ueMUIUMNs56D61qFBanduP7qKccd+Mtf/tLieMEFF1hr8FOf+lRZIgTZD8kwSLVQKCIQNAJBkCEQ0lGeciZv2LBhQyrcp5Vqcov4ppHhyJEjvcbRblLZ/9PHJpI0mnXOMCsStZfVkffSxzxAgrt27bIfFl/5yld6GS6ae/NwiWYiFJQIEIG+IRAMGfZtxg0aKOulj+MgIMKvfe1rlgjPOOOMBs28HIu5NYBwokSACOQiQDLMhSjcBklk+MILL1gSfO+99ywJXnrppeFOoCLJaBlWBCy7JQINRoBkGLFy9Uv/v//9rw2Oeeyxx+y+4Lx58yKeWW+iAxdeRIAIEIGiCODNMYgD2LziQkDIEMkBYA1efvnl1ho899xz45oIpSUCRIAIBIAAyTAAJXQjAsjwS1/6ksFxEViDM2bM6KYb3kMEiAARIALGmGDJsKrzeUW07pOoG/0lHbrX5xC3bt1qE2CXeYEMYQneddddZXbLvogAESACrUSAZJihdh8yTKpaoVPMnTx5MjO/aberjoEi3SLH+4gAESACpyIQBBk2qWoFziaiKvycOXNsBYuqLpJhVciyXyJABNqIQO1k2LSqFchAg8hOEOHixYvtmqrKTcrApzY+spwzESACVSBQOxk2rWoFyBD7g0jthpJTWUm8e1EoLcNe0OO9RIAIEIGhCARBhnnVJCByLFUr3NykIVWt4OInAkSACBCBZASCIMO8ahIQPZaqFU8++aR59NFHbYJxWIckQz56RIAIEIHwEaidDJtWtQJ7hXD9CsGHWNw3/GVJCYkAESAC/UWgdjLEdJtWtQJz0ucM9+7da63EMi/uGZaJJvsiAkSg7QgEQYZtV0I38ycZdoMa7yECRIAIBLpnSMV0hwDJsDvceBcRIAJEIAkBWoaRrguSYaSKo9hEgAgEiQDJMEi15AtFMszHiC2IABEgAr4IkAx9kQqsHckwMIVQHCJABKJGgGQYqfpIhpEqjmITASIQJALBkmHMJZxE9s2bN5sJEyYYFOAtO2k3yTDI54lCEQEiECkCJMMMxXVbwglnDHEhNynOUOL/cRB/5MiRpS0TkmFpULIjIkAEiEAYxX2bVsJp0aJF5rLLLrMJu5mom08ZESACRCB8BGq3DJtWwknSse3Zs8esXbvWHDhwgJZh+M8BJSQCRKDlCNROhk0r4SR7g5gXqnHMnTvXkuKZZ55Z6lKjm7RUONkZESACLUcgCDJsUgknVLqnm7TlTxWnTwSIQHQIBEGGTSrh9OCDD1pLcN26dTaClCWconsmKDARIAItRKB2MmxaCacky3BgYMBs3Lix1MoVdJO28GnllIkAEagMgdrJEDNrWgknHMlAJOmuXbus4rZu3Wr/v8yLZFgmmuyLCBCBtiMQBBm2XQndzJ9k2A1qvIcIEAEikIwAyTDSlUEyjFRxFJsIEIEgESAZBqmWfKFIhvkYsQURIAJEwBcBkqEvUoG1IxkGphCKQwSIQNQIkAwjVR/JMFLFUWwiQASCRIBkGKRa8oUiGeZjxBZEgAgQAV8ESIa+SAXWjmQYmEIoDhEgAlEjQDKMVH0kw0gVR7GJABEIEgGSYZBqyReKZJiPEVsQASJABHwRIBn6IhVYO5JhYAqhOESACESNAMkwUvWRDCNVHMUmAkQgSAQsGQYpGYXKRWBwkKrLBYkNiAARIAIeCPw/WRLLWRBY1PAAAAAASUVORK5CYII=" /></p>
+<p>An example with several scenes with the same organs ID and CARIBU.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">scene1</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">111</span><span class="p">:</span> <span class="p">[</span><span class="n">random_triangle_generator</span><span class="p">(</span><span class="n">spheresize</span><span class="o">=</span><span class="n">spheresize</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">)],</span>
+    <span class="mi">222</span><span class="p">:</span> <span class="p">[</span><span class="n">random_triangle_generator</span><span class="p">(</span><span class="n">spheresize</span><span class="o">=</span><span class="n">spheresize</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">30</span><span class="p">)],</span>
+    <span class="mi">333</span><span class="p">:</span> <span class="p">[</span><span class="n">random_triangle_generator</span><span class="p">(</span><span class="n">spheresize</span><span class="o">=</span><span class="n">spheresize</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)],</span>
+<span class="p">}</span>
+
+<span class="n">scene2</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">111</span><span class="p">:</span> <span class="p">[</span><span class="n">random_triangle_generator</span><span class="p">(</span><span class="n">spheresize</span><span class="o">=</span><span class="n">spheresize</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">)],</span>
+    <span class="mi">222</span><span class="p">:</span> <span class="p">[</span><span class="n">random_triangle_generator</span><span class="p">(</span><span class="n">spheresize</span><span class="o">=</span><span class="n">spheresize</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">30</span><span class="p">)],</span>
+    <span class="mi">333</span><span class="p">:</span> <span class="p">[</span><span class="n">random_triangle_generator</span><span class="p">(</span><span class="n">spheresize</span><span class="o">=</span><span class="n">spheresize</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)],</span>
+<span class="p">}</span>
+
+<span class="n">scene3</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">111</span><span class="p">:</span> <span class="p">[</span><span class="n">random_triangle_generator</span><span class="p">(</span><span class="n">spheresize</span><span class="o">=</span><span class="n">spheresize</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">)],</span>
+    <span class="mi">222</span><span class="p">:</span> <span class="p">[</span><span class="n">random_triangle_generator</span><span class="p">(</span><span class="n">spheresize</span><span class="o">=</span><span class="n">spheresize</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">30</span><span class="p">)],</span>
+    <span class="mi">333</span><span class="p">:</span> <span class="p">[</span><span class="n">random_triangle_generator</span><span class="p">(</span><span class="n">spheresize</span><span class="o">=</span><span class="n">spheresize</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)],</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>We have 3 species</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">scenes</span> <span class="o">=</span> <span class="p">[</span><span class="n">scene1</span><span class="p">,</span> <span class="n">scene2</span><span class="p">,</span> <span class="n">scene3</span><span class="p">]</span>
+<span class="n">geometry</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;scenes&quot;</span><span class="p">:</span> <span class="n">scenes</span> <span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;caribu&quot;</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">geometry</span><span class="p">)</span>
+
+<span class="c1"># compute the lighting</span>
+<span class="n">energy</span> <span class="o">=</span> <span class="mf">500.</span>
+<span class="n">hour</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="n">day</span> <span class="o">=</span> <span class="mi">264</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">elements_outputs</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+   Day  Hour  Organ  VegetationType         Area    par Eabs      par Ei
+0  264    15    111               0   865.848719  367.620782  432.495038
+1  264    15    222               0   904.093391  343.903742  404.592638
+2  264    15    333               0   500.476649  374.891932  441.049332
+3  264    15    111               1   719.501340  330.624848  388.970410
+4  264    15    222               1  1023.379192  351.641676  413.696090
+5  264    15    333               1   129.105369  391.022326  460.026266
+6  264    15    111               2  1047.414777  335.930702  395.212591
+7  264    15    222               2  1174.044647  349.124635  410.734865
+8  264    15    333               2   521.903258  361.052748  424.767939
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">SceneWidget</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">plantGL_light</span><span class="p">(),</span>
+            <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">50.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">size_display</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+            <span class="n">plane</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">size_world</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="n">axes_helper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "4a97c3e9267f4d9bb46c9c1bd9d82408", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<p>The two level organization are also kept with RATP</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;ratp&quot;</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">geometry</span><span class="p">)</span>
+
+<span class="n">energy</span> <span class="o">=</span> <span class="mf">500.</span>
+<span class="n">hour</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="n">day</span> <span class="o">=</span> <span class="mi">264</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">elements_outputs</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+     Day  Hour  Organ  VegetationType         Area        PARa  Intercepted  \
+0  264.0  15.0    111               1   865.848719  444.431609   438.050846
+1  264.0  15.0    222               1   904.093391  439.138654   508.370824
+2  264.0  15.0    333               1   500.476649  438.358519   466.758357
+3  264.0  15.0    111               2   719.501340  441.984838   374.664274
+4  264.0  15.0    222               2  1023.379192  436.324817   446.932608
+5  264.0  15.0    333               2   129.105369  442.768841   373.148804
+6  264.0  15.0    111               3  1047.414777  437.256257   728.403508
+7  264.0  15.0    222               3  1174.044647  443.465415   536.007093
+8  264.0  15.0    333               3   521.903258  432.082470   816.087594
+
+   Transmitted   SunlitPAR  SunlitArea   ShadedPAR  ShadedArea
+0   438.050846  450.722334  463.402916  356.222905   49.407779
+1   508.370824  446.126727  538.617195  351.627301   58.372064
+2   466.758357  446.387940  492.094716  351.888516   56.801907
+3   374.664274  449.154416  395.429864  352.554837   42.809579
+4   446.932608  444.042247  473.516975  347.442668   51.797538
+5   373.148804  449.336097  395.819748  352.736518   45.454794
+6   728.403508  444.694193  770.345275  349.806482   81.342446
+7   536.007093  450.321284  565.173551  355.433568   58.993793
+8   816.087594  440.468993  864.084337  345.581276   97.832614
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+c:\users\mwoussen\cdd\codes\dev\lightvegemanager\src\lightvegemanager\outputs.py:255: UserWarning: You are merging on int and float columns where the float values are not equal to their int representation.
+  trianglesoutputs = pandas.merge(dftriangles, voxels_outputs)
+</pre></div></div>
+</div>
+</section>
+<section id="Stems">
+<h2>Stems<a class="headerlink" href="#Stems" title="Permalink to this heading"></a></h2>
+<p>If there are stems elements in the inputs, you can precise their ID and the tool will manage them, depending on the lightmodel: - with CARIBU, the optical parameters associated to the organ won’t have a transmission value (rays won’t cross the triangle) - with RATP, stems are separated in a new specy with its own leaf angle distribution and their leaf area is divided by 2</p>
+<p>We reuse the wheat geometry given by adelwheat</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">geometry</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;scenes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">g</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>stems are stored in list where each element is a 2-tuple <code class="docutils literal notranslate"><span class="pre">(organ</span> <span class="pre">ID,</span> <span class="pre">specy</span> <span class="pre">ID)</span></code></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">stems</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">19</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">34</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span>
+<span class="n">geometry</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;stems id&quot;</span><span class="p">:</span> <span class="n">stems</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;caribu&quot;</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">geometry</span><span class="p">)</span>
+<span class="n">SceneWidget</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">plantGL_nolight</span><span class="p">(),</span>
+            <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">size_display</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+            <span class="n">plane</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">size_world</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+            <span class="n">axes_helper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "98dba90d8acc43e8b633b6cd1fd32e01", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lighting</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">elements_outputs</span><span class="p">)</span>
+<span class="n">SceneWidget</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">plantGL_light</span><span class="p">(),</span>
+            <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">size_display</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+            <span class="n">plane</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">size_world</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+            <span class="n">axes_helper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+   Day  Hour  Organ  VegetationType      Area    par Eabs      par Ei
+0  264    15     19               0  0.000228  194.070089  215.633432
+1  264    15     34               0  0.000013   93.806573  104.229526
+2  264    15    813               0  0.000194  458.967637  539.961926
+3  264    15    814               0  0.000240  392.729426  462.034618
+4  264    15     51               0  0.000284  350.644177  412.522561
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "fd11f5056a724394a87d9c6ef72f0448", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+</section>
+<section id="Geometric-transformations">
+<h2>Geometric transformations<a class="headerlink" href="#Geometric-transformations" title="Permalink to this heading"></a></h2>
+<p>You can apply geometric transformations on some of the inputs scenes. We have currently 3 available transformations - translation by a vector - rescale by a factor or following scenes metric unit - rotation on the xy plane</p>
+<p><img alt="transform_geo.png" src="_build/doctrees/nbsphinx/attachment:transform_geo.png" /></p>
+<p>Transformations are stored in a dict, which is stored at key <code class="docutils literal notranslate"><span class="pre">&quot;transformations&quot;</span></code> in the geometry entry. Structure of transformations :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">transformations</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;scenes unit&quot;</span><span class="p">:</span> <span class="p">{</span> <span class="n">specy</span> <span class="n">ID</span><span class="p">:</span> <span class="s2">&quot;metric unit&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">},</span>
+    <span class="s2">&quot;rescale&quot;</span><span class="p">:</span> <span class="p">{</span> <span class="n">specy</span> <span class="n">ID</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="o">...</span><span class="p">},</span>
+    <span class="s2">&quot;translate&quot;</span><span class="p">:</span> <span class="p">{</span> <span class="n">specy</span> <span class="n">ID</span><span class="p">:</span> <span class="mi">3</span><span class="o">-</span><span class="nb">tuple</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">),</span> <span class="o">...</span><span class="p">},</span>
+    <span class="s2">&quot;xyz orientation&quot;</span><span class="p">:</span>  <span class="p">{</span> <span class="n">specy</span> <span class="n">ID</span><span class="p">:</span> <span class="s2">&quot;x+ = NEWS&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">spheresize</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)</span>
+<span class="n">scene1</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">0</span><span class="p">:</span> <span class="p">[</span><span class="n">random_triangle_generator</span><span class="p">(</span><span class="n">spheresize</span><span class="o">=</span><span class="n">spheresize</span><span class="p">,</span> <span class="n">worldsize</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">)]</span>
+<span class="p">}</span>
+<span class="n">scene2</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">0</span><span class="p">:</span> <span class="p">[</span><span class="n">random_triangle_generator</span><span class="p">(</span><span class="n">spheresize</span><span class="o">=</span><span class="n">spheresize</span><span class="p">,</span> <span class="n">worldsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">)]</span>
+<span class="p">}</span>
+
+<span class="n">geometry</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;scenes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">scene1</span><span class="p">,</span> <span class="n">scene2</span><span class="p">]</span> <span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;caribu&quot;</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">geometry</span><span class="p">)</span>
+<span class="n">SceneWidget</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">plantGL_nolight</span><span class="p">(),</span>
+            <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">size_display</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+            <span class="n">plane</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">size_world</span> <span class="o">=</span> <span class="mf">50.</span><span class="p">,</span>
+            <span class="n">axes_helper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "46b4c169c54b4e0a8228d7cf1ea18e1e", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<section id="Translate">
+<h3>Translate<a class="headerlink" href="#Translate" title="Permalink to this heading"></a></h3>
+<p>The translation vector is a 3-tuple (x,y,z). Transformations is a dict in the geometry dict.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tvec</span> <span class="o">=</span> <span class="p">(</span><span class="mf">10.</span><span class="p">,</span> <span class="o">-</span><span class="mf">10.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">)</span>
+<span class="n">transformations</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;translate&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="mi">0</span><span class="p">:</span> <span class="n">tvec</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="n">geometry</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;scenes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">scene1</span><span class="p">,</span> <span class="n">scene2</span><span class="p">]</span> <span class="p">,</span> <span class="s2">&quot;transformations&quot;</span><span class="p">:</span> <span class="n">transformations</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;caribu&quot;</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">geometry</span><span class="p">)</span>
+<span class="n">SceneWidget</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">plantGL_nolight</span><span class="p">(),</span>
+            <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">size_display</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+            <span class="n">plane</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">size_world</span> <span class="o">=</span> <span class="mf">50.</span><span class="p">,</span>
+            <span class="n">axes_helper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "76c89db03d554397bf776734f8850040", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+</section>
+<section id="Rescale-following-metric-unit">
+<h3>Rescale following metric unit<a class="headerlink" href="#Rescale-following-metric-unit" title="Permalink to this heading"></a></h3>
+<p>You can precise the metric unit of each scene from this list: <code class="docutils literal notranslate"><span class="pre">&quot;mm&quot;,</span> <span class="pre">&quot;cm&quot;,</span> <span class="pre">&quot;dm&quot;,</span> <span class="pre">&quot;m&quot;,</span> <span class="pre">&quot;dam&quot;,</span> <span class="pre">&quot;hm&quot;,</span> <span class="pre">&quot;km&quot;</span></code>. By default the merged scene is in m but you can change its unit when you create an instance.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">transformations</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;scenes unit&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;dm&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="n">geometry</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;scenes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">scene1</span><span class="p">,</span> <span class="n">scene2</span><span class="p">]</span> <span class="p">,</span> <span class="s2">&quot;transformations&quot;</span><span class="p">:</span> <span class="n">transformations</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;caribu&quot;</span><span class="p">,</span> <span class="n">main_unit</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">geometry</span><span class="p">)</span>
+<span class="n">SceneWidget</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">plantGL_nolight</span><span class="p">(),</span>
+            <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">size_display</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+            <span class="n">plane</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">size_world</span> <span class="o">=</span> <span class="mf">50.</span><span class="p">,</span>
+            <span class="n">axes_helper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "1faf13d540ad444aa201ce3b3091b678", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+</section>
+<section id="Rescale-by-a-scalar-factor">
+<h3>Rescale by a scalar factor<a class="headerlink" href="#Rescale-by-a-scalar-factor" title="Permalink to this heading"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">transformations</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;rescale&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="mi">0</span><span class="p">:</span> <span class="mf">2.</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="n">geometry</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;scenes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">scene1</span><span class="p">,</span> <span class="n">scene2</span><span class="p">]</span> <span class="p">,</span> <span class="s2">&quot;transformations&quot;</span><span class="p">:</span> <span class="n">transformations</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;caribu&quot;</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">geometry</span><span class="p">)</span>
+<span class="n">SceneWidget</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">plantGL_nolight</span><span class="p">(),</span>
+            <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">size_display</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+            <span class="n">plane</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">size_world</span> <span class="o">=</span> <span class="mf">50.</span><span class="p">,</span>
+            <span class="n">axes_helper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "3371dc76488d43ec874ae447190793c3", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+</section>
+<section id="Rotate">
+<h3>Rotate<a class="headerlink" href="#Rotate" title="Permalink to this heading"></a></h3>
+<p>Finally, you can also rotate the scene around the z axis, in order to match the x+ convention for each input scene. You have the choice between: - <code class="docutils literal notranslate"><span class="pre">&quot;x+</span> <span class="pre">=</span> <span class="pre">N&quot;</span></code> - <code class="docutils literal notranslate"><span class="pre">&quot;x+</span> <span class="pre">=</span> <span class="pre">S&quot;</span></code> - <code class="docutils literal notranslate"><span class="pre">&quot;x+</span> <span class="pre">=</span> <span class="pre">E&quot;</span></code> - <code class="docutils literal notranslate"><span class="pre">&quot;x+</span> <span class="pre">=</span> <span class="pre">W&quot;</span></code></p>
+<p>The merged scene convention is x+ = N, which the convention in RATP and CARIBU.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">transformations</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;xyz orientation&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;x+ = S&quot;</span><span class="p">,</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;x+ = E&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="n">geometry</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;scenes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">scene1</span><span class="p">,</span> <span class="n">scene2</span><span class="p">]</span> <span class="p">,</span> <span class="s2">&quot;transformations&quot;</span><span class="p">:</span> <span class="n">transformations</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;caribu&quot;</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">geometry</span><span class="p">)</span>
+<span class="n">SceneWidget</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">plantGL_nolight</span><span class="p">(),</span>
+            <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">size_display</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+            <span class="n">plane</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">size_world</span> <span class="o">=</span> <span class="mf">50.</span><span class="p">,</span>
+            <span class="n">axes_helper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "76451c57a9b44f0c9b30344714b536b4", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, INRAE P3F.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

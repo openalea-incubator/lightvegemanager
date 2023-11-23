@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2. Environment parameters &mdash; LightVegeManager 0.0.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/nbsphinx-code-cells.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="3. Geometric inputs" href="input_scenes.html" />
+    <link rel="prev" title="1. LightVegeManager first steps" href="tool_basics.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            LightVegeManager
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="presentation.html">Presentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="tutorials.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials.html#quickstart">Quickstart</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="tutorials.html#tutorials-with-jupyter-notebooks">Tutorials with jupyter notebooks</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="tool_basics.html">1. LightVegeManager first steps</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">2. Environment parameters</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Content">2.1. Content</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Introduction">2.2. Introduction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#First-options">2.3. First options</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Different-ways-to-set-a-sky">2.4. Different ways to set a sky</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="input_scenes.html">3. Geometric inputs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lightmodels_functionnalities.html">4. Light models options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="outputs_and_plantmodels_transfer.html">5. Output formats and transfer methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="example_canopy.html">6. Example of use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="misc_functionnalities.html">7. Misc functionnalities</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture of the tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inputs.html">Inputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="others.html">Additionnal Functionalities</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">LightVegeManager</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="tutorials.html">Tutorials</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">2. </span>Environment parameters</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/environment_parameters.nblink.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Environment-parameters">
+<h1><span class="section-number">2. </span>Environment parameters<a class="headerlink" href="#Environment-parameters" title="Permalink to this heading"></a></h1>
+<section id="Content">
+<h2><span class="section-number">2.1. </span>Content<a class="headerlink" href="#Content" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Coordinates and other boolean options</p></li>
+<li><p>sky</p>
+<ul>
+<li><p>turtle of 46 directions</p></li>
+<li><p>file</p></li>
+<li><p>custom number of sky directions</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Introduction">
+<h2><span class="section-number">2.2. </span>Introduction<a class="headerlink" href="#Introduction" title="Permalink to this heading"></a></h2>
+<p>Environment parameters are stored in a dict and transferred as an input argument for a LightVegeManager instance. It defines all static parameters during a simulation, such the sky type, radiative options etc…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">environment</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;coordinates&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="n">latitude</span><span class="p">,</span> <span class="n">longitude</span><span class="p">,</span> <span class="n">timezone</span><span class="p">]</span> <span class="p">,</span>
+
+                <span class="s2">&quot;sky&quot;</span> <span class="p">:</span> <span class="s2">&quot;turtle46&quot;</span> <span class="p">,</span>
+                <span class="s2">&quot;sky&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;file&quot;</span><span class="p">,</span> <span class="n">filepath</span><span class="p">]</span> <span class="p">,</span>
+                <span class="s2">&quot;sky&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="n">nb_azimut</span><span class="p">,</span> <span class="n">nb_zenith</span><span class="p">,</span> <span class="s2">&quot;soc&quot;</span> <span class="ow">or</span> <span class="s2">&quot;uoc&quot;</span><span class="p">]</span> <span class="p">,</span>
+
+                <span class="s2">&quot;direct&quot;</span> <span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="c1"># sun radiations</span>
+                <span class="s2">&quot;diffus&quot;</span> <span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="c1"># sky radiations</span>
+                <span class="s2">&quot;reflected&quot;</span> <span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="c1"># reflected radiation in the canopy</span>
+                <span class="s2">&quot;infinite&quot;</span> <span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="c1"># infinitisation of the scene</span>
+                <span class="p">}</span>
+</pre></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightvegemanager.LVM</span> <span class="kn">import</span> <span class="n">LightVegeManager</span>
+<span class="kn">from</span> <span class="nn">pgljupyter</span> <span class="kn">import</span> <span class="n">SceneWidget</span>
+</pre></div>
+</div>
+</div>
+<p>As a geometric example, we will use a random set of 3D triangles</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightvegemanager.trianglesmesh</span> <span class="kn">import</span> <span class="n">random_triangle_generator</span>
+
+<span class="n">nb_triangles</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">spheresize</span> <span class="o">=</span> <span class="p">(</span><span class="mf">10.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">)</span> <span class="c1"># vertices of triangles are the sphere surface</span>
+<span class="n">triangles</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nb_triangles</span><span class="p">):</span>
+    <span class="n">triangles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">random_triangle_generator</span><span class="p">(</span><span class="n">spheresize</span><span class="o">=</span><span class="n">spheresize</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="First-options">
+<h2><span class="section-number">2.3. </span>First options<a class="headerlink" href="#First-options" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;coordinates&quot;</span></code>: sets the coordinates of the simulation, this matters if you want direct radiations</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;infinite&quot;</span></code>: activates infinite reproduction</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;reflected&quot;</span></code>: activates the reflections in the scene</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;direct&quot;</span></code>: activates the direct radiations (sun)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;diffuse&quot;</span></code>: activates the diffuse radiations (sky)</p></li>
+</ul>
+<p>An example of use</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">longitude</span> <span class="o">=</span> <span class="mf">2.</span>
+<span class="n">latitude</span> <span class="o">=</span> <span class="mf">46.</span>
+<span class="n">timezone</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">coordinates</span> <span class="o">=</span> <span class="p">[</span><span class="n">latitude</span><span class="p">,</span> <span class="n">longitude</span><span class="p">,</span> <span class="n">timezone</span><span class="p">]</span>
+<span class="n">infinite</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">reflected</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">direct</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">diffuse</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="n">environment</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;coordinates&quot;</span><span class="p">:</span> <span class="n">coordinates</span> <span class="p">,</span>
+                <span class="s2">&quot;infinite&quot;</span><span class="p">:</span> <span class="n">infinite</span><span class="p">,</span>
+                <span class="s2">&quot;reflected&quot;</span><span class="p">:</span> <span class="n">reflected</span><span class="p">,</span>
+                <span class="s2">&quot;direct&quot;</span><span class="p">:</span> <span class="n">direct</span><span class="p">,</span>
+                <span class="s2">&quot;diffuse&quot;</span><span class="p">:</span> <span class="n">diffuse</span>
+                <span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;caribu&quot;</span><span class="p">,</span> <span class="n">environment</span><span class="o">=</span><span class="n">environment</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">triangles</span><span class="p">)</span>
+
+<span class="n">energy</span> <span class="o">=</span> <span class="mf">500.</span>
+<span class="n">hour</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="n">day</span> <span class="o">=</span> <span class="mi">264</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">triangles_outputs</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+    Day  Hour  Triangle  Organ  VegetationType        Area  par Eabs  \
+0   264    15         0      0               0   25.726272  371.6035
+1   264    15         1      0               0   13.783029  349.2170
+2   264    15         2      0               0   12.763108  398.2390
+3   264    15         3      0               0   53.316476  337.0940
+4   264    15         4      0               0   77.530371  324.5620
+5   264    15         5      0               0   91.101325  345.7510
+6   264    15         6      0               0   10.561639  402.4780
+7   264    15         7      0               0   34.807818  391.7425
+8   264    15         8      0               0   50.741522  380.4250
+9   264    15         9      0               0   65.094222  357.9895
+10  264    15        10      0               0   11.478336  392.0880
+11  264    15        11      0               0    7.336318  411.0825
+12  264    15        12      0               0   67.098056  351.8955
+13  264    15        13      0               0  110.406048  349.7170
+14  264    15        14      0               0   25.205634  349.1045
+15  264    15        15      0               0   58.188870  381.7025
+16  264    15        16      0               0    4.697984  315.1850
+17  264    15        17      0               0  158.216511  327.8690
+18  264    15        18      0               0   20.092209  365.8025
+19  264    15        19      0               0   36.665943  380.5700
+20  264    15        20      0               0   41.407838  354.4745
+21  264    15        21      0               0   59.198310  392.9965
+22  264    15        22      0               0  123.069355  396.1230
+23  264    15        23      0               0   15.799376  378.0230
+24  264    15        24      0               0   83.618705  321.3325
+25  264    15        25      0               0   22.376188  421.3345
+26  264    15        26      0               0   16.980147  369.1415
+27  264    15        27      0               0    4.021323  391.9065
+28  264    15        28      0               0  101.989262  368.2225
+29  264    15        29      0               0   35.045032  362.7380
+30  264    15        30      0               0    7.279495  358.4765
+31  264    15        31      0               0    8.076740  379.1885
+32  264    15        32      0               0   25.380136  408.9655
+33  264    15        33      0               0   23.214325  362.2340
+34  264    15        34      0               0   24.755145  383.8100
+35  264    15        35      0               0   12.075043  347.8985
+36  264    15        36      0               0    5.433152  375.6225
+37  264    15        37      0               0    7.593431  329.0015
+38  264    15        38      0               0   11.336904  391.5000
+39  264    15        39      0               0   13.960928  364.9205
+40  264    15        40      0               0   51.442895  356.8665
+41  264    15        41      0               0    6.913750  358.1685
+42  264    15        42      0               0   27.859798  351.1215
+43  264    15        43      0               0   21.513230  363.2890
+44  264    15        44      0               0    0.365187  357.0700
+45  264    15        45      0               0   16.871122  345.0545
+46  264    15        46      0               0   18.246579  343.5880
+47  264    15        47      0               0   42.620629  412.0505
+48  264    15        48      0               0   24.966061  366.0345
+49  264    15        49      0               0    7.325236  392.4830
+
+        par Ei
+0   437.180588
+1   410.843529
+2   468.516471
+3   396.581176
+4   381.837647
+5   406.765882
+6   473.503529
+7   460.873529
+8   447.558824
+9   421.164118
+10  461.280000
+11  483.626471
+12  413.994706
+13  411.431765
+14  410.711176
+15  449.061765
+16  370.805882
+17  385.728235
+18  430.355882
+19  447.729412
+20  417.028824
+21  462.348824
+22  466.027059
+23  444.732941
+24  378.038235
+25  495.687647
+26  434.284118
+27  461.066471
+28  433.202941
+29  426.750588
+30  421.737059
+31  446.104118
+32  481.135882
+33  426.157647
+34  451.541176
+35  409.292353
+36  441.908824
+37  387.060588
+38  460.588235
+39  429.318235
+40  419.842941
+41  421.374706
+42  413.084118
+43  427.398824
+44  420.082353
+45  405.946471
+46  404.221176
+47  484.765294
+48  430.628824
+49  461.744706
+</pre></div></div>
+</div>
+</section>
+<section id="Different-ways-to-set-a-sky">
+<h2><span class="section-number">2.4. </span>Different ways to set a sky<a class="headerlink" href="#Different-ways-to-set-a-sky" title="Permalink to this heading"></a></h2>
+<section id="Turtle46">
+<h3><span class="section-number">2.4.1. </span>Turtle46<a class="headerlink" href="#Turtle46" title="Permalink to this heading"></a></h3>
+<p>This options creates a sky in a turtle of 46 directions. It is the default sky in the tool.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sky</span> <span class="o">=</span> <span class="s2">&quot;turtle46&quot;</span>
+<span class="n">environment</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;sky&quot;</span><span class="p">:</span> <span class="n">sky</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;caribu&quot;</span><span class="p">,</span> <span class="n">environment</span><span class="o">=</span><span class="n">environment</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">triangles</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">triangles_outputs</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+    Day  Hour  Triangle  Organ  VegetationType        Area  par Eabs  \
+0   264    15         0      0               0   25.726272  371.6035
+1   264    15         1      0               0   13.783029  349.2170
+2   264    15         2      0               0   12.763108  398.2390
+3   264    15         3      0               0   53.316476  337.0940
+4   264    15         4      0               0   77.530371  324.5620
+5   264    15         5      0               0   91.101325  345.7510
+6   264    15         6      0               0   10.561639  402.4780
+7   264    15         7      0               0   34.807818  391.7425
+8   264    15         8      0               0   50.741522  380.4250
+9   264    15         9      0               0   65.094222  357.9895
+10  264    15        10      0               0   11.478336  392.0880
+11  264    15        11      0               0    7.336318  411.0825
+12  264    15        12      0               0   67.098056  351.8955
+13  264    15        13      0               0  110.406048  349.7170
+14  264    15        14      0               0   25.205634  349.1045
+15  264    15        15      0               0   58.188870  381.7025
+16  264    15        16      0               0    4.697984  315.1850
+17  264    15        17      0               0  158.216511  327.8690
+18  264    15        18      0               0   20.092209  365.8025
+19  264    15        19      0               0   36.665943  380.5700
+20  264    15        20      0               0   41.407838  354.4745
+21  264    15        21      0               0   59.198310  392.9965
+22  264    15        22      0               0  123.069355  396.1230
+23  264    15        23      0               0   15.799376  378.0230
+24  264    15        24      0               0   83.618705  321.3325
+25  264    15        25      0               0   22.376188  421.3345
+26  264    15        26      0               0   16.980147  369.1415
+27  264    15        27      0               0    4.021323  391.9065
+28  264    15        28      0               0  101.989262  368.2225
+29  264    15        29      0               0   35.045032  362.7380
+30  264    15        30      0               0    7.279495  358.4765
+31  264    15        31      0               0    8.076740  379.1885
+32  264    15        32      0               0   25.380136  408.9655
+33  264    15        33      0               0   23.214325  362.2340
+34  264    15        34      0               0   24.755145  383.8100
+35  264    15        35      0               0   12.075043  347.8985
+36  264    15        36      0               0    5.433152  375.6225
+37  264    15        37      0               0    7.593431  329.0015
+38  264    15        38      0               0   11.336904  391.5000
+39  264    15        39      0               0   13.960928  364.9205
+40  264    15        40      0               0   51.442895  356.8665
+41  264    15        41      0               0    6.913750  358.1685
+42  264    15        42      0               0   27.859798  351.1215
+43  264    15        43      0               0   21.513230  363.2890
+44  264    15        44      0               0    0.365187  357.0700
+45  264    15        45      0               0   16.871122  345.0545
+46  264    15        46      0               0   18.246579  343.5880
+47  264    15        47      0               0   42.620629  412.0505
+48  264    15        48      0               0   24.966061  366.0345
+49  264    15        49      0               0    7.325236  392.4830
+
+        par Ei
+0   437.180588
+1   410.843529
+2   468.516471
+3   396.581176
+4   381.837647
+5   406.765882
+6   473.503529
+7   460.873529
+8   447.558824
+9   421.164118
+10  461.280000
+11  483.626471
+12  413.994706
+13  411.431765
+14  410.711176
+15  449.061765
+16  370.805882
+17  385.728235
+18  430.355882
+19  447.729412
+20  417.028824
+21  462.348824
+22  466.027059
+23  444.732941
+24  378.038235
+25  495.687647
+26  434.284118
+27  461.066471
+28  433.202941
+29  426.750588
+30  421.737059
+31  446.104118
+32  481.135882
+33  426.157647
+34  451.541176
+35  409.292353
+36  441.908824
+37  387.060588
+38  460.588235
+39  429.318235
+40  419.842941
+41  421.374706
+42  413.084118
+43  427.398824
+44  420.082353
+45  405.946471
+46  404.221176
+47  484.765294
+48  430.628824
+49  461.744706
+</pre></div></div>
+</div>
+</section>
+<section id="File">
+<h3><span class="section-number">2.4.2. </span>File<a class="headerlink" href="#File" title="Permalink to this heading"></a></h3>
+<p>You can set sky directions in a file. It needs azimut, zenit, weight and solid angle of each direction.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="n">datafile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)),</span> <span class="s2">&quot;data&quot;</span><span class="p">),</span> <span class="s2">&quot;sky_5.data&quot;</span><span class="p">)</span>
+<span class="n">datafile</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&#39;C:\\Users\\mwoussen\\cdd\\codes\\dev\\lightvegemanager\\data\\sky_5.data&#39;
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sky</span> <span class="o">=</span> <span class="n">datafile</span>
+<span class="n">environment</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;sky&quot;</span><span class="p">:</span> <span class="n">sky</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;caribu&quot;</span><span class="p">,</span> <span class="n">environment</span><span class="o">=</span><span class="n">environment</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">triangles</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">triangles_outputs</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+    Day  Hour  Triangle  Organ  VegetationType        Area  par Eabs  \
+0   264    15         0      0               0   25.726272  278.0720
+1   264    15         1      0               0   13.783029  403.3195
+2   264    15         2      0               0   12.763108  366.8215
+3   264    15         3      0               0   53.316476  397.2600
+4   264    15         4      0               0   77.530371  261.5960
+5   264    15         5      0               0   91.101325  360.5290
+6   264    15         6      0               0   10.561639  384.0350
+7   264    15         7      0               0   34.807818  397.7035
+8   264    15         8      0               0   50.741522  365.7650
+9   264    15         9      0               0   65.094222  422.4610
+10  264    15        10      0               0   11.478336  388.2775
+11  264    15        11      0               0    7.336318  408.1320
+12  264    15        12      0               0   67.098056  393.2045
+13  264    15        13      0               0  110.406048  402.1410
+14  264    15        14      0               0   25.205634  369.9850
+15  264    15        15      0               0   58.188870  349.8555
+16  264    15        16      0               0    4.697984  381.5470
+17  264    15        17      0               0  158.216511  338.6050
+18  264    15        18      0               0   20.092209  401.2725
+19  264    15        19      0               0   36.665943  360.8795
+20  264    15        20      0               0   41.407838  393.0395
+21  264    15        21      0               0   59.198310  374.3005
+22  264    15        22      0               0  123.069355  364.7995
+23  264    15        23      0               0   15.799376  335.7830
+24  264    15        24      0               0   83.618705  320.5145
+25  264    15        25      0               0   22.376188  422.5700
+26  264    15        26      0               0   16.980147  384.9540
+27  264    15        27      0               0    4.021323  356.1805
+28  264    15        28      0               0  101.989262  392.4935
+29  264    15        29      0               0   35.045032  374.7005
+30  264    15        30      0               0    7.279495  392.2800
+31  264    15        31      0               0    8.076740  397.8520
+32  264    15        32      0               0   25.380136  380.5840
+33  264    15        33      0               0   23.214325  394.5560
+34  264    15        34      0               0   24.755145  367.5900
+35  264    15        35      0               0   12.075043  324.4830
+36  264    15        36      0               0    5.433152  356.6220
+37  264    15        37      0               0    7.593431  376.8265
+38  264    15        38      0               0   11.336904  327.6150
+39  264    15        39      0               0   13.960928  408.6110
+40  264    15        40      0               0   51.442895  385.7540
+41  264    15        41      0               0    6.913750  404.1470
+42  264    15        42      0               0   27.859798  411.5640
+43  264    15        43      0               0   21.513230  403.3165
+44  264    15        44      0               0    0.365187  446.3670
+45  264    15        45      0               0   16.871122  426.9325
+46  264    15        46      0               0   18.246579  393.3755
+47  264    15        47      0               0   42.620629  397.4675
+48  264    15        48      0               0   24.966061  380.4310
+49  264    15        49      0               0    7.325236  365.7570
+
+        par Ei
+0   327.143529
+1   474.493529
+2   431.554706
+3   467.364706
+4   307.760000
+5   424.151765
+6   451.805882
+7   467.886471
+8   430.311765
+9   497.012941
+10  456.797059
+11  480.155294
+12  462.593529
+13  473.107059
+14  435.276471
+15  411.594706
+16  448.878824
+17  398.358824
+18  472.085294
+19  424.564118
+20  462.399412
+21  440.353529
+22  429.175882
+23  395.038824
+24  377.075882
+25  497.141176
+26  452.887059
+27  419.035882
+28  461.757059
+29  440.824118
+30  461.505882
+31  468.061176
+32  447.745882
+33  464.183529
+34  432.458824
+35  381.744706
+36  419.555294
+37  443.325294
+38  385.429412
+39  480.718824
+40  453.828235
+41  475.467059
+42  484.192941
+43  474.490000
+44  525.137647
+45  502.273529
+46  462.794706
+47  467.608824
+48  447.565882
+49  430.302353
+</pre></div></div>
+</div>
+</section>
+<section id="Custom-number-of-directions">
+<h3><span class="section-number">2.4.3. </span>Custom number of directions<a class="headerlink" href="#Custom-number-of-directions" title="Permalink to this heading"></a></h3>
+<p>You can directly precise the number of directions for each spherical axis.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nazimuts</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">nzenits</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">skytype</span> <span class="o">=</span> <span class="s2">&quot;soc&quot;</span>
+<span class="n">sky</span> <span class="o">=</span> <span class="p">[</span><span class="n">nazimuts</span><span class="p">,</span> <span class="n">nzenits</span><span class="p">,</span> <span class="n">skytype</span><span class="p">]</span>
+<span class="n">environment</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;sky&quot;</span><span class="p">:</span> <span class="n">sky</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;caribu&quot;</span><span class="p">,</span> <span class="n">environment</span><span class="o">=</span><span class="n">environment</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">triangles</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">triangles_outputs</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+    Day  Hour  Triangle  Organ  VegetationType        Area  par Eabs  \
+0   264    15         0      0               0   25.726272  367.4435
+1   264    15         1      0               0   13.783029  359.6625
+2   264    15         2      0               0   12.763108  396.5770
+3   264    15         3      0               0   53.316476  329.5710
+4   264    15         4      0               0   77.530371  302.7720
+5   264    15         5      0               0   91.101325  359.4800
+6   264    15         6      0               0   10.561639  402.0455
+7   264    15         7      0               0   34.807818  390.0475
+8   264    15         8      0               0   50.741522  380.4095
+9   264    15         9      0               0   65.094222  370.5000
+10  264    15        10      0               0   11.478336  365.8330
+11  264    15        11      0               0    7.336318  416.4730
+12  264    15        12      0               0   67.098056  330.1160
+13  264    15        13      0               0  110.406048  347.6350
+14  264    15        14      0               0   25.205634  355.7915
+15  264    15        15      0               0   58.188870  380.4485
+16  264    15        16      0               0    4.697984  303.9940
+17  264    15        17      0               0  158.216511  340.1875
+18  264    15        18      0               0   20.092209  374.8530
+19  264    15        19      0               0   36.665943  363.3585
+20  264    15        20      0               0   41.407838  361.5830
+21  264    15        21      0               0   59.198310  390.9105
+22  264    15        22      0               0  123.069355  393.2975
+23  264    15        23      0               0   15.799376  376.2630
+24  264    15        24      0               0   83.618705  334.4305
+25  264    15        25      0               0   22.376188  422.7645
+26  264    15        26      0               0   16.980147  370.2740
+27  264    15        27      0               0    4.021323  388.2480
+28  264    15        28      0               0  101.989262  358.1445
+29  264    15        29      0               0   35.045032  354.0735
+30  264    15        30      0               0    7.279495  350.6900
+31  264    15        31      0               0    8.076740  381.7745
+32  264    15        32      0               0   25.380136  393.2310
+33  264    15        33      0               0   23.214325  369.4760
+34  264    15        34      0               0   24.755145  375.5270
+35  264    15        35      0               0   12.075043  336.7025
+36  264    15        36      0               0    5.433152  391.4570
+37  264    15        37      0               0    7.593431  311.4770
+38  264    15        38      0               0   11.336904  370.1265
+39  264    15        39      0               0   13.960928  363.4625
+40  264    15        40      0               0   51.442895  368.7145
+41  264    15        41      0               0    6.913750  359.2955
+42  264    15        42      0               0   27.859798  357.7250
+43  264    15        43      0               0   21.513230  369.9830
+44  264    15        44      0               0    0.365187  331.4810
+45  264    15        45      0               0   16.871122  360.2515
+46  264    15        46      0               0   18.246579  364.6100
+47  264    15        47      0               0   42.620629  414.3330
+48  264    15        48      0               0   24.966061  360.7975
+49  264    15        49      0               0    7.325236  390.5770
+
+        par Ei
+0   432.286471
+1   423.132353
+2   466.561176
+3   387.730588
+4   356.202353
+5   422.917647
+6   472.994706
+7   458.879412
+8   447.540588
+9   435.882353
+10  430.391765
+11  489.968235
+12  388.371765
+13  408.982353
+14  418.578235
+15  447.586471
+16  357.640000
+17  400.220588
+18  441.003529
+19  427.480588
+20  425.391765
+21  459.894706
+22  462.702941
+23  442.662353
+24  393.447647
+25  497.370000
+26  435.616471
+27  456.762353
+28  421.346471
+29  416.557059
+30  412.576471
+31  449.146471
+32  462.624706
+33  434.677647
+34  441.796471
+35  396.120588
+36  460.537647
+37  366.443529
+38  435.442941
+39  427.602941
+40  433.781765
+41  422.700588
+42  420.852941
+43  435.274118
+44  389.977647
+45  423.825294
+46  428.952941
+47  487.450588
+48  424.467647
+49  459.502353
+</pre></div></div>
+</div>
+</section>
+<section id="And-RATP-?">
+<h3><span class="section-number">2.4.4. </span>And RATP ?<a class="headerlink" href="#And-RATP-?" title="Permalink to this heading"></a></h3>
+<p>All the skies defined above are available with RATP as the light model</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;ratp&quot;</span><span class="p">,</span> <span class="n">environment</span><span class="o">=</span><span class="n">environment</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">triangles</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">triangles_outputs</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+    Triangle  Organ  Voxel  VegetationType  primitive_area    Day  Hour  Nx  \
+0          0      0    1.0               1       25.726272  264.0  15.0   1
+14         1      0    2.0               1       13.783029  264.0  15.0   2
+20         2      0    3.0               1       12.763108  264.0  15.0   2
+15         3      0    2.0               1       53.316476  264.0  15.0   2
+1          4      0    1.0               1       77.530371  264.0  15.0   1
+2          5      0    1.0               1       91.101325  264.0  15.0   1
+26         6      0    4.0               1       10.561639  264.0  15.0   1
+34         7      0    5.0               1       34.807818  264.0  15.0   2
+38         8      0    6.0               1       50.741522  264.0  15.0   1
+39         9      0    6.0               1       65.094222  264.0  15.0   1
+41        10      0    7.0               1       11.478336  264.0  15.0   2
+3         11      0    1.0               1        7.336318  264.0  15.0   1
+44        12      0    8.0               1       67.098056  264.0  15.0   1
+45        13      0    8.0               1      110.406048  264.0  15.0   1
+35        14      0    5.0               1       25.205634  264.0  15.0   2
+46        15      0    8.0               1       58.188870  264.0  15.0   1
+21        16      0    3.0               1        4.697984  264.0  15.0   2
+47        17      0    8.0               1      158.216511  264.0  15.0   1
+16        18      0    2.0               1       20.092209  264.0  15.0   2
+4         19      0    1.0               1       36.665943  264.0  15.0   1
+5         20      0    1.0               1       41.407838  264.0  15.0   1
+6         21      0    1.0               1       59.198310  264.0  15.0   1
+7         22      0    1.0               1      123.069355  264.0  15.0   1
+17        23      0    2.0               1       15.799376  264.0  15.0   2
+8         24      0    1.0               1       83.618705  264.0  15.0   1
+22        25      0    3.0               1       22.376188  264.0  15.0   2
+23        26      0    3.0               1       16.980147  264.0  15.0   2
+48        27      0    8.0               1        4.021323  264.0  15.0   1
+42        28      0    7.0               1      101.989262  264.0  15.0   2
+27        29      0    4.0               1       35.045032  264.0  15.0   1
+18        30      0    2.0               1        7.279495  264.0  15.0   2
+28        31      0    4.0               1        8.076740  264.0  15.0   1
+49        32      0    8.0               1       25.380136  264.0  15.0   1
+9         33      0    1.0               1       23.214325  264.0  15.0   1
+10        34      0    1.0               1       24.755145  264.0  15.0   1
+40        35      0    6.0               1       12.075043  264.0  15.0   1
+24        36      0    3.0               1        5.433152  264.0  15.0   2
+43        37      0    7.0               1        7.593431  264.0  15.0   2
+11        38      0    1.0               1       11.336904  264.0  15.0   1
+36        39      0    5.0               1       13.960928  264.0  15.0   2
+19        40      0    2.0               1       51.442895  264.0  15.0   2
+37        41      0    5.0               1        6.913750  264.0  15.0   2
+25        42      0    3.0               1       27.859798  264.0  15.0   2
+29        43      0    4.0               1       21.513230  264.0  15.0   1
+12        44      0    1.0               1        0.365187  264.0  15.0   1
+30        45      0    4.0               1       16.871122  264.0  15.0   1
+13        46      0    1.0               1       18.246579  264.0  15.0   1
+31        47      0    4.0               1       42.620629  264.0  15.0   1
+32        48      0    4.0               1       24.966061  264.0  15.0   1
+33        49      0    4.0               1        7.325236  264.0  15.0   1
+
+    Ny  Nz   ShadedPAR   SunlitPAR  ShadedArea  SunlitArea        Area  \
+0    2   2  517.164368  517.164368   24.775818  598.796692  623.572510
+14   2   2  526.623230  526.623230    2.050629  159.662857  161.713486
+20   2   1  534.147095  534.147095    0.696129   89.414246   90.110374
+15   2   2  526.623230  526.623230    2.050629  159.662857  161.713486
+1    2   2  517.164368  517.164368   24.775818  598.796692  623.572510
+2    2   2  517.164368  517.164368   24.775818  598.796692  623.572510
+26   2   1  532.629761  532.629761    1.871048  165.108658  166.979706
+34   1   1  534.452026  534.452026    0.622597   80.265533   80.888130
+38   1   1  533.396484  533.396484    1.338730  126.572052  127.910782
+39   1   1  533.396484  533.396484    1.338730  126.572052  127.910782
+41   1   2  528.159302  528.159302    1.488289  119.572739  121.061028
+3    2   2  517.164368  517.164368   24.775818  598.796692  623.572510
+44   1   2  521.193115  521.193115   15.492981  407.817963  423.310944
+45   1   2  521.193115  521.193115   15.492981  407.817963  423.310944
+35   1   1  534.452026  534.452026    0.622597   80.265533   80.888130
+46   1   2  521.193115  521.193115   15.492981  407.817963  423.310944
+21   2   1  534.147095  534.147095    0.696129   89.414246   90.110374
+47   1   2  521.193115  521.193115   15.492981  407.817963  423.310944
+16   2   2  526.623230  526.623230    2.050629  159.662857  161.713486
+4    2   2  517.164368  517.164368   24.775818  598.796692  623.572510
+5    2   2  517.164368  517.164368   24.775818  598.796692  623.572510
+6    2   2  517.164368  517.164368   24.775818  598.796692  623.572510
+7    2   2  517.164368  517.164368   24.775818  598.796692  623.572510
+17   2   2  526.623230  526.623230    2.050629  159.662857  161.713486
+8    2   2  517.164368  517.164368   24.775818  598.796692  623.572510
+22   2   1  534.147095  534.147095    0.696129   89.414246   90.110374
+23   2   1  534.147095  534.147095    0.696129   89.414246   90.110374
+48   1   2  521.193115  521.193115   15.492981  407.817963  423.310944
+42   1   2  528.159302  528.159302    1.488289  119.572739  121.061028
+27   2   1  532.629761  532.629761    1.871048  165.108658  166.979706
+18   2   2  526.623230  526.623230    2.050629  159.662857  161.713486
+28   2   1  532.629761  532.629761    1.871048  165.108658  166.979706
+49   1   2  521.193115  521.193115   15.492981  407.817963  423.310944
+9    2   2  517.164368  517.164368   24.775818  598.796692  623.572510
+10   2   2  517.164368  517.164368   24.775818  598.796692  623.572510
+40   1   1  533.396484  533.396484    1.338730  126.572052  127.910782
+24   2   1  534.147095  534.147095    0.696129   89.414246   90.110374
+43   1   2  528.159302  528.159302    1.488289  119.572739  121.061028
+11   2   2  517.164368  517.164368   24.775818  598.796692  623.572510
+36   1   1  534.452026  534.452026    0.622597   80.265533   80.888130
+19   2   2  526.623230  526.623230    2.050629  159.662857  161.713486
+37   1   1  534.452026  534.452026    0.622597   80.265533   80.888130
+25   2   1  534.147095  534.147095    0.696129   89.414246   90.110374
+29   2   1  532.629761  532.629761    1.871048  165.108658  166.979706
+12   2   2  517.164368  517.164368   24.775818  598.796692  623.572510
+30   2   1  532.629761  532.629761    1.871048  165.108658  166.979706
+13   2   2  517.164368  517.164368   24.775818  598.796692  623.572510
+31   2   1  532.629761  532.629761    1.871048  165.108658  166.979706
+32   2   1  532.629761  532.629761    1.871048  165.108658  166.979706
+33   2   1  532.629761  532.629761    1.871048  165.108658  166.979706
+
+          PARa  Intercepted  Transmitted
+0   517.164368   644.978943  4682.598145
+14  526.623230   170.324142  4792.181152
+20  534.147095    96.264381  4884.172363
+15  526.623230   170.324142  4792.181152
+1   517.164368   644.978943  4682.598145
+2   517.164368   644.978943  4682.598145
+26  532.629761   177.876724  4864.585938
+34  534.452087    86.461655  4888.371582
+38  533.396423   136.454315  4874.791504
+39  533.396423   136.454315  4874.791504
+41  528.159302   127.879021  4811.868652
+3   517.164368   644.978943  4682.598145
+44  521.193115   441.253510  4728.966797
+45  521.193115   441.253510  4728.966797
+35  534.452087    86.461655  4888.371582
+46  521.193115   441.253510  4728.966797
+21  534.147095    96.264381  4884.172363
+47  521.193115   441.253510  4728.966797
+16  526.623230   170.324142  4792.181152
+4   517.164368   644.978943  4682.598145
+5   517.164368   644.978943  4682.598145
+6   517.164368   644.978943  4682.598145
+7   517.164368   644.978943  4682.598145
+17  526.623230   170.324142  4792.181152
+8   517.164368   644.978943  4682.598145
+22  534.147095    96.264381  4884.172363
+23  534.147095    96.264381  4884.172363
+48  521.193115   441.253510  4728.966797
+42  528.159302   127.879021  4811.868652
+27  532.629761   177.876724  4864.585938
+18  526.623230   170.324142  4792.181152
+28  532.629761   177.876724  4864.585938
+49  521.193115   441.253510  4728.966797
+9   517.164368   644.978943  4682.598145
+10  517.164368   644.978943  4682.598145
+40  533.396423   136.454315  4874.791504
+24  534.147095    96.264381  4884.172363
+43  528.159302   127.879021  4811.868652
+11  517.164368   644.978943  4682.598145
+36  534.452087    86.461655  4888.371582
+19  526.623230   170.324142  4792.181152
+37  534.452087    86.461655  4888.371582
+25  534.147095    96.264381  4884.172363
+29  532.629761   177.876724  4864.585938
+12  517.164368   644.978943  4682.598145
+30  532.629761   177.876724  4864.585938
+13  517.164368   644.978943  4682.598145
+31  532.629761   177.876724  4864.585938
+32  532.629761   177.876724  4864.585938
+33  532.629761   177.876724  4864.585938
+</pre></div></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tool_basics.html" class="btn btn-neutral float-left" title="1. LightVegeManager first steps" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="input_scenes.html" class="btn btn-neutral float-right" title="3. Geometric inputs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, INRAE P3F.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

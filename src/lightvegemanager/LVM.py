@@ -1059,7 +1059,7 @@ class LightVegeManager(object):
                         datanames.append(band + " Eabs")
                         datanames.append(band + " Ei")
 
-                data = [list(self.__triangles_outputs[name]) for name in datanames]
+                data = [list(self.__triangles_outputs[name].fillna(0.)) for name in datanames]
                 VTKtriangles(self.__complete_trimesh, data, datanames, filepath)
 
     def VTK_sun(self, path, scale=2, orig=(0, 0, 0), center=True, i=None):

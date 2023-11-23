@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>tool &mdash; LightVegeManager 0.0.0 documentation</title>
+  <title>LVM &mdash; LightVegeManager 0.0.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -15,6 +15,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -67,7 +68,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
-      <li class="breadcrumb-item active">tool</li>
+      <li class="breadcrumb-item active">LVM</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -76,7 +77,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for tool</h1><div class="highlight"><pre>
+  <h1>Source code for LVM</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    LightVegeManager</span>
 <span class="sd">    ****************</span>
@@ -180,7 +181,7 @@
 <span class="kn">from</span> <span class="nn">lightvegemanager.defaultvalues</span> <span class="kn">import</span> <span class="n">default_LightVegeManager_inputs</span>
 
 
-<div class="viewcode-block" id="LightVegeManager"><a class="viewcode-back" href="../reference.html#tool.LightVegeManager">[docs]</a><span class="k">class</span> <span class="nc">LightVegeManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="LightVegeManager"><a class="viewcode-back" href="../reference.html#LVM.LightVegeManager">[docs]</a><span class="k">class</span> <span class="nc">LightVegeManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Main class for the tool LightVegeManager</span>
 
 <span class="sd">    Common simulation order:</span>
@@ -245,7 +246,12 @@
     <span class="c1">## MAIN METHODS ##</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environment</span><span class="o">=</span><span class="p">{},</span> <span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">lightmodel_parameters</span><span class="o">=</span><span class="p">{},</span> <span class="n">main_unit</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">):</span>
         <span class="c1"># gets default variables from LightVegeManager_defaultvalues.py</span>
-        <span class="n">default_environnement</span><span class="p">,</span> <span class="n">default_ratp_parameters</span><span class="p">,</span> <span class="n">default_caribu_parameters</span><span class="p">,</span> <span class="n">default_riri5_parameters</span> <span class="o">=</span> <span class="n">default_LightVegeManager_inputs</span><span class="p">()</span>
+        <span class="p">(</span>
+            <span class="n">default_environnement</span><span class="p">,</span>
+            <span class="n">default_ratp_parameters</span><span class="p">,</span>
+            <span class="n">default_caribu_parameters</span><span class="p">,</span>
+            <span class="n">default_riri5_parameters</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="n">default_LightVegeManager_inputs</span><span class="p">()</span>
 
         <span class="c1"># check if choosen light model is known by the tool</span>
         <span class="k">if</span> <span class="n">lightmodel</span> <span class="o">!=</span> <span class="s2">&quot;ratp&quot;</span> <span class="ow">and</span> <span class="n">lightmodel</span> <span class="o">!=</span> <span class="s2">&quot;caribu&quot;</span> <span class="ow">and</span> <span class="n">lightmodel</span> <span class="o">!=</span> <span class="s2">&quot;riri5&quot;</span><span class="p">:</span>
@@ -286,14 +292,13 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">__sky</span> <span class="o">=</span> <span class="n">RATPsky</span><span class="p">(</span><span class="n">skytype</span><span class="p">)</span>
 
-        <span class="k">elif</span> <span class="n">lightmodel</span> <span class="o">==</span> <span class="s2">&quot;riri5&quot;</span> <span class="p">:</span>
+        <span class="k">elif</span> <span class="n">lightmodel</span> <span class="o">==</span> <span class="s2">&quot;riri5&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">skytype</span> <span class="o">==</span> <span class="s2">&quot;turtle46&quot;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">__sky</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;soc&quot;</span><span class="p">,</span> <span class="s2">&quot;VXpXmYpYm&quot;</span><span class="p">]</span>   
-            <span class="k">else</span> <span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__sky</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;soc&quot;</span><span class="p">,</span> <span class="s2">&quot;VXpXmYpYm&quot;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__sky</span> <span class="o">=</span> <span class="n">skytype</span>
 
-
-<div class="viewcode-block" id="LightVegeManager.build"><a class="viewcode-back" href="../reference.html#tool.LightVegeManager.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="p">{},</span> <span class="n">global_scene_tesselate_level</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="LightVegeManager.build"><a class="viewcode-back" href="../reference.html#LVM.LightVegeManager.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="p">{},</span> <span class="n">global_scene_tesselate_level</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Builds a mesh of the simulation scene in the right light model format</span>
 
 <span class="sd">        :param geometry: geometric parameters, contains geometric scenes, defaults to {}</span>
@@ -350,6 +355,7 @@
             <span class="c1"># build sensors</span>
             <span class="k">if</span> <span class="s2">&quot;sensors&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span><span class="p">[</span><span class="s2">&quot;sensors&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;grid&quot;</span><span class="p">:</span>
                 <span class="kn">from</span> <span class="nn">lightvegemanager.CARIBUinputs</span> <span class="kn">import</span> <span class="n">create_caribu_legume_sensors</span>
+                <span class="kn">from</span> <span class="nn">lightvegemanager.voxelsmesh</span> <span class="kn">import</span> <span class="n">reduce_layers_from_trimesh</span>
 
                 <span class="n">dxyz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span><span class="p">[</span><span class="s2">&quot;sensors&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
                 <span class="n">nxyz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span><span class="p">[</span><span class="s2">&quot;sensors&quot;</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
@@ -357,7 +363,16 @@
                 <span class="n">arg</span> <span class="o">=</span> <span class="p">(</span><span class="n">dxyz</span><span class="p">,</span> <span class="n">nxyz</span><span class="p">,</span> <span class="n">orig</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__pmax</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__complete_trimesh</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__matching_ids</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
                 <span class="n">sensors_caribu</span><span class="p">,</span> <span class="n">sensors_plantgl</span><span class="p">,</span> <span class="n">Pmax_capt</span> <span class="o">=</span> <span class="n">create_caribu_legume_sensors</span><span class="p">(</span><span class="o">*</span><span class="n">arg</span><span class="p">)</span>
 
+                <span class="nb">id</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__sensors_plantgl</span> <span class="o">=</span> <span class="n">sensors_plantgl</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__nb0</span> <span class="o">=</span> <span class="n">reduce_layers_from_trimesh</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__complete_trimesh</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__pmax</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span><span class="p">[</span><span class="s2">&quot;sensors&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span><span class="p">[</span><span class="s2">&quot;sensors&quot;</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__matching_ids</span><span class="p">,</span>
+                    <span class="nb">id</span><span class="p">,</span>
+                <span class="p">)</span>
 
         <span class="c1"># Builds voxels grid from input geometry</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel</span> <span class="o">==</span> <span class="s2">&quot;ratp&quot;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel</span> <span class="o">==</span> <span class="s2">&quot;riri5&quot;</span><span class="p">:</span>
@@ -427,7 +442,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">__matching_tri_vox</span> <span class="o">=</span> <span class="p">{}</span>
 
             <span class="c1"># if there is a grid of voxels in the inputs, we converts it in a RATP grid</span>
-            <span class="k">if</span> <span class="n">legume_grid</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__matching_ids</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel</span> <span class="o">==</span> <span class="s2">&quot;ratp&quot;</span> <span class="p">:</span>
+            <span class="k">if</span> <span class="n">legume_grid</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__matching_ids</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel</span> <span class="o">==</span> <span class="s2">&quot;ratp&quot;</span><span class="p">:</span>
                 <span class="kn">from</span> <span class="nn">lightvegemanager.buildRATPscene</span> <span class="kn">import</span> <span class="n">legumescene_to_RATPscene</span>
 
                 <span class="n">arg</span> <span class="o">=</span> <span class="p">(</span>
@@ -445,14 +460,13 @@
             <span class="k">if</span> <span class="n">legume_grid</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__LA_riri5</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__geometry</span><span class="p">[</span><span class="s2">&quot;scenes&quot;</span><span class="p">][</span><span class="n">id_legume_scene</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="s2">&quot;LA&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">dS</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__distrib_riri5</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__geometry</span><span class="p">[</span><span class="s2">&quot;scenes&quot;</span><span class="p">][</span><span class="n">id_legume_scene</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="s2">&quot;distrib&quot;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">legume_grid</span> <span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">legume_grid</span><span class="p">:</span>
                 <span class="kn">from</span> <span class="nn">lightvegemanager.RiRi5inputs</span> <span class="kn">import</span> <span class="n">ratpgrid_to_riri5</span>
-                
+
                 <span class="bp">self</span><span class="o">.</span><span class="n">__LA_riri5</span> <span class="o">=</span> <span class="n">ratpgrid_to_riri5</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__complete_voxmesh</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__distrib_riri5</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__angle_distrib</span><span class="p">[</span><span class="s2">&quot;global&quot;</span><span class="p">]</span></div>
 
-
-<div class="viewcode-block" id="LightVegeManager.run"><a class="viewcode-back" href="../reference.html#tool.LightVegeManager.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">energy</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">parunit</span><span class="o">=</span><span class="s2">&quot;micromol.m-2.s-1&quot;</span><span class="p">,</span> <span class="n">truesolartime</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">id_sensors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="LightVegeManager.run"><a class="viewcode-back" href="../reference.html#LVM.LightVegeManager.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">energy</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">parunit</span><span class="o">=</span><span class="s2">&quot;micromol.m-2.s-1&quot;</span><span class="p">,</span> <span class="n">truesolartime</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">id_sensors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Calls the light model and formats lighting results</span>
 
 <span class="sd">        :param energy: input radiation energy, defaults to 0</span>
@@ -521,7 +535,9 @@
                 <span class="kn">from</span> <span class="nn">lightvegemanager.outputs</span> <span class="kn">import</span> <span class="n">out_ratp_empty_grid</span>
 
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- Empty RATP grid&quot;</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">__voxels_outputs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__triangles_outputs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__elements_outputs</span> <span class="o">=</span> <span class="n">out_ratp_empty_grid</span><span class="p">(</span><span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__voxels_outputs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__triangles_outputs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__elements_outputs</span> <span class="o">=</span> <span class="n">out_ratp_empty_grid</span><span class="p">(</span>
+                    <span class="n">day</span><span class="p">,</span> <span class="n">hour</span>
+                <span class="p">)</span>
 
         <span class="c1">## CARIBU ##</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel</span> <span class="o">==</span> <span class="s2">&quot;caribu&quot;</span><span class="p">:</span>
@@ -566,8 +582,9 @@
                 <span class="n">opt</span><span class="p">,</span> <span class="n">sensors_caribu</span><span class="p">,</span> <span class="n">debug</span> <span class="o">=</span> <span class="n">Prepare_CARIBU</span><span class="p">(</span><span class="o">*</span><span class="n">arg</span><span class="p">)</span>
                 <span class="n">issensors</span> <span class="o">=</span> <span class="s2">&quot;sensors&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span>
                 <span class="n">issoilmesh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span><span class="p">[</span><span class="s2">&quot;soil mesh&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__domain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__geometry</span><span class="p">[</span><span class="s2">&quot;domain&quot;</span><span class="p">]</span>
 
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__matching_ids</span> <span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__matching_ids</span><span class="p">:</span>
                     <span class="c1"># Initialize a CaribuScene</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;diffus&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__environment</span><span class="p">[</span><span class="s2">&quot;direct&quot;</span><span class="p">]:</span>
                         <span class="n">c_scene_sky</span> <span class="o">=</span> <span class="n">CaribuScene</span><span class="p">(</span>
@@ -646,10 +663,10 @@
                         <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">aggregated</span><span class="p">,</span> <span class="n">raw</span> <span class="o">=</span> <span class="p">{},</span> <span class="p">{}</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">__sensors_outputs</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;par&quot;</span> <span class="p">:</span> <span class="p">{</span> <span class="p">}}</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__sensors_outputs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;par&quot;</span><span class="p">:</span> <span class="p">{}}</span>
                     <span class="k">for</span> <span class="nb">id</span><span class="p">,</span> <span class="n">triangles</span> <span class="ow">in</span> <span class="n">sensors_caribu</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">__sensors_outputs</span><span class="p">[</span><span class="s2">&quot;par&quot;</span><span class="p">][</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span>
-                            
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__sensors_outputs</span><span class="p">[</span><span class="s2">&quot;par&quot;</span><span class="p">][</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+
             <span class="c1"># Outputs management</span>
             <span class="n">arg</span> <span class="o">=</span> <span class="p">[</span><span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__complete_trimesh</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__matching_ids</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">compute</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__triangles_outputs</span> <span class="o">=</span> <span class="n">out_caribu_triangles</span><span class="p">(</span><span class="o">*</span><span class="n">arg</span><span class="p">)</span>
@@ -663,15 +680,13 @@
                 <span class="k">for</span> <span class="nb">id</span><span class="p">,</span> <span class="n">triangles</span> <span class="ow">in</span> <span class="n">sensors_caribu</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                     <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">triangles</span><span class="p">:</span>
                         <span class="n">var</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__sensors_outputs</span><span class="p">[</span><span class="s2">&quot;par&quot;</span><span class="p">][</span><span class="nb">id</span><span class="p">])</span>
-
-                <span class="n">sensor_path</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span><span class="p">[</span><span class="s2">&quot;sensors&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
-                    <span class="o">+</span> <span class="s2">&quot;sensors_h&quot;</span>
-                    <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">hour</span><span class="p">))</span>
-                    <span class="o">+</span> <span class="s2">&quot;_d&quot;</span>
-                    <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">day</span><span class="p">))</span>
-                    <span class="o">+</span> <span class="s2">&quot;.vtk&quot;</span>
-                <span class="p">)</span>
+                
+                <span class="n">sensor_name</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;sensors_h&quot;</span>      <span class="o">+</span>
+                                <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">hour</span><span class="p">))</span>  <span class="o">+</span>
+                                <span class="s2">&quot;_d&quot;</span>            <span class="o">+</span>
+                                <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">day</span><span class="p">))</span>   <span class="o">+</span>
+                                <span class="s2">&quot;.vtk&quot;</span><span class="p">)</span>
+                <span class="n">sensor_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__lightmodel_parameters</span><span class="p">[</span><span class="s2">&quot;sensors&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="n">sensor_name</span><span class="p">)</span>
                 <span class="n">VTKtriangles</span><span class="p">(</span><span class="n">sensors_caribu</span><span class="p">,</span> <span class="p">[</span><span class="n">var</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;intercepted&quot;</span><span class="p">],</span> <span class="n">sensor_path</span><span class="p">)</span>
 
         <span class="c1">## RiRi (l-egume) ##</span>
@@ -695,7 +710,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">__time_runmodel</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span></div>
 
     <span class="c1">## TRANSFER METHODS ##</span>
-<div class="viewcode-block" id="LightVegeManager.to_MTG"><a class="viewcode-back" href="../reference.html#tool.LightVegeManager.to_MTG">[docs]</a>    <span class="k">def</span> <span class="nf">to_MTG</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">energy</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">mtg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="LightVegeManager.to_MTG"><a class="viewcode-back" href="../reference.html#LVM.LightVegeManager.to_MTG">[docs]</a>    <span class="k">def</span> <span class="nf">to_MTG</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">energy</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">mtg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Transfers lighting results to a MTG table.</span>
 
 <span class="sd">        .. warning:: The :meth:`run` must have been called before to have results dataframes.</span>
@@ -752,7 +767,7 @@
             <span class="c1"># update the MTG</span>
             <span class="n">mtg</span><span class="o">.</span><span class="n">property</span><span class="p">(</span><span class="n">param</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dico_par</span><span class="p">[</span><span class="n">param</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="LightVegeManager.to_l_egume"><a class="viewcode-back" href="../reference.html#tool.LightVegeManager.to_l_egume">[docs]</a>    <span class="k">def</span> <span class="nf">to_l_egume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">energy</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">m_lais</span><span class="o">=</span><span class="p">[],</span> <span class="n">list_lstring</span><span class="o">=</span><span class="p">[],</span> <span class="n">list_dicFeuilBilanR</span><span class="o">=</span><span class="p">[],</span> <span class="n">list_invar</span><span class="o">=</span><span class="p">[],</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="LightVegeManager.to_l_egume"><a class="viewcode-back" href="../reference.html#LVM.LightVegeManager.to_l_egume">[docs]</a>    <span class="k">def</span> <span class="nf">to_l_egume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">energy</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">m_lais</span><span class="o">=</span><span class="p">[],</span> <span class="n">list_lstring</span><span class="o">=</span><span class="p">[],</span> <span class="n">list_dicFeuilBilanR</span><span class="o">=</span><span class="p">[],</span> <span class="n">list_invar</span><span class="o">=</span><span class="p">[],</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Transfers lighting results to l-egume</span>
 
 <span class="sd">        .. warning:: The :meth:`run` must have been called before to have results dataframes.</span>
@@ -841,7 +856,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown light model (ratp or caribu)&quot;</span><span class="p">)</span></div>
 
     <span class="c1">## EXTERN TOOLS ##</span>
-<div class="viewcode-block" id="LightVegeManager.s5"><a class="viewcode-back" href="../reference.html#tool.LightVegeManager.s5">[docs]</a>    <span class="k">def</span> <span class="nf">s5</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="LightVegeManager.s5"><a class="viewcode-back" href="../reference.html#LVM.LightVegeManager.s5">[docs]</a>    <span class="k">def</span> <span class="nf">s5</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates inputs files for s5 and runs it</span>
 <span class="sd">        s5 is an external tool made to analyse a set of triangles in order to use a grid of voxels.</span>
 <span class="sd">        It also computes leaf angle distribution from the triangulation</span>
@@ -930,7 +945,7 @@
 
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;--- Fin de s5.f&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="LightVegeManager.s2v"><a class="viewcode-back" href="../reference.html#tool.LightVegeManager.s2v">[docs]</a>    <span class="k">def</span> <span class="nf">s2v</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="LightVegeManager.s2v"><a class="viewcode-back" href="../reference.html#LVM.LightVegeManager.s2v">[docs]</a>    <span class="k">def</span> <span class="nf">s2v</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates inputs files for s2v and runs it</span>
 <span class="sd">        s5 is an external tool made to analyse a set of triangles in order to use a grid of voxels.</span>
 <span class="sd">        It also computes leaf angle distribution from the triangulation</span>
@@ -1036,7 +1051,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- Fin de s2v.cpp&quot;</span><span class="p">)</span></div>
 
     <span class="c1">## VTK FILES ##</span>
-<div class="viewcode-block" id="LightVegeManager.VTK_nolight"><a class="viewcode-back" href="../reference.html#tool.LightVegeManager.VTK_nolight">[docs]</a>    <span class="k">def</span> <span class="nf">VTK_nolight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">printtriangles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">printvoxels</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="LightVegeManager.VTK_nolight"><a class="viewcode-back" href="../reference.html#LVM.LightVegeManager.VTK_nolight">[docs]</a>    <span class="k">def</span> <span class="nf">VTK_nolight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">printtriangles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">printvoxels</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Writes a VTK from mesh(es) in ``self``, with only geometric informations</span>
 
 <span class="sd">        :param path: file and path name</span>
@@ -1064,7 +1079,7 @@
                 <span class="n">filepath</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;_triangles_nolight&quot;</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.vtk&quot;</span>
             <span class="n">VTKtriangles</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__complete_trimesh</span><span class="p">,</span> <span class="p">[],</span> <span class="p">[],</span> <span class="n">filepath</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="LightVegeManager.VTK_light"><a class="viewcode-back" href="../reference.html#tool.LightVegeManager.VTK_light">[docs]</a>    <span class="k">def</span> <span class="nf">VTK_light</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">printtriangles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">printvoxels</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="LightVegeManager.VTK_light"><a class="viewcode-back" href="../reference.html#LVM.LightVegeManager.VTK_light">[docs]</a>    <span class="k">def</span> <span class="nf">VTK_light</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">printtriangles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">printvoxels</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Writes a VTK from mesh(es) in ``self``, with geometric informations and lighting results</span>
 
 <span class="sd">        .. warning:: The :meth:`run` must have been called before to have results dataframes.</span>
@@ -1127,7 +1142,7 @@
                 <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__triangles_outputs</span><span class="p">[</span><span class="n">name</span><span class="p">])</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">datanames</span><span class="p">]</span>
                 <span class="n">VTKtriangles</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__complete_trimesh</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">datanames</span><span class="p">,</span> <span class="n">filepath</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="LightVegeManager.VTK_sun"><a class="viewcode-back" href="../reference.html#tool.LightVegeManager.VTK_sun">[docs]</a>    <span class="k">def</span> <span class="nf">VTK_sun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">orig</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">center</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="LightVegeManager.VTK_sun"><a class="viewcode-back" href="../reference.html#LVM.LightVegeManager.VTK_sun">[docs]</a>    <span class="k">def</span> <span class="nf">VTK_sun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">orig</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">center</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Write a VTK file representing the sun by a simple line</span>
 
 <span class="sd">        .. warning:: The :meth:`run` must have been called before to have results dataframes.</span>
@@ -1167,7 +1182,7 @@
 
         <span class="n">VTKline</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">filepath</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="LightVegeManager.plantGL_sensors"><a class="viewcode-back" href="../reference.html#tool.LightVegeManager.plantGL_sensors">[docs]</a>    <span class="k">def</span> <span class="nf">plantGL_sensors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">light</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="LightVegeManager.plantGL_sensors"><a class="viewcode-back" href="../reference.html#LVM.LightVegeManager.plantGL_sensors">[docs]</a>    <span class="k">def</span> <span class="nf">plantGL_sensors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">light</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="kn">import</span> <span class="nn">openalea.plantgl.all</span> <span class="k">as</span> <span class="nn">pgl</span>
 
         <span class="n">plantGL_sensors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sensors_plantgl</span>
@@ -1185,7 +1200,7 @@
 
         <span class="k">return</span> <span class="n">plantGL_sensors</span></div>
 
-<div class="viewcode-block" id="LightVegeManager.plantGL_nolight"><a class="viewcode-back" href="../reference.html#tool.LightVegeManager.plantGL_nolight">[docs]</a>    <span class="k">def</span> <span class="nf">plantGL_nolight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">printtriangles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">printvoxels</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="LightVegeManager.plantGL_nolight"><a class="viewcode-back" href="../reference.html#LVM.LightVegeManager.plantGL_nolight">[docs]</a>    <span class="k">def</span> <span class="nf">plantGL_nolight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">printtriangles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">printvoxels</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a plantGL Scene from mesh(es) in ``self``, with geometric informations</span>
 
 <span class="sd">        :param printtriangles: write triangulation if one has been created in :meth:`build`, defaults to True</span>
@@ -1220,7 +1235,7 @@
             <span class="n">plantgl_scene</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">plantgl_scene</span></div>
 
-<div class="viewcode-block" id="LightVegeManager.plantGL_light"><a class="viewcode-back" href="../reference.html#tool.LightVegeManager.plantGL_light">[docs]</a>    <span class="k">def</span> <span class="nf">plantGL_light</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">printtriangles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">printvoxels</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="LightVegeManager.plantGL_light"><a class="viewcode-back" href="../reference.html#LVM.LightVegeManager.plantGL_light">[docs]</a>    <span class="k">def</span> <span class="nf">plantGL_light</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">printtriangles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">printvoxels</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a plantGL Scene from mesh(es) in ``self``, with geometric informations and lighting results</span>
 
 <span class="sd">        .. warning:: The :meth:`run` must have been called before to have results dataframes.</span>
@@ -1233,7 +1248,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_LightVegeManager__elements_outputs&quot;</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;No results yet, run a light modeling first&quot;</span><span class="p">)</span>
-        
+
         <span class="kn">import</span> <span class="nn">openalea.plantgl.all</span> <span class="k">as</span> <span class="nn">pgl</span>
 
         <span class="n">plantgl_voxscene</span> <span class="o">=</span> <span class="n">pgl</span><span class="o">.</span><span class="n">Scene</span><span class="p">()</span>
@@ -1402,7 +1417,20 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__angle_distrib</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">{}</span></div>
+            <span class="k">return</span> <span class="p">{}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">domain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the largest triangle of triangles mesh</span>
+<span class="sd">        Computed in :meth:`build`</span>
+
+<span class="sd">        :return: area the triangle</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__domain</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.0</span></div>
 </pre></div>
 
            </div>

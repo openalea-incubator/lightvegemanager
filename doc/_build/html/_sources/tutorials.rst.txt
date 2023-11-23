@@ -33,7 +33,7 @@ PyRATP
     
     .. code-block:: bash
 
-        git clone https://github.com/mwoussen/PyRATP
+        git clone -b update_mobidiv https://github.com/mwoussen/PyRATP
 
 #. Installation in the conda environment (in folder ``PyRATP``)
     
@@ -84,7 +84,7 @@ between ``"ratp"``, ``"caribu"`` or ``"riri5"``.
 
 .. code-block:: python
 
-    from LightVegeManager import *
+    from lightvegeamanger.LVM import LightVegeManager
 
     # one triangle as a geometric element
     # we write our triangle in a CaribuScene format
@@ -115,6 +115,20 @@ Tutorials with jupyter notebooks
 ################################
 
 Jupyter notebooks are available with documented tutorials exploring the tool features. The following files provides:
+
+
+.. toctree::
+    :maxdepth: 1
+    :numbered:
+
+    tool_basics
+    environment_parameters
+    input_scenes
+    lightmodels_functionnalities
+    outputs_and_plantmodels_transfer
+    example_canopy
+    misc_functionnalities
+
 
 - ``tool_basics``: Introduction to the tools
 

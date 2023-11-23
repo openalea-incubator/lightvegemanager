@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Light models options &mdash; LightVegeManager 0.0.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/nbsphinx-code-cells.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            LightVegeManager
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../presentation.html">Presentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architecture.html">Architecture of the tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../inputs.html">Inputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../others.html">Additionnal Functionalities</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference.html">Reference Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">LightVegeManager</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Light models options</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/_build/doctrees/nbsphinx/lightmodels_functionnalities.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Light-models-options">
+<h1>Light models options<a class="headerlink" href="#Light-models-options" title="Permalink to this heading"></a></h1>
+<section id="Content">
+<h2>Content<a class="headerlink" href="#Content" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>CARIBU</p>
+<ul>
+<li><p>sun algo</p></li>
+<li><p>virtual sensors</p></li>
+<li><p>autres parametre</p></li>
+</ul>
+</li>
+<li><p>RATP</p>
+<ul>
+<li><p>distribution angles foliaires</p></li>
+<li><p>tesselation sur la grille</p></li>
+<li><p>autre paramètres</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Introduction">
+<h2>Introduction<a class="headerlink" href="#Introduction" title="Permalink to this heading"></a></h2>
+<p>During our use of lightvegemanager, we added special features for each known light models. This notebook gives you a small introduction to them.</p>
+<p>The parameters of those features are stored in a dict.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">lightvegemanager.LVM</span> <span class="kn">import</span> <span class="n">LightVegeManager</span>
+<span class="kn">from</span> <span class="nn">pgljupyter</span> <span class="kn">import</span> <span class="n">SceneWidget</span>
+<span class="kn">from</span> <span class="nn">lightvegemanager.trianglesmesh</span> <span class="kn">import</span> <span class="n">random_triangle_generator</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="CARIBU">
+<h2>CARIBU<a class="headerlink" href="#CARIBU" title="Permalink to this heading"></a></h2>
+<p>This is the complete parameters you can provide with CARIBU:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">caribu_args</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;sun algo&quot;</span> <span class="p">:</span> <span class="s2">&quot;ratp&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;sun algo&quot;</span> <span class="p">:</span> <span class="s2">&quot;caribu&quot;</span><span class="p">,</span>
+
+                    <span class="s2">&quot;caribu opt&quot;</span> <span class="p">:</span> <span class="p">{</span>
+                                    <span class="n">band0</span> <span class="o">=</span> <span class="p">(</span><span class="n">reflectance</span><span class="p">,</span> <span class="n">transmittance</span><span class="p">),</span>
+                                    <span class="n">band1</span> <span class="o">=</span> <span class="p">(</span><span class="n">reflectance</span><span class="p">,</span> <span class="n">transmittance</span><span class="p">),</span>
+                                    <span class="o">...</span>
+                                    <span class="p">},</span>
+                    <span class="s2">&quot;debug&quot;</span> <span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+                    <span class="s2">&quot;soil mesh&quot;</span> <span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+                    <span class="s2">&quot;sensors&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">,</span> <span class="n">dxyz</span><span class="p">,</span> <span class="n">nxyz</span><span class="p">,</span> <span class="n">orig</span><span class="p">,</span> <span class="n">vtkpath</span><span class="p">,</span> <span class="s2">&quot;vtk&quot;</span><span class="p">]</span>
+                <span class="p">}</span>
+</pre></div>
+</div>
+<section id="Computing-the-sun-position">
+<h3>Computing the sun position<a class="headerlink" href="#Computing-the-sun-position" title="Permalink to this heading"></a></h3>
+<p>In order to compute the sun position, you can use either the algorithm from RATP or CARIBU. The (x, y, z) output is formatted in CARIBU format.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">caribu_args</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;sun algo&quot;</span> <span class="p">:</span> <span class="s2">&quot;caribu&quot;</span> <span class="p">}</span>
+
+<span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;caribu&quot;</span><span class="p">,</span> <span class="n">lightmodel_parameters</span><span class="o">=</span><span class="n">caribu_args</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="p">[(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">),</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">),</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)])</span>
+<span class="n">energy</span> <span class="o">=</span> <span class="mf">500.</span>
+<span class="n">hour</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="n">day</span> <span class="o">=</span> <span class="mi">264</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">)</span>
+
+<span class="n">sun_caribu</span> <span class="o">=</span> <span class="n">lighting</span><span class="o">.</span><span class="n">sun</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sun_caribu</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(0.33506553253259913, -0.8798617206271511, -0.3370080733212115)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">caribu_args</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;sun algo&quot;</span> <span class="p">:</span> <span class="s2">&quot;ratp&quot;</span> <span class="p">}</span>
+
+<span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;caribu&quot;</span><span class="p">,</span> <span class="n">lightmodel_parameters</span><span class="o">=</span><span class="n">caribu_args</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="p">[(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">),</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">),</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)])</span>
+<span class="n">energy</span> <span class="o">=</span> <span class="mf">500.</span>
+<span class="n">hour</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="n">day</span> <span class="o">=</span> <span class="mi">264</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">)</span>
+
+<span class="n">sun_ratp</span> <span class="o">=</span> <span class="n">lighting</span><span class="o">.</span><span class="n">sun</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sun_ratp</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(0.33241183146897624, -0.8800565622452903, -0.3391206592769639)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dist</span> <span class="o">=</span> <span class="p">(</span><span class="nb">sum</span><span class="p">([</span> <span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="n">y</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">sun_ratp</span><span class="p">,</span> <span class="n">sun_caribu</span><span class="p">)</span> <span class="p">]))</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;euclidean dist = &quot;</span><span class="p">,</span><span class="n">dist</span><span class="p">,</span><span class="s2">&quot; m&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+euclidean dist =  0.003397515564596359  m
+</pre></div></div>
+</div>
+</section>
+<section id="Grid-of-virtual-sensors">
+<h3>Grid of virtual sensors<a class="headerlink" href="#Grid-of-virtual-sensors" title="Permalink to this heading"></a></h3>
+<p>If you can to match a grid of voxels, you can generate a set of virtual sensors following a 3D grid. You need to precise the dimension of the grid: - dxyz: <code class="docutils literal notranslate"><span class="pre">[dx,</span> <span class="pre">dy,</span> <span class="pre">dz]</span></code> size of one voxel - nxyz: <code class="docutils literal notranslate"><span class="pre">[nx,</span> <span class="pre">ny,</span> <span class="pre">nz]</span></code> number of voxels on each xyz axis - orig: <code class="docutils literal notranslate"><span class="pre">[0x,</span> <span class="pre">0y,</span> <span class="pre">0z]</span></code> origin point of the grid</p>
+<p>Optionnaly, you can write a geometric visualisation of the sensors in VTK format. You need to provide the file path and the flag <code class="docutils literal notranslate"><span class="pre">&quot;vtk&quot;</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># grid dimensions</span>
+<span class="n">dxyz</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.</span><span class="p">]</span> <span class="o">*</span> <span class="mi">3</span>
+<span class="n">nxyz</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
+<span class="n">orig</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">]</span> <span class="o">*</span> <span class="mi">3</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># random triangles</span>
+<span class="n">nb_triangles</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">spheresize</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">)</span> <span class="c1"># vertices of triangles are the sphere surface</span>
+<span class="n">triangles</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nb_triangles</span><span class="p">):</span>
+    <span class="n">triangles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">random_triangle_generator</span><span class="p">(</span><span class="n">worldsize</span><span class="o">=</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">),</span> <span class="n">spheresize</span><span class="o">=</span><span class="n">spheresize</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">caribu_args</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;sensors&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">,</span> <span class="n">dxyz</span><span class="p">,</span> <span class="n">nxyz</span><span class="p">,</span> <span class="n">orig</span><span class="p">]</span> <span class="p">}</span>
+
+<span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;caribu&quot;</span><span class="p">,</span> <span class="n">lightmodel_parameters</span><span class="o">=</span><span class="n">caribu_args</span><span class="p">,</span> <span class="n">environment</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;infinite&quot;</span><span class="p">:</span><span class="kc">True</span><span class="p">})</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">triangles</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>You can visualize the grid of sensors with plantGL through the method <code class="docutils literal notranslate"><span class="pre">plantGL_sensors</span></code></p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">SceneWidget</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">plantGL_sensors</span><span class="p">(),</span>
+            <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">size_display</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+            <span class="n">plane</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">size_world</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="n">axes_helper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "12c381b7a3564abc8c39f565a3df8ba1", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<p>The lighting results are stored in <code class="docutils literal notranslate"><span class="pre">sensors_outputs</span></code></p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">energy</span> <span class="o">=</span> <span class="mf">500.</span>
+<span class="n">hour</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="n">day</span> <span class="o">=</span> <span class="mi">264</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">sensors_outputs</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;par&#39;: {0: 0.5620043191303375, 1: 0.5618584729038281, 2: 0.60389586895853, 3: 0.5994287825556907, 4: 0.6003338819673372, 5: 0.9892227473385927, 6: 0.5420517619926417, 7: 0.552905696886898, 8: 0.5743983291679143, 9: 0.5231573288803778, 10: 0.7745655468808682, 11: 0.9950071883035141, 12: 0.49672566375401617, 13: 0.5718796592189763, 14: 0.48319737010376, 15: 0.6195291102018295, 16: 0.9035769753518178, 17: 0.997274929628352, 18: 0.47939433586083885, 19: 0.5249417244166038, 20: 0.5515631860087062, 21: 0.6541147586727625, 22: 0.910320558731268, 23: 0.9967711618096655, 24: 0.44404974665543817, 25: 0.3464944534705235, 26: 0.576028086893188, 27: 0.6768626772490913, 28: 0.7667147667894887, 29: 0.9955096543499555, 30: 0.5238543129825075, 31: 0.5599085722160164, 32: 0.5901538606669944, 33: 0.7256886984161701, 34: 0.7374665066266308, 35: 0.9697439931165255, 36: 0.535805675734872, 37: 0.5592452891944351, 38: 0.5756647374752185, 39: 0.6436426017849102, 40: 0.8336044711449767, 41: 0.9589390716358468, 42: 0.48280334011804865, 43: 0.47289570500357087, 44: 0.40950521426955416, 45: 0.5061163894590417, 46: 0.9029644634913371, 47: 0.9808292116907193, 48: 0.5256773022268902, 49: 0.5373692172299218, 50: 0.5395389993405157, 51: 0.5559339155709611, 52: 0.9110388997824403, 53: 0.9957011733188681, 54: 0.6082497251081437, 55: 0.5540370777829412, 56: 0.6013499582290773, 57: 0.7539935965727287, 58: 0.8696727228246093, 59: 0.993298546073756, 60: 0.4081481856749862, 61: 0.46169380494714657, 62: 0.5809020807378312, 63: 0.7442590554152073, 64: 0.7138952233199232, 65: 0.7478732769241822, 66: 0.5032646122746112, 67: 0.5531634094300184, 68: 0.638550859443428, 69: 0.7628007559452091, 70: 0.7781122640973328, 71: 0.9574046623297123, 72: 0.312388722462537, 73: 0.504423637651493, 74: 0.5442149181600349, 75: 0.7391683436234034, 76: 0.8855818394771745, 77: 0.9640197200776475, 78: 0.4203580140844563, 79: 0.4537542845248214, 80: 0.5989753470969673, 81: 0.7306663839592556, 82: 0.9018268581652129, 83: 0.9909660673736099, 84: 0.37802489895460467, 85: 0.43292188930298, 86: 0.46987687366761505, 87: 0.6846420042310976, 88: 0.7452057446753113, 89: 0.773713129441179, 90: 0.47203107097816877, 91: 0.5435298642622011, 92: 0.6677550575938763, 93: 0.6634022267445692, 94: 0.5372252318195736, 95: 0.9023960865197724, 96: 0.4971634549724447, 97: 0.5488919752425052, 98: 0.6747951992905524, 99: 0.6863121733752311, 100: 0.696034183027644, 101: 0.9291264272919091, 102: 0.44645286035739024, 103: 0.504907254303561, 104: 0.6142409240919622, 105: 0.7297223496657302, 106: 0.8596382049913499, 107: 0.9763594295561757, 108: 0.5048272323959268, 109: 0.4952087687052097, 110: 0.5130209741432934, 111: 0.6775275892147514, 112: 0.7948734232763064, 113: 0.9863293381925695, 114: 0.43721475011224165, 115: 0.5566692345452607, 116: 0.5383103915581062, 117: 0.6024880166636262, 118: 0.5720972583778527, 119: 0.6589129343366613, 120: 0.4924768124509249, 121: 0.537193061591714, 122: 0.6699775196270484, 123: 0.620561586323873, 124: 0.6521497566319846, 125: 0.9702187152637108, 126: 0.5876689594669928, 127: 0.5945561199175049, 128: 0.5497260905040386, 129: 0.5634661564314017, 130: 0.699646648631934, 131: 0.9926887155755253, 132: 0.5227188014528775, 133: 0.5774079809607106, 134: 0.43936686890653404, 135: 0.43682929998543724, 136: 0.62938914304342, 137: 0.9942403057070559, 138: 0.4797982572937865, 139: 0.5089085824700754, 140: 0.5471748263661631, 141: 0.6248668599922557, 142: 0.7369761308417812, 143: 0.9569481023238572, 144: 0.3407071432166338, 145: 0.33782083243555117, 146: 0.6309292261528813, 147: 0.6244924603643601, 148: 0.7465780451297654, 149: 0.8912547821466066}}
+</pre></div></div>
+</div>
+<p>You can also visualize the results in the plantGL scene</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">SceneWidget</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">plantGL_sensors</span><span class="p">(</span><span class="n">light</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+            <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">size_display</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+            <span class="n">plane</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">size_world</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="n">axes_helper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-intense-fg ansi-bold">---------------------------------------------------------------------------</span>
+<span class="ansi-red-intense-fg ansi-bold">AttributeError</span>                            Traceback (most recent call last)
+Cell <span class="ansi-green-intense-fg ansi-bold">In[7], line 1</span>
+<span class="ansi-green-intense-fg ansi-bold">----&gt; 1</span> SceneWidget(<span class="ansi-yellow-bg">lighting</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">plantGL_sensors</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">light</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">True</span><span class="ansi-yellow-bg">)</span>,
+<span class="ansi-green-fg">      2</span>             position<span style="color: rgb(98,98,98)">=</span>(<span style="color: rgb(98,98,98)">-</span><span style="color: rgb(98,98,98)">2.5</span>, <span style="color: rgb(98,98,98)">-</span><span style="color: rgb(98,98,98)">2.5</span>, <span style="color: rgb(98,98,98)">0.0</span>),
+<span class="ansi-green-fg">      3</span>             size_display<span style="color: rgb(98,98,98)">=</span>(<span style="color: rgb(98,98,98)">600</span>, <span style="color: rgb(98,98,98)">400</span>),
+<span class="ansi-green-fg">      4</span>             plane<span style="color: rgb(98,98,98)">=</span><span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
+<span class="ansi-green-fg">      5</span>             size_world <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(98,98,98)">10</span>,
+<span class="ansi-green-fg">      6</span>             axes_helper<span style="color: rgb(98,98,98)">=</span><span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
+
+File <span class="ansi-green-intense-fg ansi-bold">c:\users\mwoussen\cdd\codes\dev\lightvegemanager\src\lightvegemanager\tool.py:1088</span>, in <span class="ansi-cyan-fg">LightVegeManager.plantGL_sensors</span><span class="ansi-blue-intense-fg ansi-bold">(self, light)</span>
+<span class="ansi-green-fg">   1085</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span> <span style="color: rgb(0,0,255)">plantGL_sensors</span>(<span style="color: rgb(0,135,0)">self</span>, light<span style="color: rgb(98,98,98)">=</span><span class="ansi-bold" style="color: rgb(0,135,0)">False</span>):
+<span class="ansi-green-fg">   1086</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">import</span> <span class="ansi-bold" style="color: rgb(0,0,255)">openalea</span><span class="ansi-bold" style="color: rgb(0,0,255)">.</span><span class="ansi-bold" style="color: rgb(0,0,255)">plantgl</span><span class="ansi-bold" style="color: rgb(0,0,255)">.</span><span class="ansi-bold" style="color: rgb(0,0,255)">all</span> <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> <span class="ansi-bold" style="color: rgb(0,0,255)">pgl</span>
+<span class="ansi-green-intense-fg ansi-bold">-&gt; 1088</span>     plantGL_sensors <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">__sensors_plantgl</span>
+<span class="ansi-green-fg">   1090</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> light:
+<span class="ansi-green-fg">   1091</span>         var <span style="color: rgb(98,98,98)">=</span> [v <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> v <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>__sensors_outputs[<span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">par</span><span style="color: rgb(175,0,0)">&#34;</span>]<span style="color: rgb(98,98,98)">.</span>values()]
+
+<span class="ansi-red-intense-fg ansi-bold">AttributeError</span>: &#39;LightVegeManager&#39; object has no attribute &#39;_LightVegeManager__sensors_plantgl&#39;
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">SceneWidget</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">plantGL_sensors</span><span class="p">(</span><span class="n">light</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">+</span> <span class="n">lighting</span><span class="o">.</span><span class="n">plantGL_nolight</span><span class="p">(),</span>
+            <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">size_display</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+            <span class="n">plane</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">size_world</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="n">axes_helper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "2b5e06124ce741ab8849cdad61f61a18", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+</section>
+<section id="Other-parameters">
+<h3>Other parameters<a class="headerlink" href="#Other-parameters" title="Permalink to this heading"></a></h3>
+<p>In additional features, you can activate the debug mode in CARIBU, which describe the internal steps.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">caribu_args</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;debug&quot;</span> <span class="p">:</span> <span class="kc">True</span> <span class="p">}</span>
+
+<span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;caribu&quot;</span><span class="p">,</span> <span class="n">lightmodel_parameters</span><span class="o">=</span><span class="n">caribu_args</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="p">[(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">),</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">),</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)])</span>
+
+<span class="n">energy</span> <span class="o">=</span> <span class="mf">500.</span>
+<span class="n">hour</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="n">day</span> <span class="o">=</span> <span class="mi">264</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Prepare scene 1
+done
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-intense-fg ansi-bold">---------------------------------------------------------------------------</span>
+<span class="ansi-red-intense-fg ansi-bold">FileNotFoundError</span>                         Traceback (most recent call last)
+Cell <span class="ansi-green-intense-fg ansi-bold">In[6], line 9</span>
+<span class="ansi-green-fg">      7</span> hour <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(98,98,98)">15</span>
+<span class="ansi-green-fg">      8</span> day <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(98,98,98)">264</span>
+<span class="ansi-green-intense-fg ansi-bold">----&gt; 9</span> <span class="ansi-yellow-bg">lighting</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">run</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">energy</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">energy</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">hour</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">hour</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">day</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">day</span><span class="ansi-yellow-bg">)</span>
+
+File <span class="ansi-green-intense-fg ansi-bold">c:\users\mwoussen\cdd\codes\dev\lightvegemanager\src\lightvegemanager\tool.py:533</span>, in <span class="ansi-cyan-fg">LightVegeManager.run</span><span class="ansi-blue-intense-fg ansi-bold">(self, energy, day, hour, parunit, truesolartime, id_sensors)</span>
+<span class="ansi-green-fg">    531</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> sun_sky_option <span style="color: rgb(98,98,98)">==</span> <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">mix</span><span style="color: rgb(175,0,0)">&#34;</span>:
+<span class="ansi-green-fg">    532</span>     start <span style="color: rgb(98,98,98)">=</span> time<span style="color: rgb(98,98,98)">.</span>time()
+<span class="ansi-green-intense-fg ansi-bold">--&gt; 533</span>     raw_sun, aggregated_sun <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">run_caribu</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">*</span><span class="ansi-yellow-bg">arg</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-fg">    534</span>     arg[<span style="color: rgb(98,98,98)">0</span>] <span style="color: rgb(98,98,98)">=</span> c_scene_sky
+<span class="ansi-green-fg">    535</span>     raw_sky, aggregated_sky <span style="color: rgb(98,98,98)">=</span> run_caribu(<span style="color: rgb(98,98,98)">*</span>arg)
+
+File <span class="ansi-green-intense-fg ansi-bold">c:\users\mwoussen\cdd\codes\dev\lightvegemanager\src\lightvegemanager\CARIBUinputs.py:370</span>, in <span class="ansi-cyan-fg">run_caribu</span><span class="ansi-blue-intense-fg ansi-bold">(c_scene, direct_active, infinite, sensors, energy)</span>
+<span class="ansi-green-fg">    329</span> <span style="color: rgb(175,0,0)">&#34;&#34;&#34;runs caribu depending on input options</span>
+<span class="ansi-green-fg">    330</span>
+<span class="ansi-green-fg">    331</span> <span style="color: rgb(175,0,0)">:param c_scene: instance of CaribuScene containing geometry, light source(s), opt etc...</span>
+<span class="ansi-green-intense-fg ansi-bold">   (...)</span>
+<span class="ansi-green-fg">    367</span> <span style="color: rgb(175,0,0)">:rtype: dict of dict, dict of dict</span>
+<span class="ansi-green-fg">    368</span> <span style="color: rgb(175,0,0)">&#34;&#34;&#34;</span>
+<span class="ansi-green-fg">    369</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> sensors <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span> :
+<span class="ansi-green-intense-fg ansi-bold">--&gt; 370</span>     raw, aggregated <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">c_scene</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">run</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">direct</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">direct_active</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">infinite</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">infinite</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-fg">    371</span> <span class="ansi-bold" style="color: rgb(0,135,0)">else</span> :
+<span class="ansi-green-fg">    372</span>     raw, aggregated <span style="color: rgb(98,98,98)">=</span> c_scene<span style="color: rgb(98,98,98)">.</span>run(direct<span style="color: rgb(98,98,98)">=</span>direct_active, infinite<span style="color: rgb(98,98,98)">=</span>infinite,
+<span class="ansi-green-fg">    373</span>                                                         sensors<span style="color: rgb(98,98,98)">=</span>sensors)
+
+File <span class="ansi-green-intense-fg ansi-bold">~\AppData\Local\miniconda3\envs\mobidivpy37\lib\site-packages\alinea.caribu-8.0.7-py3.8.egg\alinea\caribu\CaribuScene.py:568</span>, in <span class="ansi-cyan-fg">CaribuScene.run</span><span class="ansi-blue-intense-fg ansi-bold">(self, direct, infinite, d_sphere, layers, height, screen_size, screen_resolution, sensors, split_face, simplify)</span>
+<span class="ansi-green-fg">    566</span>         <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>canfile <span style="color: rgb(98,98,98)">=</span> os<span style="color: rgb(98,98,98)">.</span>path<span style="color: rgb(98,98,98)">.</span>join(<span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>tempdir,<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">cscene.can</span><span style="color: rgb(175,0,0)">&#39;</span>)
+<span class="ansi-green-fg">    567</span>         <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>optfile <span style="color: rgb(98,98,98)">=</span> os<span style="color: rgb(98,98,98)">.</span>path<span style="color: rgb(98,98,98)">.</span>join(<span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>tempdir,<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">band0.opt</span><span style="color: rgb(175,0,0)">&#39;</span>)
+<span class="ansi-green-intense-fg ansi-bold">--&gt; 568</span>         <span class="ansi-yellow-bg">write_scene</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">triangles</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">materials</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">canfile</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">canfile</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">optfile</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">optfile</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-fg">    570</span> <span class="ansi-bold" style="color: rgb(0,135,0)">else</span>:
+<span class="ansi-green-fg">    571</span>     <span style="color: rgb(95,135,135)"># self.materialvalues is a cache for the computation of the material list</span>
+<span class="ansi-green-fg">    572</span>     materials <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>materialvalues
+
+File <span class="ansi-green-intense-fg ansi-bold">~\AppData\Local\miniconda3\envs\mobidivpy37\lib\site-packages\alinea.caribu-8.0.7-py3.8.egg\alinea\caribu\caribu.py:177</span>, in <span class="ansi-cyan-fg">write_scene</span><span class="ansi-blue-intense-fg ansi-bold">(triangles, materials, canfile, optfile)</span>
+<span class="ansi-green-fg">    175</span> o_string, labels <span style="color: rgb(98,98,98)">=</span> opt_string_and_labels(materials)
+<span class="ansi-green-fg">    176</span> can_string <span style="color: rgb(98,98,98)">=</span> triangles_string(triangles, labels)
+<span class="ansi-green-intense-fg ansi-bold">--&gt; 177</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">open</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">canfile</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#39;</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">w</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#39;</span><span class="ansi-yellow-bg">)</span><span style="color: rgb(98,98,98)">.</span>write(can_string)
+<span class="ansi-green-fg">    178</span> <span style="color: rgb(0,135,0)">open</span>(optfile,<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">w</span><span style="color: rgb(175,0,0)">&#39;</span>)<span style="color: rgb(98,98,98)">.</span>write(o_string)
+
+<span class="ansi-red-intense-fg ansi-bold">FileNotFoundError</span>: [Errno 2] No such file or directory: &#39;./caribuscene_2672400716080\\cscene.can&#39;
+</pre></div></div>
+</div>
+<p>You can also use the soilmesh option and get the lighting hitting the soil. The method <code class="docutils literal notranslate"><span class="pre">soilenergy</span></code> get you access to its result.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">caribu_args</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;soil mesh&quot;</span> <span class="p">:</span> <span class="kc">True</span> <span class="p">}</span>
+
+<span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;caribu&quot;</span><span class="p">,</span> <span class="n">lightmodel_parameters</span><span class="o">=</span><span class="n">caribu_args</span><span class="p">)</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="p">[(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">),</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">),</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)])</span>
+
+<span class="n">energy</span> <span class="o">=</span> <span class="mf">500.</span>
+<span class="n">hour</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="n">day</span> <span class="o">=</span> <span class="mi">264</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">soilenergy</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;Qi&#39;: 0.6750540873627096, &#39;Einc&#39;: 0.6750540873627096}
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="RATP">
+<h2>RATP<a class="headerlink" href="#RATP" title="Permalink to this heading"></a></h2>
+<p>This is the complete parameters you can provide with CARIBU:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ratp_args</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="c1"># Grid specifications</span>
+                <span class="s2">&quot;voxel size&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dz</span><span class="p">],</span>
+                <span class="s2">&quot;voxel size&quot;</span> <span class="p">:</span> <span class="s2">&quot;dynamic&quot;</span><span class="p">,</span>
+
+                <span class="s2">&quot;full grid&quot;</span> <span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+
+                <span class="s2">&quot;origin&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="n">xorigin</span><span class="p">,</span> <span class="n">yorigin</span><span class="p">,</span> <span class="n">zorigin</span><span class="p">],</span>
+                <span class="s2">&quot;origin&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="n">xorigin</span><span class="p">,</span> <span class="n">yorigin</span><span class="p">],</span>
+
+                <span class="s2">&quot;number voxels&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">],</span>
+                <span class="s2">&quot;grid slicing&quot;</span> <span class="p">:</span> <span class="s2">&quot;ground = 0.&quot;</span>
+                <span class="s2">&quot;tesselation level&quot;</span> <span class="p">:</span> <span class="nb">int</span>
+
+                <span class="c1"># Leaf angle distribution</span>
+                <span class="s2">&quot;angle distrib algo&quot;</span> <span class="p">:</span> <span class="s2">&quot;compute global&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;angle distrib algo&quot;</span> <span class="p">:</span> <span class="s2">&quot;compute voxel&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;angle distrib algo&quot;</span> <span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+
+                <span class="s2">&quot;nb angle classes&quot;</span> <span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                <span class="s2">&quot;angle distrib file&quot;</span> <span class="p">:</span> <span class="n">filepath</span><span class="p">,</span>
+
+                <span class="c1"># Vegetation type</span>
+                <span class="s2">&quot;soil reflectance&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="n">reflectance_band0</span><span class="p">,</span> <span class="n">reflectance_band1</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+                <span class="s2">&quot;reflectance coefficients&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="n">reflectance_band0</span><span class="p">,</span> <span class="n">reflectance_band1</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+                <span class="s2">&quot;mu&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="n">mu_scene0</span><span class="p">,</span> <span class="n">mu_scene1</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+            <span class="p">}</span>
+</pre></div>
+</div>
+<section id="Leaf-angle-distribution">
+<h3>Leaf angle distribution<a class="headerlink" href="#Leaf-angle-distribution" title="Permalink to this heading"></a></h3>
+<p>Leaf angle distribution can be generated in 3 ways: - from a file, one distribution per specy - global and dynamically, it generates a distribution from a triangles mesh for each specy - per voxel and dynamically, it generates a distribution from the triangles located in each voxel</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># random triangles</span>
+<span class="n">nb_triangles</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">spheresize</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">)</span> <span class="c1"># vertices of triangles are the sphere surface</span>
+<span class="n">worldsize</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">)</span>
+<span class="n">triangles</span> <span class="o">=</span> <span class="p">[</span><span class="n">random_triangle_generator</span><span class="p">(</span><span class="n">worldsize</span><span class="o">=</span><span class="n">worldsize</span><span class="p">,</span> <span class="n">spheresize</span><span class="o">=</span><span class="n">spheresize</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nb_triangles</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+<section id="File">
+<h4>File<a class="headerlink" href="#File" title="Permalink to this heading"></a></h4>
+<p>You need the flag <code class="docutils literal notranslate"><span class="pre">&quot;file&quot;</span></code> and to specify the file path.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)),</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;luzerne_angle_distrib.data&quot;</span><span class="p">)</span>
+<span class="n">ratp_parameters</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;angle distrib algo&quot;</span> <span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span> <span class="s2">&quot;angle distrib file&quot;</span> <span class="p">:</span> <span class="n">filepath</span> <span class="p">}</span>
+
+<span class="c1"># initialize the instance</span>
+<span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;ratp&quot;</span><span class="p">,</span> <span class="n">lightmodel_parameters</span><span class="o">=</span><span class="n">ratp_parameters</span><span class="p">)</span>
+
+<span class="c1"># build the scene</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">triangles</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">leafangledistribution</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;global&#39;: [[0.1382, 0.1664, 0.1972, 0.1925, 0.1507, 0.0903, 0.0425, 0.0172, 0.005]]}
+</pre></div></div>
+</div>
+</section>
+<section id="Global-distribution">
+<h4>Global distribution<a class="headerlink" href="#Global-distribution" title="Permalink to this heading"></a></h4>
+<p>You need the flag <code class="docutils literal notranslate"><span class="pre">&quot;compute</span> <span class="pre">global&quot;</span></code> and to specify the number of angle classes you need.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ratp_parameters</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;angle distrib algo&quot;</span> <span class="p">:</span> <span class="s2">&quot;compute global&quot;</span><span class="p">,</span> <span class="s2">&quot;nb angle classes&quot;</span> <span class="p">:</span> <span class="mi">9</span> <span class="p">}</span>
+
+<span class="c1"># initialize the instance</span>
+<span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;ratp&quot;</span><span class="p">,</span> <span class="n">lightmodel_parameters</span><span class="o">=</span><span class="n">ratp_parameters</span><span class="p">)</span>
+
+<span class="c1"># build the scene</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">triangles</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">leafangledistribution</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;global&#39;: [[0.0, 0.01403472520994376, 0.14553389876181141, 0.13870880399511626, 0.17786938035077418, 0.06842434118299212, 0.09608726894836216, 0.20983153542452182, 0.14951004612647875]]}
+</pre></div></div>
+</div>
+</section>
+<section id="Local-distribution">
+<h4>Local distribution<a class="headerlink" href="#Local-distribution" title="Permalink to this heading"></a></h4>
+<p>You need the flag <code class="docutils literal notranslate"><span class="pre">&quot;compute</span> <span class="pre">voxel&quot;</span></code> and to specify the number of angle classes you need. You will get one distribution for each voxel of your grid and each specy.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ratp_parameters</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;voxel size&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">],</span>
+                    <span class="s2">&quot;angle distrib algo&quot;</span> <span class="p">:</span> <span class="s2">&quot;compute voxel&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;nb angle classes&quot;</span> <span class="p">:</span> <span class="mi">9</span>
+                    <span class="p">}</span>
+
+<span class="c1"># initialize the instance</span>
+<span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;ratp&quot;</span><span class="p">,</span> <span class="n">lightmodel_parameters</span><span class="o">=</span><span class="n">ratp_parameters</span><span class="p">)</span>
+
+<span class="c1"># build the scene</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">triangles</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Global&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">leafangledistribution</span><span class="p">[</span><span class="s2">&quot;global&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2"> Local&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">lighting</span><span class="o">.</span><span class="n">leafangledistribution</span><span class="p">[</span><span class="s2">&quot;voxel&quot;</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Global
+[[0.009674637223767685, 0.06468549489243054, 0.10705660994810652, 0.10196105003699654, 0.07575759861707439, 0.3044721953841436, 0.06446975879644407, 0.14828246866341796, 0.12364018643761852]]
+
+
+ Local
+[0. 0. 0. 0. 0. 0. 0. 1. 0.]
+[0. 0. 0. 0. 0. 0. 0. 0. 1.]
+[0. 0. 1. 0. 0. 0. 0. 0. 0.]
+[0.         0.         0.55805526 0.44194474 0.         0.
+ 0.         0.         0.        ]
+[0. 0. 0. 0. 0. 0. 1. 0. 0.]
+[0. 0. 0. 0. 1. 0. 0. 0. 0.]
+[0. 0. 0. 0. 0. 1. 0. 0. 0.]
+[0. 0. 0. 0. 0. 0. 0. 1. 0.]
+[0. 0. 0. 0. 0. 0. 0. 0. 1.]
+[0. 0. 0. 0. 1. 0. 0. 0. 0.]
+[0. 1. 0. 0. 0. 0. 0. 0. 0.]
+[0. 1. 0. 0. 0. 0. 0. 0. 0.]
+[0. 1. 0. 0. 0. 0. 0. 0. 0.]
+[0. 0. 0. 1. 0. 0. 0. 0. 0.]
+[0. 1. 0. 0. 0. 0. 0. 0. 0.]
+[0. 0. 0. 0. 1. 0. 0. 0. 0.]
+[0.         0.         0.41000514 0.58999486 0.         0.
+ 0.         0.         0.        ]
+[0. 0. 0. 0. 0. 1. 0. 0. 0.]
+[0. 0. 0. 0. 0. 0. 0. 0. 1.]
+[0. 0. 1. 0. 0. 0. 0. 0. 0.]
+[0. 0. 0. 0. 1. 0. 0. 0. 0.]
+[0. 0. 0. 0. 0. 0. 0. 1. 0.]
+[1. 0. 0. 0. 0. 0. 0. 0. 0.]
+[0. 0. 0. 0. 1. 0. 0. 0. 0.]
+[0. 0. 0. 0. 1. 0. 0. 0. 0.]
+[0. 0. 0. 0. 0. 1. 0. 0. 0.]
+[0.         0.         0.58893012 0.41106988 0.         0.
+ 0.         0.         0.        ]
+[0. 0. 0. 0. 1. 0. 0. 0. 0.]
+[0. 0. 0. 0. 0. 1. 0. 0. 0.]
+[0.         0.30170822 0.         0.         0.         0.
+ 0.         0.         0.69829178]
+[0.         0.         0.         0.17828753 0.         0.
+ 0.         0.         0.82171247]
+[0. 0. 0. 1. 0. 0. 0. 0. 0.]
+[0. 0. 0. 0. 0. 1. 0. 0. 0.]
+[0. 0. 0. 0. 0. 0. 0. 0. 1.]
+[0. 0. 0. 1. 0. 0. 0. 0. 0.]
+[0. 1. 0. 0. 0. 0. 0. 0. 0.]
+[1. 0. 0. 0. 0. 0. 0. 0. 0.]
+[0. 0. 0. 0. 0. 0. 0. 1. 0.]
+[0. 0. 0. 1. 0. 0. 0. 0. 0.]
+[0. 0. 0. 0. 0. 1. 0. 0. 0.]
+[0. 0. 0. 0. 0. 0. 0. 0. 1.]
+[0. 0. 1. 0. 0. 0. 0. 0. 0.]
+[0. 0. 0. 0. 0. 0. 0. 1. 0.]
+[0. 0. 0. 0. 0. 0. 1. 0. 0.]
+</pre></div></div>
+</div>
+<p>For visualization of the situation</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">SceneWidget</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">plantGL_nolight</span><span class="p">(</span><span class="n">printtriangles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">printvoxels</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+            <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">size_display</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+            <span class="n">plane</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">size_world</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="n">axes_helper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "7632d86906e349c3ab0757bebb81acb5", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+</section>
+</section>
+<section id="Triangles-tesselation-in-a-grid">
+<h3>Triangles tesselation in a grid<a class="headerlink" href="#Triangles-tesselation-in-a-grid" title="Permalink to this heading"></a></h3>
+<p>You can reduce the error while transferring a triangle mesh to a voxel mesh by subdividing triangles across multiple voxels.</p>
+<div><p><img alt="b9d9c8a18a0d42958417f111ab5e95aa" class="no-scaled-link" src="_build/doctrees/nbsphinx/attachment:tesselation_voxels.png" style="width: 500px;" /></p>
+</div><p>You only need to precise how many times you want to subdivide the triangles.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ratp_parameters</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;voxel size&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">],</span> <span class="s2">&quot;tesselation level&quot;</span> <span class="p">:</span> <span class="mi">7</span> <span class="p">}</span>
+
+<span class="c1"># initialize the instance</span>
+<span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;ratp&quot;</span><span class="p">,</span> <span class="n">lightmodel_parameters</span><span class="o">=</span><span class="n">ratp_parameters</span><span class="p">)</span>
+
+<span class="c1"># build the scene</span>
+<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="n">triangles</span><span class="p">)</span>
+
+<span class="n">SceneWidget</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">plantGL_nolight</span><span class="p">(</span><span class="n">printtriangles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">printvoxels</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+            <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">size_display</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+            <span class="n">plane</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">size_world</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="n">axes_helper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "06b27e827cfe46f784e8d39259bacc84", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+</section>
+<section id="id1">
+<h3>Other parameters<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h3>
+<p>By default, the number of voxels is dynamically computed following the voxel size and mesh limits, but you can force its number.</p>
+<p>Voxel size can also be dynamically computed and is based on 3 times the longest triangle.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, INRAE P3F.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

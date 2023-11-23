@@ -79,6 +79,7 @@ LightVegeManager is a Python package made for plant modeling and managing enligh
     Development tools
     ```bash
         conda install pytest sphinx sphinx-rtd-theme -c conda-forge
+        pip install nbsphinx pgljupyter
     ```
     
 ### Complete installation

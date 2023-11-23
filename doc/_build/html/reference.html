@@ -16,7 +16,9 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
-        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -53,34 +55,35 @@
 <p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Reference Guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#module-tool"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tool</span></code> module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-LVM"><code class="xref py py-mod docutils literal notranslate"><span class="pre">LVM</span></code> module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#lightvegemanager">LightVegeManager</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#tool.LightVegeManager"><code class="docutils literal notranslate"><span class="pre">LightVegeManager</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#tool.LightVegeManager.build"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.build()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tool.LightVegeManager.run"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.run()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tool.LightVegeManager.to_MTG"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.to_MTG()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tool.LightVegeManager.to_l_egume"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.to_l_egume()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tool.LightVegeManager.s5"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.s5()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tool.LightVegeManager.s2v"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.s2v()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tool.LightVegeManager.VTK_nolight"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.VTK_nolight()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tool.LightVegeManager.VTK_light"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.VTK_light()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tool.LightVegeManager.VTK_sun"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.VTK_sun()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tool.LightVegeManager.plantGL_sensors"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.plantGL_sensors()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tool.LightVegeManager.plantGL_nolight"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.plantGL_nolight()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tool.LightVegeManager.plantGL_light"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.plantGL_light()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tool.LightVegeManager.riri5_transmitted_light"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.riri5_transmitted_light</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tool.LightVegeManager.riri5_intercepted_light"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.riri5_intercepted_light</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tool.LightVegeManager.elements_outputs"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.elements_outputs</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tool.LightVegeManager.triangles_outputs"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.triangles_outputs</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tool.LightVegeManager.voxels_outputs"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.voxels_outputs</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tool.LightVegeManager.sensors_outputs"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.sensors_outputs</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tool.LightVegeManager.sun"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.sun</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tool.LightVegeManager.soilenergy"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.soilenergy</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tool.LightVegeManager.maxtrianglearea"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.maxtrianglearea</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tool.LightVegeManager.legume_empty_layers"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.legume_empty_layers</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tool.LightVegeManager.tesselationtime"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.tesselationtime</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tool.LightVegeManager.modelruntime"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.modelruntime</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tool.LightVegeManager.leafangledistribution"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.leafangledistribution</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#LVM.LightVegeManager"><code class="docutils literal notranslate"><span class="pre">LightVegeManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#LVM.LightVegeManager.build"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.build()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#LVM.LightVegeManager.run"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#LVM.LightVegeManager.to_MTG"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.to_MTG()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#LVM.LightVegeManager.to_l_egume"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.to_l_egume()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#LVM.LightVegeManager.s5"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.s5()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#LVM.LightVegeManager.s2v"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.s2v()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#LVM.LightVegeManager.VTK_nolight"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.VTK_nolight()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#LVM.LightVegeManager.VTK_light"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.VTK_light()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#LVM.LightVegeManager.VTK_sun"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.VTK_sun()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#LVM.LightVegeManager.plantGL_sensors"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.plantGL_sensors()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#LVM.LightVegeManager.plantGL_nolight"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.plantGL_nolight()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#LVM.LightVegeManager.plantGL_light"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.plantGL_light()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#LVM.LightVegeManager.riri5_transmitted_light"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.riri5_transmitted_light</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#LVM.LightVegeManager.riri5_intercepted_light"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.riri5_intercepted_light</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#LVM.LightVegeManager.elements_outputs"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.elements_outputs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#LVM.LightVegeManager.triangles_outputs"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.triangles_outputs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#LVM.LightVegeManager.voxels_outputs"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.voxels_outputs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#LVM.LightVegeManager.sensors_outputs"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.sensors_outputs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#LVM.LightVegeManager.sun"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.sun</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#LVM.LightVegeManager.soilenergy"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.soilenergy</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#LVM.LightVegeManager.maxtrianglearea"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.maxtrianglearea</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#LVM.LightVegeManager.legume_empty_layers"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.legume_empty_layers</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#LVM.LightVegeManager.tesselationtime"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.tesselationtime</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#LVM.LightVegeManager.modelruntime"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.modelruntime</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#LVM.LightVegeManager.leafangledistribution"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.leafangledistribution</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#LVM.LightVegeManager.domain"><code class="docutils literal notranslate"><span class="pre">LightVegeManager.domain</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -261,7 +264,7 @@ describing what they are and what they do.</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#reference-guide" id="id3">Reference Guide</a></p>
 <ul>
-<li><p><a class="reference internal" href="#module-tool" id="id4"><a class="reference internal" href="#module-tool" title="tool"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tool</span></code></a> module</a></p>
+<li><p><a class="reference internal" href="#module-LVM" id="id4"><a class="reference internal" href="#module-LVM" title="LVM"><code class="xref py py-mod docutils literal notranslate"><span class="pre">LVM</span></code></a> module</a></p>
 <ul>
 <li><p><a class="reference internal" href="#lightvegemanager" id="id5">LightVegeManager</a></p></li>
 </ul>
@@ -350,8 +353,8 @@ describing what they are and what they do.</p>
 </li>
 </ul>
 </nav>
-<section id="module-tool">
-<span id="tool-module"></span><h2><a class="toc-backref" href="#id4" role="doc-backlink"><a class="reference internal" href="#module-tool" title="tool"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tool</span></code></a> module</a><a class="headerlink" href="#module-tool" title="Permalink to this heading"></a></h2>
+<section id="module-LVM">
+<span id="lvm-module"></span><h2><a class="toc-backref" href="#id4" role="doc-backlink"><a class="reference internal" href="#module-LVM" title="LVM"><code class="xref py py-mod docutils literal notranslate"><span class="pre">LVM</span></code></a> module</a><a class="headerlink" href="#module-LVM" title="Permalink to this heading"></a></h2>
 <section id="lightvegemanager">
 <h3><a class="toc-backref" href="#id5" role="doc-backlink">LightVegeManager</a><a class="headerlink" href="#lightvegemanager" title="Permalink to this heading"></a></h3>
 <p>Main class of the tool. Calls all the other modules in <code class="docutils literal notranslate"><span class="pre">src</span></code>.</p>
@@ -432,8 +435,8 @@ describing what they are and what they do.</p>
 </div>
 </section>
 <dl class="py class">
-<dt class="sig sig-object py" id="tool.LightVegeManager">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tool.</span></span><span class="sig-name descname"><span class="pre">LightVegeManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">environment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lightmodel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lightmodel_parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">main_unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'m'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tool.html#LightVegeManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tool.LightVegeManager" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="LVM.LightVegeManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">LVM.</span></span><span class="sig-name descname"><span class="pre">LightVegeManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">environment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lightmodel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lightmodel_parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">main_unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'m'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/LVM.html#LightVegeManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#LVM.LightVegeManager" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Main class for the tool LightVegeManager</p>
 <p>Common simulation order:</p>
@@ -443,43 +446,43 @@ describing what they are and what they do.</p>
 <div><p>Main methods:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">__init__</span></code>: initializes and builds static object for the rest of simulation</p></li>
-<li><p><a class="reference internal" href="#tool.LightVegeManager.build" title="tool.LightVegeManager.build"><code class="xref py py-meth docutils literal notranslate"><span class="pre">build()</span></code></a>: builds and prepare all geometric meshes</p></li>
-<li><p><a class="reference internal" href="#tool.LightVegeManager.run" title="tool.LightVegeManager.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a>: calls a light model and manages its inputs and outputs</p></li>
+<li><p><a class="reference internal" href="#LVM.LightVegeManager.build" title="LVM.LightVegeManager.build"><code class="xref py py-meth docutils literal notranslate"><span class="pre">build()</span></code></a>: builds and prepare all geometric meshes</p></li>
+<li><p><a class="reference internal" href="#LVM.LightVegeManager.run" title="LVM.LightVegeManager.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a>: calls a light model and manages its inputs and outputs</p></li>
 </ul>
 <p>Transfer methods:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#tool.LightVegeManager.to_MTG" title="tool.LightVegeManager.to_MTG"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_MTG()</span></code></a>: transfers ligthing results to a MTG table</p></li>
-<li><p><a class="reference internal" href="#tool.LightVegeManager.to_l_egume" title="tool.LightVegeManager.to_l_egume"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_l_egume()</span></code></a>: transfers ligthing results to l-egume by creating two arrays as inputs for the plant model</p></li>
+<li><p><a class="reference internal" href="#LVM.LightVegeManager.to_MTG" title="LVM.LightVegeManager.to_MTG"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_MTG()</span></code></a>: transfers ligthing results to a MTG table</p></li>
+<li><p><a class="reference internal" href="#LVM.LightVegeManager.to_l_egume" title="LVM.LightVegeManager.to_l_egume"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_l_egume()</span></code></a>: transfers ligthing results to l-egume by creating two arrays as inputs for the plant model</p></li>
 </ul>
 <p>Analysis tools: analyses a set of triangles and formats them as a turbid medium inputs</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#tool.LightVegeManager.s5" title="tool.LightVegeManager.s5"><code class="xref py py-meth docutils literal notranslate"><span class="pre">s5()</span></code></a>: fortran tool</p></li>
-<li><p><a class="reference internal" href="#tool.LightVegeManager.s2v" title="tool.LightVegeManager.s2v"><code class="xref py py-meth docutils literal notranslate"><span class="pre">s2v()</span></code></a>: c++ tool</p></li>
+<li><p><a class="reference internal" href="#LVM.LightVegeManager.s5" title="LVM.LightVegeManager.s5"><code class="xref py py-meth docutils literal notranslate"><span class="pre">s5()</span></code></a>: fortran tool</p></li>
+<li><p><a class="reference internal" href="#LVM.LightVegeManager.s2v" title="LVM.LightVegeManager.s2v"><code class="xref py py-meth docutils literal notranslate"><span class="pre">s2v()</span></code></a>: c++ tool</p></li>
 </ul>
 <p>Visualisation tools:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#tool.LightVegeManager.plantGL_nolight" title="tool.LightVegeManager.plantGL_nolight"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plantGL_nolight()</span></code></a>: return a plantGL scene from the geometry</p></li>
-<li><p><a class="reference internal" href="#tool.LightVegeManager.plantGL_light" title="tool.LightVegeManager.plantGL_light"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plantGL_light()</span></code></a>: return a plantGL scene from the geometry with lighting results</p></li>
-<li><p><a class="reference internal" href="#tool.LightVegeManager.plantGL_sensors" title="tool.LightVegeManager.plantGL_sensors"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plantGL_sensors()</span></code></a>: return a plantGL scene from virtual sensors if created</p></li>
-<li><p><a class="reference internal" href="#tool.LightVegeManager.VTK_nolight" title="tool.LightVegeManager.VTK_nolight"><code class="xref py py-meth docutils literal notranslate"><span class="pre">VTK_nolight()</span></code></a>: write VTK file with only geometric informations</p></li>
-<li><p><a class="reference internal" href="#tool.LightVegeManager.VTK_light" title="tool.LightVegeManager.VTK_light"><code class="xref py py-meth docutils literal notranslate"><span class="pre">VTK_light()</span></code></a>: write VTK file with geometric informations and associated light results</p></li>
-<li><p><a class="reference internal" href="#tool.LightVegeManager.VTK_sun" title="tool.LightVegeManager.VTK_sun"><code class="xref py py-meth docutils literal notranslate"><span class="pre">VTK_sun()</span></code></a>: write VTK file representing the sun as a line</p></li>
+<li><p><a class="reference internal" href="#LVM.LightVegeManager.plantGL_nolight" title="LVM.LightVegeManager.plantGL_nolight"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plantGL_nolight()</span></code></a>: return a plantGL scene from the geometry</p></li>
+<li><p><a class="reference internal" href="#LVM.LightVegeManager.plantGL_light" title="LVM.LightVegeManager.plantGL_light"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plantGL_light()</span></code></a>: return a plantGL scene from the geometry with lighting results</p></li>
+<li><p><a class="reference internal" href="#LVM.LightVegeManager.plantGL_sensors" title="LVM.LightVegeManager.plantGL_sensors"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plantGL_sensors()</span></code></a>: return a plantGL scene from virtual sensors if created</p></li>
+<li><p><a class="reference internal" href="#LVM.LightVegeManager.VTK_nolight" title="LVM.LightVegeManager.VTK_nolight"><code class="xref py py-meth docutils literal notranslate"><span class="pre">VTK_nolight()</span></code></a>: write VTK file with only geometric informations</p></li>
+<li><p><a class="reference internal" href="#LVM.LightVegeManager.VTK_light" title="LVM.LightVegeManager.VTK_light"><code class="xref py py-meth docutils literal notranslate"><span class="pre">VTK_light()</span></code></a>: write VTK file with geometric informations and associated light results</p></li>
+<li><p><a class="reference internal" href="#LVM.LightVegeManager.VTK_sun" title="LVM.LightVegeManager.VTK_sun"><code class="xref py py-meth docutils literal notranslate"><span class="pre">VTK_sun()</span></code></a>: write VTK file representing the sun as a line</p></li>
 </ul>
 <p>Getters: to use light results with external routines</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#tool.LightVegeManager.riri5_transmitted_light" title="tool.LightVegeManager.riri5_transmitted_light"><code class="xref py py-meth docutils literal notranslate"><span class="pre">riri5_transmitted_light()</span></code></a></p></li>
-<li><p><a class="reference internal" href="#tool.LightVegeManager.riri5_intercepted_light" title="tool.LightVegeManager.riri5_intercepted_light"><code class="xref py py-meth docutils literal notranslate"><span class="pre">riri5_intercepted_light()</span></code></a></p></li>
-<li><p><a class="reference internal" href="#tool.LightVegeManager.elements_outputs" title="tool.LightVegeManager.elements_outputs"><code class="xref py py-meth docutils literal notranslate"><span class="pre">elements_outputs()</span></code></a></p></li>
-<li><p><a class="reference internal" href="#tool.LightVegeManager.triangles_outputs" title="tool.LightVegeManager.triangles_outputs"><code class="xref py py-meth docutils literal notranslate"><span class="pre">triangles_outputs()</span></code></a></p></li>
-<li><p><a class="reference internal" href="#tool.LightVegeManager.voxels_outputs" title="tool.LightVegeManager.voxels_outputs"><code class="xref py py-meth docutils literal notranslate"><span class="pre">voxels_outputs()</span></code></a></p></li>
-<li><p><a class="reference internal" href="#tool.LightVegeManager.sensors_outputs" title="tool.LightVegeManager.sensors_outputs"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sensors_outputs()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#LVM.LightVegeManager.riri5_transmitted_light" title="LVM.LightVegeManager.riri5_transmitted_light"><code class="xref py py-meth docutils literal notranslate"><span class="pre">riri5_transmitted_light()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#LVM.LightVegeManager.riri5_intercepted_light" title="LVM.LightVegeManager.riri5_intercepted_light"><code class="xref py py-meth docutils literal notranslate"><span class="pre">riri5_intercepted_light()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#LVM.LightVegeManager.elements_outputs" title="LVM.LightVegeManager.elements_outputs"><code class="xref py py-meth docutils literal notranslate"><span class="pre">elements_outputs()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#LVM.LightVegeManager.triangles_outputs" title="LVM.LightVegeManager.triangles_outputs"><code class="xref py py-meth docutils literal notranslate"><span class="pre">triangles_outputs()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#LVM.LightVegeManager.voxels_outputs" title="LVM.LightVegeManager.voxels_outputs"><code class="xref py py-meth docutils literal notranslate"><span class="pre">voxels_outputs()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#LVM.LightVegeManager.sensors_outputs" title="LVM.LightVegeManager.sensors_outputs"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sensors_outputs()</span></code></a></p></li>
 <li><p><a class="reference internal" href="#module-sun" title="sun"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sun()</span></code></a></p></li>
-<li><p><a class="reference internal" href="#tool.LightVegeManager.soilenergy" title="tool.LightVegeManager.soilenergy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">soilenergy()</span></code></a></p></li>
-<li><p><a class="reference internal" href="#tool.LightVegeManager.maxtrianglearea" title="tool.LightVegeManager.maxtrianglearea"><code class="xref py py-meth docutils literal notranslate"><span class="pre">maxtrianglearea()</span></code></a></p></li>
-<li><p><a class="reference internal" href="#tool.LightVegeManager.legume_empty_layers" title="tool.LightVegeManager.legume_empty_layers"><code class="xref py py-meth docutils literal notranslate"><span class="pre">legume_empty_layers()</span></code></a></p></li>
-<li><p><a class="reference internal" href="#tool.LightVegeManager.tesselationtime" title="tool.LightVegeManager.tesselationtime"><code class="xref py py-meth docutils literal notranslate"><span class="pre">tesselationtime()</span></code></a></p></li>
-<li><p><a class="reference internal" href="#tool.LightVegeManager.modelruntime" title="tool.LightVegeManager.modelruntime"><code class="xref py py-meth docutils literal notranslate"><span class="pre">modelruntime()</span></code></a></p></li>
-<li><p><a class="reference internal" href="#tool.LightVegeManager.leafangledistribution" title="tool.LightVegeManager.leafangledistribution"><code class="xref py py-meth docutils literal notranslate"><span class="pre">leafangledistribution()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#LVM.LightVegeManager.soilenergy" title="LVM.LightVegeManager.soilenergy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">soilenergy()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#LVM.LightVegeManager.maxtrianglearea" title="LVM.LightVegeManager.maxtrianglearea"><code class="xref py py-meth docutils literal notranslate"><span class="pre">maxtrianglearea()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#LVM.LightVegeManager.legume_empty_layers" title="LVM.LightVegeManager.legume_empty_layers"><code class="xref py py-meth docutils literal notranslate"><span class="pre">legume_empty_layers()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#LVM.LightVegeManager.tesselationtime" title="LVM.LightVegeManager.tesselationtime"><code class="xref py py-meth docutils literal notranslate"><span class="pre">tesselationtime()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#LVM.LightVegeManager.modelruntime" title="LVM.LightVegeManager.modelruntime"><code class="xref py py-meth docutils literal notranslate"><span class="pre">modelruntime()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#LVM.LightVegeManager.leafangledistribution" title="LVM.LightVegeManager.leafangledistribution"><code class="xref py py-meth docutils literal notranslate"><span class="pre">leafangledistribution()</span></code></a></p></li>
 </ul>
 </div></blockquote>
 <dl class="field-list simple">
@@ -496,8 +499,8 @@ describing what they are and what they do.</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="tool.LightVegeManager.build">
-<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geometry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_scene_tesselate_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tool.html#LightVegeManager.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tool.LightVegeManager.build" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="LVM.LightVegeManager.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geometry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_scene_tesselate_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/LVM.html#LightVegeManager.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#LVM.LightVegeManager.build" title="Permalink to this definition"></a></dt>
 <dd><p>Builds a mesh of the simulation scene in the right light model format</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -513,8 +516,8 @@ describing what they are and what they do.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="tool.LightVegeManager.run">
-<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">energy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">day</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parunit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'micromol.m-2.s-1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">truesolartime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_sensors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tool.html#LightVegeManager.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tool.LightVegeManager.run" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="LVM.LightVegeManager.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">energy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">day</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parunit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'micromol.m-2.s-1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">truesolartime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_sensors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/LVM.html#LightVegeManager.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#LVM.LightVegeManager.run" title="Permalink to this definition"></a></dt>
 <dd><p>Calls the light model and formats lighting results</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -537,12 +540,12 @@ describing what they are and what they do.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="tool.LightVegeManager.to_MTG">
-<span class="sig-name descname"><span class="pre">to_MTG</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">energy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tool.html#LightVegeManager.to_MTG"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tool.LightVegeManager.to_MTG" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="LVM.LightVegeManager.to_MTG">
+<span class="sig-name descname"><span class="pre">to_MTG</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">energy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/LVM.html#LightVegeManager.to_MTG"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#LVM.LightVegeManager.to_MTG" title="Permalink to this definition"></a></dt>
 <dd><p>Transfers lighting results to a MTG table.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>The <a class="reference internal" href="#tool.LightVegeManager.run" title="tool.LightVegeManager.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a> must have been called before to have results dataframes.</p>
+<p>The <a class="reference internal" href="#LVM.LightVegeManager.run" title="LVM.LightVegeManager.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a> must have been called before to have results dataframes.</p>
 </div>
 <p>Results are <code class="docutils literal notranslate"><span class="pre">pandas.Dataframe</span></code> stored in the <code class="docutils literal notranslate"><span class="pre">self</span></code></p>
 <dl class="field-list simple">
@@ -560,12 +563,12 @@ describing what they are and what they do.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="tool.LightVegeManager.to_l_egume">
-<span class="sig-name descname"><span class="pre">to_l_egume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">energy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_lais</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_lstring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_dicFeuilBilanR</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_invar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tool.html#LightVegeManager.to_l_egume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tool.LightVegeManager.to_l_egume" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="LVM.LightVegeManager.to_l_egume">
+<span class="sig-name descname"><span class="pre">to_l_egume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">energy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_lais</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_lstring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_dicFeuilBilanR</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_invar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/LVM.html#LightVegeManager.to_l_egume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#LVM.LightVegeManager.to_l_egume" title="Permalink to this definition"></a></dt>
 <dd><p>Transfers lighting results to l-egume</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>The <a class="reference internal" href="#tool.LightVegeManager.run" title="tool.LightVegeManager.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a> must have been called before to have results dataframes.</p>
+<p>The <a class="reference internal" href="#LVM.LightVegeManager.run" title="LVM.LightVegeManager.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a> must have been called before to have results dataframes.</p>
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -589,7 +592,7 @@ describing what they are and what they do.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>AttributeError</strong> – you need to call <a class="reference internal" href="#tool.LightVegeManager.run" title="tool.LightVegeManager.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a> first</p></li>
+<li><p><strong>AttributeError</strong> – you need to call <a class="reference internal" href="#LVM.LightVegeManager.run" title="LVM.LightVegeManager.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a> first</p></li>
 <li><p><strong>ValueError</strong> – unknown light model</p></li>
 </ul>
 </dd>
@@ -617,8 +620,8 @@ describing what they are and what they do.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="tool.LightVegeManager.s5">
-<span class="sig-name descname"><span class="pre">s5</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tool.html#LightVegeManager.s5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tool.LightVegeManager.s5" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="LVM.LightVegeManager.s5">
+<span class="sig-name descname"><span class="pre">s5</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/LVM.html#LightVegeManager.s5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#LVM.LightVegeManager.s5" title="Permalink to this definition"></a></dt>
 <dd><p>Creates inputs files for s5 and runs it
 s5 is an external tool made to analyse a set of triangles in order to use a grid of voxels.
 It also computes leaf angle distribution from the triangulation</p>
@@ -675,8 +678,8 @@ It also computes leaf angle distribution from the triangulation</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="tool.LightVegeManager.s2v">
-<span class="sig-name descname"><span class="pre">s2v</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tool.html#LightVegeManager.s2v"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tool.LightVegeManager.s2v" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="LVM.LightVegeManager.s2v">
+<span class="sig-name descname"><span class="pre">s2v</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/LVM.html#LightVegeManager.s2v"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#LVM.LightVegeManager.s2v" title="Permalink to this definition"></a></dt>
 <dd><p>Creates inputs files for s2v and runs it
 s5 is an external tool made to analyse a set of triangles in order to use a grid of voxels.
 It also computes leaf angle distribution from the triangulation</p>
@@ -741,8 +744,8 @@ line 2: global zenital leaf angle distribution for specy 1</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="tool.LightVegeManager.VTK_nolight">
-<span class="sig-name descname"><span class="pre">VTK_nolight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">printtriangles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">printvoxels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tool.html#LightVegeManager.VTK_nolight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tool.LightVegeManager.VTK_nolight" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="LVM.LightVegeManager.VTK_nolight">
+<span class="sig-name descname"><span class="pre">VTK_nolight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">printtriangles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">printvoxels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/LVM.html#LightVegeManager.VTK_nolight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#LVM.LightVegeManager.VTK_nolight" title="Permalink to this definition"></a></dt>
 <dd><p>Writes a VTK from mesh(es) in <code class="docutils literal notranslate"><span class="pre">self</span></code>, with only geometric informations</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -757,35 +760,35 @@ line 2: global zenital leaf angle distribution for specy 1</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="tool.LightVegeManager.VTK_light">
-<span class="sig-name descname"><span class="pre">VTK_light</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">printtriangles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">printvoxels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tool.html#LightVegeManager.VTK_light"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tool.LightVegeManager.VTK_light" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="LVM.LightVegeManager.VTK_light">
+<span class="sig-name descname"><span class="pre">VTK_light</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">printtriangles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">printvoxels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/LVM.html#LightVegeManager.VTK_light"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#LVM.LightVegeManager.VTK_light" title="Permalink to this definition"></a></dt>
 <dd><p>Writes a VTK from mesh(es) in <code class="docutils literal notranslate"><span class="pre">self</span></code>, with geometric informations and lighting results</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>The <a class="reference internal" href="#tool.LightVegeManager.run" title="tool.LightVegeManager.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a> must have been called before to have results dataframes.</p>
+<p>The <a class="reference internal" href="#LVM.LightVegeManager.run" title="LVM.LightVegeManager.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a> must have been called before to have results dataframes.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<em>string</em>) – file and path name</p></li>
 <li><p><strong>i</strong> (<em>int</em><em>, </em><em>optional</em>) – associate the created file with an indice in its filename, defaults to None</p></li>
-<li><p><strong>printtriangles</strong> (<em>bool</em><em>, </em><em>optional</em>) – write triangulation if one has been created in <a class="reference internal" href="#tool.LightVegeManager.build" title="tool.LightVegeManager.build"><code class="xref py py-meth docutils literal notranslate"><span class="pre">build()</span></code></a>, defaults to True</p></li>
-<li><p><strong>printvoxels</strong> (<em>bool</em><em>, </em><em>optional</em>) – write grid of voxels if one has been created in <a class="reference internal" href="#tool.LightVegeManager.build" title="tool.LightVegeManager.build"><code class="xref py py-meth docutils literal notranslate"><span class="pre">build()</span></code></a>, defaults to True</p></li>
+<li><p><strong>printtriangles</strong> (<em>bool</em><em>, </em><em>optional</em>) – write triangulation if one has been created in <a class="reference internal" href="#LVM.LightVegeManager.build" title="LVM.LightVegeManager.build"><code class="xref py py-meth docutils literal notranslate"><span class="pre">build()</span></code></a>, defaults to True</p></li>
+<li><p><strong>printvoxels</strong> (<em>bool</em><em>, </em><em>optional</em>) – write grid of voxels if one has been created in <a class="reference internal" href="#LVM.LightVegeManager.build" title="LVM.LightVegeManager.build"><code class="xref py py-meth docutils literal notranslate"><span class="pre">build()</span></code></a>, defaults to True</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>AttributeError</strong> – you need to call <a class="reference internal" href="#tool.LightVegeManager.run" title="tool.LightVegeManager.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a> first</p>
+<dd class="field-even"><p><strong>AttributeError</strong> – you need to call <a class="reference internal" href="#LVM.LightVegeManager.run" title="LVM.LightVegeManager.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a> first</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="tool.LightVegeManager.VTK_sun">
-<span class="sig-name descname"><span class="pre">VTK_sun</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">0,</span> <span class="pre">0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tool.html#LightVegeManager.VTK_sun"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tool.LightVegeManager.VTK_sun" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="LVM.LightVegeManager.VTK_sun">
+<span class="sig-name descname"><span class="pre">VTK_sun</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">0,</span> <span class="pre">0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/LVM.html#LightVegeManager.VTK_sun"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#LVM.LightVegeManager.VTK_sun" title="Permalink to this definition"></a></dt>
 <dd><p>Write a VTK file representing the sun by a simple line</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>The <a class="reference internal" href="#tool.LightVegeManager.run" title="tool.LightVegeManager.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a> must have been called before to have results dataframes.</p>
+<p>The <a class="reference internal" href="#LVM.LightVegeManager.run" title="LVM.LightVegeManager.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a> must have been called before to have results dataframes.</p>
 </div>
 <p>if center is False, orig is the starting point the line and it ends at orig + scale*sun.position</p>
 <p>if center is True, orig is the middle point of the line.</p>
@@ -800,54 +803,54 @@ line 2: global zenital leaf angle distribution for specy 1</p>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>AttributeError</strong> – you need to call <a class="reference internal" href="#tool.LightVegeManager.run" title="tool.LightVegeManager.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a> first</p>
+<dd class="field-even"><p><strong>AttributeError</strong> – you need to call <a class="reference internal" href="#LVM.LightVegeManager.run" title="LVM.LightVegeManager.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a> first</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="tool.LightVegeManager.plantGL_sensors">
-<span class="sig-name descname"><span class="pre">plantGL_sensors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">light</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tool.html#LightVegeManager.plantGL_sensors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tool.LightVegeManager.plantGL_sensors" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="LVM.LightVegeManager.plantGL_sensors">
+<span class="sig-name descname"><span class="pre">plantGL_sensors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">light</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/LVM.html#LightVegeManager.plantGL_sensors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#LVM.LightVegeManager.plantGL_sensors" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="tool.LightVegeManager.plantGL_nolight">
-<span class="sig-name descname"><span class="pre">plantGL_nolight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">printtriangles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">printvoxels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tool.html#LightVegeManager.plantGL_nolight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tool.LightVegeManager.plantGL_nolight" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="LVM.LightVegeManager.plantGL_nolight">
+<span class="sig-name descname"><span class="pre">plantGL_nolight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">printtriangles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">printvoxels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/LVM.html#LightVegeManager.plantGL_nolight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#LVM.LightVegeManager.plantGL_nolight" title="Permalink to this definition"></a></dt>
 <dd><p>Return a plantGL Scene from mesh(es) in <code class="docutils literal notranslate"><span class="pre">self</span></code>, with geometric informations</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>printtriangles</strong> (<em>bool</em><em>, </em><em>optional</em>) – write triangulation if one has been created in <a class="reference internal" href="#tool.LightVegeManager.build" title="tool.LightVegeManager.build"><code class="xref py py-meth docutils literal notranslate"><span class="pre">build()</span></code></a>, defaults to True</p></li>
-<li><p><strong>printvoxels</strong> (<em>bool</em><em>, </em><em>optional</em>) – write grid of voxels if one has been created in <a class="reference internal" href="#tool.LightVegeManager.build" title="tool.LightVegeManager.build"><code class="xref py py-meth docutils literal notranslate"><span class="pre">build()</span></code></a>, defaults to True</p></li>
+<li><p><strong>printtriangles</strong> (<em>bool</em><em>, </em><em>optional</em>) – write triangulation if one has been created in <a class="reference internal" href="#LVM.LightVegeManager.build" title="LVM.LightVegeManager.build"><code class="xref py py-meth docutils literal notranslate"><span class="pre">build()</span></code></a>, defaults to True</p></li>
+<li><p><strong>printvoxels</strong> (<em>bool</em><em>, </em><em>optional</em>) – write grid of voxels if one has been created in <a class="reference internal" href="#LVM.LightVegeManager.build" title="LVM.LightVegeManager.build"><code class="xref py py-meth docutils literal notranslate"><span class="pre">build()</span></code></a>, defaults to True</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="tool.LightVegeManager.plantGL_light">
-<span class="sig-name descname"><span class="pre">plantGL_light</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">printtriangles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">printvoxels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tool.html#LightVegeManager.plantGL_light"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tool.LightVegeManager.plantGL_light" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="LVM.LightVegeManager.plantGL_light">
+<span class="sig-name descname"><span class="pre">plantGL_light</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">printtriangles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">printvoxels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/LVM.html#LightVegeManager.plantGL_light"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#LVM.LightVegeManager.plantGL_light" title="Permalink to this definition"></a></dt>
 <dd><p>Return a plantGL Scene from mesh(es) in <code class="docutils literal notranslate"><span class="pre">self</span></code>, with geometric informations and lighting results</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>The <a class="reference internal" href="#tool.LightVegeManager.run" title="tool.LightVegeManager.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a> must have been called before to have results dataframes.</p>
+<p>The <a class="reference internal" href="#LVM.LightVegeManager.run" title="LVM.LightVegeManager.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a> must have been called before to have results dataframes.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>printtriangles</strong> (<em>bool</em><em>, </em><em>optional</em>) – write triangulation if one has been created in <a class="reference internal" href="#tool.LightVegeManager.build" title="tool.LightVegeManager.build"><code class="xref py py-meth docutils literal notranslate"><span class="pre">build()</span></code></a>, defaults to True</p></li>
-<li><p><strong>printvoxels</strong> (<em>bool</em><em>, </em><em>optional</em>) – write grid of voxels if one has been created in <a class="reference internal" href="#tool.LightVegeManager.build" title="tool.LightVegeManager.build"><code class="xref py py-meth docutils literal notranslate"><span class="pre">build()</span></code></a>, defaults to True</p></li>
+<li><p><strong>printtriangles</strong> (<em>bool</em><em>, </em><em>optional</em>) – write triangulation if one has been created in <a class="reference internal" href="#LVM.LightVegeManager.build" title="LVM.LightVegeManager.build"><code class="xref py py-meth docutils literal notranslate"><span class="pre">build()</span></code></a>, defaults to True</p></li>
+<li><p><strong>printvoxels</strong> (<em>bool</em><em>, </em><em>optional</em>) – write grid of voxels if one has been created in <a class="reference internal" href="#LVM.LightVegeManager.build" title="LVM.LightVegeManager.build"><code class="xref py py-meth docutils literal notranslate"><span class="pre">build()</span></code></a>, defaults to True</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>AttributeError</strong> – you need to call <a class="reference internal" href="#tool.LightVegeManager.run" title="tool.LightVegeManager.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a> first</p>
+<dd class="field-even"><p><strong>AttributeError</strong> – you need to call <a class="reference internal" href="#LVM.LightVegeManager.run" title="LVM.LightVegeManager.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a> first</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="tool.LightVegeManager.riri5_transmitted_light">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">riri5_transmitted_light</span></span><a class="headerlink" href="#tool.LightVegeManager.riri5_transmitted_light" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="LVM.LightVegeManager.riri5_transmitted_light">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">riri5_transmitted_light</span></span><a class="headerlink" href="#LVM.LightVegeManager.riri5_transmitted_light" title="Permalink to this definition"></a></dt>
 <dd><p>transmitted results if light model is RiRi light</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -860,8 +863,8 @@ line 2: global zenital leaf angle distribution for specy 1</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="tool.LightVegeManager.riri5_intercepted_light">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">riri5_intercepted_light</span></span><a class="headerlink" href="#tool.LightVegeManager.riri5_intercepted_light" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="LVM.LightVegeManager.riri5_intercepted_light">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">riri5_intercepted_light</span></span><a class="headerlink" href="#LVM.LightVegeManager.riri5_intercepted_light" title="Permalink to this definition"></a></dt>
 <dd><p>Intercepted results if light model is RiRi light,</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -874,8 +877,8 @@ line 2: global zenital leaf angle distribution for specy 1</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="tool.LightVegeManager.elements_outputs">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">elements_outputs</span></span><a class="headerlink" href="#tool.LightVegeManager.elements_outputs" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="LVM.LightVegeManager.elements_outputs">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">elements_outputs</span></span><a class="headerlink" href="#LVM.LightVegeManager.elements_outputs" title="Permalink to this definition"></a></dt>
 <dd><p>Lighting results aggregate by element</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -888,8 +891,8 @@ line 2: global zenital leaf angle distribution for specy 1</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="tool.LightVegeManager.triangles_outputs">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">triangles_outputs</span></span><a class="headerlink" href="#tool.LightVegeManager.triangles_outputs" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="LVM.LightVegeManager.triangles_outputs">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">triangles_outputs</span></span><a class="headerlink" href="#LVM.LightVegeManager.triangles_outputs" title="Permalink to this definition"></a></dt>
 <dd><p>Lighting results aggregate by triangle, if it has a triangulation in its inputs</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -906,8 +909,8 @@ line 2: global zenital leaf angle distribution for specy 1</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="tool.LightVegeManager.voxels_outputs">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">voxels_outputs</span></span><a class="headerlink" href="#tool.LightVegeManager.voxels_outputs" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="LVM.LightVegeManager.voxels_outputs">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">voxels_outputs</span></span><a class="headerlink" href="#LVM.LightVegeManager.voxels_outputs" title="Permalink to this definition"></a></dt>
 <dd><p>Lighting results aggregate by voxels, only with RATP as the selected light model</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -924,8 +927,8 @@ line 2: global zenital leaf angle distribution for specy 1</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="tool.LightVegeManager.sensors_outputs">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sensors_outputs</span></span><a class="headerlink" href="#tool.LightVegeManager.sensors_outputs" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="LVM.LightVegeManager.sensors_outputs">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sensors_outputs</span></span><a class="headerlink" href="#LVM.LightVegeManager.sensors_outputs" title="Permalink to this definition"></a></dt>
 <dd><p>Lighting results aggregate by sensors.
 Only with CARIBU if you activated the virtual sensors option</p>
 <dl class="field-list simple">
@@ -939,8 +942,8 @@ Only with CARIBU if you activated the virtual sensors option</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="tool.LightVegeManager.sun">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sun</span></span><a class="headerlink" href="#tool.LightVegeManager.sun" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="LVM.LightVegeManager.sun">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sun</span></span><a class="headerlink" href="#LVM.LightVegeManager.sun" title="Permalink to this definition"></a></dt>
 <dd><p>Return sun position of the last :func:run call</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -953,8 +956,8 @@ Only with CARIBU if you activated the virtual sensors option</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="tool.LightVegeManager.soilenergy">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">soilenergy</span></span><a class="headerlink" href="#tool.LightVegeManager.soilenergy" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="LVM.LightVegeManager.soilenergy">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">soilenergy</span></span><a class="headerlink" href="#LVM.LightVegeManager.soilenergy" title="Permalink to this definition"></a></dt>
 <dd><p>Return soil energy, only with CARIBU if soilmesh option is activated</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -967,10 +970,10 @@ Only with CARIBU if you activated the virtual sensors option</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="tool.LightVegeManager.maxtrianglearea">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">maxtrianglearea</span></span><a class="headerlink" href="#tool.LightVegeManager.maxtrianglearea" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="LVM.LightVegeManager.maxtrianglearea">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">maxtrianglearea</span></span><a class="headerlink" href="#LVM.LightVegeManager.maxtrianglearea" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the largest triangle of triangles mesh
-Computed in <a class="reference internal" href="#tool.LightVegeManager.build" title="tool.LightVegeManager.build"><code class="xref py py-meth docutils literal notranslate"><span class="pre">build()</span></code></a></p>
+Computed in <a class="reference internal" href="#LVM.LightVegeManager.build" title="LVM.LightVegeManager.build"><code class="xref py py-meth docutils literal notranslate"><span class="pre">build()</span></code></a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>area the triangle</p>
@@ -982,8 +985,8 @@ Computed in <a class="reference internal" href="#tool.LightVegeManager.build" ti
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="tool.LightVegeManager.legume_empty_layers">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">legume_empty_layers</span></span><a class="headerlink" href="#tool.LightVegeManager.legume_empty_layers" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="LVM.LightVegeManager.legume_empty_layers">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">legume_empty_layers</span></span><a class="headerlink" href="#LVM.LightVegeManager.legume_empty_layers" title="Permalink to this definition"></a></dt>
 <dd><p>Returns number of empty layers between top of the canopy and number of z layers expected by l-egume</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -996,8 +999,8 @@ Computed in <a class="reference internal" href="#tool.LightVegeManager.build" ti
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="tool.LightVegeManager.tesselationtime">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tesselationtime</span></span><a class="headerlink" href="#tool.LightVegeManager.tesselationtime" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="LVM.LightVegeManager.tesselationtime">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tesselationtime</span></span><a class="headerlink" href="#LVM.LightVegeManager.tesselationtime" title="Permalink to this definition"></a></dt>
 <dd><p>_summary_</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1010,8 +1013,8 @@ Computed in <a class="reference internal" href="#tool.LightVegeManager.build" ti
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="tool.LightVegeManager.modelruntime">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">modelruntime</span></span><a class="headerlink" href="#tool.LightVegeManager.modelruntime" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="LVM.LightVegeManager.modelruntime">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">modelruntime</span></span><a class="headerlink" href="#LVM.LightVegeManager.modelruntime" title="Permalink to this definition"></a></dt>
 <dd><p>Returns running time of the light model</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1024,9 +1027,24 @@ Computed in <a class="reference internal" href="#tool.LightVegeManager.build" ti
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="tool.LightVegeManager.leafangledistribution">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">leafangledistribution</span></span><a class="headerlink" href="#tool.LightVegeManager.leafangledistribution" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="LVM.LightVegeManager.leafangledistribution">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">leafangledistribution</span></span><a class="headerlink" href="#LVM.LightVegeManager.leafangledistribution" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="LVM.LightVegeManager.domain">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">domain</span></span><a class="headerlink" href="#LVM.LightVegeManager.domain" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the largest triangle of triangles mesh
+Computed in <a class="reference internal" href="#LVM.LightVegeManager.build" title="LVM.LightVegeManager.build"><code class="xref py py-meth docutils literal notranslate"><span class="pre">build()</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>area the triangle</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 

@@ -84,7 +84,7 @@ between ``"ratp"``, ``"caribu"`` or ``"riri5"``.
 
 .. code-block:: python
 
-    from LightVegeManager import *
+    from lightvegeamanger.LVM import LightVegeManager
 
     # one triangle as a geometric element
     # we write our triangle in a CaribuScene format
@@ -116,17 +116,17 @@ Tutorials with jupyter notebooks
 
 Jupyter notebooks are available with documented tutorials exploring the tool features. The following files provides:
 
-- ``tool_basics``: Introduction to the tools
 
-- ``environment_parameters``:  Ways to set the environment
+.. toctree::
+    :maxdepth: 1
+    :numbered:
 
-- ``input_scenes``: Ways to set the geometric scenes
+    tool_basics
+    environment_parameters
+    input_scenes
+    lightmodels_functionnalities
+    outputs_and_plantmodels_transfer
+    example_canopy
+    misc_functionnalities
 
-- ``lightmodels_functionnalities``: Describing how to set up the light models
-
-- ``outputs_and_plantmodels_transfer``: Exploring output formats
-
-- ``example_canopy``: an example with a more realistic gemoetry
-
-- ``misc_functionnalities``: presentation of additional features
 
