@@ -1,120 +1,9 @@
 .. _tutorials:
 
-Tutorials
-==========
-
-.. _installation:
-
-Installation
-############
-
-Setting a Python environment
-----------------------------
-
-We propose a way to install an openalea environment with conda. 
-
-#. Create a conda environment with miniconda3
-
-    .. code-block:: bash
-        
-        conda create -n myenvname python=3 openalea.mtg openalea.plantgl alinea.caribu alinea.astk numpy=1.20.3 pandas pytest sphinx sphinx-rtd-theme -c conda-forge -c openalea3
-
-#. Place yourself in the created environment: ``conda activate myenvname``
-
-.. note:: ``virtual sensors`` and ``soilmesh`` in Caribu > 8.0.10 are working correctly
-
-Installation of Needed Packages
--------------------------------
-
-PyRATP
-***************
-    
-#. Git console:
-    
-    .. code-block:: bash
-
-        git clone -b update_mobidiv https://github.com/mwoussen/PyRATP
-
-#. Installation in the conda environment (in folder ``PyRATP``)
-    
-    .. code-block:: bash
-
-        make mode=develop
-        make clean
-
-RiRi5
-****************
-    
-#. Git console:
-    
-    .. code-block:: bash
-
-        git clone https://github.com/glouarn/riri5
-
-#. Installation in the conda environment (in folder ``riri5``)
-   
-    .. code-block:: bash
-
-        python setup.py develop
-
-
-LightVegeManager
-****************
-    
-#. Git console:
-    
-    .. code-block:: bash
-
-        git clone https://github.com/mwoussen/lightvegemanager
-
-#. Installation in the conda environment (in folder ``lightvegemanager``)
-   
-    .. code-block:: bash
-
-        python setup.py develop
-
-
-.. _quickstart:
-
-Quickstart
-############
-
-Small test to quickly test the tool. LightVegeManager needs at least a geometric information and a light model to call
-between ``"ratp"``, ``"caribu"`` or ``"riri5"``.
-
-.. code-block:: python
-
-    from lightvegeamanger.LVM import LightVegeManager
-
-    # one triangle as a geometric element
-    # we write our triangle in a CaribuScene format
-    organ_id = 001
-    triangle_vertices = [(0,0,0), (1,0,0), (1,1,1)]
-    triangle = {organ_id : [triangle_vertices]}
-    geometry = { "scenes" : [triangle] }
-
-    # surfacic lighting with CARIBU
-    lighting = LightVegeManager(lightmodel="caribu")
-
-    # build the scene
-    lighting.build(geometry)
-
-    # compute lighting
-    energy = 500
-    hour = 15   
-    day = 264 # 21st september
-    lighting.run(energy, hour, day)
-
-    # output
-    print(lighting.elements_outputs)
-
-.. seealso:: For more details on default values, see :mod:`LightVegeManager\_defaultvalues`
-
-
 Tutorials with jupyter notebooks
 ################################
 
-Jupyter notebooks are available with documented tutorials exploring the tool features. The following files provides:
+Jupyter notebooks are available with documented tutorials exploring the tool features. The following files provides:jjjjjkkkkj
 
 
 .. toctree::
@@ -128,5 +17,4 @@ Jupyter notebooks are available with documented tutorials exploring the tool fea
     outputs_and_plantmodels_transfer
     example_canopy
     misc_functionnalities
-
-
+    more_examples

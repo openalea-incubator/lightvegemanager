@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tutorials &mdash; LightVegeManager 0.0.0 documentation</title>
+  <title>Tutorials with jupyter notebooks &mdash; LightVegeManager 0.0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -21,7 +21,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="1. LightVegeManager first steps" href="tool_basics.html" />
-    <link rel="prev" title="Presentation" href="presentation.html" /> 
+    <link rel="prev" title="Additionnal Functionalities" href="others.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,33 +46,21 @@
               <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="presentation.html">Presentation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorials</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#setting-a-python-environment">Setting a Python environment</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#installation-of-needed-packages">Installation of Needed Packages</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#pyratp">PyRATP</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#riri5">RiRi5</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#lightvegemanager">LightVegeManager</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#quickstart">Quickstart</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#tutorials-with-jupyter-notebooks">Tutorials with jupyter notebooks</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="tool_basics.html">1. LightVegeManager first steps</a></li>
-<li class="toctree-l3"><a class="reference internal" href="environment_parameters.html">2. Environment parameters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="input_scenes.html">3. Geometric inputs</a></li>
-<li class="toctree-l3"><a class="reference internal" href="lightmodels_functionnalities.html">4. Light models options</a></li>
-<li class="toctree-l3"><a class="reference internal" href="outputs_and_plantmodels_transfer.html">5. Output formats and transfer methods</a></li>
-<li class="toctree-l3"><a class="reference internal" href="example_canopy.html">6. Example of use</a></li>
-<li class="toctree-l3"><a class="reference internal" href="misc_functionnalities.html">7. Misc functionnalities</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture of the tool</a></li>
 <li class="toctree-l1"><a class="reference internal" href="inputs.html">Inputs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="others.html">Additionnal Functionalities</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorials with jupyter notebooks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tool_basics.html">1. LightVegeManager first steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="environment_parameters.html">2. Environment parameters: ways to set the simulation environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="input_scenes.html">3. Geometric inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lightmodels_functionnalities.html">4. Light models options: how to set up the light models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="outputs_and_plantmodels_transfer.html">5. Output formats and transfer methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_canopy.html">6. Example of use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc_functionnalities.html">7. Misc functionnalities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="more_examples.html">8. More examples</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
 <ul>
@@ -93,7 +81,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Tutorials</li>
+      <li class="breadcrumb-item active">Tutorials with jupyter notebooks</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/tutorials.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -103,155 +91,28 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="tutorials">
-<span id="id1"></span><h1>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this heading"></a></h1>
-<section id="installation">
-<span id="id2"></span><h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h2>
-<section id="setting-a-python-environment">
-<h3>Setting a Python environment<a class="headerlink" href="#setting-a-python-environment" title="Permalink to this heading"></a></h3>
-<p>We propose a way to install an openalea environment with conda.</p>
-<ol class="arabic">
-<li><p>Create a conda environment with miniconda3</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>myenvname<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span><span class="w"> </span>openalea.mtg<span class="w"> </span>openalea.plantgl<span class="w"> </span>alinea.caribu<span class="w"> </span>alinea.astk<span class="w"> </span><span class="nv">numpy</span><span class="o">=</span><span class="m">1</span>.20.3<span class="w"> </span>pandas<span class="w"> </span>pytest<span class="w"> </span>sphinx<span class="w"> </span>sphinx-rtd-theme<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>-c<span class="w"> </span>openalea3
-</pre></div>
-</div>
-</div></blockquote>
-</li>
-<li><p>Place yourself in the created environment: <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">activate</span> <span class="pre">myenvname</span></code></p></li>
-</ol>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><code class="docutils literal notranslate"><span class="pre">virtual</span> <span class="pre">sensors</span></code> and <code class="docutils literal notranslate"><span class="pre">soilmesh</span></code> in Caribu &gt; 8.0.10 are working correctly</p>
-</div>
-</section>
-<section id="installation-of-needed-packages">
-<h3>Installation of Needed Packages<a class="headerlink" href="#installation-of-needed-packages" title="Permalink to this heading"></a></h3>
-<section id="pyratp">
-<h4>PyRATP<a class="headerlink" href="#pyratp" title="Permalink to this heading"></a></h4>
-<ol class="arabic">
-<li><p>Git console:</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>-b<span class="w"> </span>update_mobidiv<span class="w"> </span>https://github.com/mwoussen/PyRATP
-</pre></div>
-</div>
-</div></blockquote>
-</li>
-<li><p>Installation in the conda environment (in folder <code class="docutils literal notranslate"><span class="pre">PyRATP</span></code>)</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span><span class="nv">mode</span><span class="o">=</span>develop
-make<span class="w"> </span>clean
-</pre></div>
-</div>
-</div></blockquote>
-</li>
-</ol>
-</section>
-<section id="riri5">
-<h4>RiRi5<a class="headerlink" href="#riri5" title="Permalink to this heading"></a></h4>
-<ol class="arabic">
-<li><p>Git console:</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/glouarn/riri5
-</pre></div>
-</div>
-</div></blockquote>
-</li>
-<li><p>Installation in the conda environment (in folder <code class="docutils literal notranslate"><span class="pre">riri5</span></code>)</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>setup.py<span class="w"> </span>develop
-</pre></div>
-</div>
-</div></blockquote>
-</li>
-</ol>
-</section>
-<section id="lightvegemanager">
-<h4>LightVegeManager<a class="headerlink" href="#lightvegemanager" title="Permalink to this heading"></a></h4>
-<ol class="arabic">
-<li><p>Git console:</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/mwoussen/lightvegemanager
-</pre></div>
-</div>
-</div></blockquote>
-</li>
-<li><p>Installation in the conda environment (in folder <code class="docutils literal notranslate"><span class="pre">lightvegemanager</span></code>)</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>setup.py<span class="w"> </span>develop
-</pre></div>
-</div>
-</div></blockquote>
-</li>
-</ol>
-</section>
-</section>
-</section>
-<section id="quickstart">
-<span id="id3"></span><h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this heading"></a></h2>
-<p>Small test to quickly test the tool. LightVegeManager needs at least a geometric information and a light model to call
-between <code class="docutils literal notranslate"><span class="pre">&quot;ratp&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;caribu&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;riri5&quot;</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightvegeamanger.LVM</span> <span class="kn">import</span> <span class="n">LightVegeManager</span>
-
-<span class="c1"># one triangle as a geometric element</span>
-<span class="c1"># we write our triangle in a CaribuScene format</span>
-<span class="n">organ_id</span> <span class="o">=</span> <span class="mi">001</span>
-<span class="n">triangle_vertices</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)]</span>
-<span class="n">triangle</span> <span class="o">=</span> <span class="p">{</span><span class="n">organ_id</span> <span class="p">:</span> <span class="p">[</span><span class="n">triangle_vertices</span><span class="p">]}</span>
-<span class="n">geometry</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;scenes&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="n">triangle</span><span class="p">]</span> <span class="p">}</span>
-
-<span class="c1"># surfacic lighting with CARIBU</span>
-<span class="n">lighting</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;caribu&quot;</span><span class="p">)</span>
-
-<span class="c1"># build the scene</span>
-<span class="n">lighting</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="p">)</span>
-
-<span class="c1"># compute lighting</span>
-<span class="n">energy</span> <span class="o">=</span> <span class="mi">500</span>
-<span class="n">hour</span> <span class="o">=</span> <span class="mi">15</span>
-<span class="n">day</span> <span class="o">=</span> <span class="mi">264</span> <span class="c1"># 21st september</span>
-<span class="n">lighting</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">hour</span><span class="p">,</span> <span class="n">day</span><span class="p">)</span>
-
-<span class="c1"># output</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">elements_outputs</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>For more details on default values, see <code class="xref py py-mod docutils literal notranslate"><span class="pre">LightVegeManager_defaultvalues</span></code></p>
-</div>
-</section>
-<section id="tutorials-with-jupyter-notebooks">
-<h2>Tutorials with jupyter notebooks<a class="headerlink" href="#tutorials-with-jupyter-notebooks" title="Permalink to this heading"></a></h2>
-<p>Jupyter notebooks are available with documented tutorials exploring the tool features. The following files provides:</p>
+  <section id="tutorials-with-jupyter-notebooks">
+<span id="tutorials"></span><h1>Tutorials with jupyter notebooks<a class="headerlink" href="#tutorials-with-jupyter-notebooks" title="Permalink to this heading"></a></h1>
+<p>Jupyter notebooks are available with documented tutorials exploring the tool features. The following files provides:jjjjjkkkkj</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="tool_basics.html">1. LightVegeManager first steps</a></li>
-<li class="toctree-l1"><a class="reference internal" href="environment_parameters.html">2. Environment parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="environment_parameters.html">2. Environment parameters: ways to set the simulation environment</a></li>
 <li class="toctree-l1"><a class="reference internal" href="input_scenes.html">3. Geometric inputs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="lightmodels_functionnalities.html">4. Light models options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lightmodels_functionnalities.html">4. Light models options: how to set up the light models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="outputs_and_plantmodels_transfer.html">5. Output formats and transfer methods</a></li>
 <li class="toctree-l1"><a class="reference internal" href="example_canopy.html">6. Example of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="misc_functionnalities.html">7. Misc functionnalities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="more_examples.html">8. More examples</a></li>
 </ul>
 </div>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">tool_basics</span></code>: Introduction to the tools</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">environment_parameters</span></code>:  Ways to set the environment</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">input_scenes</span></code>: Ways to set the geometric scenes</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">lightmodels_functionnalities</span></code>: Describing how to set up the light models</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">outputs_and_plantmodels_transfer</span></code>: Exploring output formats</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">example_canopy</span></code>: an example with a more realistic gemoetry</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">misc_functionnalities</span></code>: presentation of additional features</p></li>
-</ul>
-</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="presentation.html" class="btn btn-neutral float-left" title="Presentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="others.html" class="btn btn-neutral float-left" title="Additionnal Functionalities" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="tool_basics.html" class="btn btn-neutral float-right" title="1. LightVegeManager first steps" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

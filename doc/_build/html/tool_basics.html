@@ -23,8 +23,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="2. Environment parameters" href="environment_parameters.html" />
-    <link rel="prev" title="Tutorials" href="tutorials.html" /> 
+    <link rel="next" title="2. Environment parameters: ways to set the simulation environment" href="environment_parameters.html" />
+    <link rel="prev" title="Tutorials with jupyter notebooks" href="tutorials.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -49,30 +49,35 @@
               <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="presentation.html">Presentation</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="tutorials.html#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials.html#quickstart">Quickstart</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="tutorials.html#tutorials-with-jupyter-notebooks">Tutorials with jupyter notebooks</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">1. LightVegeManager first steps</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Content:">1.1. Content:</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Introduction">1.2. Introduction</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#One-triangle">1.3. One triangle</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Set-of-triangles">1.4. Set of triangles</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="environment_parameters.html">2. Environment parameters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="input_scenes.html">3. Geometric inputs</a></li>
-<li class="toctree-l3"><a class="reference internal" href="lightmodels_functionnalities.html">4. Light models options</a></li>
-<li class="toctree-l3"><a class="reference internal" href="outputs_and_plantmodels_transfer.html">5. Output formats and transfer methods</a></li>
-<li class="toctree-l3"><a class="reference internal" href="example_canopy.html">6. Example of use</a></li>
-<li class="toctree-l3"><a class="reference internal" href="misc_functionnalities.html">7. Misc functionnalities</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture of the tool</a></li>
 <li class="toctree-l1"><a class="reference internal" href="inputs.html">Inputs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="others.html">Additionnal Functionalities</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials with jupyter notebooks</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">1. LightVegeManager first steps</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Content:">1.1. Content:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Introduction">1.2. Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#One-triangle">1.3. One triangle</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#CARIBU-(surfarcic-modelling)">1.3.1. CARIBU (surfarcic modelling)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#RATP">1.3.2. RATP</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#Set-of-triangles">1.4. Set of triangles</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#CARIBU">1.4.1. CARIBU</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id1">1.4.2. RATP</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="environment_parameters.html">2. Environment parameters: ways to set the simulation environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="input_scenes.html">3. Geometric inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lightmodels_functionnalities.html">4. Light models options: how to set up the light models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="outputs_and_plantmodels_transfer.html">5. Output formats and transfer methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_canopy.html">6. Example of use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc_functionnalities.html">7. Misc functionnalities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="more_examples.html">8. More examples</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
 <ul>
@@ -93,7 +98,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="tutorials.html">Tutorials</a></li>
+          <li class="breadcrumb-item"><a href="tutorials.html">Tutorials with jupyter notebooks</a></li>
       <li class="breadcrumb-item active"><span class="section-number">1. </span>LightVegeManager first steps</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/tool_basics.nblink.txt" rel="nofollow"> View page source</a>
@@ -646,14 +651,6 @@
 <div class="output_area docutils container">
 <script type="application/vnd.jupyter.widget-view+json">{"model_id": "19aaa3db6a1c4886a1aca18428e9dadb", "version_major": 2, "version_minor": 0}</script></div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
 </section>
 </section>
 </section>
@@ -662,8 +659,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="tutorials.html" class="btn btn-neutral float-left" title="Tutorials" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="environment_parameters.html" class="btn btn-neutral float-right" title="2. Environment parameters" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="tutorials.html" class="btn btn-neutral float-left" title="Tutorials with jupyter notebooks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="environment_parameters.html" class="btn btn-neutral float-right" title="2. Environment parameters: ways to set the simulation environment" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

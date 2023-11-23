@@ -13,8 +13,6 @@ The package has 8 folders and 4 files in its root:
 - data: data files used in some the use examples in the package
  
 - doc: user and reference documentations
-  
-- examples: small python scripts with examples of LightVegeManager use
 
 - notebooks: jupyter notebooks with documented tutorials exploring the tool features
 

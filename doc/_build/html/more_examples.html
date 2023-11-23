@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>8. More examples &mdash; LightVegeManager 0.0.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/nbsphinx-code-cells.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Reference Guide" href="reference.html" />
+    <link rel="prev" title="7. Misc functionnalities" href="misc_functionnalities.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            LightVegeManager
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="presentation.html">Presentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture of the tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inputs.html">Inputs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="others.html">Additionnal Functionalities</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials with jupyter notebooks</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="tool_basics.html">1. LightVegeManager first steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="environment_parameters.html">2. Environment parameters: ways to set the simulation environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="input_scenes.html">3. Geometric inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lightmodels_functionnalities.html">4. Light models options: how to set up the light models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="outputs_and_plantmodels_transfer.html">5. Output formats and transfer methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_canopy.html">6. Example of use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc_functionnalities.html">7. Misc functionnalities</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">8. More examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Sun-positions">8.1. Sun positions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Two-planes">8.2. Two planes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Examples-with-RATP-and-stem-elements">8.3. Examples with RATP and stem elements</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">LightVegeManager</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="tutorials.html">Tutorials with jupyter notebooks</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">8. </span>More examples</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/more_examples.nblink.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="More-examples">
+<h1><span class="section-number">8. </span>More examples<a class="headerlink" href="#More-examples" title="Permalink to this heading"></a></h1>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openalea.plantgl.all</span> <span class="k">as</span> <span class="nn">pgl_all</span>
+<span class="kn">from</span> <span class="nn">lightvegemanager.LVM</span> <span class="kn">import</span> <span class="n">LightVegeManager</span>
+<span class="kn">from</span> <span class="nn">pgljupyter</span> <span class="kn">import</span> <span class="n">SceneWidget</span>
+</pre></div>
+</div>
+</div>
+<section id="Sun-positions">
+<h2><span class="section-number">8.1. </span>Sun positions<a class="headerlink" href="#Sun-positions" title="Permalink to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">print_sun</span></code> function allows you to compare the sun position differences between RATP and CARIBU internal computation.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[38]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightvegemanager.sun</span> <span class="kn">import</span> <span class="n">print_sun</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">print_sun</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Prints sun position ouputs from RATP and CARIBU algorithm with the same inputs
+
+    :param day: input day
+    :type day: int
+    :param hour: input hour
+    :type hour: int
+    :param coordinates: [latitude, longitude, timezone]
+    :type coordinates: list
+    :param truesolartime: activates true solar time or local time to compute sun position
+    :type truesolartime: bool
+
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">print_sun</span><span class="p">(</span><span class="mi">201</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">print_sun</span><span class="p">(</span><span class="mi">201</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="p">[</span><span class="mf">40.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">print_sun</span><span class="p">(</span><span class="mi">201</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="p">[</span><span class="mf">40.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">print_sun</span><span class="p">(</span><span class="mi">201</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="p">[</span><span class="mf">40.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="kc">False</span><span class="p">)</span>
+<span class="n">print_sun</span><span class="p">(</span><span class="mi">347</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="p">[</span><span class="mf">46.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+---      SUN COORDONATES         ---
+--- Convention x+ = North, vector from sky to floor
+--- azimut: south clockwise E = -90° W = 90°     zenith:                                 zenith = 0° horizon = 90°
+--- day: 201     hour: 12        latitude: 0.00 °
+--- true solar time
+--- RATP ---
+         azimut: 180.000         zenith: 69.227
+         x: -0.354671    y: -0.000000    z: -0.934991
+--- CARIBU ---
+         azimut: 180.000         zenith: 68.944
+         x: -0.359285    y: -0.000000    z: -0.933228
+
+
+---      SUN COORDONATES         ---
+--- Convention x+ = North, vector from sky to floor
+--- azimut: south clockwise E = -90° W = 90°     zenith:                                 zenith = 0° horizon = 90°
+--- day: 201     hour: 12        latitude: 40.00 °
+--- true solar time
+--- RATP ---
+         azimut: 0.000   zenith: 70.773
+         x: 0.329307     y: -0.000000    z: -0.944223
+--- CARIBU ---
+         azimut: 0.000   zenith: 71.148
+         x: 0.323132     y: -0.000000    z: -0.946354
+
+
+---      SUN COORDONATES         ---
+--- Convention x+ = North, vector from sky to floor
+--- azimut: south clockwise E = -90° W = 90°     zenith:                                 zenith = 0° horizon = 90°
+--- day: 201     hour: 16        latitude: 40.00 °
+--- true solar time
+--- RATP ---
+         azimut: 87.963          zenith: 35.881
+         x: 0.028807     y: -0.809726    z: -0.586100
+--- CARIBU ---
+         azimut: 88.295          zenith: 36.115
+         x: 0.024030     y: -0.807482    z: -0.589402
+
+
+---      SUN COORDONATES         ---
+--- Convention x+ = North, vector from sky to floor
+--- azimut: south clockwise E = -90° W = 90°     zenith:                                 zenith = 0° horizon = 90°
+--- day: 201     hour: 16        latitude: 40.00 °
+--- local time, true solar time is 18.70
+--- RATP ---
+         azimut: 112.480         zenith: 5.641
+         x: -0.380514    y: -0.919537    z: -0.098291
+--- CARIBU ---
+         azimut: 112.736         zenith: 5.895
+         x: -0.384436    y: -0.917420    z: -0.102706
+
+
+---      SUN COORDONATES         ---
+--- Convention x+ = North, vector from sky to floor
+--- azimut: south clockwise E = -90° W = 90°     zenith:                                 zenith = 0° horizon = 90°
+--- day: 347     hour: 16        latitude: 46.00 °
+--- true solar time
+--- RATP ---
+         azimut: 52.853          zenith: 2.129
+         x: 0.603439     y: -0.796543    z: -0.037150
+--- CARIBU ---
+         azimut: 53.169          zenith: 2.592
+         x: 0.598849     y: -0.799584    z: -0.045228
+
+
+</pre></div></div>
+</div>
+</section>
+<section id="Two-planes">
+<h2><span class="section-number">8.2. </span>Two planes<a class="headerlink" href="#Two-planes" title="Permalink to this heading"></a></h2>
+<p>A small example with two horizontal planes, in order to check if the xy orientation according to North-East-South-West.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">geom1</span> <span class="o">=</span> <span class="n">pgl_all</span><span class="o">.</span><span class="n">FaceSet</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">)],[</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)])</span> <span class="c1"># plaque dessous</span>
+<span class="n">geom2</span> <span class="o">=</span> <span class="n">pgl_all</span><span class="o">.</span><span class="n">FaceSet</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">)],[</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)])</span> <span class="c1"># plaque dessus, décalée en y (axe est-ouest) vers l&#39;ouest</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">pgl_all</span><span class="o">.</span><span class="n">Scene</span><span class="p">([</span><span class="n">pgl_all</span><span class="o">.</span><span class="n">Shape</span><span class="p">(</span><span class="n">geom1</span><span class="p">,</span> <span class="n">pgl_all</span><span class="o">.</span><span class="n">Material</span><span class="p">((</span><span class="mi">250</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="mi">1</span><span class="p">),</span> <span class="mi">888</span><span class="p">),</span>
+                    <span class="n">pgl_all</span><span class="o">.</span><span class="n">Shape</span><span class="p">(</span><span class="n">geom2</span><span class="p">,</span> <span class="n">pgl_all</span><span class="o">.</span><span class="n">Material</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">250</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="mi">1</span><span class="p">),</span> <span class="mi">999</span><span class="p">)])</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># input dict</span>
+<span class="n">geometry</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">environment</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">caribu_parameters</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="c1"># Paramètres pré-simulation</span>
+<span class="n">geometry</span><span class="p">[</span><span class="s2">&quot;scenes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="p">]</span>
+
+<span class="n">environment</span><span class="p">[</span><span class="s2">&quot;coordinates&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span> <span class="p">,</span><span class="mf">0.</span> <span class="p">,</span><span class="mf">0.</span><span class="p">]</span> <span class="c1"># latitude, longitude, timezone</span>
+<span class="n">environment</span><span class="p">[</span><span class="s2">&quot;direct&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">environment</span><span class="p">[</span><span class="s2">&quot;diffus&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">environment</span><span class="p">[</span><span class="s2">&quot;reflected&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">environment</span><span class="p">[</span><span class="s2">&quot;caribu opt&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">environment</span><span class="p">[</span><span class="s2">&quot;caribu opt&quot;</span><span class="p">][</span><span class="s2">&quot;par&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.10</span><span class="p">,</span> <span class="p">)</span> <span class="c1"># plaques opaques</span>
+<span class="n">environment</span><span class="p">[</span><span class="s2">&quot;infinite&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1">## Paramètres CARIBU ##</span>
+<span class="n">caribu_parameters</span><span class="p">[</span><span class="s2">&quot;sun algo&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;caribu&quot;</span>
+<span class="n">caribu_parameters</span><span class="p">[</span><span class="s2">&quot;caribu opt&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">caribu_parameters</span><span class="p">[</span><span class="s2">&quot;caribu opt&quot;</span><span class="p">][</span><span class="s2">&quot;par&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.10</span><span class="p">,</span> <span class="p">)</span> <span class="c1"># plaques opaques</span>
+
+<span class="c1"># Déclaration de l&#39;objet</span>
+<span class="n">lghtcaribu</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">environment</span><span class="o">=</span><span class="n">environment</span><span class="p">,</span>
+                                <span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;caribu&quot;</span><span class="p">,</span>
+                                <span class="n">lightmodel_parameters</span><span class="o">=</span><span class="n">caribu_parameters</span><span class="p">)</span>
+<span class="c1"># création de la scène dans l&#39;objet</span>
+<span class="n">lghtcaribu</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">global_scene_tesselate_level</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[39]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># forçage arbitraire en µmol.m-2.s-1</span>
+<span class="n">PARi</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="c1"># jour arbitraire (21 septembre)</span>
+<span class="n">day</span> <span class="o">=</span> <span class="mi">264</span>
+
+<span class="c1"># heure matin, soleil arrive de l&#39;est, les 2 plaques reçoivent tout le rayonnement</span>
+<span class="n">hour</span> <span class="o">=</span> <span class="mi">16</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- day </span><span class="si">%i</span><span class="s2">, hour </span><span class="si">%i</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="p">))</span>
+
+<span class="c1"># Calcul du rayonnement</span>
+<span class="n">lghtcaribu</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="n">PARi</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">parunit</span><span class="o">=</span><span class="s2">&quot;micromol.m-2.s-1&quot;</span><span class="p">,</span> <span class="n">truesolartime</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+--- day 264, hour 16
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># visualisation</span>
+<span class="n">SceneWidget</span><span class="p">(</span><span class="n">lghtcaribu</span><span class="o">.</span><span class="n">plantGL_light</span><span class="p">(),</span>
+            <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">size_display</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+            <span class="n">plane</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">size_world</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="n">axes_helper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "20d3e789dcf940518db632fee1e6c0ab", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+</section>
+<section id="Examples-with-RATP-and-stem-elements">
+<h2><span class="section-number">8.3. </span>Examples with RATP and stem elements<a class="headerlink" href="#Examples-with-RATP-and-stem-elements" title="Permalink to this heading"></a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Stems processing checking
+-------------------------
+
+Scene for verification is a set of horizontal planes in one voxel as so:
+
+-------------
+|   ----    |
+|     ____  |
+| ----      |
+-------------
+
+We compare the PAR mean on all the planes between CARIBU and RATP
+
+Stems processing
+    * CARIBU
+        Computing of incident PAR is done with no transmittance, triangles are opaques
+
+    * RATP
+        triangles area are divided by 2
+</pre></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">geom1</span> <span class="o">=</span> <span class="n">pgl_all</span><span class="o">.</span><span class="n">FaceSet</span><span class="p">([(</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.96</span><span class="p">),(</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.6</span><span class="p">,</span><span class="mf">0.96</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.6</span><span class="p">,</span><span class="mf">0.6</span><span class="p">,</span><span class="mf">0.96</span><span class="p">),(</span><span class="mf">0.6</span><span class="p">,</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.96</span><span class="p">)],[</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)])</span>
+<span class="n">geom2</span> <span class="o">=</span> <span class="n">pgl_all</span><span class="o">.</span><span class="n">FaceSet</span><span class="p">([(</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.806</span><span class="p">),(</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.9</span><span class="p">,</span><span class="mf">0.806</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.6</span><span class="p">,</span><span class="mf">0.9</span><span class="p">,</span><span class="mf">0.806</span><span class="p">),(</span><span class="mf">0.6</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.806</span><span class="p">)],[</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)])</span>
+<span class="n">geom3</span> <span class="o">=</span> <span class="n">pgl_all</span><span class="o">.</span><span class="n">FaceSet</span><span class="p">([(</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.646</span><span class="p">),(</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.7</span><span class="p">,</span><span class="mf">0.646</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.9</span><span class="p">,</span><span class="mf">0.7</span><span class="p">,</span><span class="mf">0.646</span><span class="p">),(</span><span class="mf">0.9</span><span class="p">,</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.646</span><span class="p">)],[</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)])</span>
+<span class="n">geom4</span> <span class="o">=</span> <span class="n">pgl_all</span><span class="o">.</span><span class="n">FaceSet</span><span class="p">([(</span><span class="mf">0.3</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.486</span><span class="p">),(</span><span class="mf">0.3</span><span class="p">,</span><span class="mf">0.9</span><span class="p">,</span><span class="mf">0.486</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.8</span><span class="p">,</span><span class="mf">0.9</span><span class="p">,</span><span class="mf">0.486</span><span class="p">),(</span><span class="mf">0.8</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.486</span><span class="p">)],[</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)])</span>
+<span class="n">geom5</span> <span class="o">=</span> <span class="n">pgl_all</span><span class="o">.</span><span class="n">FaceSet</span><span class="p">([(</span><span class="mf">0.3</span><span class="p">,</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.32</span><span class="p">),(</span><span class="mf">0.3</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.32</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.8</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.32</span><span class="p">),(</span><span class="mf">0.8</span><span class="p">,</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.32</span><span class="p">)],[</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)])</span>
+<span class="n">geom6</span> <span class="o">=</span> <span class="n">pgl_all</span><span class="o">.</span><span class="n">FaceSet</span><span class="p">([(</span><span class="mf">0.2</span><span class="p">,</span><span class="mf">0.4</span><span class="p">,</span><span class="mf">0.16</span><span class="p">),(</span><span class="mf">0.2</span><span class="p">,</span><span class="mf">0.9</span><span class="p">,</span><span class="mf">0.16</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.6</span><span class="p">,</span><span class="mf">0.9</span><span class="p">,</span><span class="mf">0.16</span><span class="p">),(</span><span class="mf">0.6</span><span class="p">,</span><span class="mf">0.4</span><span class="p">,</span><span class="mf">0.16</span><span class="p">)],[</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)])</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">pgl_all</span><span class="o">.</span><span class="n">Scene</span><span class="p">([</span><span class="n">pgl_all</span><span class="o">.</span><span class="n">Shape</span><span class="p">(</span><span class="n">geom1</span><span class="p">,</span> <span class="n">pgl_all</span><span class="o">.</span><span class="n">Material</span><span class="p">((</span><span class="mi">250</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="mi">1</span><span class="p">),</span> <span class="mi">888</span><span class="p">),</span>
+                    <span class="n">pgl_all</span><span class="o">.</span><span class="n">Shape</span><span class="p">(</span><span class="n">geom2</span><span class="p">,</span> <span class="n">pgl_all</span><span class="o">.</span><span class="n">Material</span><span class="p">((</span><span class="mi">250</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="mi">1</span><span class="p">),</span> <span class="mi">888</span><span class="p">),</span>
+                    <span class="n">pgl_all</span><span class="o">.</span><span class="n">Shape</span><span class="p">(</span><span class="n">geom3</span><span class="p">,</span> <span class="n">pgl_all</span><span class="o">.</span><span class="n">Material</span><span class="p">((</span><span class="mi">250</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="mi">1</span><span class="p">),</span> <span class="mi">888</span><span class="p">),</span>
+                    <span class="n">pgl_all</span><span class="o">.</span><span class="n">Shape</span><span class="p">(</span><span class="n">geom4</span><span class="p">,</span> <span class="n">pgl_all</span><span class="o">.</span><span class="n">Material</span><span class="p">((</span><span class="mi">250</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="mi">1</span><span class="p">),</span> <span class="mi">888</span><span class="p">),</span>
+                    <span class="n">pgl_all</span><span class="o">.</span><span class="n">Shape</span><span class="p">(</span><span class="n">geom5</span><span class="p">,</span> <span class="n">pgl_all</span><span class="o">.</span><span class="n">Material</span><span class="p">((</span><span class="mi">250</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="mi">1</span><span class="p">),</span> <span class="mi">888</span><span class="p">),</span>
+                    <span class="n">pgl_all</span><span class="o">.</span><span class="n">Shape</span><span class="p">(</span><span class="n">geom6</span><span class="p">,</span> <span class="n">pgl_all</span><span class="o">.</span><span class="n">Material</span><span class="p">((</span><span class="mi">250</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="mi">1</span><span class="p">),</span> <span class="mi">888</span><span class="p">)])</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">geometry</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">environment</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">ratp_parameters</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">caribu_parameters</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="c1"># Paramètres pré-simulation</span>
+<span class="n">geometry</span><span class="p">[</span><span class="s2">&quot;scenes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="p">]</span>
+<span class="n">geometry</span><span class="p">[</span><span class="s2">&quot;stems id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">888</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span>
+
+<span class="n">environment</span><span class="p">[</span><span class="s2">&quot;coordinates&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">]</span> <span class="c1"># latitude, longitude, timezone</span>
+<span class="n">environment</span><span class="p">[</span><span class="s2">&quot;sky&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;turtle46&quot;</span> <span class="c1"># turtle à 46 directions par défaut</span>
+<span class="n">environment</span><span class="p">[</span><span class="s2">&quot;diffus&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">environment</span><span class="p">[</span><span class="s2">&quot;direct&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">environment</span><span class="p">[</span><span class="s2">&quot;reflected&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">environment</span><span class="p">[</span><span class="s2">&quot;infinite&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1">## Paramètres CARIBU ##</span>
+<span class="n">caribu_parameters</span><span class="p">[</span><span class="s2">&quot;sun algo&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;caribu&quot;</span>
+<span class="n">caribu_parameters</span><span class="p">[</span><span class="s2">&quot;caribu opt&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">caribu_parameters</span><span class="p">[</span><span class="s2">&quot;caribu opt&quot;</span><span class="p">][</span><span class="s2">&quot;par&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.10</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">)</span>
+<span class="n">lghtcaribu</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">environment</span><span class="o">=</span><span class="n">environment</span><span class="p">,</span>
+                                <span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;caribu&quot;</span><span class="p">,</span>
+                                <span class="n">lightmodel_parameters</span><span class="o">=</span><span class="n">caribu_parameters</span><span class="p">)</span>
+<span class="n">lghtcaribu</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## Paramètres RATP ##</span>
+<span class="n">dv</span> <span class="o">=</span> <span class="mf">1.</span> <span class="c1"># m</span>
+<span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dz</span> <span class="o">=</span> <span class="n">dv</span><span class="p">,</span> <span class="n">dv</span><span class="p">,</span> <span class="n">dv</span> <span class="c1"># m</span>
+<span class="n">ratp_parameters</span><span class="p">[</span><span class="s2">&quot;voxel size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dz</span><span class="p">]</span>
+<span class="n">ratp_parameters</span><span class="p">[</span><span class="s2">&quot;soil reflectance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">]</span>
+<span class="n">ratp_parameters</span><span class="p">[</span><span class="s2">&quot;mu&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.</span><span class="p">]</span>
+<span class="n">ratp_parameters</span><span class="p">[</span><span class="s2">&quot;tesselation level&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">ratp_parameters</span><span class="p">[</span><span class="s2">&quot;angle distrib algo&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;compute global&quot;</span>
+<span class="n">ratp_parameters</span><span class="p">[</span><span class="s2">&quot;nb angle classes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="n">ratp_parameters</span><span class="p">[</span><span class="s2">&quot;reflectance coefficients&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">]]</span>
+<span class="n">lghtratp</span> <span class="o">=</span> <span class="n">LightVegeManager</span><span class="p">(</span><span class="n">environment</span><span class="o">=</span><span class="n">environment</span><span class="p">,</span>
+                            <span class="n">lightmodel</span><span class="o">=</span><span class="s2">&quot;ratp&quot;</span><span class="p">,</span>
+                            <span class="n">lightmodel_parameters</span><span class="o">=</span><span class="n">ratp_parameters</span><span class="p">)</span>
+<span class="n">lghtratp</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">geometry</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># visualisation</span>
+<span class="n">SceneWidget</span><span class="p">(</span><span class="n">lghtratp</span><span class="o">.</span><span class="n">plantGL_nolight</span><span class="p">(</span><span class="n">printvoxels</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+            <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">size_display</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+            <span class="n">plane</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">size_world</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="n">axes_helper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "9cde2a83ac604bef871b420b04b34902", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PARi</span><span class="o">=</span><span class="mi">500</span>
+<span class="n">day</span><span class="o">=</span><span class="mf">100.</span>
+<span class="n">hour</span><span class="o">=</span><span class="mi">12</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PARi</span><span class="o">=</span><span class="mi">500</span>
+<span class="n">day</span><span class="o">=</span><span class="mf">100.</span>
+<span class="n">hour</span><span class="o">=</span><span class="mf">17.5</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lghtcaribu</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="n">PARi</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">parunit</span><span class="o">=</span><span class="s2">&quot;micromol.m-2.s-1&quot;</span><span class="p">,</span> <span class="n">truesolartime</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== CARIBU ===&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">lghtcaribu</span><span class="o">.</span><span class="n">elements_outputs</span><span class="p">)</span>
+<span class="c1"># visualisation</span>
+<span class="n">SceneWidget</span><span class="p">(</span><span class="n">lghtcaribu</span><span class="o">.</span><span class="n">plantGL_light</span><span class="p">(),</span>
+            <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">size_display</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+            <span class="n">plane</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">size_world</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="n">axes_helper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+=== CARIBU ===
+     Day  Hour  Organ  VegetationType  Area    par Eabs      par Ei
+0  100.0    12    888               0  1.29  226.615845  251.795383
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "d17905268cfe4bc4abc52bd944350cb4", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lghtratp</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">energy</span><span class="o">=</span><span class="n">PARi</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="n">day</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">parunit</span><span class="o">=</span><span class="s2">&quot;micromol.m-2.s-1&quot;</span><span class="p">,</span> <span class="n">truesolartime</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== RATP ===&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">lghtratp</span><span class="o">.</span><span class="n">elements_outputs</span><span class="p">)</span>
+<span class="c1"># visualisation</span>
+<span class="n">SceneWidget</span><span class="p">(</span><span class="n">lghtratp</span><span class="o">.</span><span class="n">plantGL_light</span><span class="p">(</span><span class="n">printvoxels</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+            <span class="n">position</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">size_display</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">),</span>
+            <span class="n">plane</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">size_world</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="n">axes_helper</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+=== RATP ===
+     Day  Hour  Organ  VegetationType  Area        PARa  Intercepted  \
+0  100.0  12.0    888               2  1.29  377.546967     0.487036
+
+   Transmitted   SunlitPAR  SunlitArea  ShadedPAR  ShadedArea
+0     0.487036  499.828644    0.487203        0.0    0.157797
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "347a43daf7b444228a995879c9e486bd", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="misc_functionnalities.html" class="btn btn-neutral float-left" title="7. Misc functionnalities" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="reference.html" class="btn btn-neutral float-right" title="Reference Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, INRAE P3F.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

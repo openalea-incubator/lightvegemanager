@@ -23,7 +23,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Architecture of the tool" href="architecture.html" />
+    <link rel="next" title="8. More examples" href="more_examples.html" />
     <link rel="prev" title="6. Example of use" href="example_canopy.html" /> 
 </head>
 
@@ -49,31 +49,35 @@
               <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="presentation.html">Presentation</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="tutorials.html#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials.html#quickstart">Quickstart</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="tutorials.html#tutorials-with-jupyter-notebooks">Tutorials with jupyter notebooks</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="tool_basics.html">1. LightVegeManager first steps</a></li>
-<li class="toctree-l3"><a class="reference internal" href="environment_parameters.html">2. Environment parameters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="input_scenes.html">3. Geometric inputs</a></li>
-<li class="toctree-l3"><a class="reference internal" href="lightmodels_functionnalities.html">4. Light models options</a></li>
-<li class="toctree-l3"><a class="reference internal" href="outputs_and_plantmodels_transfer.html">5. Output formats and transfer methods</a></li>
-<li class="toctree-l3"><a class="reference internal" href="example_canopy.html">6. Example of use</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">7. Misc functionnalities</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Content">7.1. Content</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Introduction">7.2. Introduction</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Simple-mesh-subdivision">7.3. Simple mesh subdivision</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Visualisation-with-VTK">7.4. Visualisation with VTK</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Analyze-with-s2v-and-s5">7.5. Analyze with s2v and s5</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture of the tool</a></li>
 <li class="toctree-l1"><a class="reference internal" href="inputs.html">Inputs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="others.html">Additionnal Functionalities</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials with jupyter notebooks</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="tool_basics.html">1. LightVegeManager first steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="environment_parameters.html">2. Environment parameters: ways to set the simulation environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="input_scenes.html">3. Geometric inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lightmodels_functionnalities.html">4. Light models options: how to set up the light models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="outputs_and_plantmodels_transfer.html">5. Output formats and transfer methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_canopy.html">6. Example of use</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">7. Misc functionnalities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Content">7.1. Content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Introduction">7.2. Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Simple-mesh-subdivision">7.3. Simple mesh subdivision</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Visualisation-with-VTK">7.4. Visualisation with VTK</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Triangles-exportation">7.4.1. Triangles exportation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Voxels-exportation">7.4.2. Voxels exportation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#Analyze-with-s2v-and-s5">7.5. Analyze with s2v and s5</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#s5-(fortran)">7.5.1. s5 (fortran)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="more_examples.html">8. More examples</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
 <ul>
@@ -94,7 +98,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="tutorials.html">Tutorials</a></li>
+          <li class="breadcrumb-item"><a href="tutorials.html">Tutorials with jupyter notebooks</a></li>
       <li class="breadcrumb-item active"><span class="section-number">7. </span>Misc functionnalities</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/misc_functionnalities.nblink.txt" rel="nofollow"> View page source</a>
@@ -686,14 +690,6 @@ p 2 100001001000 0  3 4.355116 3.219292 4.362386 4.516341 3.181239 4.363903 4.65
   0  4  0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0 0 0.000000
 </pre></div></div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
 </section>
 </section>
 </section>
@@ -704,7 +700,7 @@ p 2 100001001000 0  3 4.355116 3.219292 4.362386 4.516341 3.181239 4.363903 4.65
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="example_canopy.html" class="btn btn-neutral float-left" title="6. Example of use" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="architecture.html" class="btn btn-neutral float-right" title="Architecture of the tool" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="more_examples.html" class="btn btn-neutral float-right" title="8. More examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

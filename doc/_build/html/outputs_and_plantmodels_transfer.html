@@ -24,7 +24,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="6. Example of use" href="example_canopy.html" />
-    <link rel="prev" title="4. Light models options" href="lightmodels_functionnalities.html" /> 
+    <link rel="prev" title="4. Light models options: how to set up the light models" href="lightmodels_functionnalities.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -49,31 +49,32 @@
               <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="presentation.html">Presentation</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="tutorials.html#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials.html#quickstart">Quickstart</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="tutorials.html#tutorials-with-jupyter-notebooks">Tutorials with jupyter notebooks</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="tool_basics.html">1. LightVegeManager first steps</a></li>
-<li class="toctree-l3"><a class="reference internal" href="environment_parameters.html">2. Environment parameters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="input_scenes.html">3. Geometric inputs</a></li>
-<li class="toctree-l3"><a class="reference internal" href="lightmodels_functionnalities.html">4. Light models options</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">5. Output formats and transfer methods</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Content">5.1. Content</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Introduction">5.2. Introduction</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Main-light-outputs:-Pandas-dataframe">5.3. Main light outputs: Pandas dataframe</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#l-egume-results-transfer">5.4. l-egume results transfer</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#CN-Wheat-results-transfer">5.5. CN-Wheat results transfer</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="example_canopy.html">6. Example of use</a></li>
-<li class="toctree-l3"><a class="reference internal" href="misc_functionnalities.html">7. Misc functionnalities</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture of the tool</a></li>
 <li class="toctree-l1"><a class="reference internal" href="inputs.html">Inputs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="others.html">Additionnal Functionalities</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials with jupyter notebooks</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="tool_basics.html">1. LightVegeManager first steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="environment_parameters.html">2. Environment parameters: ways to set the simulation environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="input_scenes.html">3. Geometric inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lightmodels_functionnalities.html">4. Light models options: how to set up the light models</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">5. Output formats and transfer methods</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Content">5.1. Content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Introduction">5.2. Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Main-light-outputs:-Pandas-dataframe">5.3. Main light outputs: Pandas dataframe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#l-egume-results-transfer">5.4. l-egume results transfer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#RATP">5.4.1. RATP</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#CARIBU">5.4.2. CARIBU</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#CN-Wheat-results-transfer">5.5. CN-Wheat results transfer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="example_canopy.html">6. Example of use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc_functionnalities.html">7. Misc functionnalities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="more_examples.html">8. More examples</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
 <ul>
@@ -94,7 +95,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="tutorials.html">Tutorials</a></li>
+          <li class="breadcrumb-item"><a href="tutorials.html">Tutorials with jupyter notebooks</a></li>
       <li class="breadcrumb-item active"><span class="section-number">5. </span>Output formats and transfer methods</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/outputs_and_plantmodels_transfer.nblink.txt" rel="nofollow"> View page source</a>
@@ -1114,14 +1115,6 @@ PARa absorbed per plant
 {19: 0.0007445579394698143, 34: 0.0007445579394698143, 813: 0.0007445579394698141, 814: 0.00030915768207336026, 51: 0.0007445579394698143}
 </pre></div></div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
 </section>
 </section>
 
@@ -1129,7 +1122,7 @@ PARa absorbed per plant
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="lightmodels_functionnalities.html" class="btn btn-neutral float-left" title="4. Light models options" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="lightmodels_functionnalities.html" class="btn btn-neutral float-left" title="4. Light models options: how to set up the light models" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="example_canopy.html" class="btn btn-neutral float-right" title="6. Example of use" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

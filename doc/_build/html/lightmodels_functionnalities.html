@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>4. Light models options &mdash; LightVegeManager 0.0.0 documentation</title>
+  <title>4. Light models options: how to set up the light models &mdash; LightVegeManager 0.0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/nbsphinx-code-cells.css" type="text/css" />
@@ -49,30 +49,37 @@
               <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="presentation.html">Presentation</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="tutorials.html#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials.html#quickstart">Quickstart</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="tutorials.html#tutorials-with-jupyter-notebooks">Tutorials with jupyter notebooks</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="tool_basics.html">1. LightVegeManager first steps</a></li>
-<li class="toctree-l3"><a class="reference internal" href="environment_parameters.html">2. Environment parameters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="input_scenes.html">3. Geometric inputs</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">4. Light models options</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Content">4.1. Content</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Introduction">4.2. Introduction</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#CARIBU">4.3. CARIBU</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#RATP">4.4. RATP</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="outputs_and_plantmodels_transfer.html">5. Output formats and transfer methods</a></li>
-<li class="toctree-l3"><a class="reference internal" href="example_canopy.html">6. Example of use</a></li>
-<li class="toctree-l3"><a class="reference internal" href="misc_functionnalities.html">7. Misc functionnalities</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture of the tool</a></li>
 <li class="toctree-l1"><a class="reference internal" href="inputs.html">Inputs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="others.html">Additionnal Functionalities</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials with jupyter notebooks</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="tool_basics.html">1. LightVegeManager first steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="environment_parameters.html">2. Environment parameters: ways to set the simulation environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="input_scenes.html">3. Geometric inputs</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">4. Light models options: how to set up the light models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Content">4.1. Content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Introduction">4.2. Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#CARIBU">4.3. CARIBU</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Computing-the-sun-position">4.3.1. Computing the sun position</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Grid-of-virtual-sensors">4.3.2. Grid of virtual sensors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Other-parameters">4.3.3. Other parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#RATP">4.4. RATP</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Leaf-angle-distribution">4.4.1. Leaf angle distribution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Triangles-tesselation-in-a-grid">4.4.2. Triangles tesselation in a grid</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id1">4.4.3. Other parameters</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="outputs_and_plantmodels_transfer.html">5. Output formats and transfer methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_canopy.html">6. Example of use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc_functionnalities.html">7. Misc functionnalities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="more_examples.html">8. More examples</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
 <ul>
@@ -93,8 +100,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="tutorials.html">Tutorials</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">4. </span>Light models options</li>
+          <li class="breadcrumb-item"><a href="tutorials.html">Tutorials with jupyter notebooks</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">4. </span>Light models options: how to set up the light models</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/lightmodels_functionnalities.nblink.txt" rel="nofollow"> View page source</a>
       </li>
@@ -104,23 +111,23 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="Light-models-options">
-<h1><span class="section-number">4. </span>Light models options<a class="headerlink" href="#Light-models-options" title="Permalink to this heading"></a></h1>
+  <section id="Light-models-options:-how-to-set-up-the-light-models">
+<h1><span class="section-number">4. </span>Light models options: how to set up the light models<a class="headerlink" href="#Light-models-options:-how-to-set-up-the-light-models" title="Permalink to this heading"></a></h1>
 <section id="Content">
 <h2><span class="section-number">4.1. </span>Content<a class="headerlink" href="#Content" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p>CARIBU</p>
 <ul>
-<li><p>sun algo</p></li>
-<li><p>virtual sensors</p></li>
-<li><p>autres parametre</p></li>
+<li><p>Computing the sun position</p></li>
+<li><p>Grid of virtual sensors</p></li>
+<li><p>Other parameters</p></li>
 </ul>
 </li>
 <li><p>RATP</p>
 <ul>
-<li><p>distribution angles foliaires</p></li>
-<li><p>tesselation sur la grille</p></li>
-<li><p>autre paramètres</p></li>
+<li><p>Leaf angle distribution</p></li>
+<li><p>Triangles tesselation in a grid</p></li>
+<li><p>Other parameters</p></li>
 </ul>
 </li>
 </ul>
@@ -237,7 +244,7 @@ euclidean dist =  0.003397515564596359  m
 <p>If you can to match a grid of voxels, you can generate a set of virtual sensors following a 3D grid. You need to precise the dimension of the grid: - dxyz: <code class="docutils literal notranslate"><span class="pre">[dx,</span> <span class="pre">dy,</span> <span class="pre">dz]</span></code> size of one voxel - nxyz: <code class="docutils literal notranslate"><span class="pre">[nx,</span> <span class="pre">ny,</span> <span class="pre">nz]</span></code> number of voxels on each xyz axis - orig: <code class="docutils literal notranslate"><span class="pre">[0x,</span> <span class="pre">0y,</span> <span class="pre">0z]</span></code> origin point of the grid</p>
 <p>Optionnaly, you can write a geometric visualisation of the sensors in VTK format. You need to provide the file path and the flag <code class="docutils literal notranslate"><span class="pre">&quot;vtk&quot;</span></code>.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># grid dimensions</span>
@@ -248,7 +255,7 @@ euclidean dist =  0.003397515564596359  m
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># random triangles</span>
@@ -261,7 +268,7 @@ euclidean dist =  0.003397515564596359  m
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">caribu_args</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;sensors&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">,</span> <span class="n">dxyz</span><span class="p">,</span> <span class="n">nxyz</span><span class="p">,</span> <span class="n">orig</span><span class="p">]</span> <span class="p">}</span>
@@ -273,7 +280,7 @@ euclidean dist =  0.003397515564596359  m
 </div>
 <p>You can visualize the grid of sensors with plantGL through the method <code class="docutils literal notranslate"><span class="pre">plantGL_sensors</span></code></p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">SceneWidget</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">plantGL_sensors</span><span class="p">(),</span>
@@ -286,15 +293,15 @@ euclidean dist =  0.003397515564596359  m
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "12c381b7a3564abc8c39f565a3df8ba1", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "0a38db459b934f7f973c2b2a40610095", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <p>The lighting results are stored in <code class="docutils literal notranslate"><span class="pre">sensors_outputs</span></code></p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">energy</span> <span class="o">=</span> <span class="mf">500.</span>
@@ -311,12 +318,12 @@ euclidean dist =  0.003397515564596359  m
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-{&#39;par&#39;: {0: 0.5620043191303375, 1: 0.5618584729038281, 2: 0.60389586895853, 3: 0.5994287825556907, 4: 0.6003338819673372, 5: 0.9892227473385927, 6: 0.5420517619926417, 7: 0.552905696886898, 8: 0.5743983291679143, 9: 0.5231573288803778, 10: 0.7745655468808682, 11: 0.9950071883035141, 12: 0.49672566375401617, 13: 0.5718796592189763, 14: 0.48319737010376, 15: 0.6195291102018295, 16: 0.9035769753518178, 17: 0.997274929628352, 18: 0.47939433586083885, 19: 0.5249417244166038, 20: 0.5515631860087062, 21: 0.6541147586727625, 22: 0.910320558731268, 23: 0.9967711618096655, 24: 0.44404974665543817, 25: 0.3464944534705235, 26: 0.576028086893188, 27: 0.6768626772490913, 28: 0.7667147667894887, 29: 0.9955096543499555, 30: 0.5238543129825075, 31: 0.5599085722160164, 32: 0.5901538606669944, 33: 0.7256886984161701, 34: 0.7374665066266308, 35: 0.9697439931165255, 36: 0.535805675734872, 37: 0.5592452891944351, 38: 0.5756647374752185, 39: 0.6436426017849102, 40: 0.8336044711449767, 41: 0.9589390716358468, 42: 0.48280334011804865, 43: 0.47289570500357087, 44: 0.40950521426955416, 45: 0.5061163894590417, 46: 0.9029644634913371, 47: 0.9808292116907193, 48: 0.5256773022268902, 49: 0.5373692172299218, 50: 0.5395389993405157, 51: 0.5559339155709611, 52: 0.9110388997824403, 53: 0.9957011733188681, 54: 0.6082497251081437, 55: 0.5540370777829412, 56: 0.6013499582290773, 57: 0.7539935965727287, 58: 0.8696727228246093, 59: 0.993298546073756, 60: 0.4081481856749862, 61: 0.46169380494714657, 62: 0.5809020807378312, 63: 0.7442590554152073, 64: 0.7138952233199232, 65: 0.7478732769241822, 66: 0.5032646122746112, 67: 0.5531634094300184, 68: 0.638550859443428, 69: 0.7628007559452091, 70: 0.7781122640973328, 71: 0.9574046623297123, 72: 0.312388722462537, 73: 0.504423637651493, 74: 0.5442149181600349, 75: 0.7391683436234034, 76: 0.8855818394771745, 77: 0.9640197200776475, 78: 0.4203580140844563, 79: 0.4537542845248214, 80: 0.5989753470969673, 81: 0.7306663839592556, 82: 0.9018268581652129, 83: 0.9909660673736099, 84: 0.37802489895460467, 85: 0.43292188930298, 86: 0.46987687366761505, 87: 0.6846420042310976, 88: 0.7452057446753113, 89: 0.773713129441179, 90: 0.47203107097816877, 91: 0.5435298642622011, 92: 0.6677550575938763, 93: 0.6634022267445692, 94: 0.5372252318195736, 95: 0.9023960865197724, 96: 0.4971634549724447, 97: 0.5488919752425052, 98: 0.6747951992905524, 99: 0.6863121733752311, 100: 0.696034183027644, 101: 0.9291264272919091, 102: 0.44645286035739024, 103: 0.504907254303561, 104: 0.6142409240919622, 105: 0.7297223496657302, 106: 0.8596382049913499, 107: 0.9763594295561757, 108: 0.5048272323959268, 109: 0.4952087687052097, 110: 0.5130209741432934, 111: 0.6775275892147514, 112: 0.7948734232763064, 113: 0.9863293381925695, 114: 0.43721475011224165, 115: 0.5566692345452607, 116: 0.5383103915581062, 117: 0.6024880166636262, 118: 0.5720972583778527, 119: 0.6589129343366613, 120: 0.4924768124509249, 121: 0.537193061591714, 122: 0.6699775196270484, 123: 0.620561586323873, 124: 0.6521497566319846, 125: 0.9702187152637108, 126: 0.5876689594669928, 127: 0.5945561199175049, 128: 0.5497260905040386, 129: 0.5634661564314017, 130: 0.699646648631934, 131: 0.9926887155755253, 132: 0.5227188014528775, 133: 0.5774079809607106, 134: 0.43936686890653404, 135: 0.43682929998543724, 136: 0.62938914304342, 137: 0.9942403057070559, 138: 0.4797982572937865, 139: 0.5089085824700754, 140: 0.5471748263661631, 141: 0.6248668599922557, 142: 0.7369761308417812, 143: 0.9569481023238572, 144: 0.3407071432166338, 145: 0.33782083243555117, 146: 0.6309292261528813, 147: 0.6244924603643601, 148: 0.7465780451297654, 149: 0.8912547821466066}}
+{&#39;par&#39;: {0: 0.5357183881257019, 1: 0.4686494843618967, 2: 0.43585410695767945, 3: 0.7773054342426935, 4: 0.7653565097977126, 5: 0.8234079750501035, 6: 0.4758490954881396, 7: 0.5623902514683649, 8: 0.6648303684704121, 9: 0.7523744755517257, 10: 0.757628513619047, 11: 0.7759095328197766, 12: 0.5042164344666725, 13: 0.5273952940619577, 14: 0.618460535502636, 15: 0.7471856369784272, 16: 0.7002461334186968, 17: 0.8083881379807872, 18: 0.5731391756180516, 19: 0.6005392197593685, 20: 0.5830230691495272, 21: 0.668598834740319, 22: 0.7491856052337844, 23: 0.7778896638896193, 24: 0.45941263771422963, 25: 0.5231994757990336, 26: 0.5730702589058677, 27: 0.6802830730422291, 28: 0.768563206195468, 29: 0.8783160299524551, 30: 0.4879256729568832, 31: 0.3986838108537597, 32: 0.5107879595674222, 33: 0.7104544959233176, 34: 0.6104289235914225, 35: 0.8335714361222757, 36: 0.49402264002060914, 37: 0.5236661627298473, 38: 0.5559437694123442, 39: 0.7801809144392181, 40: 0.7482355370820352, 41: 0.8703959530204384, 42: 0.4437212327094782, 43: 0.48943914843165776, 44: 0.6265471398912993, 45: 0.6242676962673399, 46: 0.6242541832847409, 47: 0.8029465687456536, 48: 0.4552489809791363, 49: 0.5706269863386113, 50: 0.6707753329147661, 51: 0.6173647331272717, 52: 0.5817093348224309, 53: 0.8761273435958801, 54: 0.39061205289281303, 55: 0.4876144245567773, 56: 0.6081462607497906, 57: 0.6490748578167109, 58: 0.6112989310198034, 59: 0.9081399625253275, 60: 0.4382387194995509, 61: 0.24511969967129915, 62: 0.5564013821314899, 63: 0.6811375757235048, 64: 0.770734538810677, 65: 0.6876474556435463, 66: 0.4333876306307797, 67: 0.5117511864924423, 68: 0.5452643050348251, 69: 0.5855297120040052, 70: 0.7679378169458118, 71: 0.7374054106105965, 72: 0.46718762617607673, 73: 0.515406942360565, 74: 0.5498630958709402, 75: 0.38157016078052153, 76: 0.6230183331063252, 77: 0.9297880197486428, 78: 0.42012696485414797, 79: 0.43441190921900263, 80: 0.576547648435128, 81: 0.575563926783583, 82: 0.5587431661289568, 83: 0.9428844615982549, 84: 0.40797647513225416, 85: 0.32045180842520204, 86: 0.3860501936085704, 87: 0.6035746806015782, 88: 0.6761415094988514, 89: 0.9147231881446279, 90: 0.35723846481058197, 91: 0.29971902254716964, 92: 0.4617676006672053, 93: 0.6670186733643282, 94: 0.7729889949287282, 95: 0.8223626142139061, 96: 0.43689040185742767, 97: 0.5034266289477778, 98: 0.614485119215983, 99: 0.6753609146208617, 100: 0.8209389374222003, 101: 0.88137358368075, 102: 0.5060744695288328, 103: 0.5006922321596806, 104: 0.5450143532935812, 105: 0.669825913948119, 106: 0.7948585486270389, 107: 0.9497236962858565, 108: 0.5240235293870577, 109: 0.5291828813059647, 110: 0.5584025594129878, 111: 0.7009911880575855, 112: 0.6644575143621863, 113: 0.896722396622886, 114: 0.48066310311501675, 115: 0.45339172597584754, 116: 0.4928664818657807, 117: 0.6921498380364002, 118: 0.6582322232034805, 119: 0.8062622917317241, 120: 0.4165301298570477, 121: 0.47752211531730254, 122: 0.5422072915168136, 123: 0.7320985553256096, 124: 0.760961505134305, 125: 0.8425522336315453, 126: 0.48285036844495494, 127: 0.4897295356464291, 128: 0.6751897497018744, 129: 0.7650357314236249, 130: 0.6888417962718921, 131: 0.9099594684378505, 132: 0.4801370709108044, 133: 0.5233846696457297, 134: 0.5942217135899492, 135: 0.7384234333722701, 136: 0.8064837117567087, 137: 0.955340358423788, 138: 0.5755258055313021, 139: 0.5351956047253674, 140: 0.5430459909905389, 141: 0.7603523762894485, 142: 0.8096038729562012, 143: 0.9210479253387107, 144: 0.49256349385820036, 145: 0.4352151194578986, 146: 0.4353486297408457, 147: 0.7458275318718196, 148: 0.7991276473463365, 149: 0.9117731862505419}}
 </pre></div></div>
 </div>
 <p>You can also visualize the results in the plantGL scene</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">SceneWidget</span><span class="p">(</span><span class="n">lighting</span><span class="o">.</span><span class="n">plantGL_sensors</span><span class="p">(</span><span class="n">light</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
@@ -329,29 +336,11 @@ euclidean dist =  0.003397515564596359  m
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-intense-fg ansi-bold">---------------------------------------------------------------------------</span>
-<span class="ansi-red-intense-fg ansi-bold">AttributeError</span>                            Traceback (most recent call last)
-Cell <span class="ansi-green-intense-fg ansi-bold">In[7], line 1</span>
-<span class="ansi-green-intense-fg ansi-bold">----&gt; 1</span> SceneWidget(<span class="ansi-yellow-bg">lighting</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">plantGL_sensors</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">light</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">True</span><span class="ansi-yellow-bg">)</span>,
-<span class="ansi-green-fg">      2</span>             position<span style="color: rgb(98,98,98)">=</span>(<span style="color: rgb(98,98,98)">-</span><span style="color: rgb(98,98,98)">2.5</span>, <span style="color: rgb(98,98,98)">-</span><span style="color: rgb(98,98,98)">2.5</span>, <span style="color: rgb(98,98,98)">0.0</span>),
-<span class="ansi-green-fg">      3</span>             size_display<span style="color: rgb(98,98,98)">=</span>(<span style="color: rgb(98,98,98)">600</span>, <span style="color: rgb(98,98,98)">400</span>),
-<span class="ansi-green-fg">      4</span>             plane<span style="color: rgb(98,98,98)">=</span><span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
-<span class="ansi-green-fg">      5</span>             size_world <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(98,98,98)">10</span>,
-<span class="ansi-green-fg">      6</span>             axes_helper<span style="color: rgb(98,98,98)">=</span><span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
-
-File <span class="ansi-green-intense-fg ansi-bold">c:\users\mwoussen\cdd\codes\dev\lightvegemanager\src\lightvegemanager\tool.py:1088</span>, in <span class="ansi-cyan-fg">LightVegeManager.plantGL_sensors</span><span class="ansi-blue-intense-fg ansi-bold">(self, light)</span>
-<span class="ansi-green-fg">   1085</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span> <span style="color: rgb(0,0,255)">plantGL_sensors</span>(<span style="color: rgb(0,135,0)">self</span>, light<span style="color: rgb(98,98,98)">=</span><span class="ansi-bold" style="color: rgb(0,135,0)">False</span>):
-<span class="ansi-green-fg">   1086</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">import</span> <span class="ansi-bold" style="color: rgb(0,0,255)">openalea</span><span class="ansi-bold" style="color: rgb(0,0,255)">.</span><span class="ansi-bold" style="color: rgb(0,0,255)">plantgl</span><span class="ansi-bold" style="color: rgb(0,0,255)">.</span><span class="ansi-bold" style="color: rgb(0,0,255)">all</span> <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> <span class="ansi-bold" style="color: rgb(0,0,255)">pgl</span>
-<span class="ansi-green-intense-fg ansi-bold">-&gt; 1088</span>     plantGL_sensors <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">__sensors_plantgl</span>
-<span class="ansi-green-fg">   1090</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> light:
-<span class="ansi-green-fg">   1091</span>         var <span style="color: rgb(98,98,98)">=</span> [v <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> v <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>__sensors_outputs[<span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">par</span><span style="color: rgb(175,0,0)">&#34;</span>]<span style="color: rgb(98,98,98)">.</span>values()]
-
-<span class="ansi-red-intense-fg ansi-bold">AttributeError</span>: &#39;LightVegeManager&#39; object has no attribute &#39;_LightVegeManager__sensors_plantgl&#39;
-</pre></div></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "5552af150fc94d0e86071b0102a0bff8", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
@@ -371,7 +360,7 @@ File <span class="ansi-green-intense-fg ansi-bold">c:\users\mwoussen\cdd\codes\d
 </pre></div>
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "2b5e06124ce741ab8849cdad61f61a18", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "6a47cff23a7344f99b95c6181de7d2b2", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 </section>
 <section id="Other-parameters">
@@ -453,7 +442,7 @@ File <span class="ansi-green-intense-fg ansi-bold">~\AppData\Local\miniconda3\en
 </div>
 <p>You can also use the soilmesh option and get the lighting hitting the soil. The method <code class="docutils literal notranslate"><span class="pre">soilenergy</span></code> get you access to its result.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">caribu_args</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;soil mesh&quot;</span> <span class="p">:</span> <span class="kc">True</span> <span class="p">}</span>
@@ -698,7 +687,7 @@ Global
 <section id="Triangles-tesselation-in-a-grid">
 <h3><span class="section-number">4.4.2. </span>Triangles tesselation in a grid<a class="headerlink" href="#Triangles-tesselation-in-a-grid" title="Permalink to this heading"></a></h3>
 <p>You can reduce the error while transferring a triangle mesh to a voxel mesh by subdividing triangles across multiple voxels.</p>
-<div><p><img alt="391a1989ba074c14b5ea72238cf0a1cf" class="no-scaled-link" src="attachment:tesselation_voxels.png" style="width: 500px;" /></p>
+<div><p><img alt="da94faccd8d24a8f8080281858d52357" class="no-scaled-link" src="_images/tesselation_voxels.png" style="width: 500px;" /></p>
 </div><p>You only need to precise how many times you want to subdivide the triangles.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:

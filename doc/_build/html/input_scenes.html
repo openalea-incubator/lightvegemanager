@@ -23,8 +23,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="4. Light models options" href="lightmodels_functionnalities.html" />
-    <link rel="prev" title="2. Environment parameters" href="environment_parameters.html" /> 
+    <link rel="next" title="4. Light models options: how to set up the light models" href="lightmodels_functionnalities.html" />
+    <link rel="prev" title="2. Environment parameters: ways to set the simulation environment" href="environment_parameters.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -49,32 +49,44 @@
               <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="presentation.html">Presentation</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="tutorials.html#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials.html#quickstart">Quickstart</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="tutorials.html#tutorials-with-jupyter-notebooks">Tutorials with jupyter notebooks</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="tool_basics.html">1. LightVegeManager first steps</a></li>
-<li class="toctree-l3"><a class="reference internal" href="environment_parameters.html">2. Environment parameters</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">3. Geometric inputs</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Content">3.1. Content</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Introduction">3.2. Introduction</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Inputs-Formats">3.3. Inputs Formats</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Organizing-the-inputs">3.4. Organizing the inputs</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Stems">3.5. Stems</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Geometric-transformations">3.6. Geometric transformations</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="lightmodels_functionnalities.html">4. Light models options</a></li>
-<li class="toctree-l3"><a class="reference internal" href="outputs_and_plantmodels_transfer.html">5. Output formats and transfer methods</a></li>
-<li class="toctree-l3"><a class="reference internal" href="example_canopy.html">6. Example of use</a></li>
-<li class="toctree-l3"><a class="reference internal" href="misc_functionnalities.html">7. Misc functionnalities</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture of the tool</a></li>
 <li class="toctree-l1"><a class="reference internal" href="inputs.html">Inputs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="others.html">Additionnal Functionalities</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials with jupyter notebooks</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="tool_basics.html">1. LightVegeManager first steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="environment_parameters.html">2. Environment parameters: ways to set the simulation environment</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">3. Geometric inputs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Content">3.1. Content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Introduction">3.2. Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Inputs-Formats">3.3. Inputs Formats</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dict-of-triangles">3.3.1. dict of triangles</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PlantGL-scene">3.3.2. PlantGL scene</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#VGX-file">3.3.3. VGX file</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Grid-of-voxels">3.3.4. Grid of voxels</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#MTG-object-from-adelwheat">3.3.5. MTG object from adelwheat</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#RATP-inputs">3.3.6. RATP inputs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#RiRi5-inputs">3.3.7. RiRi5 inputs</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#Organizing-the-inputs">3.4. Organizing the inputs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Stems">3.5. Stems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Geometric-transformations">3.6. Geometric transformations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Translate">3.6.1. Translate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Rescale-following-metric-unit">3.6.2. Rescale following metric unit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Rescale-by-a-scalar-factor">3.6.3. Rescale by a scalar factor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Rotate">3.6.4. Rotate</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lightmodels_functionnalities.html">4. Light models options: how to set up the light models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="outputs_and_plantmodels_transfer.html">5. Output formats and transfer methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_canopy.html">6. Example of use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc_functionnalities.html">7. Misc functionnalities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="more_examples.html">8. More examples</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference Guide</span></p>
 <ul>
@@ -95,7 +107,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="tutorials.html">Tutorials</a></li>
+          <li class="breadcrumb-item"><a href="tutorials.html">Tutorials with jupyter notebooks</a></li>
       <li class="breadcrumb-item active"><span class="section-number">3. </span>Geometric inputs</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/input_scenes.nblink.txt" rel="nofollow"> View page source</a>
@@ -113,11 +125,13 @@
 <ul class="simple">
 <li><p>input formats</p>
 <ul>
-<li><p>dict</p></li>
-<li><p>plantGL</p></li>
-<li><p>fichier VGX</p></li>
-<li><p>grille de voxels</p></li>
-<li><p>table MTG de adelwheat</p></li>
+<li><p>Dict of triangles</p></li>
+<li><p>PlantGL scene</p></li>
+<li><p>VGX file</p></li>
+<li><p>Voxels grid</p></li>
+<li><p>MTG object from adelwheat</p></li>
+<li><p>RATP inputs</p></li>
+<li><p>RiRi5 inputs</p></li>
 </ul>
 </li>
 <li><p>organization levels: species and organs</p></li>
@@ -129,7 +143,7 @@
 <h2><span class="section-number">3.2. </span>Introduction<a class="headerlink" href="#Introduction" title="Permalink to this heading"></a></h2>
 <p>The main purpose of this tool was to merge several geometric scenes in various formats and apply a radiative modelling on it. Here, we will precise the different possiblities for manipulating geometry.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightvegemanager.LVM</span> <span class="kn">import</span> <span class="n">LightVegeManager</span>
@@ -138,7 +152,7 @@
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Environment parameters for this notebook</span>
@@ -1006,7 +1020,7 @@ c:\users\mwoussen\cdd\codes\dev\lightvegemanager\src\lightvegemanager\outputs.py
 <section id="Geometric-transformations">
 <h2><span class="section-number">3.6. </span>Geometric transformations<a class="headerlink" href="#Geometric-transformations" title="Permalink to this heading"></a></h2>
 <p>You can apply geometric transformations on some of the inputs scenes. We have currently 3 available transformations - translation by a vector - rescale by a factor or following scenes metric unit - rotation on the xy plane</p>
-<p><img alt="transform_geo.png" src="attachment:transform_geo.png" /></p>
+<p><img alt="transform_geo.png" src="_images/transform_geo.png" /></p>
 <p>Transformations are stored in a dict, which is stored at key <code class="docutils literal notranslate"><span class="pre">&quot;transformations&quot;</span></code> in the geometry entry. Structure of transformations :</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">transformations</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;scenes unit&quot;</span><span class="p">:</span> <span class="p">{</span> <span class="n">specy</span> <span class="n">ID</span><span class="p">:</span> <span class="s2">&quot;metric unit&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">},</span>
@@ -1016,6 +1030,7 @@ c:\users\mwoussen\cdd\codes\dev\lightvegemanager\src\lightvegemanager\outputs.py
 <span class="p">}</span>
 </pre></div>
 </div>
+<p><strong>Main scenes</strong></p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
@@ -1211,14 +1226,6 @@ c:\users\mwoussen\cdd\codes\dev\lightvegemanager\src\lightvegemanager\outputs.py
 <div class="output_area docutils container">
 <script type="application/vnd.jupyter.widget-view+json">{"model_id": "76451c57a9b44f0c9b30344714b536b4", "version_major": 2, "version_minor": 0}</script></div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
 </section>
 </section>
 </section>
@@ -1227,8 +1234,8 @@ c:\users\mwoussen\cdd\codes\dev\lightvegemanager\src\lightvegemanager\outputs.py
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="environment_parameters.html" class="btn btn-neutral float-left" title="2. Environment parameters" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="lightmodels_functionnalities.html" class="btn btn-neutral float-right" title="4. Light models options" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="environment_parameters.html" class="btn btn-neutral float-left" title="2. Environment parameters: ways to set the simulation environment" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="lightmodels_functionnalities.html" class="btn btn-neutral float-right" title="4. Light models options: how to set up the light models" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

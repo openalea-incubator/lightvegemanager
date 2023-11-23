@@ -32,10 +32,11 @@ Documentation
     :caption: User Guide
 
     presentation
-    tutorials
+    installation
     architecture
     inputs
     others
+    tutorials
 
 .. toctree::
     :maxdepth: 2
