@@ -91,7 +91,7 @@ For pratical uses of this tool with mixed crops, see [Plant Fusion](https://gith
     Development tools
     ```bash
         conda install pytest sphinx sphinx-rtd-theme -c conda-forge
-        pip install nbsphinx pgljupyter
+        pip install nbsphinx nbsphinx_link pgljupyter
     ```
     
 ### Complete installation

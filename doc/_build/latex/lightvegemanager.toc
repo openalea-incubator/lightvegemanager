@@ -1,0 +1,174 @@
+\babel@toc {english}{}\relax 
+\contentsline {chapter}{\numberline {1}Module description}{3}{chapter.1}%
+\contentsline {chapter}{\numberline {2}Documentation}{5}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Presentation}{5}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}Context}{5}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}Intentions}{5}{subsection.2.1.2}%
+\contentsline {subsection}{\numberline {2.1.3}How}{5}{subsection.2.1.3}%
+\contentsline {subsection}{\numberline {2.1.4}Lighting}{6}{subsection.2.1.4}%
+\contentsline {subsubsection}{Surfacic approach (CARIBU)}{6}{subsubsection*.6}%
+\contentsline {subsubsection}{Volumic approach (PyRATP, RiRi)}{6}{subsubsection*.7}%
+\contentsline {section}{\numberline {2.2}Installation}{9}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Setting a Python environment}{9}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}Installation of Needed Packages}{9}{subsection.2.2.2}%
+\contentsline {subsubsection}{PyRATP}{9}{subsubsection*.8}%
+\contentsline {subsubsection}{RiRi5}{9}{subsubsection*.9}%
+\contentsline {subsubsection}{LightVegeManager}{9}{subsubsection*.10}%
+\contentsline {subsection}{\numberline {2.2.3}Quickstart}{10}{subsection.2.2.3}%
+\contentsline {section}{\numberline {2.3}Architecture of the tool}{10}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Package Content}{10}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}Code structure}{11}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.3}Front End: the main commands}{12}{subsection.2.3.3}%
+\contentsline {subsection}{\numberline {2.3.4}Back End: More details about how the tool works}{13}{subsection.2.3.4}%
+\contentsline {subsubsection}{Geometric merging}{13}{subsubsection*.11}%
+\contentsline {subsubsection}{Managing indexes}{13}{subsubsection*.12}%
+\contentsline {subsubsection}{Triangle subdivision}{13}{subsubsection*.13}%
+\contentsline {subsubsection}{CARIBU, l\sphinxhyphen {}egume and virtual sensors}{16}{subsubsection*.14}%
+\contentsline {section}{\numberline {2.4}Inputs}{16}{section.2.4}%
+\contentsline {subsection}{\numberline {2.4.1}Geometric inputs}{16}{subsection.2.4.1}%
+\contentsline {subsubsection}{Scenes}{16}{subsubsection*.15}%
+\contentsline {subsubsection}{Geometric transformations}{17}{subsubsection*.16}%
+\contentsline {paragraph}{\sphinxstyleliteralintitle {\sphinxupquote {"scenes unit"}}}{17}{paragraph*.17}%
+\contentsline {paragraph}{\sphinxstyleliteralintitle {\sphinxupquote {"rescale"}}}{17}{paragraph*.18}%
+\contentsline {paragraph}{\sphinxstyleliteralintitle {\sphinxupquote {"translate"}}}{18}{paragraph*.19}%
+\contentsline {paragraph}{\sphinxstyleliteralintitle {\sphinxupquote {"xyz orientation"}}}{18}{paragraph*.20}%
+\contentsline {subsection}{\numberline {2.4.2}Environment parameters}{18}{subsection.2.4.2}%
+\contentsline {subsection}{\numberline {2.4.3}Light model parameters}{19}{subsection.2.4.3}%
+\contentsline {subsubsection}{CARIBU: surfacic approach}{19}{subsubsection*.21}%
+\contentsline {subsubsection}{RATP: volumic approach}{20}{subsubsection*.22}%
+\contentsline {paragraph}{Grid specifications}{20}{paragraph*.23}%
+\contentsline {paragraph}{Leaf angle distribution}{21}{paragraph*.24}%
+\contentsline {paragraph}{Vegetation type}{21}{paragraph*.25}%
+\contentsline {section}{\numberline {2.5}Additionnal Functionalities}{21}{section.2.5}%
+\contentsline {subsection}{\numberline {2.5.1}Inputs analysis Tool}{21}{subsection.2.5.1}%
+\contentsline {subsection}{\numberline {2.5.2}Visualisation}{21}{subsection.2.5.2}%
+\contentsline {subsubsection}{VTK files}{21}{subsubsection*.26}%
+\contentsline {subsubsection}{PlantGL visualizer}{22}{subsubsection*.27}%
+\contentsline {section}{\numberline {2.6}Tutorials with jupyter notebooks}{22}{section.2.6}%
+\contentsline {subsection}{\numberline {2.6.1}LightVegeManager first steps}{22}{subsection.2.6.1}%
+\contentsline {subsubsection}{Content:}{22}{subsubsection*.28}%
+\contentsline {subsubsection}{Introduction}{22}{subsubsection*.29}%
+\contentsline {subsubsection}{One triangle}{22}{subsubsection*.30}%
+\contentsline {paragraph}{CARIBU (surfarcic modelling)}{23}{paragraph*.31}%
+\contentsline {paragraph}{RATP}{23}{paragraph*.32}%
+\contentsline {subsubsection}{Set of triangles}{24}{subsubsection*.33}%
+\contentsline {paragraph}{CARIBU}{25}{paragraph*.34}%
+\contentsline {paragraph}{RATP}{26}{paragraph*.35}%
+\contentsline {subsection}{\numberline {2.6.2}Environment parameters: ways to set the simulation environment}{29}{subsection.2.6.2}%
+\contentsline {subsubsection}{Content}{29}{subsubsection*.36}%
+\contentsline {subsubsection}{Introduction}{29}{subsubsection*.37}%
+\contentsline {subsubsection}{First options}{30}{subsubsection*.38}%
+\contentsline {subsubsection}{Different ways to set a sky}{32}{subsubsection*.39}%
+\contentsline {paragraph}{Turtle46}{32}{paragraph*.40}%
+\contentsline {paragraph}{File}{35}{paragraph*.41}%
+\contentsline {paragraph}{Custom number of directions}{37}{paragraph*.42}%
+\contentsline {paragraph}{And RATP ?}{39}{paragraph*.43}%
+\contentsline {subsection}{\numberline {2.6.3}Geometric inputs}{43}{subsection.2.6.3}%
+\contentsline {subsubsection}{Content}{43}{subsubsection*.44}%
+\contentsline {subsubsection}{Introduction}{43}{subsubsection*.45}%
+\contentsline {subsubsection}{Inputs Formats}{44}{subsubsection*.46}%
+\contentsline {paragraph}{dict of triangles}{44}{paragraph*.47}%
+\contentsline {paragraph}{PlantGL scene}{45}{paragraph*.48}%
+\contentsline {paragraph}{VGX file}{45}{paragraph*.49}%
+\contentsline {paragraph}{Grid of voxels}{46}{paragraph*.50}%
+\contentsline {paragraph}{MTG object from adelwheat}{47}{paragraph*.51}%
+\contentsline {paragraph}{RATP inputs}{48}{paragraph*.52}%
+\contentsline {paragraph}{RiRi5 inputs}{48}{paragraph*.53}%
+\contentsline {subsubsection}{Organizing the inputs}{52}{subsubsection*.54}%
+\contentsline {subsubsection}{Stems}{54}{subsubsection*.55}%
+\contentsline {subsubsection}{Geometric transformations}{55}{subsubsection*.56}%
+\contentsline {paragraph}{Translate}{56}{paragraph*.57}%
+\contentsline {paragraph}{Rescale following metric unit}{57}{paragraph*.58}%
+\contentsline {paragraph}{Rescale by a scalar factor}{57}{paragraph*.59}%
+\contentsline {paragraph}{Rotate}{58}{paragraph*.60}%
+\contentsline {subsection}{\numberline {2.6.4}Light models options: how to set up the light models}{58}{subsection.2.6.4}%
+\contentsline {subsubsection}{Content}{58}{subsubsection*.61}%
+\contentsline {subsubsection}{Introduction}{59}{subsubsection*.62}%
+\contentsline {subsubsection}{CARIBU}{59}{subsubsection*.63}%
+\contentsline {paragraph}{Computing the sun position}{59}{paragraph*.64}%
+\contentsline {paragraph}{Grid of virtual sensors}{60}{paragraph*.65}%
+\contentsline {paragraph}{Other parameters}{62}{paragraph*.66}%
+\contentsline {subsubsection}{RATP}{64}{subsubsection*.67}%
+\contentsline {paragraph}{Leaf angle distribution}{65}{paragraph*.68}%
+\contentsline {subparagraph}{File}{65}{subparagraph*.69}%
+\contentsline {subparagraph}{Global distribution}{65}{subparagraph*.70}%
+\contentsline {subparagraph}{Local distribution}{66}{subparagraph*.71}%
+\contentsline {paragraph}{Triangles tesselation in a grid}{67}{paragraph*.72}%
+\contentsline {paragraph}{Other parameters}{68}{paragraph*.73}%
+\contentsline {subsection}{\numberline {2.6.5}Output formats and transfer methods}{68}{subsection.2.6.5}%
+\contentsline {subsubsection}{Content}{68}{subsubsection*.74}%
+\contentsline {subsubsection}{Introduction}{68}{subsubsection*.75}%
+\contentsline {subsubsection}{Main light outputs: Pandas dataframe}{69}{subsubsection*.76}%
+\contentsline {subsubsection}{l\sphinxhyphen {}egume results transfer}{74}{subsubsection*.77}%
+\contentsline {paragraph}{RATP}{75}{paragraph*.78}%
+\contentsline {paragraph}{CARIBU}{80}{paragraph*.79}%
+\contentsline {subsubsection}{CN\sphinxhyphen {}Wheat results transfer}{83}{subsubsection*.80}%
+\contentsline {subsection}{\numberline {2.6.6}Example of use}{84}{subsection.2.6.6}%
+\contentsline {subsubsection}{Canopy generation}{84}{subsubsection*.81}%
+\contentsline {subsubsection}{Lighting simulation}{85}{subsubsection*.82}%
+\contentsline {subsection}{\numberline {2.6.7}Misc functionnalities}{86}{subsection.2.6.7}%
+\contentsline {subsubsection}{Content}{86}{subsubsection*.83}%
+\contentsline {subsubsection}{Introduction}{86}{subsubsection*.84}%
+\contentsline {subsubsection}{Simple mesh subdivision}{86}{subsubsection*.85}%
+\contentsline {subsubsection}{Visualisation with VTK}{87}{subsubsection*.86}%
+\contentsline {paragraph}{Triangles exportation}{88}{paragraph*.87}%
+\contentsline {paragraph}{Voxels exportation}{88}{paragraph*.88}%
+\contentsline {subsubsection}{Analyze with s2v and s5}{88}{subsubsection*.89}%
+\contentsline {paragraph}{s5 (fortran)}{89}{paragraph*.90}%
+\contentsline {subparagraph}{Description of \sphinxstyleliteralintitle {\sphinxupquote {fort.60}}}{89}{subparagraph*.91}%
+\contentsline {subparagraph}{Description of \sphinxstyleliteralintitle {\sphinxupquote {leafarea}}}{91}{subparagraph*.92}%
+\contentsline {subparagraph}{s2v (c++)}{92}{subparagraph*.93}%
+\contentsline {subparagraph}{Description of \sphinxstyleliteralintitle {\sphinxupquote {s2v.log}}}{92}{subparagraph*.94}%
+\contentsline {subparagraph}{Description of \sphinxstyleliteralintitle {\sphinxupquote {s2v.can}}}{93}{subparagraph*.95}%
+\contentsline {subparagraph}{Description of \sphinxstyleliteralintitle {\sphinxupquote {s2v.area}}}{94}{subparagraph*.96}%
+\contentsline {subparagraph}{Description of \sphinxstyleliteralintitle {\sphinxupquote {out.dang}}}{94}{subparagraph*.97}%
+\contentsline {subparagraph}{Description of \sphinxstyleliteralintitle {\sphinxupquote {leafarea}}}{94}{subparagraph*.98}%
+\contentsline {subsection}{\numberline {2.6.8}More examples}{95}{subsection.2.6.8}%
+\contentsline {subsubsection}{Sun positions}{95}{subsubsection*.99}%
+\contentsline {subsubsection}{Two planes}{97}{subsubsection*.100}%
+\contentsline {subsubsection}{Examples with RATP and stem elements}{98}{subsubsection*.101}%
+\contentsline {section}{\numberline {2.7}Reference Guide}{101}{section.2.7}%
+\contentsline {subsection}{\numberline {2.7.1}\sphinxstyleliteralintitle {\sphinxupquote {LVM}} module}{102}{subsection.2.7.1}%
+\contentsline {subsubsection}{LightVegeManager}{102}{subsubsection*.137}%
+\contentsline {subsection}{\numberline {2.7.2}\sphinxstyleliteralintitle {\sphinxupquote {CARIBUinputs}} module}{112}{subsection.2.7.2}%
+\contentsline {subsubsection}{CARIBUinputs}{112}{subsubsection*.165}%
+\contentsline {subsection}{\numberline {2.7.3}\sphinxstyleliteralintitle {\sphinxupquote {RATPinputs}} module}{116}{subsection.2.7.3}%
+\contentsline {subsubsection}{RATPinputs}{116}{subsubsection*.170}%
+\contentsline {subsection}{\numberline {2.7.4}\sphinxstyleliteralintitle {\sphinxupquote {VTK}} module}{117}{subsection.2.7.4}%
+\contentsline {subsubsection}{VTK}{117}{subsubsection*.174}%
+\contentsline {subsection}{\numberline {2.7.5}\sphinxstyleliteralintitle {\sphinxupquote {basicgeometry}} module}{119}{subsection.2.7.5}%
+\contentsline {subsubsection}{basicgeometry}{119}{subsubsection*.180}%
+\contentsline {subsubsection}{example}{121}{subsubsection*.188}%
+\contentsline {subsubsection}{example}{121}{subsubsection*.190}%
+\contentsline {subsubsection}{example}{122}{subsubsection*.192}%
+\contentsline {subsection}{\numberline {2.7.6}\sphinxstyleliteralintitle {\sphinxupquote {buildRATPscene}} module}{122}{subsection.2.7.6}%
+\contentsline {subsubsection}{buildRATPscene}{122}{subsubsection*.193}%
+\contentsline {subsection}{\numberline {2.7.7}\sphinxstyleliteralintitle {\sphinxupquote {defaultvalues}} module}{125}{subsection.2.7.7}%
+\contentsline {subsubsection}{defaultvalues}{125}{subsubsection*.198}%
+\contentsline {subsection}{\numberline {2.7.8}\sphinxstyleliteralintitle {\sphinxupquote {leafangles}} module}{125}{subsection.2.7.8}%
+\contentsline {subsubsection}{leafangles}{125}{subsubsection*.200}%
+\contentsline {subsection}{\numberline {2.7.9}\sphinxstyleliteralintitle {\sphinxupquote {outputs}} module}{126}{subsection.2.7.9}%
+\contentsline {subsubsection}{outputs}{126}{subsubsection*.204}%
+\contentsline {subsection}{\numberline {2.7.10}\sphinxstyleliteralintitle {\sphinxupquote {plantGL}} module}{131}{subsection.2.7.10}%
+\contentsline {subsubsection}{plantGL}{131}{subsubsection*.213}%
+\contentsline {subsection}{\numberline {2.7.11}\sphinxstyleliteralintitle {\sphinxupquote {sky}} module}{132}{subsection.2.7.11}%
+\contentsline {subsubsection}{sky}{132}{subsubsection*.217}%
+\contentsline {subsection}{\numberline {2.7.12}\sphinxstyleliteralintitle {\sphinxupquote {stems}} module}{134}{subsection.2.7.12}%
+\contentsline {subsubsection}{stems}{134}{subsubsection*.223}%
+\contentsline {subsection}{\numberline {2.7.13}\sphinxstyleliteralintitle {\sphinxupquote {sun}} module}{135}{subsection.2.7.13}%
+\contentsline {subsubsection}{sun}{135}{subsubsection*.226}%
+\contentsline {subsection}{\numberline {2.7.14}\sphinxstyleliteralintitle {\sphinxupquote {tesselator}} module}{136}{subsection.2.7.14}%
+\contentsline {subsubsection}{tesselator}{136}{subsubsection*.230}%
+\contentsline {subsection}{\numberline {2.7.15}\sphinxstyleliteralintitle {\sphinxupquote {transfer}} module}{138}{subsection.2.7.15}%
+\contentsline {subsubsection}{transfer}{138}{subsubsection*.237}%
+\contentsline {subsection}{\numberline {2.7.16}\sphinxstyleliteralintitle {\sphinxupquote {trianglesmesh}} module}{139}{subsection.2.7.16}%
+\contentsline {subsubsection}{trianglesmesh}{139}{subsubsection*.240}%
+\contentsline {subsection}{\numberline {2.7.17}\sphinxstyleliteralintitle {\sphinxupquote {voxelsmesh}} module}{144}{subsection.2.7.17}%
+\contentsline {subsubsection}{voxelsmesh}{144}{subsubsection*.253}%
+\contentsline {chapter}{\numberline {3}Contact}{147}{chapter.3}%
+\contentsline {chapter}{\numberline {4}Authors}{149}{chapter.4}%
+\contentsline {chapter}{\numberline {5}License}{151}{chapter.5}%
+\contentsline {chapter}{\numberline {6}Funding}{153}{chapter.6}%
+\contentsline {chapter}{\numberline {7}Research references}{155}{chapter.7}%
+\contentsline {chapter}{\numberline {8}Indices and tables}{157}{chapter.8}%
+\contentsline {chapter}{Python Module Index}{159}{section*.259}%

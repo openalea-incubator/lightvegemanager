@@ -1,0 +1,138 @@
+\indexentry{module@\spxentry{module}!lightvegemanager@\spxentry{lightvegemanager}|hyperpage}{1}
+\indexentry{lightvegemanager@\spxentry{lightvegemanager}!module@\spxentry{module}|hyperpage}{1}
+\indexentry{module@\spxentry{module}!LVM@\spxentry{LVM}|hyperpage}{102}
+\indexentry{LVM@\spxentry{LVM}!module@\spxentry{module}|hyperpage}{102}
+\indexentry{LightVegeManager (class in LVM)@\spxentry{LightVegeManager}\spxextra{class in LVM}|hyperpage}{103}
+\indexentry{build() (LVM.LightVegeManager method)@\spxentry{build()}\spxextra{LVM.LightVegeManager method}|hyperpage}{104}
+\indexentry{run() (LVM.LightVegeManager method)@\spxentry{run()}\spxextra{LVM.LightVegeManager method}|hyperpage}{105}
+\indexentry{to\_MTG() (LVM.LightVegeManager method)@\spxentry{to\_MTG()}\spxextra{LVM.LightVegeManager method}|hyperpage}{105}
+\indexentry{to\_l\_egume() (LVM.LightVegeManager method)@\spxentry{to\_l\_egume()}\spxextra{LVM.LightVegeManager method}|hyperpage}{105}
+\indexentry{s5() (LVM.LightVegeManager method)@\spxentry{s5()}\spxextra{LVM.LightVegeManager method}|hyperpage}{107}
+\indexentry{s2v() (LVM.LightVegeManager method)@\spxentry{s2v()}\spxextra{LVM.LightVegeManager method}|hyperpage}{107}
+\indexentry{VTK\_nolight() (LVM.LightVegeManager method)@\spxentry{VTK\_nolight()}\spxextra{LVM.LightVegeManager method}|hyperpage}{108}
+\indexentry{VTK\_light() (LVM.LightVegeManager method)@\spxentry{VTK\_light()}\spxextra{LVM.LightVegeManager method}|hyperpage}{108}
+\indexentry{VTK\_sun() (LVM.LightVegeManager method)@\spxentry{VTK\_sun()}\spxextra{LVM.LightVegeManager method}|hyperpage}{109}
+\indexentry{plantGL\_sensors() (LVM.LightVegeManager method)@\spxentry{plantGL\_sensors()}\spxextra{LVM.LightVegeManager method}|hyperpage}{109}
+\indexentry{plantGL\_nolight() (LVM.LightVegeManager method)@\spxentry{plantGL\_nolight()}\spxextra{LVM.LightVegeManager method}|hyperpage}{109}
+\indexentry{plantGL\_light() (LVM.LightVegeManager method)@\spxentry{plantGL\_light()}\spxextra{LVM.LightVegeManager method}|hyperpage}{109}
+\indexentry{riri5\_transmitted\_light (LVM.LightVegeManager property)@\spxentry{riri5\_transmitted\_light}\spxextra{LVM.LightVegeManager property}|hyperpage}{110}
+\indexentry{riri5\_intercepted\_light (LVM.LightVegeManager property)@\spxentry{riri5\_intercepted\_light}\spxextra{LVM.LightVegeManager property}|hyperpage}{110}
+\indexentry{elements\_outputs (LVM.LightVegeManager property)@\spxentry{elements\_outputs}\spxextra{LVM.LightVegeManager property}|hyperpage}{110}
+\indexentry{triangles\_outputs (LVM.LightVegeManager property)@\spxentry{triangles\_outputs}\spxextra{LVM.LightVegeManager property}|hyperpage}{110}
+\indexentry{voxels\_outputs (LVM.LightVegeManager property)@\spxentry{voxels\_outputs}\spxextra{LVM.LightVegeManager property}|hyperpage}{110}
+\indexentry{sensors\_outputs (LVM.LightVegeManager property)@\spxentry{sensors\_outputs}\spxextra{LVM.LightVegeManager property}|hyperpage}{111}
+\indexentry{sun (LVM.LightVegeManager property)@\spxentry{sun}\spxextra{LVM.LightVegeManager property}|hyperpage}{111}
+\indexentry{soilenergy (LVM.LightVegeManager property)@\spxentry{soilenergy}\spxextra{LVM.LightVegeManager property}|hyperpage}{111}
+\indexentry{maxtrianglearea (LVM.LightVegeManager property)@\spxentry{maxtrianglearea}\spxextra{LVM.LightVegeManager property}|hyperpage}{111}
+\indexentry{legume\_empty\_layers (LVM.LightVegeManager property)@\spxentry{legume\_empty\_layers}\spxextra{LVM.LightVegeManager property}|hyperpage}{111}
+\indexentry{tesselationtime (LVM.LightVegeManager property)@\spxentry{tesselationtime}\spxextra{LVM.LightVegeManager property}|hyperpage}{111}
+\indexentry{modelruntime (LVM.LightVegeManager property)@\spxentry{modelruntime}\spxextra{LVM.LightVegeManager property}|hyperpage}{112}
+\indexentry{leafangledistribution (LVM.LightVegeManager property)@\spxentry{leafangledistribution}\spxextra{LVM.LightVegeManager property}|hyperpage}{112}
+\indexentry{domain (LVM.LightVegeManager property)@\spxentry{domain}\spxextra{LVM.LightVegeManager property}|hyperpage}{112}
+\indexentry{module@\spxentry{module}!CARIBUinputs@\spxentry{CARIBUinputs}|hyperpage}{112}
+\indexentry{CARIBUinputs@\spxentry{CARIBUinputs}!module@\spxentry{module}|hyperpage}{112}
+\indexentry{Prepare\_CARIBU() (in module CARIBUinputs)@\spxentry{Prepare\_CARIBU()}\spxextra{in module CARIBUinputs}|hyperpage}{113}
+\indexentry{CARIBU\_opticals() (in module CARIBUinputs)@\spxentry{CARIBU\_opticals()}\spxextra{in module CARIBUinputs}|hyperpage}{113}
+\indexentry{create\_caribu\_legume\_sensors() (in module CARIBUinputs)@\spxentry{create\_caribu\_legume\_sensors()}\spxextra{in module CARIBUinputs}|hyperpage}{114}
+\indexentry{run\_caribu() (in module CARIBUinputs)@\spxentry{run\_caribu()}\spxextra{in module CARIBUinputs}|hyperpage}{115}
+\indexentry{module@\spxentry{module}!RATPinputs@\spxentry{RATPinputs}|hyperpage}{116}
+\indexentry{RATPinputs@\spxentry{RATPinputs}!module@\spxentry{module}|hyperpage}{116}
+\indexentry{RATP\_vegetation() (in module RATPinputs)@\spxentry{RATP\_vegetation()}\spxextra{in module RATPinputs}|hyperpage}{116}
+\indexentry{RATP\_meteo() (in module RATPinputs)@\spxentry{RATP\_meteo()}\spxextra{in module RATPinputs}|hyperpage}{116}
+\indexentry{RdRsH() (in module RATPinputs)@\spxentry{RdRsH()}\spxextra{in module RATPinputs}|hyperpage}{117}
+\indexentry{module@\spxentry{module}!VTK@\spxentry{VTK}|hyperpage}{117}
+\indexentry{VTK@\spxentry{VTK}!module@\spxentry{module}|hyperpage}{117}
+\indexentry{VTKtriangles() (in module VTK)@\spxentry{VTKtriangles()}\spxextra{in module VTK}|hyperpage}{117}
+\indexentry{VTKline() (in module VTK)@\spxentry{VTKline()}\spxextra{in module VTK}|hyperpage}{117}
+\indexentry{ratp\_prepareVTK() (in module VTK)@\spxentry{ratp\_prepareVTK()}\spxextra{in module VTK}|hyperpage}{118}
+\indexentry{VTKvoxels() (in module VTK)@\spxentry{VTKvoxels()}\spxextra{in module VTK}|hyperpage}{118}
+\indexentry{PlantGL\_to\_VTK() (in module VTK)@\spxentry{PlantGL\_to\_VTK()}\spxextra{in module VTK}|hyperpage}{118}
+\indexentry{module@\spxentry{module}!basicgeometry@\spxentry{basicgeometry}|hyperpage}{119}
+\indexentry{basicgeometry@\spxentry{basicgeometry}!module@\spxentry{module}|hyperpage}{119}
+\indexentry{crossproduct() (in module basicgeometry)@\spxentry{crossproduct()}\spxextra{in module basicgeometry}|hyperpage}{119}
+\indexentry{middle() (in module basicgeometry)@\spxentry{middle()}\spxextra{in module basicgeometry}|hyperpage}{119}
+\indexentry{triangle\_normal() (in module basicgeometry)@\spxentry{triangle\_normal()}\spxextra{in module basicgeometry}|hyperpage}{119}
+\indexentry{triangle\_elevation() (in module basicgeometry)@\spxentry{triangle\_elevation()}\spxextra{in module basicgeometry}|hyperpage}{119}
+\indexentry{triangle\_area() (in module basicgeometry)@\spxentry{triangle\_area()}\spxextra{in module basicgeometry}|hyperpage}{120}
+\indexentry{triangle\_barycenter() (in module basicgeometry)@\spxentry{triangle\_barycenter()}\spxextra{in module basicgeometry}|hyperpage}{120}
+\indexentry{rescale() (in module basicgeometry)@\spxentry{rescale()}\spxextra{in module basicgeometry}|hyperpage}{120}
+\indexentry{translate() (in module basicgeometry)@\spxentry{translate()}\spxextra{in module basicgeometry}|hyperpage}{121}
+\indexentry{zrotate() (in module basicgeometry)@\spxentry{zrotate()}\spxextra{in module basicgeometry}|hyperpage}{121}
+\indexentry{module@\spxentry{module}!buildRATPscene@\spxentry{buildRATPscene}|hyperpage}{122}
+\indexentry{buildRATPscene@\spxentry{buildRATPscene}!module@\spxentry{module}|hyperpage}{122}
+\indexentry{extract\_grid\_origin() (in module buildRATPscene)@\spxentry{extract\_grid\_origin()}\spxextra{in module buildRATPscene}|hyperpage}{122}
+\indexentry{build\_RATPscene\_from\_trimesh() (in module buildRATPscene)@\spxentry{build\_RATPscene\_from\_trimesh()}\spxextra{in module buildRATPscene}|hyperpage}{123}
+\indexentry{build\_RATPscene\_empty() (in module buildRATPscene)@\spxentry{build\_RATPscene\_empty()}\spxextra{in module buildRATPscene}|hyperpage}{124}
+\indexentry{legumescene\_to\_RATPscene() (in module buildRATPscene)@\spxentry{legumescene\_to\_RATPscene()}\spxextra{in module buildRATPscene}|hyperpage}{124}
+\indexentry{module@\spxentry{module}!defaultvalues@\spxentry{defaultvalues}|hyperpage}{125}
+\indexentry{defaultvalues@\spxentry{defaultvalues}!module@\spxentry{module}|hyperpage}{125}
+\indexentry{default\_LightVegeManager\_inputs() (in module defaultvalues)@\spxentry{default\_LightVegeManager\_inputs()}\spxextra{in module defaultvalues}|hyperpage}{125}
+\indexentry{module@\spxentry{module}!leafangles@\spxentry{leafangles}|hyperpage}{125}
+\indexentry{leafangles@\spxentry{leafangles}!module@\spxentry{module}|hyperpage}{125}
+\indexentry{read\_distrib\_file() (in module leafangles)@\spxentry{read\_distrib\_file()}\spxextra{in module leafangles}|hyperpage}{125}
+\indexentry{compute\_distrib\_globale() (in module leafangles)@\spxentry{compute\_distrib\_globale()}\spxextra{in module leafangles}|hyperpage}{125}
+\indexentry{compute\_distrib\_voxel() (in module leafangles)@\spxentry{compute\_distrib\_voxel()}\spxextra{in module leafangles}|hyperpage}{126}
+\indexentry{module@\spxentry{module}!outputs@\spxentry{outputs}|hyperpage}{126}
+\indexentry{outputs@\spxentry{outputs}!module@\spxentry{module}|hyperpage}{126}
+\indexentry{out\_ratp\_empty\_grid() (in module outputs)@\spxentry{out\_ratp\_empty\_grid()}\spxextra{in module outputs}|hyperpage}{128}
+\indexentry{out\_ratp\_voxels() (in module outputs)@\spxentry{out\_ratp\_voxels()}\spxextra{in module outputs}|hyperpage}{128}
+\indexentry{out\_ratp\_triangles() (in module outputs)@\spxentry{out\_ratp\_triangles()}\spxextra{in module outputs}|hyperpage}{129}
+\indexentry{out\_ratp\_elements() (in module outputs)@\spxentry{out\_ratp\_elements()}\spxextra{in module outputs}|hyperpage}{129}
+\indexentry{out\_caribu\_mix() (in module outputs)@\spxentry{out\_caribu\_mix()}\spxextra{in module outputs}|hyperpage}{129}
+\indexentry{out\_caribu\_nomix() (in module outputs)@\spxentry{out\_caribu\_nomix()}\spxextra{in module outputs}|hyperpage}{130}
+\indexentry{out\_caribu\_elements() (in module outputs)@\spxentry{out\_caribu\_elements()}\spxextra{in module outputs}|hyperpage}{130}
+\indexentry{out\_caribu\_triangles() (in module outputs)@\spxentry{out\_caribu\_triangles()}\spxextra{in module outputs}|hyperpage}{131}
+\indexentry{module@\spxentry{module}!plantGL@\spxentry{plantGL}|hyperpage}{131}
+\indexentry{plantGL@\spxentry{plantGL}!module@\spxentry{module}|hyperpage}{131}
+\indexentry{cscene\_to\_plantGLScene\_stems() (in module plantGL)@\spxentry{cscene\_to\_plantGLScene\_stems()}\spxextra{in module plantGL}|hyperpage}{131}
+\indexentry{cscene\_to\_plantGLScene\_light() (in module plantGL)@\spxentry{cscene\_to\_plantGLScene\_light()}\spxextra{in module plantGL}|hyperpage}{131}
+\indexentry{ratpgrid\_to\_plantGLScene() (in module plantGL)@\spxentry{ratpgrid\_to\_plantGLScene()}\spxextra{in module plantGL}|hyperpage}{132}
+\indexentry{module@\spxentry{module}!sky@\spxentry{sky}|hyperpage}{132}
+\indexentry{sky@\spxentry{sky}!module@\spxentry{module}|hyperpage}{132}
+\indexentry{ratpformat\_to\_caribuformat() (in module sky)@\spxentry{ratpformat\_to\_caribuformat()}\spxextra{in module sky}|hyperpage}{132}
+\indexentry{caribuformat\_to\_ratpformat() (in module sky)@\spxentry{caribuformat\_to\_ratpformat()}\spxextra{in module sky}|hyperpage}{133}
+\indexentry{RATPsky() (in module sky)@\spxentry{RATPsky()}\spxextra{in module sky}|hyperpage}{133}
+\indexentry{CARIBUsky() (in module sky)@\spxentry{CARIBUsky()}\spxextra{in module sky}|hyperpage}{133}
+\indexentry{discrete\_sky() (in module sky)@\spxentry{discrete\_sky()}\spxextra{in module sky}|hyperpage}{134}
+\indexentry{module@\spxentry{module}!stems@\spxentry{stems}|hyperpage}{134}
+\indexentry{stems@\spxentry{stems}!module@\spxentry{module}|hyperpage}{134}
+\indexentry{extract\_stems\_from\_MTG() (in module stems)@\spxentry{extract\_stems\_from\_MTG()}\spxextra{in module stems}|hyperpage}{134}
+\indexentry{manage\_stems\_for\_ratp() (in module stems)@\spxentry{manage\_stems\_for\_ratp()}\spxextra{in module stems}|hyperpage}{134}
+\indexentry{module@\spxentry{module}!sun@\spxentry{sun}|hyperpage}{135}
+\indexentry{sun@\spxentry{sun}!module@\spxentry{module}|hyperpage}{135}
+\indexentry{ratp\_sun() (in module sun)@\spxentry{ratp\_sun()}\spxextra{in module sun}|hyperpage}{135}
+\indexentry{caribu\_sun() (in module sun)@\spxentry{caribu\_sun()}\spxextra{in module sun}|hyperpage}{135}
+\indexentry{print\_sun() (in module sun)@\spxentry{print\_sun()}\spxextra{in module sun}|hyperpage}{135}
+\indexentry{module@\spxentry{module}!tesselator@\spxentry{tesselator}|hyperpage}{136}
+\indexentry{tesselator@\spxentry{tesselator}!module@\spxentry{module}|hyperpage}{136}
+\indexentry{whichvoxel() (in module tesselator)@\spxentry{whichvoxel()}\spxextra{in module tesselator}|hyperpage}{136}
+\indexentry{samevoxel() (in module tesselator)@\spxentry{samevoxel()}\spxextra{in module tesselator}|hyperpage}{136}
+\indexentry{tesselate() (in module tesselator)@\spxentry{tesselate()}\spxextra{in module tesselator}|hyperpage}{136}
+\indexentry{tesselate2() (in module tesselator)@\spxentry{tesselate2()}\spxextra{in module tesselator}|hyperpage}{136}
+\indexentry{iterate\_trianglesingrid() (in module tesselator)@\spxentry{iterate\_trianglesingrid()}\spxextra{in module tesselator}|hyperpage}{137}
+\indexentry{iterate\_triangles() (in module tesselator)@\spxentry{iterate\_triangles()}\spxextra{in module tesselator}|hyperpage}{137}
+\indexentry{module@\spxentry{module}!transfer@\spxentry{transfer}|hyperpage}{138}
+\indexentry{transfer@\spxentry{transfer}!module@\spxentry{module}|hyperpage}{138}
+\indexentry{transfer\_ratp\_legume() (in module transfer)@\spxentry{transfer\_ratp\_legume()}\spxextra{in module transfer}|hyperpage}{138}
+\indexentry{transfer\_caribu\_legume() (in module transfer)@\spxentry{transfer\_caribu\_legume()}\spxextra{in module transfer}|hyperpage}{138}
+\indexentry{module@\spxentry{module}!trianglesmesh@\spxentry{trianglesmesh}|hyperpage}{139}
+\indexentry{trianglesmesh@\spxentry{trianglesmesh}!module@\spxentry{module}|hyperpage}{139}
+\indexentry{triangles\_entity() (in module trianglesmesh)@\spxentry{triangles\_entity()}\spxextra{in module trianglesmesh}|hyperpage}{140}
+\indexentry{globalid\_to\_elementid() (in module trianglesmesh)@\spxentry{globalid\_to\_elementid()}\spxextra{in module trianglesmesh}|hyperpage}{140}
+\indexentry{globalid\_to\_triangle() (in module trianglesmesh)@\spxentry{globalid\_to\_triangle()}\spxextra{in module trianglesmesh}|hyperpage}{140}
+\indexentry{compute\_area\_max() (in module trianglesmesh)@\spxentry{compute\_area\_max()}\spxextra{in module trianglesmesh}|hyperpage}{141}
+\indexentry{compute\_minmax\_coord() (in module trianglesmesh)@\spxentry{compute\_minmax\_coord()}\spxextra{in module trianglesmesh}|hyperpage}{141}
+\indexentry{compute\_trilenght\_max() (in module trianglesmesh)@\spxentry{compute\_trilenght\_max()}\spxextra{in module trianglesmesh}|hyperpage}{141}
+\indexentry{isatriangle() (in module trianglesmesh)@\spxentry{isatriangle()}\spxextra{in module trianglesmesh}|hyperpage}{141}
+\indexentry{chain\_triangulations() (in module trianglesmesh)@\spxentry{chain\_triangulations()}\spxextra{in module trianglesmesh}|hyperpage}{141}
+\indexentry{vgx\_to\_caribu() (in module trianglesmesh)@\spxentry{vgx\_to\_caribu()}\spxextra{in module trianglesmesh}|hyperpage}{142}
+\indexentry{apply\_transformations() (in module trianglesmesh)@\spxentry{apply\_transformations()}\spxextra{in module trianglesmesh}|hyperpage}{142}
+\indexentry{create\_heterogeneous\_canopy() (in module trianglesmesh)@\spxentry{create\_heterogeneous\_canopy()}\spxextra{in module trianglesmesh}|hyperpage}{143}
+\indexentry{random\_triangle\_generator() (in module trianglesmesh)@\spxentry{random\_triangle\_generator()}\spxextra{in module trianglesmesh}|hyperpage}{143}
+\indexentry{module@\spxentry{module}!voxelsmesh@\spxentry{voxelsmesh}|hyperpage}{144}
+\indexentry{voxelsmesh@\spxentry{voxelsmesh}!module@\spxentry{module}|hyperpage}{144}
+\indexentry{compute\_grid\_size\_from\_trimesh() (in module voxelsmesh)@\spxentry{compute\_grid\_size\_from\_trimesh()}\spxextra{in module voxelsmesh}|hyperpage}{144}
+\indexentry{tesselate\_trimesh\_on\_grid() (in module voxelsmesh)@\spxentry{tesselate\_trimesh\_on\_grid()}\spxextra{in module voxelsmesh}|hyperpage}{144}
+\indexentry{fill\_ratpgrid\_from\_trimesh() (in module voxelsmesh)@\spxentry{fill\_ratpgrid\_from\_trimesh()}\spxextra{in module voxelsmesh}|hyperpage}{144}
+\indexentry{fill\_ratpgrid\_from\_legumescene() (in module voxelsmesh)@\spxentry{fill\_ratpgrid\_from\_legumescene()}\spxextra{in module voxelsmesh}|hyperpage}{145}
+\indexentry{reduce\_layers\_from\_trimesh() (in module voxelsmesh)@\spxentry{reduce\_layers\_from\_trimesh()}\spxextra{in module voxelsmesh}|hyperpage}{145}
