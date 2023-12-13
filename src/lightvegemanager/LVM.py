@@ -276,23 +276,57 @@ class LightVegeManager(object):
             if "sensors" in self.__lightmodel_parameters and self.__lightmodel_parameters["sensors"][0] == "grid":
                 from lightvegemanager.CARIBUinputs import create_caribu_legume_sensors
                 from lightvegemanager.voxelsmesh import reduce_layers_from_trimesh
+                try:
+                    import openalea.plantgl.all as pgl
+                except ImportError:
+                    pass
+                if isinstance(self.__lightmodel_parameters["sensors"], list):
+                    dxyz = self.__lightmodel_parameters["sensors"][1]
+                    nxyz = self.__lightmodel_parameters["sensors"][2]
+                    orig = self.__lightmodel_parameters["sensors"][3]
+                    arg = (dxyz, nxyz, orig, self.__pmax, self.__complete_trimesh, self.__matching_ids, None, True)
+                    sensors_caribu, sensors_plantgl, Pmax_capt = create_caribu_legume_sensors(*arg)
 
-                dxyz = self.__lightmodel_parameters["sensors"][1]
-                nxyz = self.__lightmodel_parameters["sensors"][2]
-                orig = self.__lightmodel_parameters["sensors"][3]
-                arg = (dxyz, nxyz, orig, self.__pmax, self.__complete_trimesh, self.__matching_ids, None, True)
-                sensors_caribu, sensors_plantgl, Pmax_capt = create_caribu_legume_sensors(*arg)
+                    id = [-1]
+                    self.__sensors_plantgl = sensors_plantgl
+                    self.__nb0 = reduce_layers_from_trimesh(
+                        self.__complete_trimesh,
+                        self.__pmax,
+                        self.__lightmodel_parameters["sensors"][1],
+                        self.__lightmodel_parameters["sensors"][2],
+                        self.__matching_ids,
+                        id,
+                    )
+                elif isinstance(self.__lightmodel_parameters["sensors"], dict):
+                    start_id = 0
+                    sensors_plantgl = pgl.Scene()
+                    sensors_caribu = {}
+                    nb0 = 9999999
+                    id = [-1]
+                    for specy_indice, sensors_parameters in self.__lightmodel_parameters["sensors"].items():
+                        dxyz = sensors_parameters[1]
+                        nxyz = sensors_parameters[2]
+                        orig = sensors_parameters[3]
+                        arg = (dxyz, nxyz, orig, self.__pmax, self.__complete_trimesh, self.__matching_ids, None, True, start_id)
+                        _caribu, \
+                        _plantgl, \
+                        Pmax_capt = create_caribu_legume_sensors(*arg)
+                        sensors_caribu.update(_caribu)
+                        sensors_plantgl += _plantgl
+                        start_id = max(sensors_caribu.key())
 
-                id = [-1]
-                self.__sensors_plantgl = sensors_plantgl
-                self.__nb0 = reduce_layers_from_trimesh(
-                    self.__complete_trimesh,
-                    self.__pmax,
-                    self.__lightmodel_parameters["sensors"][1],
-                    self.__lightmodel_parameters["sensors"][2],
-                    self.__matching_ids,
-                    id,
-                )
+         
+                        self.__sensors_plantgl = sensors_plantgl
+                        _nb0 = reduce_layers_from_trimesh(
+                            self.__complete_trimesh,
+                            self.__pmax,
+                            sensors_parameters[1],
+                            sensors_parameters[2],
+                            self.__matching_ids,
+                            id,
+                        )
+                        nb0 = min(nb0, _nb0)
+                    self.__nb0 = nb0
 
         # Builds voxels grid from input geometry
         elif self.__lightmodel == "ratp" or self.__lightmodel == "riri5":
@@ -499,7 +533,7 @@ class LightVegeManager(object):
                     self.__environment["infinite"],
                     id_sensors,
                 )
-                opt, sensors_caribu, debug = Prepare_CARIBU(*arg)
+                opt, sensors_caribu, debug, matching_sensors_species = Prepare_CARIBU(*arg)
                 issensors = "sensors" in self.__lightmodel_parameters
                 issoilmesh = self.__lightmodel_parameters["soil mesh"] != -1
                 self.__domain = self.__geometry["domain"]
