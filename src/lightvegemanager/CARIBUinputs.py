@@ -99,7 +99,9 @@ def Prepare_CARIBU(trimesh,
 
         * ``debug``: boolean if user wants to activate th edebug option in CARIBU
 
-    :rtype: dict, dict, bool
+        * ``matching_sensors_species``: dict where each key is a sensor ID and value, its matching input vegetation type
+
+    :rtype: dict, dict, bool, dict
     """                    
     # manage stems element and creates optical parameters
     stems = []
@@ -110,7 +112,7 @@ def Prepare_CARIBU(trimesh,
 
     # debug, sensors, domain
     sensors_caribu = None
-    matching_sensors_species = None
+    matching_sensors_species = {}
     if isinstance(parameters["sensors"], list):
         if "sensors" in parameters and parameters["sensors"][0] == "grid" :
             dxyz = parameters["sensors"][1]
@@ -127,6 +129,8 @@ def Prepare_CARIBU(trimesh,
             sensors_caribu, \
             sensors_plantgl, \
             Pmax_capt = create_caribu_legume_sensors(*arg)
+            for i in sensors_caribu.keys():
+                matching_sensors_species[i] = 0
     elif isinstance(parameters["sensors"], dict):
         sensors_caribu = {}
         matching_sensors_species = {}
@@ -148,9 +152,9 @@ def Prepare_CARIBU(trimesh,
             sensors_plantgl, \
             Pmax_capt = create_caribu_legume_sensors(*arg)
             sensors_caribu.update(sensors_dict)
-            start_id = max(sensors_caribu.key())
+            start_id = max(sensors_dict.keys()) + 1
 
-            for key in sensors_caribu.keys():
+            for key in sensors_dict.keys():
                 matching_sensors_species[key] = specy_indice
 
 

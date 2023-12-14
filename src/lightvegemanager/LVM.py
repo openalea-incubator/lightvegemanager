@@ -273,7 +273,7 @@ class LightVegeManager(object):
                 self.__geometry["stems id"] = None
 
             # build sensors
-            if "sensors" in self.__lightmodel_parameters and self.__lightmodel_parameters["sensors"][0] == "grid":
+            if "sensors" in self.__lightmodel_parameters and (self.__lightmodel_parameters["sensors"][0] == "grid" or self.__lightmodel_parameters["sensors"][0][0] == "grid"):
                 from lightvegemanager.CARIBUinputs import create_caribu_legume_sensors
                 from lightvegemanager.voxelsmesh import reduce_layers_from_trimesh
                 try:
@@ -313,7 +313,7 @@ class LightVegeManager(object):
                         Pmax_capt = create_caribu_legume_sensors(*arg)
                         sensors_caribu.update(_caribu)
                         sensors_plantgl += _plantgl
-                        start_id = max(sensors_caribu.key())
+                        start_id = max(sensors_caribu.keys())
 
          
                         self.__sensors_plantgl = sensors_plantgl
@@ -521,7 +521,7 @@ class LightVegeManager(object):
                 from lightvegemanager.CARIBUinputs import Prepare_CARIBU, run_caribu
                 from alinea.caribu.CaribuScene import CaribuScene
                 from alinea.caribu.sky_tools.spitters_horaire import RdRsH
-                from lightvegemanager.outputs import out_caribu_mix, out_caribu_nomix
+                from lightvegemanager.outputs import out_caribu_mix, out_caribu_nomix, out_caribu_sensors
 
                 # CARIBU preparations
                 arg = (
@@ -621,6 +621,9 @@ class LightVegeManager(object):
                     for id, triangles in sensors_caribu.items():
                         self.__sensors_outputs["par"][id] = 1.0
 
+                if issensors:
+                    self.__sensors_outputs_df = out_caribu_sensors(day, hour, self.__sensors_outputs, matching_sensors_species)
+
             # Outputs management
             arg = [day, hour, self.__complete_trimesh, self.__matching_ids, raw, compute]
             self.__triangles_outputs = out_caribu_triangles(*arg)
@@ -628,20 +631,26 @@ class LightVegeManager(object):
             arg.append(self.__triangles_outputs)
             self.__elements_outputs = out_caribu_elements(*arg)
 
-            if "sensors" in self.__lightmodel_parameters and self.__lightmodel_parameters["sensors"][-1] == "vtk":
-                # create list with radiative value for each sensor triangle (2 triangles per sensor)
-                var = []
-                for id, triangles in sensors_caribu.items():
-                    for t in triangles:
-                        var.append(self.__sensors_outputs["par"][id])
+            # if "sensors" in self.__lightmodel_parameters and \
+            #     ((isinstance(self.__lightmodel_parameters["sensors"], list) and self.__lightmodel_parameters["sensors"][-1] == "vtk") \
+            #     or (isinstance(self.__lightmodel_parameters["sensors"], dict) and self.__lightmodel_parameters["sensors"][0][-1] == "vtk")):
+            #     # create list with radiative value for each sensor triangle (2 triangles per sensor)
+            #     var = []
+            #     if isinstance(self.__lightmodel_parameters["sensors"], list) :
+            #         sensor_path = os.path.join(self.__lightmodel_parameters["sensors"][-2], sensor_name)
+            #     elif isinstance(self.__lightmodel_parameters["sensors"], dict) :
+            #         sensor_path = os.path.join(self.__lightmodel_parameters["sensors"][0][-2], sensor_name)
                 
-                sensor_name = ("sensors_h"      +
-                                str(int(hour))  +
-                                "_d"            +
-                                str(int(day))   +
-                                ".vtk")
-                sensor_path = os.path.join(self.__lightmodel_parameters["sensors"][-2], sensor_name)
-                VTKtriangles(sensors_caribu, [var], ["intercepted"], sensor_path)
+            #     for id, triangles in sensors_caribu.items():
+            #         for t in triangles:
+            #             var.append(self.__sensors_outputs["par"][id])
+                
+            #     sensor_name = ("sensors_h"      +
+            #                     str(int(hour))  +
+            #                     "_d"            +
+            #                     str(int(day))   +
+            #                     ".vtk")
+            #     VTKtriangles(sensors_caribu, [var], ["intercepted"], sensor_path)
 
         ## RiRi (l-egume) ##
         elif self.__lightmodel == "riri5":
@@ -1289,8 +1298,7 @@ class LightVegeManager(object):
         """
         return self.__voxels_outputs
 
-    @property
-    def sensors_outputs(self):
+    def sensors_outputs(self, dataframe=False):
         """Lighting results aggregate by sensors.
         Only with CARIBU if you activated the virtual sensors option
 
@@ -1298,7 +1306,10 @@ class LightVegeManager(object):
         :rtype: dict
         """
         try:
-            return self.__sensors_outputs
+            if dataframe:
+                return self.__sensors_outputs_df
+            else:
+                return self.__sensors_outputs
         except AttributeError:
             return None
 
