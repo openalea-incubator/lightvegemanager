@@ -385,3 +385,10 @@ def legumescene_to_RATPscene(legumescene, parameters, coordinates, reflected, in
     fill_ratpgrid_from_legumescene(legumescene, ratpgrid, nb0)
 
     return ratpgrid, distrib, nb0
+
+def concatene_legumescenes(scenes):
+    return_scene = scenes[0]
+    for grid in scenes[1:]:
+        return_scene["LA"] = numpy.append(return_scene["LA"], grid["LA"], axis=0)
+        return_scene["distrib"].append(grid["distrib"][0])
+    return return_scene

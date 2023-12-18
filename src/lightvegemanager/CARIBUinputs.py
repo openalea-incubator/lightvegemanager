@@ -21,7 +21,7 @@
                                             },
                             "debug" : bool,
                             "soil mesh" : bool,
-                            "sensors" : ["grid", dxyz, nxyz, orig, vtkpath, "vtk"]
+                            "sensors" : ["grid", dxyz, nxyz, orig]
                             }
     
     * ``geometry`` corresponding to the geometric information with the scenes inputs
@@ -113,7 +113,7 @@ def Prepare_CARIBU(trimesh,
     # debug, sensors, domain
     sensors_caribu = None
     matching_sensors_species = {}
-    if isinstance(parameters["sensors"], list):
+    if "sensors" in parameters and isinstance(parameters["sensors"], list):
         if "sensors" in parameters and parameters["sensors"][0] == "grid" :
             dxyz = parameters["sensors"][1]
             nxyz = parameters["sensors"][2]
@@ -131,7 +131,7 @@ def Prepare_CARIBU(trimesh,
             Pmax_capt = create_caribu_legume_sensors(*arg)
             for i in sensors_caribu.keys():
                 matching_sensors_species[i] = 0
-    elif isinstance(parameters["sensors"], dict):
+    elif "sensors" in parameters and isinstance(parameters["sensors"], dict):
         sensors_caribu = {}
         matching_sensors_species = {}
         start_id = 0
