@@ -603,3 +603,33 @@ def out_caribu_triangles(day, hour, trimesh, matching_ids, raw, sun_up) :
         dico_tr[band + " Ei"] = s_Ei[band]
 
     return pandas.DataFrame(dico_tr)
+
+def out_caribu_sensors(day, hour, sensors, matching_sensors_species) :
+    """Converts raw in a pandas.Dataframe following simulation datas
+
+    :param day: day of simulation
+    :type day: int
+    :param hour: hour of simulation
+    :type hour: int
+    :param sensors: lighting results for each virtual sensors in caribu
+    :type sensors: dict
+    :param matching_sensors_species: dict that match each sensor with a plant specy
+    :type matching_sensors_species: dict
+    :return: sensors results rearrange in a Dataframe
+    :rtype: pandas.Dataframe
+    """       
+    s_par = [value for value in sensors["par"].values()]
+    s_sen = [key for key in sensors["par"].keys()]
+    s_day = [day] * len(sensors["par"])
+    s_hour = [hour] * len(sensors["par"])
+    s_ent = [value for value in matching_sensors_species.values()]
+
+    dico_sensors = {
+        "Day" : s_day,
+        "Hour" : s_hour,
+        "Sensor" : s_sen,
+        "PAR" : s_par,
+        "VegetationType" : s_ent,
+    }
+    
+    return pandas.DataFrame(dico_sensors)

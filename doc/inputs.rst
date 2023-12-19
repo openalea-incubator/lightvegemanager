@@ -193,7 +193,15 @@ CARIBU: surfacic approach
                                         },
                         "debug" : bool,
                         "soil mesh" : bool,
-                        "sensors" : ["grid", dxyz, nxyz, orig, vtkpath, "vtk"]
+                        
+                        # two possibilities
+                        "sensors" : ["grid", dxyz, nxyz, orig]
+                        "sensors" : {
+                                        id_0 : ["grid", dxyz_0, nxyz_0, orig_0],
+                                        id_1 : ["grid", dxyz_1, nxyz_1, orig_1],
+                                        ...
+                                    }
+
                     }
 
 
@@ -212,7 +220,7 @@ For virtual sensors, we propose the construction following a grid of voxels, whe
         
         .. code-block:: python
             
-            caribu_parameters["sensors"] = ["grid", dxyz, nxyz, orig, path, "vtk"]
+            caribu_parameters["sensors"] = ["grid", dxyz, nxyz, orig]
         
         Where:
 
@@ -220,13 +228,19 @@ For virtual sensors, we propose the construction following a grid of voxels, whe
         
         *  ``nxyz = [nx, ny, nz]`` : list of number of voxels in each direction
         
-        *  ``path`` : string of file path where to save the vtk file of the sensors
-        
-        *  ``"vtk"`` : flag to specify you want to write sensors in VTK format for visualisation
-        
-        ``path`` and ``"vtk"`` are optional elements in the list
+        * ``orig = [x0, y0, z0]`` : list of origin coordinates of the grid
     
     .. note:: At the moment, only grid option is available for sensors
+
+You can create several grids of virtual sensors following some or all of the input scenes by setting a ``dict``:
+
+        .. code-block:: python
+            
+            caribu_parameters["sensors"] = {
+                                                id_0 : ["grid", dxyz_0, nxyz_0, orig_0],
+                                                id_1 : ["grid", dxyz_1, nxyz_1, orig_1],
+                                                ...
+                                            }
     
 
 .. _ratpparam:

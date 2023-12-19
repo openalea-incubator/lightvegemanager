@@ -35,7 +35,7 @@ def test_Prepare_CARIBU():
     infinite = True
     idsensors = [0]
 
-    opt, sensors_caribu, debug = Prepare_CARIBU(
+    opt, sensors_caribu, debug, matching_sensors_species = Prepare_CARIBU(
         triangles, geometry, matching_ids, minmax, parameters, infinite, idsensors
     )
     assert opt["par"][0] == (0.5, 0.2)

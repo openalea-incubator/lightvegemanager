@@ -50,7 +50,7 @@
                                             },
                             "debug" : bool,
                             "soil mesh" : bool,
-                            "sensors" : ["grid", dxyz, nxyz, orig, vtkpath, "vtk"]
+                            "sensors" : ["grid", dxyz, nxyz, orig]
                         }
 
     .. code-block:: python
@@ -273,26 +273,76 @@ class LightVegeManager(object):
                 self.__geometry["stems id"] = None
 
             # build sensors
-            if "sensors" in self.__lightmodel_parameters and self.__lightmodel_parameters["sensors"][0] == "grid":
+            self.__issensors = "sensors" in self.__lightmodel_parameters
+
+            if self.__issensors and (
+                self.__lightmodel_parameters["sensors"][0] == "grid"
+                or self.__lightmodel_parameters["sensors"][0][0] == "grid"
+            ):
                 from lightvegemanager.CARIBUinputs import create_caribu_legume_sensors
                 from lightvegemanager.voxelsmesh import reduce_layers_from_trimesh
 
-                dxyz = self.__lightmodel_parameters["sensors"][1]
-                nxyz = self.__lightmodel_parameters["sensors"][2]
-                orig = self.__lightmodel_parameters["sensors"][3]
-                arg = (dxyz, nxyz, orig, self.__pmax, self.__complete_trimesh, self.__matching_ids, None, True)
-                sensors_caribu, sensors_plantgl, Pmax_capt = create_caribu_legume_sensors(*arg)
+                try:
+                    import openalea.plantgl.all as pgl
+                except ImportError:
+                    pass
 
-                id = [-1]
-                self.__sensors_plantgl = sensors_plantgl
-                self.__nb0 = reduce_layers_from_trimesh(
-                    self.__complete_trimesh,
-                    self.__pmax,
-                    self.__lightmodel_parameters["sensors"][1],
-                    self.__lightmodel_parameters["sensors"][2],
-                    self.__matching_ids,
-                    id,
-                )
+                if isinstance(self.__lightmodel_parameters["sensors"], list):
+                    dxyz = self.__lightmodel_parameters["sensors"][1]
+                    nxyz = self.__lightmodel_parameters["sensors"][2]
+                    orig = self.__lightmodel_parameters["sensors"][3]
+                    arg = (dxyz, nxyz, orig, self.__pmax, self.__complete_trimesh, self.__matching_ids, None, True)
+                    sensors_caribu, sensors_plantgl, Pmax_capt = create_caribu_legume_sensors(*arg)
+
+                    id = [-1]
+                    self.__sensors_plantgl = sensors_plantgl
+                    self.__sensors_caribu = sensors_caribu
+                    self.__nb0 = reduce_layers_from_trimesh(
+                        self.__complete_trimesh,
+                        self.__pmax,
+                        self.__lightmodel_parameters["sensors"][1],
+                        self.__lightmodel_parameters["sensors"][2],
+                        self.__matching_ids,
+                        id,
+                    )
+                elif isinstance(self.__lightmodel_parameters["sensors"], dict):
+                    start_id = 0
+                    sensors_plantgl = pgl.Scene()
+                    sensors_caribu = {}
+                    nb0 = 9999999
+                    id = [-1]
+                    for specy_indice, sensors_parameters in self.__lightmodel_parameters["sensors"].items():
+                        dxyz = sensors_parameters[1]
+                        nxyz = sensors_parameters[2]
+                        orig = sensors_parameters[3]
+                        arg = (
+                            dxyz,
+                            nxyz,
+                            orig,
+                            self.__pmax,
+                            self.__complete_trimesh,
+                            self.__matching_ids,
+                            None,
+                            True,
+                            start_id,
+                        )
+                        _caribu, _plantgl, Pmax_capt = create_caribu_legume_sensors(*arg)
+                        sensors_caribu.update(_caribu)
+                        sensors_plantgl += _plantgl
+                        start_id = max(sensors_caribu.keys())
+
+                        _nb0 = reduce_layers_from_trimesh(
+                            self.__complete_trimesh,
+                            self.__pmax,
+                            sensors_parameters[1],
+                            sensors_parameters[2],
+                            self.__matching_ids,
+                            id,
+                        )
+                        nb0 = min(nb0, _nb0)
+                    self.__nb0 = nb0
+                    self.__sensors_plantgl = sensors_plantgl
+                    self.__sensors_caribu = sensors_caribu
 
         # Builds voxels grid from input geometry
         elif self.__lightmodel == "ratp" or self.__lightmodel == "riri5":
@@ -303,7 +353,7 @@ class LightVegeManager(object):
             self.__nb0 = 0
 
             if legume_grid:
-                numberofentities = max([self.__geometry["scenes"][i]["LA"].shape[0] for i in id_legume_scene])
+                numberofentities = sum([self.__geometry["scenes"][i]["LA"].shape[0] for i in id_legume_scene])
 
             # triangles in the inputs
             if self.__matching_ids:
@@ -363,10 +413,17 @@ class LightVegeManager(object):
 
             # if there is a grid of voxels in the inputs, we converts it in a RATP grid
             if legume_grid and not self.__matching_ids and self.__lightmodel == "ratp":
-                from lightvegemanager.buildRATPscene import legumescene_to_RATPscene
+                from lightvegemanager.buildRATPscene import legumescene_to_RATPscene, concatene_legumescenes
+
+                if len(id_legume_scene) > 1:
+                    concatened_legumescene = concatene_legumescenes(
+                        [self.__geometry["scenes"][i] for i in id_legume_scene]
+                    )
+                else:
+                    concatened_legumescene = self.__geometry["scenes"][id_legume_scene[0]]
 
                 arg = (
-                    self.__geometry["scenes"][id_legume_scene[0]],
+                    concatened_legumescene,
                     self.__lightmodel_parameters,
                     self.__environment["coordinates"],
                     self.__environment["reflected"],
@@ -487,7 +544,7 @@ class LightVegeManager(object):
                 from lightvegemanager.CARIBUinputs import Prepare_CARIBU, run_caribu
                 from alinea.caribu.CaribuScene import CaribuScene
                 from alinea.caribu.sky_tools.spitters_horaire import RdRsH
-                from lightvegemanager.outputs import out_caribu_mix, out_caribu_nomix
+                from lightvegemanager.outputs import out_caribu_mix, out_caribu_nomix, out_caribu_sensors
 
                 # CARIBU preparations
                 arg = (
@@ -499,8 +556,7 @@ class LightVegeManager(object):
                     self.__environment["infinite"],
                     id_sensors,
                 )
-                opt, sensors_caribu, debug = Prepare_CARIBU(*arg)
-                issensors = "sensors" in self.__lightmodel_parameters
+                opt, sensors_caribu, debug, matching_sensors_species = Prepare_CARIBU(*arg)
                 issoilmesh = self.__lightmodel_parameters["soil mesh"] != -1
                 self.__domain = self.__geometry["domain"]
 
@@ -570,7 +626,7 @@ class LightVegeManager(object):
                             aggregated_sun,
                             raw_sky,
                             aggregated_sky,
-                            issensors,
+                            self.__issensors,
                             issoilmesh,
                         )
                     else:
@@ -579,13 +635,18 @@ class LightVegeManager(object):
                         self.__time_runmodel = time.time() - start
 
                         self.__sensors_outputs, self.__soilenergy = out_caribu_nomix(
-                            c_scene, aggregated, issensors, issoilmesh
+                            c_scene, aggregated, self.__issensors, issoilmesh
                         )
                 else:
                     aggregated, raw = {}, {}
                     self.__sensors_outputs = {"par": {}}
                     for id, triangles in sensors_caribu.items():
                         self.__sensors_outputs["par"][id] = 1.0
+
+                if self.__issensors:
+                    self.__sensors_outputs_df = out_caribu_sensors(
+                        day, hour, self.__sensors_outputs, matching_sensors_species
+                    )
 
             # Outputs management
             arg = [day, hour, self.__complete_trimesh, self.__matching_ids, raw, compute]
@@ -594,20 +655,26 @@ class LightVegeManager(object):
             arg.append(self.__triangles_outputs)
             self.__elements_outputs = out_caribu_elements(*arg)
 
-            if "sensors" in self.__lightmodel_parameters and self.__lightmodel_parameters["sensors"][-1] == "vtk":
-                # create list with radiative value for each sensor triangle (2 triangles per sensor)
-                var = []
-                for id, triangles in sensors_caribu.items():
-                    for t in triangles:
-                        var.append(self.__sensors_outputs["par"][id])
-                
-                sensor_name = ("sensors_h"      +
-                                str(int(hour))  +
-                                "_d"            +
-                                str(int(day))   +
-                                ".vtk")
-                sensor_path = os.path.join(self.__lightmodel_parameters["sensors"][-2], sensor_name)
-                VTKtriangles(sensors_caribu, [var], ["intercepted"], sensor_path)
+            # if "sensors" in self.__lightmodel_parameters and \
+            #     ((isinstance(self.__lightmodel_parameters["sensors"], list) and self.__lightmodel_parameters["sensors"][-1] == "vtk") \
+            #     or (isinstance(self.__lightmodel_parameters["sensors"], dict) and self.__lightmodel_parameters["sensors"][0][-1] == "vtk")):
+            #     # create list with radiative value for each sensor triangle (2 triangles per sensor)
+            #     var = []
+            #     if isinstance(self.__lightmodel_parameters["sensors"], list) :
+            #         sensor_path = os.path.join(self.__lightmodel_parameters["sensors"][-2], sensor_name)
+            #     elif isinstance(self.__lightmodel_parameters["sensors"], dict) :
+            #         sensor_path = os.path.join(self.__lightmodel_parameters["sensors"][0][-2], sensor_name)
+
+            #     for id, triangles in sensors_caribu.items():
+            #         for t in triangles:
+            #             var.append(self.__sensors_outputs["par"][id])
+
+            #     sensor_name = ("sensors_h"      +
+            #                     str(int(hour))  +
+            #                     "_d"            +
+            #                     str(int(day))   +
+            #                     ".vtk")
+            #     VTKtriangles(sensors_caribu, [var], ["intercepted"], sensor_path)
 
         ## RiRi (l-egume) ##
         elif self.__lightmodel == "riri5":
@@ -970,79 +1037,78 @@ class LightVegeManager(object):
 
         print("--- Fin de s2v.cpp")
 
-    ## VTK FILES ##
-    def VTK_nolight(self, path, i=None, printtriangles=True, printvoxels=True):
-        """Writes a VTK from mesh(es) in ``self``, with only geometric informations
+    def to_VTK(
+        self,
+        lighting=False,
+        path="",
+        i=0,
+        printtriangles=True,
+        printvoxels=True,
+        virtual_sensors=False,
+        sun=False,
+        sun_scale=2,
+        sun_origin=(0, 0, 0),
+        sun_center=True,
+    ):
+        """Writes a VTK from mesh(es) in ``self``
 
-        :param path: file and path name
-        :type path: string
-        :param i: associate the created file with an indice in its filename, defaults to None
+        .. warning:: If ``lighting=True``, the :meth:`run` must have been called before to have results dataframes.
+
+        .. note:: if ``sun_center`` is False, ``sun_origin`` is the starting point of the line and it ends at ``sun_origin + sun_scale*sun.position``, if ``sun_center`` is True, ``sun_origin`` is the middle point of the line.
+
+        :param lighting: for writing lighting information associated with each element, defaults to False
+        :type lighting: bool, optional
+        :param path: file and path names for the VTK file(s)
+        :type path: string, optional
+        :param i: time iteration of the current VTk file(s)
         :type i: int, optional
         :param printtriangles: write triangulation if one has been created in :func:build, defaults to True
         :type printtriangles: bool, optional
         :param printvoxels: write grid of voxels if one has been created in :func:build, defaults to True
         :type printvoxels: bool, optional
+        :param virtual_sensors: write grid of virtual sensors if one has been created in :func:build, defaults to False
+        :type virtual_sensors: bool, optional
+        :param sun: write a line representing the sun position, defaults to False
+        :type sun: bool, optional
+        :param sun_scale: size of the line, defaults to 2
+        :type sun_scale: int, optional
+        :param sun_origin: starting or middle point of the line, defaults to (0,0,0)
+        :type sun_origin: tuple, optional
+        :param sun_center: if True orig is the middle of the line, otherwise it is the starting point, defaults to True
+        :type sun_center: bool, optional
+        :raises AttributeError: it needs to have lighting informations
+        :raises AttributeError: it needs to have a grid of virtual sensors
         """
+        if lighting:
+            # deactivate lighting if if no lighting results
+            if self.__lightmodel == "ratp" and (not hasattr(self, "_LightVegeManager__voxels_outputs")):
+                print("--- VTK:  No light data, run the simulation")
+                lighting = False
+            elif self.__lightmodel == "caribu" and (not hasattr(self, "_LightVegeManager__triangles_outputs")):
+                print("--- VTK:  No light data, run the simulation")
+                lighting = False
+
+            if sun and not hasattr(self, "_LightVegeManager__sun"):
+                raise AttributeError("No results yet, run a light modeling first")
+
         if self.__lightmodel == "ratp" and printvoxels:
             from lightvegemanager.VTK import ratp_prepareVTK
 
-            if i is None:
-                filepath = path + "_voxels_nolight.vtk"
-            else:
-                filepath = path + "_voxels_nolight" + "_" + str(i) + ".vtk"
-            ratp_prepareVTK(self.__complete_voxmesh, filepath)
-
-        if self.__matching_ids and printtriangles:
-            if i is None:
-                filepath = path + "_triangles_nolight.vtk"
-            else:
-                filepath = path + "_triangles_nolight" + "_" + str(i) + ".vtk"
-            VTKtriangles(self.__complete_trimesh, [], [], filepath)
-
-    def VTK_light(self, path, i=None, printtriangles=True, printvoxels=True):
-        """Writes a VTK from mesh(es) in ``self``, with geometric informations and lighting results
-
-        .. warning:: The :meth:`run` must have been called before to have results dataframes.
-
-        :param path: file and path name
-        :type path: string
-        :param i: associate the created file with an indice in its filename, defaults to None
-        :type i: int, optional
-        :param printtriangles: write triangulation if one has been created in :meth:`build`, defaults to True
-        :type printtriangles: bool, optional
-        :param printvoxels: write grid of voxels if one has been created in :meth:`build`, defaults to True
-        :type printvoxels: bool, optional
-        :raises AttributeError: you need to call :meth:`run` first
-        """
-        if not hasattr(self, "_LightVegeManager__elements_outputs"):
-            raise AttributeError("No results yet, run a light modeling first")
-
-        if self.__lightmodel == "ratp" and (not hasattr(self, "_LightVegeManager__voxels_outputs")):
-            print("--- VTK:  No light data, run the simulation")
-            self.VTK_nolight(path, i, printtriangles, printvoxels)
-        elif self.__lightmodel == "caribu" and (not hasattr(self, "_LightVegeManager__triangles_outputs")):
-            print("--- VTK:  No light data, run the simulation")
-            self.VTK_nolight(path, i, printtriangles, printvoxels)
-        else:
-            if self.__lightmodel == "ratp" and printvoxels:
-                from lightvegemanager.VTK import ratp_prepareVTK
-
-                if i is None:
-                    filepath = path + "_voxels_light.vtk"
-                else:
-                    filepath = path + "_voxels_light" + "_" + str(i) + ".vtk"
-
+            if lighting:
+                filepath = path + "_voxels_light" + "_" + str(i) + ".vtk"
                 datanames = ["ShadedPAR", "SunlitPAR", "ShadedArea", "SunlitArea", "PARa", "Intercepted", "Transmitted"]
-
                 ratp_prepareVTK(self.__complete_voxmesh, filepath, datanames, self.__voxels_outputs)
 
-            if self.__matching_ids and printtriangles:
-                if i is None:
-                    filepath = path + "_triangles_light.vtk"
-                else:
-                    filepath = path + "_triangles_light" + "_" + str(i) + ".vtk"
+            else:
+                filepath = path + "_voxels_nolight" + "_" + str(i) + ".vtk"
+                ratp_prepareVTK(self.__complete_voxmesh, filepath)
 
-                datanames = []
+        if self.__matching_ids and printtriangles:
+            data = []
+            datanames = []
+            if lighting:
+                filepath = path + "_triangles_light" + "_" + str(i) + ".vtk"
+
                 if self.__lightmodel == "ratp":
                     datanames = [
                         "ShadedPAR",
@@ -1058,155 +1124,150 @@ class LightVegeManager(object):
                     for band in self.__lightmodel_parameters["caribu opt"].keys():
                         datanames.append(band + " Eabs")
                         datanames.append(band + " Ei")
+                data = [list(self.__triangles_outputs[name].fillna(0.0)) for name in datanames]
 
-                data = [list(self.__triangles_outputs[name].fillna(0.)) for name in datanames]
-                VTKtriangles(self.__complete_trimesh, data, datanames, filepath)
+            else:
+                filepath = path + "_triangles_nolight" + "_" + str(i) + ".vtk"
 
-    def VTK_sun(self, path, scale=2, orig=(0, 0, 0), center=True, i=None):
-        """Write a VTK file representing the sun by a simple line
+            VTKtriangles(self.__complete_trimesh, data, datanames, filepath)
 
-        .. warning:: The :meth:`run` must have been called before to have results dataframes.
+        if sun:
+            from lightvegemanager.VTK import VTKline
 
-        if center is False, orig is the starting point the line and it ends at orig + scale*sun.position
-
-        if center is True, orig is the middle point of the line.
-
-        :param path: file and path name
-        :type path: string
-        :param scale: size of the line, defaults to 2
-        :type scale: int, optional
-        :param orig: starting or middle point of the line, defaults to (0,0,0)
-        :type orig: tuple, optional
-        :param center: if True orig is the middle of the line, otherwise it is the starting point, defaults to True
-        :type center: bool, optional
-        :param i: associate the created file with an indice in its filename, defaults to None
-        :type i: int, optional
-        :raises AttributeError: you need to call :meth:`run` first
-        """
-        from lightvegemanager.VTK import VTKline
-
-        if not hasattr(self, "_LightVegeManager__sun"):
-            raise AttributeError("No results yet, run a light modeling first")
-
-        if i is None:
-            filepath = path + "_sun.vtk"
-        else:
             filepath = path + "_sun" + "_" + str(i) + ".vtk"
+            if sun_center:
+                start = tuple([a + b * sun_scale for a, b in zip(sun_origin, self.__sun)])
+                end = tuple([a + b * -sun_scale for a, b in zip(sun_origin, self.__sun)])
+            else:
+                start = sun_origin
+                end = tuple([a + b * sun_scale for a, b in zip(sun_origin, self.__sun)])
 
-        if center:
-            start = tuple([a + b * scale for a, b in zip(orig, self.__sun)])
-            end = tuple([a + b * -scale for a, b in zip(orig, self.__sun)])
-        else:
-            start = orig
-            end = tuple([a + b * scale for a, b in zip(orig, self.__sun)])
+            VTKline(start, end, filepath)
 
-        VTKline(start, end, filepath)
+        if virtual_sensors:
+            if not self.__issensors:
+                raise AttributeError("No virtual sensors in the inputs")
+            else:
+                filepath = path + "_virtualsensors" + "_" + str(i) + ".vtk"
+                data = []
+                datanames = []
+                if lighting:
+                    var = []
 
-    def plantGL_sensors(self, light=False):
-        import openalea.plantgl.all as pgl
+                    for id, triangles in self.__sensors_caribu.items():
+                        for t in triangles:
+                            var.append(self.__sensors_outputs["par"][id])
+                    data.append(var)
+                    datanames.append("intercepted")
+                indice = []
+                for id, triangles in self.__sensors_caribu.items():
+                    for t in triangles:
+                        indice.append(
+                            self.__sensors_outputs_df[self.__sensors_outputs_df.Sensor == id]["VegetationType"].values[
+                                0
+                            ]
+                        )
+                data.append(indice)
+                datanames.append("VegetationType")
 
-        plantGL_sensors = self.__sensors_plantgl
+                VTKtriangles(self.__sensors_caribu, data, datanames, filepath)
 
-        if light:
-            var = [v for v in self.__sensors_outputs["par"].values()]
+    def to_plantGL(self, lighting=False, printtriangles=True, printvoxels=False, virtual_sensors=False):
+        """Return a plantGL Scene from mesh(es) in ``self``
 
-            plt_cmap = "seismic"
-            minvalue = numpy.min(var)
-            maxvalue = numpy.max(var)
-            colormap = pgl.PglMaterialMap(minvalue, maxvalue, plt_cmap)
+        .. warning:: If ``lighting=True``, the :meth:`run` must have been called before to have results dataframes.
 
-            for i, s in enumerate(plantGL_sensors):
-                s.appearance = colormap(var[i])
-
-        return plantGL_sensors
-
-    def plantGL_nolight(self, printtriangles=True, printvoxels=False):
-        """Return a plantGL Scene from mesh(es) in ``self``, with geometric informations
-
+        :param lighting: for writing lighting information associated with each element, defaults to False
+        :type lighting: bool, optional
         :param printtriangles: write triangulation if one has been created in :meth:`build`, defaults to True
         :type printtriangles: bool, optional
-        :param printvoxels: write grid of voxels if one has been created in :meth:`build`, defaults to True
+        :param printvoxels: write grid of voxels if one has been created in :meth:`build`, defaults to False
         :type printvoxels: bool, optional
+        :param virtual_sensors: write grid of virtual sensors if one has been created in :func:build, defaults to False
+        :type virtual_sensors: bool, optional
+        :raises AttributeError:  AttributeError
+        :return: Returns plantGL Scene with triangles and/or voxels from the final mesh
+        :rtype: plantgl.Scene
+        :return: Returns plantGL Scene with a grid of virtual sensors
+        :rtype: plantgl.Scene
         """
         import openalea.plantgl.all as pgl
+
+        if lighting:
+            # deactivate lighting if if no lighting results
+            if self.__lightmodel == "ratp" and (not hasattr(self, "_LightVegeManager__voxels_outputs")):
+                print("--- VTK:  No light data, run the simulation")
+                lighting = False
+            elif self.__lightmodel == "caribu" and (not hasattr(self, "_LightVegeManager__triangles_outputs")):
+                print("--- VTK:  No light data, run the simulation")
+                lighting = False
 
         plantgl_voxscene = pgl.Scene()
         plantgl_triscene = pgl.Scene()
         if self.__lightmodel == "ratp" and printvoxels:
             from lightvegemanager.plantGL import ratpgrid_to_plantGLScene
 
-            transparency = 0.0
-            if printtriangles:
-                transparency = 0.35
-            plantgl_voxscene = ratpgrid_to_plantGLScene(
-                self.__complete_voxmesh, transparency=transparency, plt_cmap="Greens"
-            )
-
-        if self.__matching_ids and printtriangles:
-            from lightvegemanager.plantGL import cscene_to_plantGLScene_stems
-
-            plantgl_triscene = cscene_to_plantGLScene_stems(
-                self.__complete_trimesh, stems_id=self.__geometry["stems id"], matching_ids=self.__matching_ids
-            )
-        plantgl_scene = pgl.Scene()
-        for s in plantgl_triscene:
-            plantgl_scene.add(s)
-        for s in plantgl_voxscene:
-            plantgl_scene.add(s)
-        return plantgl_scene
-
-    def plantGL_light(self, printtriangles=True, printvoxels=False):
-        """Return a plantGL Scene from mesh(es) in ``self``, with geometric informations and lighting results
-
-        .. warning:: The :meth:`run` must have been called before to have results dataframes.
-
-        :param printtriangles: write triangulation if one has been created in :meth:`build`, defaults to True
-        :type printtriangles: bool, optional
-        :param printvoxels: write grid of voxels if one has been created in :meth:`build`, defaults to True
-        :type printvoxels: bool, optional
-        :raises AttributeError: you need to call :meth:`run` first
-        """
-        if not hasattr(self, "_LightVegeManager__elements_outputs"):
-            raise AttributeError("No results yet, run a light modeling first")
-
-        import openalea.plantgl.all as pgl
-
-        plantgl_voxscene = pgl.Scene()
-        plantgl_triscene = pgl.Scene()
-
-        if self.__lightmodel == "ratp" and printvoxels:
-            from lightvegemanager.plantGL import ratpgrid_to_plantGLScene
-
-            if printtriangles:
-                transparency = 0.35
+            if lighting:
+                if printtriangles:
+                    transparency = 0.35
+                    plantgl_voxscene = ratpgrid_to_plantGLScene(
+                        self.__complete_voxmesh, transparency=transparency, plt_cmap="Greens"
+                    )
+                else:
+                    transparency = 0.0
+                    plantgl_voxscene = ratpgrid_to_plantGLScene(
+                        self.__complete_voxmesh,
+                        outputs=self.__voxels_outputs,
+                        plt_cmap="seismic",
+                        transparency=transparency,
+                    )
+            else:
+                transparency = 0.0
+                if printtriangles:
+                    transparency = 0.35
                 plantgl_voxscene = ratpgrid_to_plantGLScene(
                     self.__complete_voxmesh, transparency=transparency, plt_cmap="Greens"
                 )
-            else:
-                transparency = 0.0
-                plantgl_voxscene = ratpgrid_to_plantGLScene(
-                    self.__complete_voxmesh,
-                    outputs=self.__voxels_outputs,
-                    plt_cmap="seismic",
-                    transparency=transparency,
-                )
-
         if self.__matching_ids and printtriangles:
-            from lightvegemanager.plantGL import cscene_to_plantGLScene_light
+            if lighting:
+                from lightvegemanager.plantGL import cscene_to_plantGLScene_light
 
-            if self.__lightmodel == "caribu":
-                column_name = "par Ei"
-            elif self.__lightmodel == "ratp":
-                column_name = "PARa"
-            plantgl_triscene = cscene_to_plantGLScene_light(
-                self.__complete_trimesh, outputs=self.__triangles_outputs, column_name=column_name
-            )
+                if self.__lightmodel == "caribu":
+                    column_name = "par Ei"
+                elif self.__lightmodel == "ratp":
+                    column_name = "PARa"
+                plantgl_triscene = cscene_to_plantGLScene_light(
+                    self.__complete_trimesh, outputs=self.__triangles_outputs, column_name=column_name
+                )
+            else:
+                from lightvegemanager.plantGL import cscene_to_plantGLScene_stems
+
+                plantgl_triscene = cscene_to_plantGLScene_stems(
+                    self.__complete_trimesh, stems_id=self.__geometry["stems id"], matching_ids=self.__matching_ids
+                )
 
         plantgl_scene = pgl.Scene()
         for s in plantgl_triscene:
             plantgl_scene.add(s)
         for s in plantgl_voxscene:
             plantgl_scene.add(s)
+
+        if virtual_sensors:
+            if not self.__issensors:
+                raise AttributeError("No virtual sensors in the inputs")
+            else:
+                if lighting:
+                    var = [v for v in self.__sensors_outputs["par"].values()]
+
+                    plt_cmap = "seismic"
+                    minvalue = numpy.min(var)
+                    maxvalue = numpy.max(var)
+                    colormap = pgl.PglMaterialMap(minvalue, maxvalue, plt_cmap)
+
+                    for i, s in enumerate(self.__sensors_plantgl):
+                        s.appearance = colormap(var[i])
+                return plantgl_scene, self.__sensors_plantgl
+
         return plantgl_scene
 
     ## GETTERS ##
@@ -1255,8 +1316,7 @@ class LightVegeManager(object):
         """
         return self.__voxels_outputs
 
-    @property
-    def sensors_outputs(self):
+    def sensors_outputs(self, dataframe=False):
         """Lighting results aggregate by sensors.
         Only with CARIBU if you activated the virtual sensors option
 
@@ -1264,7 +1324,10 @@ class LightVegeManager(object):
         :rtype: dict
         """
         try:
-            return self.__sensors_outputs
+            if dataframe:
+                return self.__sensors_outputs_df
+            else:
+                return self.__sensors_outputs
         except AttributeError:
             return None
 

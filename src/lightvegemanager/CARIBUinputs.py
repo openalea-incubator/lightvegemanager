@@ -21,7 +21,7 @@
                                             },
                             "debug" : bool,
                             "soil mesh" : bool,
-                            "sensors" : ["grid", dxyz, nxyz, orig, vtkpath, "vtk"]
+                            "sensors" : ["grid", dxyz, nxyz, orig]
                             }
     
     * ``geometry`` corresponding to the geometric information with the scenes inputs
@@ -99,7 +99,9 @@ def Prepare_CARIBU(trimesh,
 
         * ``debug``: boolean if user wants to activate th edebug option in CARIBU
 
-    :rtype: dict, dict, bool
+        * ``matching_sensors_species``: dict where each key is a sensor ID and value, its matching input vegetation type
+
+    :rtype: dict, dict, bool, dict
     """                    
     # manage stems element and creates optical parameters
     stems = []
@@ -110,21 +112,51 @@ def Prepare_CARIBU(trimesh,
 
     # debug, sensors, domain
     sensors_caribu = None
-    if "sensors" in parameters and parameters["sensors"][0] == "grid" :
-        dxyz = parameters["sensors"][1]
-        nxyz = parameters["sensors"][2]
-        orig = parameters["sensors"][3]
-        arg = (dxyz,
-                nxyz,
-                orig,
-                minmax[1],
-                trimesh,
-                matching_ids,
-                idsensors,
-                infinite)
-        sensors_caribu, \
-        sensors_plantgl, \
-        Pmax_capt = create_caribu_legume_sensors(*arg)
+    matching_sensors_species = {}
+    if "sensors" in parameters and isinstance(parameters["sensors"], list):
+        if "sensors" in parameters and parameters["sensors"][0] == "grid" :
+            dxyz = parameters["sensors"][1]
+            nxyz = parameters["sensors"][2]
+            orig = parameters["sensors"][3]
+            arg = (dxyz,
+                    nxyz,
+                    orig,
+                    minmax[1],
+                    trimesh,
+                    matching_ids,
+                    idsensors,
+                    infinite)
+            sensors_caribu, \
+            sensors_plantgl, \
+            Pmax_capt = create_caribu_legume_sensors(*arg)
+            for i in sensors_caribu.keys():
+                matching_sensors_species[i] = 0
+    elif "sensors" in parameters and isinstance(parameters["sensors"], dict):
+        sensors_caribu = {}
+        matching_sensors_species = {}
+        start_id = 0
+        for specy_indice, sensors_parameters in parameters["sensors"].items():
+            dxyz = sensors_parameters[1]
+            nxyz = sensors_parameters[2]
+            orig = sensors_parameters[3]
+            arg = (dxyz,
+                    nxyz,
+                    orig,
+                    minmax[1],
+                    trimesh,
+                    matching_ids,
+                    idsensors,
+                    infinite,
+                    start_id)
+            sensors_dict, \
+            sensors_plantgl, \
+            Pmax_capt = create_caribu_legume_sensors(*arg)
+            sensors_caribu.update(sensors_dict)
+            start_id = max(sensors_dict.keys()) + 1
+
+            for key in sensors_dict.keys():
+                matching_sensors_species[key] = specy_indice
+
 
     # infinite scene pattern if not precised in the inputs
     if "domain" not in geometry :
@@ -144,7 +176,7 @@ def Prepare_CARIBU(trimesh,
     debug = False
     if "debug" in parameters and parameters["debug"] :  debug = True
     
-    return opt, sensors_caribu, debug
+    return opt, sensors_caribu, debug, matching_sensors_species
     
 
 def CARIBU_opticals(matching_ids, parameters, stems_id=None) :
@@ -194,7 +226,8 @@ def create_caribu_legume_sensors(dxyz,
                                 trimesh, 
                                 matching_ids, 
                                 id_sensors, 
-                                infinite) :
+                                infinite,
+                                start_id=0) :
     """Creates a set of virtual sensors following a voxels grid
     each sensor is a square made by two triangles and takes place on the bottom face of a voxel
     The grid follow the xyz axis (and so the voxels)
@@ -278,7 +311,7 @@ def create_caribu_legume_sensors(dxyz,
     square_pgl = pgl.QuadSet(points, indices, normals, indices)
     
     # generate the sensors in plantGL format among the grid
-    ID_capt = 0
+    ID_capt = start_id
     dico_translat = {}
     for ix in range(nxyz[0]):
         for iy in range(nxyz[1]):

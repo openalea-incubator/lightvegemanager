@@ -79,7 +79,7 @@ between ``"ratp"``, ``"caribu"`` or ``"riri5"``.
 
 .. code-block:: python
 
-    from lightvegeamanger.LVM import LightVegeManager
+    from lightvegemanager.LVM import LightVegeManager
 
     # one triangle as a geometric element
     # we write our triangle in a CaribuScene format
