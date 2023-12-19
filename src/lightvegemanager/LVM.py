@@ -1088,7 +1088,7 @@ class LightVegeManager(object):
                 print("--- VTK:  No light data, run the simulation")
                 lighting = False
 
-            if not hasattr(self, "_LightVegeManager__sun"):
+            if sun and not hasattr(self, "_LightVegeManager__sun"):
                 raise AttributeError("No results yet, run a light modeling first")
 
         if self.__lightmodel == "ratp" and printvoxels:

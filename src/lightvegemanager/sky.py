@@ -221,10 +221,15 @@ def discrete_sky(n_azimuts, n_zeniths, sky_type):
     :param sky_type: ``"soc"`` or ``"uoc"``
     :type sky_type: string
     :return: 4 output lists of length n_azimuts * n_zeniths
+
         * ele: elevations in degrees (angle soil to sky)
+
         * azi: azimuts in degrees
+
         * omega: solid angle of directions
+
         * pc: relative contribution of directions to incident diffuse radiation
+        
     :rtype: list, list, list, list
     """
 
